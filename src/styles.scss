@@ -1,1 +1,14 @@
 /* You can add global styles to this file, and also import other style files */
+@import "primeicons/primeicons.css";
+
+/* Tipografía y fondo general */
+html {
+  background: var(--p-surface-0);
+  color: var(--p-text-color);
+}
+
+body {
+  margin: 0;
+  background: inherit;
+  color: inherit;
+}

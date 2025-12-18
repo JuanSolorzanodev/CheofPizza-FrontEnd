@@ -1,0 +1,74 @@
+<p-toolbar class="cheof-toolbar">
+  <ng-template pTemplate="start">
+    <div class="brand">
+      <div class="cheof-title">CHEO' F</div>
+      <div class="cheof-accent-line"></div>
+    </div>
+  </ng-template>
+
+  <ng-template pTemplate="end">
+    <div class="toolbar-actions">
+
+      <!-- WEB: Botones con texto (Sencillas/Especiales) -->
+      <div class="cats-desktop">
+        <p-button
+          label="Pizzas sencillas"
+          icon="pi pi-star"
+          outlined="true"
+          styleClass="cheof-theme-toggle cheof-btn-simple">
+        </p-button>
+
+        <p-button
+          label="Pizzas especiales"
+          icon="pi pi-bolt"
+          outlined="true"
+          styleClass="cheof-theme-toggle cheof-btn-special">
+        </p-button>
+      </div>
+
+      <!-- MÓVIL: Select unido -->
+      <div class="cats-mobile">
+        <p-selectButton
+          [(ngModel)]="pizzaCategory"
+          [options]="pizzaCategoryOptions"
+          optionLabel="label"
+          optionValue="value"
+          styleClass="cheof-cat-select"
+          (onChange)="onCategoryChange($event.value)">
+
+          <ng-template pTemplate="item" let-opt>
+            <i [class]="opt.icon"></i>
+            <span class="opt-label">{{ opt.label }}</span>
+          </ng-template>
+
+        </p-selectButton>
+      </div>
+
+      <!-- Login: WEB (texto) -->
+      <p-button
+        label="Iniciar sesión"
+        icon="pi pi-user"
+        outlined="true"
+        styleClass="cheof-theme-toggle login-desktop">
+      </p-button>
+
+
+
+      <!-- Carrito (siempre ícono) -->
+      <p-button
+        icon="pi pi-shopping-cart"
+        outlined="true"
+        styleClass="cheof-theme-toggle cheof-icon-btn">
+      </p-button>
+
+      <!-- Theme (siempre ícono) -->
+      <p-button
+        [icon]="themeIcon()"
+        outlined="true"
+        styleClass="cheof-theme-toggle cheof-icon-btn"
+        (onClick)="toggleTheme()">
+      </p-button>
+
+    </div>
+  </ng-template>
+</p-toolbar>

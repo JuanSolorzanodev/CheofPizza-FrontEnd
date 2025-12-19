@@ -1,0 +1,70 @@
+<p-dialog
+  [(visible)]="visible"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [closable]="true"
+  (onHide)="close()"
+  header="Iniciar sesión / Registrarse"
+  styleClass="cheof-login-dialog"
+  appendTo="body"
+  [baseZIndex]="2000"
+
+>
+  <div class="content">
+    @if (errorMsg) {
+      <div class="error">{{ errorMsg }}</div>
+    }
+
+    @if (!phoneRequired) {
+      <p class="hint">Continuar con google:</p>
+
+      <div class="google-wrap">
+        <button
+          class="google-pill"
+          type="button"
+          (click)="continueWithGoogle()"
+          [disabled]="loading"
+        >
+          <span class="google-icon" aria-hidden="true"></span>
+          <span class="google-text">Registrarse con Google</span>
+          @if (loading) { <span class="google-spinner" aria-hidden="true"></span> }
+        </button>
+      </div>
+    } @else {
+      <p class="hint">Tu cuenta es nueva. Para completar el registro, ingresa tu teléfono.</p>
+
+      <label class="label" for="phone">Teléfono</label>
+      <input
+        id="phone"
+        type="text"
+        pInputText
+        [formControl]="phone"
+        placeholder="Ej: +593 9XXXXXXXX"
+        [disabled]="loading"
+        class="w-full"
+      />
+
+      @if (phone.touched && phone.invalid) {
+        <small class="field-error">Teléfono requerido (máx. 30 caracteres).</small>
+      }
+
+      <div class="actions">
+        <p-button
+          label="Atrás"
+          outlined="true"
+          [disabled]="loading"
+          (onClick)="backToGoogle()"
+          styleClass="w-full"
+        />
+        <p-button
+          label="Completar"
+          [loading]="loading"
+          [disabled]="loading"
+          (onClick)="completeWithPhone()"
+          styleClass="w-full"
+        />
+      </div>
+    }
+  </div>
+</p-dialog>

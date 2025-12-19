@@ -32,8 +32,16 @@ const CheofPreset = definePreset(Aura, {
           800: '#27272a',
           900: '#18181b',
           950: '#09090b'
+        },
+
+        // ✅ IMPORTANTÍSIMO: texto en LIGHT
+        text: {
+          color: '{surface.900}',
+          secondaryColor: '{surface.600}',
+          mutedColor: '{surface.500}'
         }
       },
+
       dark: {
         surface: {
           0: '#131629ff',
@@ -48,6 +56,13 @@ const CheofPreset = definePreset(Aura, {
           800: '#8fb59a',
           900: '#c6e7d2',
           950: '#eaf7ef'
+        },
+
+        // ✅ IMPORTANTÍSIMO: texto en DARK
+        text: {
+          color: '{surface.950}',
+          secondaryColor: '{surface.900}',
+          mutedColor: '{surface.800}'
         }
       }
     },
@@ -71,6 +86,24 @@ const CheofPreset = definePreset(Aura, {
   },
 
   css: ({ dt }) => `
+    /* =========================================================
+      ✅ “Seguro” de texto global:
+      Fuerza variables de texto para que TODOS los componentes
+      (incluido p-dialog) tengan contraste correcto.
+      ========================================================= */
+    :root {
+      --p-text-color: ${dt('colorScheme.light.text.color')};
+      --p-text-color-secondary: ${dt('colorScheme.light.text.secondaryColor')};
+      --p-text-muted-color: ${dt('colorScheme.light.text.mutedColor')};
+    }
+
+    html.cheof-dark {
+      --p-text-color: ${dt('colorScheme.dark.text.color')};
+      --p-text-color-secondary: ${dt('colorScheme.dark.text.secondaryColor')};
+      --p-text-muted-color: ${dt('colorScheme.dark.text.mutedColor')};
+    }
+
+    /* Marca */
     .cheof-title {
       color: ${dt('cheof.brand.red')};
       font-weight: 800;
@@ -97,78 +130,72 @@ const CheofPreset = definePreset(Aura, {
     .p-button.p-button-cheof-red:not(:disabled):hover {
       filter: brightness(0.95);
     }
-        /* ========== Botones de marca (reutilizables) ========== */
 
-  /* Base: redondeado y consistente */
-  .p-button.cheof-btn {
-    border-radius: 999px;
-    font-weight: 600;
-    border-width: 1px;
-  }
+    /* ========== Botones de marca (reutilizables) ========== */
+    .p-button.cheof-btn {
+      border-radius: 999px;
+      font-weight: 600;
+      border-width: 1px;
+    }
 
-  /* Verde sólido (acciones normales) */
-  .p-button.cheof-btn--primary {
-    background: ${dt('cheof.brand.green')};
-    border-color: ${dt('cheof.brand.green')};
-    color: #fff;
-  }
-  .p-button.cheof-btn--primary:not(:disabled):hover {
-    filter: brightness(0.95);
-  }
+    .p-button.cheof-btn--primary {
+      background: ${dt('cheof.brand.green')};
+      border-color: ${dt('cheof.brand.green')};
+      color: #fff;
+    }
+    .p-button.cheof-btn--primary:not(:disabled):hover {
+      filter: brightness(0.95);
+    }
 
-  /* Rojo sólido (acciones importantes/promos) */
-  .p-button.cheof-btn--danger {
-    background: ${dt('cheof.brand.red')};
-    border-color: ${dt('cheof.brand.red')};
-    color: #fff;
-  }
-  .p-button.cheof-btn--danger:not(:disabled):hover {
-    filter: brightness(0.95);
-  }
+    .p-button.cheof-btn--danger {
+      background: ${dt('cheof.brand.red')};
+      border-color: ${dt('cheof.brand.red')};
+      color: #fff;
+    }
+    .p-button.cheof-btn--danger:not(:disabled):hover {
+      filter: brightness(0.95);
+    }
 
-  /* Outlined (para categorías / acciones secundarias) */
-  .p-button.cheof-btn--outlined {
-    background: transparent;
-    border-color: ${dt('cheof.brand.green')};
-    color: ${dt('cheof.brand.green')};
-  }
-  .p-button.cheof-btn--outlined .p-button-icon {
-    color: ${dt('cheof.brand.green')};
-  }
+    .p-button.cheof-btn--outlined {
+      background: transparent;
+      border-color: ${dt('cheof.brand.green')};
+      color: ${dt('cheof.brand.green')};
+    }
+    .p-button.cheof-btn--outlined .p-button-icon {
+      color: ${dt('cheof.brand.green')};
+    }
 
-  /* Dark mode: outlined más visible */
-  html.cheof-dark .p-button.cheof-btn--outlined {
-    background: color-mix(in srgb, ${dt('cheof.brand.green')} 10%, transparent);
-    border-color: color-mix(in srgb, ${dt('cheof.brand.green')} 65%, transparent);
-    color: ${dt('colorScheme.dark.surface.950')};
-  }
-  html.cheof-dark .p-button.cheof-btn--outlined .p-button-icon {
-    color: ${dt('colorScheme.dark.surface.950')};
-  }
+    /* Dark mode: outlined más visible */
+    html.cheof-dark .p-button.cheof-btn--outlined {
+      background: color-mix(in srgb, ${dt('cheof.brand.green')} 10%, transparent);
+      border-color: color-mix(in srgb, ${dt('cheof.brand.green')} 65%, transparent);
+      color: ${dt('colorScheme.dark.surface.950')};
+    }
+    html.cheof-dark .p-button.cheof-btn--outlined .p-button-icon {
+      color: ${dt('colorScheme.dark.surface.950')};
+    }
 
-  /* ========== Chips / títulos de categoría (texto + icono) ========== */
-  .cheof-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: .5rem;
-    padding: .45rem .75rem;
-    border-radius: 999px;
-    font-weight: 800;
-    letter-spacing: .04em;
-    text-transform: uppercase;
-    border: 1px solid var(--p-surface-200);
-    background: var(--p-surface-0);
-  }
+    /* Chips */
+    .cheof-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      padding: .45rem .75rem;
+      border-radius: 999px;
+      font-weight: 800;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+      border: 1px solid var(--p-surface-200);
+      background: var(--p-surface-0);
+    }
 
-  .cheof-badge--simple {
-    color: ${dt('cheof.brand.green')};
-  }
+    .cheof-badge--simple {
+      color: ${dt('cheof.brand.green')};
+    }
 
-  .cheof-badge--special {
-    color: ${dt('cheof.brand.red')};
-  }
-
-
+    .cheof-badge--special {
+      color: ${dt('cheof.brand.red')};
+    }
   `
 });
 

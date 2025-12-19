@@ -58,6 +58,55 @@
   display: inline-flex;
 }
 
+/* =========================================================
+   ✅ Usuario autenticado (p-button outlined)
+   -> se ve igual que tus otros botones en dark/outlined
+   ========================================================= */
+:host ::ng-deep .user-chip-btn.p-button {
+  height: 42px;
+  border-radius: 999px;
+  padding: 0 12px;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Asegura que el contenido no tenga padding raro */
+:host ::ng-deep .user-chip-btn.p-button .p-button-label {
+  padding: 0;
+}
+
+/* Avatar */
+:host ::ng-deep .user-chip-btn .avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  object-fit: cover;
+  display: block;
+}
+
+/* Fallback icon */
+:host ::ng-deep .user-chip-btn .avatar-fallback {
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Nombre: visible y con ellipsis si es largo */
+:host ::ng-deep .user-chip-btn .name {
+  font-weight: 700;
+  font-size: 0.92rem;
+  white-space: nowrap;
+
+  max-width: 280px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 /* =========================
    Responsive
    ========================= */
@@ -79,11 +128,18 @@
   .login-mobile {
     display: inline-flex;
   }
+
+  /* en móvil: ocultar nombre, queda avatar */
+  :host ::ng-deep .user-chip-btn .name {
+    display: none;
+  }
+  :host ::ng-deep .user-chip-btn.p-button {
+    padding: 0 10px;
+  }
 }
 
 /* =========================
    Opcional: diferenciar botones web
-   (solo borde, sin romper preset)
    ========================= */
 :host ::ng-deep .cheof-btn-simple.p-button {
   border-color: color-mix(in srgb, var(--p-danger-500) 55%, var(--p-surface-200));
@@ -93,9 +149,7 @@
 }
 
 /* =========================================================
-   MÓVIL: SelectButton (Prime usa p-togglebutton internamente)
-   -> MISMO FONDO para ambos
-   -> borde rojo/verde SOLO en seleccionado
+   MÓVIL: SelectButton
    ========================================================= */
 
 /* contenedor del select */
@@ -108,7 +162,6 @@
   border-radius: 0 !important;
   border: 0 !important;
 
-  /* MISMO fondo para ambos (nunca blanco) */
   background: var(--p-surface-0) !important;
   color: var(--p-text-color) !important;
 
@@ -162,12 +215,10 @@
   white-space: nowrap;
 }
 
-/* si usas template con icon + label */
 :host ::ng-deep .cheof-cat-select i {
   margin-right: 8px;
 }
 
-/* teléfonos muy pequeños: ocultar texto del select */
 @media (max-width: 380px) {
   :host ::ng-deep .cheof-cat-select .opt-label {
     display: none;

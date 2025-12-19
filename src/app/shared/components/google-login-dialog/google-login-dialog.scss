@@ -1,0 +1,148 @@
+/* =========================================================
+   IMPORTANTE: appendTo="body"
+   -> NO uses :host aquí. Todo con ::ng-deep
+   ========================================================= */
+
+/* Tamaño del dialog */
+::ng-deep .cheof-login-dialog {
+  width: 420px;
+  max-width: 92vw;
+}
+
+/* Overlay */
+::ng-deep .p-dialog-mask {
+  background: rgba(0, 0, 0, 0.55);
+}
+
+/* Panel */
+::ng-deep .cheof-login-dialog.p-dialog {
+  border-radius: 16px !important;
+  overflow: hidden !important;
+
+  background: var(--p-surface-0) !important;
+  border: 1px solid var(--p-surface-200) !important;
+
+  /* ✅ Texto SIEMPRE desde tokens (light/dark) */
+  color: var(--p-surface-900) !important;
+}
+
+/* Header + content */
+::ng-deep .cheof-login-dialog.p-dialog .p-dialog-header,
+::ng-deep .cheof-login-dialog.p-dialog .p-dialog-content {
+  background: var(--p-surface-0) !important;
+  color: var(--p-surface-900) !important;
+}
+
+
+
+/* Título y botón cerrar */
+::ng-deep .cheof-login-dialog.p-dialog .p-dialog-title,
+::ng-deep .cheof-login-dialog.p-dialog .p-dialog-header-icon {
+  color: var(--p-surface-900) !important;
+  font-weight: 800;
+}
+
+/* =========================================================
+   Content
+   ========================================================= */
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Texto secundario */
+.hint {
+  margin: 0;
+  color: var(--p-text-color-secondary) !important;
+  font-weight: 600;
+}
+
+/* Error */
+.error {
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--p-danger-500) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--p-danger-500) 35%, transparent);
+  color: var(--p-text-color) !important;
+}
+
+/* Labels */
+.label {
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--p-text-color) !important;
+}
+
+.field-error {
+  color: var(--p-danger-500) !important;
+}
+
+.actions {
+  margin-top: 8px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+/* =========================================================
+   Botón Google (blanco siempre)
+   ========================================================= */
+.google-wrap {
+  display: flex;
+  justify-content: center;
+}
+
+.google-pill {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+
+  border-radius: 999px;
+  padding: 12px 16px;
+  cursor: pointer;
+
+  background: var(--p-surface-0) !important;
+  border: 1px solid color-mix(in srgb, #000 16%, transparent);
+  color:var(--p-surface-0) !important;
+
+  transition: transform 120ms ease, box-shadow 120ms ease;
+}
+
+.google-pill:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 20px color-mix(in srgb, #000 12%, transparent);
+}
+
+.google-pill:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.google-icon {
+  width: 18px;
+  height: 18px;
+  background: center / contain no-repeat
+    url("https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg");
+}
+
+.google-text {
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  color: var(--p-surface-900) !important;
+}
+
+.google-spinner {
+  width: 14px;
+  height: 14px;
+  border-radius: 999px;
+  border: 2px solid color-mix(in srgb, #000 18%, transparent);
+  border-top-color: var(--p-primary-500);
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

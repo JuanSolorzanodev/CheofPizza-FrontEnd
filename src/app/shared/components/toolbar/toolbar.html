@@ -9,7 +9,7 @@
   <ng-template pTemplate="end">
     <div class="toolbar-actions">
 
-      <!-- WEB: Botones con texto (Sencillas/Especiales) -->
+      <!-- WEB: Botones con texto -->
       <div class="cats-desktop">
         <p-button
           label="Pizzas sencillas"
@@ -44,30 +44,59 @@
         </p-selectButton>
       </div>
 
-      <!-- Login: WEB (texto) -->
-      <p-button
-        label="Iniciar sesión"
-        icon="pi pi-user"
-        outlined="true"
-        styleClass="cheof-theme-toggle login-desktop">
-      </p-button>
+      <!-- ✅ Login -->
+      @if (!isAuthenticated()) {
+        <p-button
+          label="Iniciar sesión"
+          icon="pi pi-user"
+          outlined="true"
+          (onClick)="loginDialog.open()"
+          styleClass="cheof-theme-toggle login-desktop">
+        </p-button>
+      } @else {
+        <!-- ✅ Usuario autenticado como p-button (mismo look dark/outlined que el resto) -->
+        <p-button
+          outlined="true"
+          styleClass="cheof-theme-toggle user-chip-btn"
+          (onClick)="logout()"
+          title="Cerrar sesión">
 
+          <ng-template pTemplate="content">
+            @if (photoUrl() && !avatarBroken()) {
+              <img
+                class="avatar"
+                [src]="photoUrl()!"
+                alt="Foto de perfil"
+                referrerpolicy="no-referrer"
+                (error)="onAvatarError()"
+              />
+            } @else {
+              <span class="avatar-fallback pi pi-user"></span>
+            }
 
+            <span class="name">{{ displayName() }}</span>
+          </ng-template>
 
-      <!-- Carrito (siempre ícono) -->
+        </p-button>
+      }
+
+      <!-- Carrito -->
       <p-button
         icon="pi pi-shopping-cart"
         outlined="true"
         styleClass="cheof-theme-toggle cheof-icon-btn">
       </p-button>
 
-      <!-- Theme (siempre ícono) -->
+      <!-- Theme -->
       <p-button
         [icon]="themeIcon()"
         outlined="true"
         styleClass="cheof-theme-toggle cheof-icon-btn"
         (onClick)="toggleTheme()">
       </p-button>
+
+      <!-- ✅ Dialog -->
+      <app-google-login-dialog #loginDialog></app-google-login-dialog>
 
     </div>
   </ng-template>

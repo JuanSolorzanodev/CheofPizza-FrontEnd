@@ -19,8 +19,8 @@ export class ThemeService {
   }
 
   private apply(mode: ThemeMode): void {
-    const root = document.documentElement;
-    root.classList.toggle('cheof-dark', mode === 'dark');
+   const root = document.documentElement;
+   root.classList.toggle('cheof-dark', mode === 'dark');
   }
 
   private getInitialMode(): ThemeMode {

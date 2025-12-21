@@ -1,13 +1,13 @@
 import { Component, signal, inject, computed } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { ThemeService } from './core/state/theme.service';
 import { Toolbar } from './shared/components/toolbar/toolbar';
+import { CarouselComponent } from "./shared/components/carousel-component/carousel-component";
 
 
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, Toolbar],
+  imports: [RouterOutlet, Toolbar, CarouselComponent],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })

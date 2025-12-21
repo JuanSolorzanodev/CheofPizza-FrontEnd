@@ -44,7 +44,24 @@
         </p-selectButton>
       </div>
 
-      <!-- ✅ Login -->
+
+
+      <!-- Carrito -->
+      <p-button
+        icon="pi pi-shopping-cart"
+        outlined="true"
+        styleClass="cheof-theme-toggle cheof-icon-btn">
+      </p-button>
+
+      <!-- Theme -->
+      <p-button
+        [icon]="themeIcon()"
+        outlined="true"
+        styleClass="cheof-theme-toggle cheof-icon-btn"
+        (onClick)="toggleTheme()">
+      </p-button>
+
+            <!-- ✅ Login -->
       @if (!isAuthenticated()) {
         <p-button
           label="Iniciar sesión"
@@ -79,21 +96,6 @@
 
         </p-button>
       }
-
-      <!-- Carrito -->
-      <p-button
-        icon="pi pi-shopping-cart"
-        outlined="true"
-        styleClass="cheof-theme-toggle cheof-icon-btn">
-      </p-button>
-
-      <!-- Theme -->
-      <p-button
-        [icon]="themeIcon()"
-        outlined="true"
-        styleClass="cheof-theme-toggle cheof-icon-btn"
-        (onClick)="toggleTheme()">
-      </p-button>
 
       <!-- ✅ Dialog -->
       <app-google-login-dialog #loginDialog></app-google-login-dialog>

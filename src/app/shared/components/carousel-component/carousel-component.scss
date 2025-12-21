@@ -1,0 +1,68 @@
+.hero-carousel {
+  width: 100%;
+  padding: 0 16px;        /* margen lateral en mobile */
+  box-sizing: border-box;
+}
+
+/* Contenedor del banner */
+.banner-wrap {
+  width: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+
+  /* Fondo por si usas object-fit: contain */
+  background : var(--p-surface-0) ;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  /* ALTURA RESPONSIVE (reemplaza el height fijo de 500px) */
+  height: clamp(200px, 32vw, 500px);
+  /* - mínimo: 200px (móvil)
+     - ideal: 32vw (se adapta al ancho)
+     - máximo: 500px (desktop) */
+}
+
+.banner-img {
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+  display: block;
+
+  /* Escoge 1 según tu objetivo: */
+//object-fit: fill; /* imagen completa (sin recorte) */
+  /* object-fit: cover;  // full-bleed (con recorte) */
+}
+
+/* Opcional: reducir padding en pantallas muy pequeñas */
+@media (max-width: 480px) {
+  .hero-carousel {
+    padding: 0 10px;
+  }
+
+  .banner-wrap {
+    height: 220px; /* un poco más “hero” sin exagerar */
+  }
+}
+
+/* Tablet */
+@media (min-width: 768px) {
+  .hero-carousel {
+    padding: 0 24px;
+  }
+
+  .banner-wrap {
+    height: 420px;
+  }
+}
+
+/* Ajustes PrimeNG: asegurar que el carrusel use todo el ancho */
+:host ::ng-deep .p-carousel,
+:host ::ng-deep .p-carousel-content,
+:host ::ng-deep .p-carousel-container,
+:host ::ng-deep .p-carousel-items-content,
+:host ::ng-deep .p-carousel-items-container,
+:host ::ng-deep .p-carousel-item {
+  width: 100%;
+}

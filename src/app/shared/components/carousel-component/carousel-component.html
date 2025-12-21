@@ -1,0 +1,21 @@
+<div class="hero-carousel">
+  <p-carousel
+    [value]="banners"
+    [numVisible]="1"
+    [numScroll]="1"
+    [circular]="true"
+    [autoplayInterval]="4000"
+    [showIndicators]="true"
+    [showNavigators]="true"
+  >
+    <ng-template pTemplate="item" let-banner>
+      <div class="banner-wrap">
+        <img
+          [src]="banner.imageUrl"
+          [alt]="banner.alt ?? 'Banner'"
+          class="banner-img"
+        />
+      </div>
+    </ng-template>
+  </p-carousel>
+</div>

@@ -63,7 +63,8 @@ const CheofPreset = definePreset(Aura, {
           color: '{surface.950}',
           secondaryColor: '{surface.900}',
           mutedColor: '{surface.800}'
-        }
+        },
+
       }
     },
 
@@ -95,12 +96,20 @@ const CheofPreset = definePreset(Aura, {
       --p-text-color: ${dt('colorScheme.light.text.color')};
       --p-text-color-secondary: ${dt('colorScheme.light.text.secondaryColor')};
       --p-text-muted-color: ${dt('colorScheme.light.text.mutedColor')};
+      /* ✅ Exporta marca a CSS variables */
+      --cheof-red: ${dt('cheof.brand.red')};
+      --cheof-green: ${dt('cheof.brand.green')};
+      --cheof-white: ${dt('cheof.brand.white')};
+
     }
 
     html.cheof-dark {
       --p-text-color: ${dt('colorScheme.dark.text.color')};
       --p-text-color-secondary: ${dt('colorScheme.dark.text.secondaryColor')};
       --p-text-muted-color: ${dt('colorScheme.dark.text.mutedColor')};
+      --cheof-red: ${dt('cheof.brand.red')};
+      --cheof-green: ${dt('cheof.brand.green')};
+      --cheof-white: ${dt('cheof.brand.white')};
     }
 
     /* Marca */

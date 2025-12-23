@@ -1,0 +1,165 @@
+.menu-page {
+  padding: 2.5rem 0 3.5rem;
+  background: var(--p-surface-0);
+  color: var(--p-text-color);
+}
+
+.page-title {
+  text-align: center;
+  margin: 0 0 1.75rem;
+  font-family: 'Times New Roman', Times, serif;
+  font-size: clamp(2rem, 4vw, 3rem);
+  letter-spacing: 0.12em;
+  color: var(--cheof-red);
+  text-transform: uppercase;
+}
+
+.section-title {
+  text-align: center;
+  font-family: 'Times New Roman', Times, serif;
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  letter-spacing: 0.10em;
+  margin: 0 0 1.5rem;
+  color: var(--p-surface-900);
+  text-transform: uppercase;
+
+  &.section-title--spaced {
+    margin-top: 3rem;
+  }
+}
+
+.loading,
+.error {
+  max-width: 1100px;
+  margin: 0 auto 1.5rem;
+  padding: 0 1rem;
+  text-align: center;
+  font-size: 1rem;
+}
+
+.error {
+  color: var(--cheof-red);
+}
+
+:host ::ng-deep .p-dataview {
+  background: transparent;
+  border: none;
+}
+
+/* Grid wrapper (PrimeFlex cols viven dentro) */
+.grid {
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 0 1rem;
+  background: var(--p-surface-0);
+}
+
+.pizza-card {
+  background: var(--p-surface-0);
+  border-radius: 16px;
+  padding: 1.25rem;
+  box-shadow: 0 3px 9px rgba(0, 0, 0, 1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  min-height: 320px;
+  border: 1px solid color-mix(in srgb, var(--p-surface-500) 55%, transparent);
+}
+
+html.cheof-dark .pizza-card {
+  background: color-mix(in srgb, var(--p-surface-0) 92%, transparent);
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.45);
+  border-color: color-mix(in srgb, var(--p-surface-700) 55%, transparent);
+}
+
+.pizza-name {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-family: 'Times New Roman', Times, serif;
+  font-size: 1.6rem;
+  color: var(--p-surface-900);
+  text-align: center;
+}
+
+html.cheof-dark .pizza-name {
+  color: var(--p-text-color);
+}
+
+.image-wrap {
+  width: 100%;
+  border-radius: 10px;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--p-surface-0) 70%, transparent);
+}
+
+html.cheof-dark .image-wrap {
+  background: color-mix(in srgb, var(--p-surface-0) 35%, transparent);
+}
+
+.pizza-image {
+  width: 100%;
+  height: 190px;
+  display: block;
+  object-fit: contain;
+}
+
+.order-btn {
+  width: auto;
+  border-radius: 12px;
+  letter-spacing: 0.06em;
+  justify-content: center;
+}
+
+/* ✅ Botón con marca (sin pelear con Prime) */
+:host ::ng-deep .order-btn.p-button {
+  background: var(--cheof-red);
+  border: 1px solid transparent;
+  color: var(--p-surface-900);
+  padding-inline: 1.25rem;
+}
+
+:host ::ng-deep .order-btn.p-button:not(:disabled):hover {
+  filter: brightness(0.95);
+}
+
+/* ==============================
+   Skeleton styles
+   ============================== */
+.pizza-card--skeleton {
+  /* Mantiene el layout idéntico */
+  border-color: color-mix(in srgb, var(--p-surface-200) 55%, transparent);
+}
+
+html.cheof-dark .pizza-card--skeleton {
+  border-color: color-mix(in srgb, var(--p-surface-700) 55%, transparent);
+}
+
+/* Base skeleton color (light/dark) */
+:host ::ng-deep .p-skeleton {
+  background: color-mix(in srgb, var(--p-surface-200) 55%, transparent);
+}
+
+html.cheof-dark :host ::ng-deep .p-skeleton {
+  background: color-mix(in srgb, var(--p-surface-700) 40%, transparent);
+}
+
+/* Shimmer */
+:host ::ng-deep .p-skeleton::after {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--p-surface-0) 22%, transparent),
+    transparent
+  );
+}
+
+html.cheof-dark :host ::ng-deep .p-skeleton::after {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--p-surface-950) 22%, transparent),
+    transparent
+  );
+}

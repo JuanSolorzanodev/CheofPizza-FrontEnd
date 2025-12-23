@@ -1,3 +1,4 @@
+// src/app/shared/components/menu/menu.ts
 import { PizzaDto } from './../../../../core/api/catalog/catalog.models';
 import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -5,7 +6,8 @@ import { finalize } from 'rxjs';
 
 import { DataView } from 'primeng/dataview';
 import { ButtonModule } from 'primeng/button';
-import { SkeletonModule } from 'primeng/skeleton'; // ✅
+import { SkeletonModule } from 'primeng/skeleton';
+
 
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CatalogApiService } from '../../../../core/api/catalog/catalog-api.service';
@@ -13,7 +15,7 @@ import { CatalogApiService } from '../../../../core/api/catalog/catalog-api.serv
 @Component({
   selector: 'app-menu',
   standalone: true,
-  imports: [CommonModule, DataView, ButtonModule, SkeletonModule], // ✅
+  imports: [CommonModule, DataView, ButtonModule, SkeletonModule],
   templateUrl: './menu.html',
   styleUrl: './menu.scss',
 })
@@ -21,21 +23,17 @@ export class Menu {
   private readonly api = inject(CatalogApiService);
   private readonly destroyRef = inject(DestroyRef);
 
-  // DATA
   readonly sencillas = signal<PizzaDto[]>([]);
   readonly especiales = signal<PizzaDto[]>([]);
 
-  // STATE
   readonly loadingSencillas = signal<boolean>(true);
   readonly loadingEspeciales = signal<boolean>(true);
 
   readonly errorSencillas = signal<string | null>(null);
   readonly errorEspeciales = signal<string | null>(null);
 
-  // ✅ Para renderizar 6 skeleton cards (2 filas de 3)
   readonly skeletonItems = Array.from({ length: 6 }, (_, i) => i);
 
-  // Fallback si no hay imagen
   readonly fallbackImage =
     'data:image/svg+xml;utf8,' +
     encodeURIComponent(
@@ -86,6 +84,4 @@ export class Menu {
   onOrder(pizza: PizzaDto): void {
     console.log('ORDENAR:', pizza);
   }
-
-  trackById = (_: number, p: PizzaDto) => p.id;
 }

@@ -1,3 +1,4 @@
+<!-- src/app/shared/components/toolbar/toolbar.html -->
 <p-toolbar class="cheof-toolbar">
   <ng-template pTemplate="start">
     <div class="brand">
@@ -8,13 +9,13 @@
 
   <ng-template pTemplate="end">
     <div class="toolbar-actions">
-
-      <!-- WEB: Botones con texto -->
+      <!-- WEB -->
       <div class="cats-desktop">
         <p-button
           label="Pizzas sencillas"
           icon="pi pi-star"
           outlined="true"
+          (click)="goToSencillas()"
           styleClass="cheof-theme-toggle cheof-btn-simple">
         </p-button>
 
@@ -22,11 +23,12 @@
           label="Pizzas especiales"
           icon="pi pi-bolt"
           outlined="true"
+          (click)="goToEspeciales()"
           styleClass="cheof-theme-toggle cheof-btn-special">
         </p-button>
       </div>
 
-      <!-- MÓVIL: Select unido -->
+      <!-- MÓVIL -->
       <div class="cats-mobile">
         <p-selectButton
           [(ngModel)]="pizzaCategory"
@@ -35,16 +37,12 @@
           optionValue="value"
           styleClass="cheof-cat-select"
           (onChange)="onCategoryChange($event.value)">
-
           <ng-template pTemplate="item" let-opt>
             <i [class]="opt.icon"></i>
             <span class="opt-label">{{ opt.label }}</span>
           </ng-template>
-
         </p-selectButton>
       </div>
-
-
 
       <!-- Carrito -->
       <p-button
@@ -61,7 +59,7 @@
         (onClick)="toggleTheme()">
       </p-button>
 
-            <!-- ✅ Login -->
+      <!-- Login -->
       @if (!isAuthenticated()) {
         <p-button
           label="Iniciar sesión"
@@ -71,13 +69,11 @@
           styleClass="cheof-theme-toggle login-desktop">
         </p-button>
       } @else {
-        <!-- ✅ Usuario autenticado como p-button (mismo look dark/outlined que el resto) -->
         <p-button
           outlined="true"
           styleClass="cheof-theme-toggle user-chip-btn"
           (onClick)="logout()"
           title="Cerrar sesión">
-
           <ng-template pTemplate="content">
             @if (photoUrl() && !avatarBroken()) {
               <img
@@ -90,16 +86,12 @@
             } @else {
               <span class="avatar-fallback pi pi-user"></span>
             }
-
             <span class="name">{{ displayName() }}</span>
           </ng-template>
-
         </p-button>
       }
 
-      <!-- ✅ Dialog -->
       <app-google-login-dialog #loginDialog></app-google-login-dialog>
-
     </div>
   </ng-template>
 </p-toolbar>

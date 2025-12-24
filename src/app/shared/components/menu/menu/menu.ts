@@ -8,7 +8,7 @@ import { DataView } from 'primeng/dataview';
 import { ButtonModule } from 'primeng/button';
 import { SkeletonModule } from 'primeng/skeleton';
 
-
+import { Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CatalogApiService } from '../../../../core/api/catalog/catalog-api.service';
 
@@ -22,6 +22,7 @@ import { CatalogApiService } from '../../../../core/api/catalog/catalog-api.serv
 export class Menu {
   private readonly api = inject(CatalogApiService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly router = inject(Router);
 
   readonly sencillas = signal<PizzaDto[]>([]);
   readonly especiales = signal<PizzaDto[]>([]);
@@ -82,6 +83,8 @@ export class Menu {
   }
 
   onOrder(pizza: PizzaDto): void {
-    console.log('ORDENAR:', pizza);
+
+    const name = encodeURIComponent(pizza.name);
+    this.router.navigate(['/builder', name]);
   }
 }

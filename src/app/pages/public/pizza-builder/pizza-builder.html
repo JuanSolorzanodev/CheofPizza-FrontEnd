@@ -1,0 +1,221 @@
+<section class="builder-page">
+  @if (loading()) {
+    <div class="shell">
+      <div class="left">
+        <p-skeleton width="100%" height="520px" borderRadius="16px"></p-skeleton>
+      </div>
+      <div class="right">
+        <p-skeleton width="70%" height="34px"></p-skeleton>
+        <p-skeleton width="45%" height="28px"></p-skeleton>
+        <p-skeleton width="100%" height="140px" borderRadius="16px"></p-skeleton>
+        <p-skeleton width="100%" height="220px" borderRadius="16px"></p-skeleton>
+      </div>
+    </div>
+  } @else if (error()) {
+    <div class="error-box">
+      <h2>Error</h2>
+      <p>{{ error() }}</p>
+    </div>
+  } @else {
+    <div class="shell">
+      <!-- LEFT -->
+      <div class="left">
+        <div class="image-card">
+          <img class="hero" [src]="heroImage()" [alt]="pizza()?.name || 'Pizza'" />
+        </div>
+      </div>
+
+      <!-- RIGHT -->
+      <div class="right">
+        <h1 class="title">{{ pizza()?.name }}</h1>
+
+        <div class="price-row">
+          <div class="price">
+            @if (selectedSize()) {
+              ${{ unitPrice() | number:'1.2-2' }}
+              <span class="unit">/ unidad</span>
+            } @else {
+              <span class="muted">Selecciona un tamaño para ver el precio</span>
+            }
+          </div>
+
+          <div class="total">
+            @if (selectedSize()) {
+              Total: <strong>${{ total() | number:'1.2-2' }}</strong>
+            } @else {
+              Total: <strong>—</strong>
+            }
+          </div>
+        </div>
+
+        <p-divider></p-divider>
+
+        <!-- Tamaño (SIN preselección) -->
+        <div class="block">
+          <div class="block-title">Tamaño</div>
+
+          <div class="size-row">
+            <button pButton type="button" label="Peq"
+              [outlined]="sizeKey() !== 'peq'"
+              [severity]="sizeKey() === 'peq' ? 'success' : undefined"
+              (click)="setSize('peq')"></button>
+
+            <button pButton type="button" label="Med"
+              [outlined]="sizeKey() !== 'med'"
+              [severity]="sizeKey() === 'med' ? 'success' : undefined"
+              (click)="setSize('med')"></button>
+
+            <button pButton type="button" label="Fam"
+              [outlined]="sizeKey() !== 'fam'"
+              [severity]="sizeKey() === 'fam' ? 'success' : undefined"
+              (click)="setSize('fam')"></button>
+
+            <button pButton type="button" label="Gig"
+              [outlined]="sizeKey() !== 'gig'"
+              [severity]="sizeKey() === 'gig' ? 'success' : undefined"
+              (click)="setSize('gig')"></button>
+          </div>
+
+          @if (!selectedSize()) {
+            <div class="hint warn">Debes seleccionar un tamaño para continuar.</div>
+          } @else {
+            <div class="hint">
+              Precio base: <strong>${{ basePrice() | number:'1.2-2' }}</strong>
+              | Extras: <strong>${{ extrasPrice() | number:'1.2-2' }}</strong>
+            </div>
+          }
+        </div>
+
+        <!-- Cantidad con límite -->
+        <div class="block">
+          <div class="block-title">Cantidad</div>
+
+          <p-inputNumber
+            [ngModel]="quantity()"
+            (ngModelChange)="setQty($event)"
+            [min]="minQty"
+            [max]="maxQty"
+            [showButtons]="true"
+            buttonLayout="horizontal"
+            incrementButtonIcon="pi pi-plus"
+            decrementButtonIcon="pi pi-minus">
+          </p-inputNumber>
+
+          <div class="hint">
+            Máximo: <strong>{{ maxQty }}</strong>
+          </div>
+        </div>
+
+        <!-- Ingredientes base (bloqueo real + mensaje) -->
+        <div class="block">
+          <div class="block-title">Ingredientes</div>
+
+          @if (baseIngredients().length === 0) {
+            <div class="muted">Esta pizza no tiene ingredientes definidos.</div>
+          } @else {
+            <div class="chips">
+              @for (ing of baseIngredients(); track ing) {
+                <p-chip
+                  [label]="ing"
+                  [removable]="!isBaseIngredientLocked(ing)"
+                  (onRemove)="removeBaseIngredient(ing)">
+                </p-chip>
+              }
+            </div>
+
+            <div class="hint">
+              {{ baseLocksHint() }}
+              <br />
+              <span class="muted">Los ingredientes bloqueados no muestran la “X” y no se pueden eliminar.</span>
+            </div>
+          }
+        </div>
+
+        <!-- Extras con ACCORDION (cerrado por defecto) -->
+        <div class="block">
+          <p-accordion
+            [value]="extrasAccordionValue()"
+            [multiple]="false"
+            (valueChange)="onExtrasAccordionChange($event)"
+            styleClass="cheof-accordion">
+
+            <p-accordion-panel value="extras">
+              <p-accordion-header>
+                <div class="acc-head">
+                  <span>Ingredientes extra</span>
+                  <span class="acc-meta">{{ extrasCount() }}/{{ maxExtras }}</span>
+                </div>
+              </p-accordion-header>
+
+              <p-accordion-content>
+                <div class="acc-body">
+                  @if (!selectedSize()) {
+                    <div class="muted">Selecciona un tamaño para habilitar precios de extras.</div>
+                  }
+
+                  @if (extrasCatalog().length === 0) {
+                    <div class="muted">No hay extras disponibles.</div>
+                  } @else {
+                    <div class="hint">
+                      Puedes agregar hasta <strong>{{ maxExtras }}</strong> extras.
+                    </div>
+
+                    <div class="extras-grid">
+                      @for (ex of extrasCatalog(); track ex.id) {
+                        <div class="extra-item" [class.is-disabled]="isExtraDisabled(ex)">
+                          <p-checkbox
+                            [binary]="true"
+                            [disabled]="isExtraDisabled(ex) || !selectedSize()"
+                            [ngModel]="selectedExtras().has(ex.id)"
+                            (onChange)="toggleExtra(ex, $event.checked)">
+                          </p-checkbox>
+
+                          <div class="extra-name">
+                            <div class="n">{{ ex.name }}</div>
+                            <div class="t">{{ ex.type?.name || 'Extra' }}</div>
+                          </div>
+
+                          <div class="extra-price">
+                            @if (selectedSize()) {
+                              +${{ extraPriceFor(ex) | number:'1.2-2' }}
+                            } @else {
+                              —
+                            }
+                          </div>
+                        </div>
+                      }
+                    </div>
+                  }
+                </div>
+              </p-accordion-content>
+            </p-accordion-panel>
+
+          </p-accordion>
+        </div>
+
+        <!-- Acciones -->
+        <div class="actions">
+          <button
+            pButton
+            type="button"
+            label="Agregar al carrito"
+            icon="pi pi-shopping-cart"
+            class="btn-cart"
+            [disabled]="!canCheckout()"
+            (click)="addToCart()">
+          </button>
+
+          <button
+            pButton
+            type="button"
+            label="Compra ahora"
+            icon="pi pi-bolt"
+            class="btn-buy"
+            [disabled]="!canCheckout()"
+            (click)="buyNow()">
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+</section>

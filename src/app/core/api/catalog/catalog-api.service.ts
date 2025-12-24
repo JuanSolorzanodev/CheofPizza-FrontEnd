@@ -32,6 +32,17 @@ export class CatalogApiService {
     );
   }
 
+  /** ✅ Para endpoints que devuelven { data: T[] } pero queremos el primero */
+  private getFirst<T>(path: string, notFoundMessage: string): Observable<T> {
+    return this.getCollection<T>(path).pipe(
+      map((arr) => {
+        const first = arr?.[0];
+        if (!first) throw new Error(notFoundMessage);
+        return first;
+      })
+    );
+  }
+
   // ✅ 1) Pizzas sencillas
   private readonly sencillas$ = this.getCollection<PizzaDto>('v1/public/catalog/pizzas/sencillas').pipe(
     shareReplay({ bufferSize: 1, refCount: true })
@@ -42,7 +53,7 @@ export class CatalogApiService {
     shareReplay({ bufferSize: 1, refCount: true })
   );
 
-  // ✅ 3) Ingredientes (para builder después)
+  // ✅ 3) Ingredientes (para builder)
   private readonly ingredients$ = this.getCollection<IngredientDto>('v1/public/catalog/ingredients').pipe(
     shareReplay({ bufferSize: 1, refCount: true })
   );
@@ -58,4 +69,21 @@ export class CatalogApiService {
   getIngredients(): Observable<IngredientDto[]> {
     return this.ingredients$;
   }
+
+  /** ✅ 4) Buscar pizza por nombre (tu endpoint /pizzas/{name}/search) */
+getPizzaByName(name: string): Observable<PizzaDto> {
+  return this.http.get<ApiCollectionResponse<PizzaDto>>(
+    `${this.baseUrl}v1/public/catalog/pizzas/${encodeURIComponent(name)}/search`
+  ).pipe(
+    map(res => (res?.data?.[0] ?? null)),
+    map(p => {
+      if (!p) throw new Error('Pizza no encontrada.');
+      return p;
+    }),
+    catchError(err => {
+      const message = err?.error?.message || err?.message || 'No se pudo cargar la pizza.';
+      return throwError(() => new Error(message));
+    })
+  );
+}
 }

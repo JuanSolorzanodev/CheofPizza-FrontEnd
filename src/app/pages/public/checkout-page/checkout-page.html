@@ -1,0 +1,264 @@
+<div class="wrap">
+  <div class="card">
+    <div class="head">
+      <h2>Checkout</h2>
+      <p class="muted">Completa tu pedido paso a paso.</p>
+    </div>
+
+    <app-google-login-dialog></app-google-login-dialog>
+
+    <p-steps [model]="steps()" [activeIndex]="activeStep()" [readonly]="true"></p-steps>
+
+    <p-divider></p-divider>
+
+    <!-- Estado vacío -->
+    @if (!hasItems() && !order()) {
+      <div class="empty">
+        <div class="title">Tu carrito está vacío</div>
+        <div class="muted">Vuelve al menú y agrega pizzas.</div>
+        <p-button label="Ir al menú" [routerLink]="['/']" outlined="true"></p-button>
+      </div>
+    }
+
+    <!-- Confirmación final -->
+    @else if (order()) {
+      <div class="success">
+        <div class="title">Pedido confirmado</div>
+        <div class="muted">Tu número de orden:</div>
+        <div class="order-number">{{ order()!.order_number }}</div>
+
+        <p-divider></p-divider>
+
+        <div class="row">
+          <span>Total</span>
+          <strong>{{ order()!.total | currency:'USD':'symbol':'1.2-2' }}</strong>
+        </div>
+
+        <div class="muted note">
+          Realiza la transferencia (o el pago según método elegido) y envía el comprobante al local para validar el pedido.
+        </div>
+
+        <p-button label="Volver al menú" [routerLink]="['/']"></p-button>
+      </div>
+    }
+
+    <!-- Wizard -->
+    @else {
+      @switch (activeStep()) {
+
+        <!-- STEP 1: Entrega -->
+        @case (0) {
+          <div class="step">
+            <h3>Entrega</h3>
+            <p class="muted">Selecciona cómo deseas recibir tu pedido.</p>
+
+            <div class="grid2">
+              <label class="option">
+                <p-radioButton
+                  name="delivery_type"
+                  [value]="'pickup'"
+                  [formControl]="form.controls.delivery_type"
+                ></p-radioButton>
+                <div>
+                  <div class="opt-title">Retiro en local</div>
+                  <div class="muted">Te acercas al local a retirar tu pedido.</div>
+                </div>
+              </label>
+
+              <label class="option">
+                <p-radioButton
+                  name="delivery_type"
+                  [value]="'delivery'"
+                  [formControl]="form.controls.delivery_type"
+                ></p-radioButton>
+                <div>
+                  <div class="opt-title">Delivery</div>
+                  <div class="muted">Enviamos tu pedido a tu dirección.</div>
+                </div>
+              </label>
+            </div>
+
+            @if (form.controls.delivery_type.value === 'delivery') {
+              <div class="field">
+                <label>Dirección</label>
+                <textarea
+                  pInputTextarea
+                  rows="3"
+                  [formControl]="form.controls.address"
+                  placeholder="Ej: Calle X, Av. Y, referencia..."
+                ></textarea>
+
+                @if (form.controls.address.touched && form.controls.address.invalid) {
+                  <small class="err">Dirección requerida (mínimo 10 caracteres).</small>
+                }
+              </div>
+            }
+          </div>
+        }
+
+        <!-- STEP 2: Pago -->
+        @case (1) {
+          <div class="step">
+            <h3>Método de pago</h3>
+            <p class="muted">Elige cómo vas a pagar.</p>
+
+            <div class="grid3">
+              <label class="pay">
+                <p-radioButton
+                  name="payment_method"
+                  [value]="'transfer'"
+                  [formControl]="form.controls.payment_method"
+                ></p-radioButton>
+                <div>
+                  <div class="opt-title">Transferencia</div>
+                  <div class="muted">Confirmación manual con comprobante.</div>
+                </div>
+              </label>
+
+              <label class="pay">
+                <p-radioButton
+                  name="payment_method"
+                  [value]="'cash'"
+                  [formControl]="form.controls.payment_method"
+                ></p-radioButton>
+                <div>
+                  <div class="opt-title">Efectivo</div>
+                  <div class="muted">Pagas al recibir.</div>
+                </div>
+              </label>
+
+              <label class="pay disabled">
+                <p-radioButton
+                  name="payment_method"
+                  [value]="'card'"
+                  [formControl]="form.controls.payment_method"
+                  [disabled]="true"
+                ></p-radioButton>
+                <div>
+                  <div class="opt-title">Tarjeta</div>
+                  <div class="muted">Próximamente (pasarela).</div>
+                </div>
+              </label>
+            </div>
+
+            <div class="field">
+              <label>Notas (opcional)</label>
+              <textarea
+                pInputTextarea
+                rows="3"
+                [formControl]="form.controls.notes"
+                placeholder="Ej: sin cebolla, timbre dañado, etc."
+              ></textarea>
+            </div>
+
+            @if (form.controls.payment_method.value === 'transfer') {
+              <div class="note bank">
+                <div class="opt-title">Instrucciones de transferencia</div>
+                <div class="muted">
+                  Aquí puedes mostrar tus datos bancarios (Banco, cuenta, nombre, etc.).
+                </div>
+              </div>
+            }
+          </div>
+        }
+
+        <!-- STEP 3: Revisión -->
+        @case (2) {
+          <div class="step">
+            <div class="review-head">
+              <div>
+                <h3>Revisión</h3>
+                <p class="muted">Verifica tu pedido antes de confirmar.</p>
+              </div>
+
+              @if (!auth.isAuthenticated()) {
+                <p-button label="Iniciar sesión" icon="pi pi-user" outlined="true" (onClick)="openLogin()"></p-button>
+              }
+            </div>
+
+            <div class="items">
+              @for (it of cart.items(); track it.id) {
+                <div class="line">
+                  <img class="thumb" [src]="it.pizza?.image_url || it.pizza_second?.image_url" alt="Pizza" />
+                  <div class="meta">
+                    <div class="name">
+                      @if (it.is_half_and_half) { {{ it.pizza?.name }} + {{ it.pizza_second?.name }} }
+                      @else { {{ it.pizza?.name }} }
+                    </div>
+                    <div class="muted">@if (it.size?.name) { {{ it.size?.name }} }</div>
+                    <div class="muted">{{ it.unit_price | currency:'USD':'symbol':'1.2-2' }} / u</div>
+                  </div>
+
+                  <div class="right">
+                    <p-inputNumber
+                      [ngModel]="it.quantity"
+                      [ngModelOptions]="{ standalone: true }"
+                      (ngModelChange)="cart.setQuantity(it.id, ($event ?? 1))"
+                      [min]="1"
+                      [max]="10"
+                      [allowEmpty]="false"
+                      [showButtons]="true"
+                      buttonLayout="horizontal"
+                      incrementButtonIcon="pi pi-plus"
+                      decrementButtonIcon="pi pi-minus"
+                      styleClass="qty"
+                    ></p-inputNumber>
+
+                    <strong>{{ it.subtotal | currency:'USD':'symbol':'1.2-2' }}</strong>
+                  </div>
+                </div>
+              }
+            </div>
+
+            <p-divider></p-divider>
+
+            <div class="row total">
+              <span>Total</span>
+              <strong>{{ cart.total() | currency:'USD':'symbol':'1.2-2' }}</strong>
+            </div>
+
+            @if (!auth.isAuthenticated()) {
+              <small class="err">Debes iniciar sesión para confirmar el pedido.</small>
+            }
+          </div>
+        }
+
+        <!-- STEP 4 solo se usa si quisieras mostrar confirmación dentro del wizard,
+             pero en este flujo lo renderiza order() arriba -->
+        @default {
+          <div></div>
+        }
+      }
+
+      <p-divider></p-divider>
+
+      <div class="nav">
+        <p-button
+          label="Atrás"
+          icon="pi pi-arrow-left"
+          outlined="true"
+          (onClick)="prev()"
+          [disabled]="activeStep() === 0 || placing()"
+        ></p-button>
+
+        @if (activeStep() < 2) {
+          <p-button
+            label="Siguiente"
+            icon="pi pi-arrow-right"
+            iconPos="right"
+            (onClick)="next()"
+            [disabled]="!canNext() || placing()"
+          ></p-button>
+        } @else {
+          <p-button
+            label="Confirmar pedido"
+            icon="pi pi-check"
+            (onClick)="confirm()"
+            [loading]="placing()"
+            [disabled]="!canNext()"
+          ></p-button>
+        }
+      </div>
+    }
+  </div>
+</div>

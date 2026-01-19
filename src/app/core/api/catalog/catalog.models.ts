@@ -20,14 +20,6 @@ export interface CategoryDto {
   size_prices: CategorySizePriceDto[];
 }
 
-export interface PizzaDto {
-  id: number;
-  name: string;
-  description: string | null;
-  image_url: string | null;
-  category: CategoryDto;
-}
-
 export interface IngredientTypeDto {
   id: number;
   name: string;
@@ -43,4 +35,22 @@ export interface IngredientDto {
   name: string;
   type?: IngredientTypeDto;
   extra_prices?: IngredientExtraPriceDto[];
+}
+
+/** ✅ Ingredientes “base” que vienen dentro de PizzaResource */
+export interface PizzaIngredientDto {
+  id: number;
+  name: string;
+  type?: IngredientTypeDto;
+}
+
+export interface PizzaDto {
+  id: number;
+  name: string;
+  description: string | null;
+  image_url: string | null;
+  category: CategoryDto;
+
+  /** ✅ viene del PizzaResource cuando está loaded('ingredients') */
+  ingredients?: PizzaIngredientDto[];
 }

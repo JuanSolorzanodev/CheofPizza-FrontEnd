@@ -21,36 +21,45 @@
       <!-- LEFT -->
       <div class="left">
         <div class="image-card">
-          <img class="hero" [src]="heroImage()" [alt]="pizza()?.name || 'Pizza'" />
+          <img class="hero" [src]="heroImage()" [alt]="pizzaA()?.name || 'Pizza'" />
         </div>
       </div>
 
       <!-- RIGHT -->
       <div class="right">
-        <h1 class="title">{{ pizza()?.name }}</h1>
+        <h1 class="title">{{ pizzaA()?.name }}</h1>
 
+        <!-- Price -->
         <div class="price-row">
           <div class="price">
-            @if (selectedSize()) {
+            @if (!selectedSize()) {
+              <span class="muted">Selecciona un tamaño para ver el precio</span>
+            } @else if (quoteLoading()) {
+              <span class="muted">Cotizando…</span>
+            } @else if (!quote()) {
+              <span class="muted">—</span>
+            } @else {
               ${{ unitPrice() | number:'1.2-2' }}
               <span class="unit">/ unidad</span>
-            } @else {
-              <span class="muted">Selecciona un tamaño para ver el precio</span>
             }
           </div>
 
           <div class="total">
-            @if (selectedSize()) {
-              Total: <strong>${{ total() | number:'1.2-2' }}</strong>
-            } @else {
+            @if (!selectedSize() || quoteLoading() || !quote()) {
               Total: <strong>—</strong>
+            } @else {
+              Total: <strong>${{ total() | number:'1.2-2' }}</strong>
             }
           </div>
         </div>
 
+        @if (quoteError()) {
+          <div class="hint warn">{{ quoteError() }}</div>
+        }
+
         <p-divider></p-divider>
 
-        <!-- Tamaño (SIN preselección) -->
+        <!-- Tamaño -->
         <div class="block">
           <div class="block-title">Tamaño</div>
 
@@ -78,6 +87,12 @@
 
           @if (!selectedSize()) {
             <div class="hint warn">Debes seleccionar un tamaño para continuar.</div>
+          } @else if (isHalfAndHalf() && !pizzaB()) {
+            <div class="hint warn">Selecciona la segunda especialidad para cotizar.</div>
+          } @else if (quoteLoading()) {
+            <div class="hint">Cotizando precios…</div>
+          } @else if (!quote()) {
+            <div class="hint warn">No se pudo obtener la cotización. Revisa tu selección.</div>
           } @else {
             <div class="hint">
               Precio base: <strong>${{ basePrice() | number:'1.2-2' }}</strong>
@@ -86,7 +101,43 @@
           }
         </div>
 
-        <!-- Cantidad con límite -->
+        <!-- MITAD Y MITAD -->
+        <div class="block">
+          <div class="half-head">
+            <div class="q">¿Desea la pizza mitad y mitad (2 especialidades)?</div>
+
+            <p-checkbox
+              [binary]="true"
+              [ngModel]="isHalfAndHalf()"
+              (onChange)="setHalfAndHalf($event.checked)">
+            </p-checkbox>
+          </div>
+
+          <div class="hint">
+            El precio base se toma de la especialidad/categoría más cara.
+          </div>
+
+          @if (isHalfAndHalf()) {
+            <div class="half-select">
+              <p-select
+                [options]="pizzaOptions()"
+                optionLabel="label"
+                optionValue="value"
+                [filter]="true"
+                [showClear]="true"
+                placeholder="Selecciona la segunda especialidad"
+                [ngModel]="secondPizzaId()"
+                (onChange)="setSecondPizzaId($event.value)">
+              </p-select>
+
+              @if (!pizzaB()) {
+                <div class="hint warn">Debes elegir la segunda especialidad para continuar.</div>
+              }
+            </div>
+          }
+        </div>
+
+        <!-- Cantidad -->
         <div class="block">
           <div class="block-title">Cantidad</div>
 
@@ -106,32 +157,119 @@
           </div>
         </div>
 
-        <!-- Ingredientes base (bloqueo real + mensaje) -->
+        <!-- Ingredientes base + Restablecer -->
         <div class="block">
-          <div class="block-title">Ingredientes</div>
+          <div class="block-head">
+            <div class="block-title">Ingredientes base</div>
 
-          @if (baseIngredients().length === 0) {
-            <div class="muted">Esta pizza no tiene ingredientes definidos.</div>
+            @if (!isHalfAndHalf()) {
+              <button
+                pButton
+                type="button"
+                label="Restablecer"
+                icon="pi pi-refresh"
+                severity="secondary"
+                [text]="true"
+                class="reset-btn"
+                [disabled]="!hasIngredientChangesA()"
+                (click)="resetBaseIngredientsA()">
+              </button>
+            }
+          </div>
+
+          @if (!isHalfAndHalf()) {
+            @if (baseIngredientsA().length === 0) {
+              <div class="muted">Esta pizza no tiene ingredientes definidos.</div>
+            } @else {
+              <div class="chips">
+                @for (ing of baseIngredientsA(); track ing) {
+                  <p-chip
+                    [label]="ing"
+                    [removable]="!isBaseIngredientLocked(ing)"
+                    [styleClass]="isBaseIngredientLocked(ing) ? 'p-chip-locked' : ''"
+                    (onRemove)="removeBaseIngredientA(ing)">
+                  </p-chip>
+                }
+              </div>
+
+              <div class="hint">
+                {{ baseLocksHint() }}
+                <br />
+                <span class="muted">Los ingredientes bloqueados no muestran la “X” y no se pueden eliminar.</span>
+              </div>
+            }
           } @else {
-            <div class="chips">
-              @for (ing of baseIngredients(); track ing) {
-                <p-chip
-                  [label]="ing"
-                  [removable]="!isBaseIngredientLocked(ing)"
-                  (onRemove)="removeBaseIngredient(ing)">
-                </p-chip>
-              }
+            <div class="halves">
+              <div class="half-box">
+                <div class="half-title-row">
+                  <div class="half-title">Mitad A — {{ pizzaA()?.name }}</div>
+
+                  <button
+                    pButton
+                    type="button"
+                    icon="pi pi-refresh"
+                    severity="secondary"
+                    [text]="true"
+                    class="reset-btn"
+                    [disabled]="!hasIngredientChangesA()"
+                    (click)="resetBaseIngredientsA()">
+                  </button>
+                </div>
+
+                <div class="chips">
+                  @for (ing of baseIngredientsA(); track ing) {
+                    <p-chip
+                      [label]="ing"
+                      [removable]="!isBaseIngredientLocked(ing)"
+                      [styleClass]="isBaseIngredientLocked(ing) ? 'p-chip-locked' : ''"
+                      (onRemove)="removeBaseIngredientA(ing)">
+                    </p-chip>
+                  }
+                </div>
+              </div>
+
+              <div class="half-box">
+                <div class="half-title-row">
+                  <div class="half-title">Mitad B — {{ pizzaB()?.name || 'Sin seleccionar' }}</div>
+
+                  <button
+                    pButton
+                    type="button"
+                    icon="pi pi-refresh"
+                    severity="secondary"
+                    [text]="true"
+                    class="reset-btn"
+                    [disabled]="!pizzaB() || !hasIngredientChangesB()"
+                    (click)="resetBaseIngredientsB()">
+                  </button>
+                </div>
+
+                @if (!pizzaB()) {
+                  <div class="muted">Selecciona la segunda especialidad para editar ingredientes.</div>
+                } @else {
+                  <div class="chips">
+                    @for (ing of baseIngredientsB(); track ing) {
+                      <p-chip
+                        [label]="ing"
+                        [removable]="!isBaseIngredientLocked(ing)"
+                        [styleClass]="isBaseIngredientLocked(ing) ? 'p-chip-locked' : ''"
+                        (onRemove)="removeBaseIngredientB(ing)">
+                      </p-chip>
+                    }
+                  </div>
+                }
+              </div>
             </div>
 
             <div class="hint">
               {{ baseLocksHint() }}
               <br />
-              <span class="muted">Los ingredientes bloqueados no muestran la “X” y no se pueden eliminar.</span>
+              <span class="muted">Puedes quitar ingredientes por mitad (excepto los bloqueados).</span>
             </div>
           }
         </div>
 
-        <!-- Extras con ACCORDION (cerrado por defecto) -->
+        <!-- Extras -->
         <div class="block">
           <p-accordion
             [value]="extrasAccordionValue()"
@@ -173,13 +311,28 @@
                           <div class="extra-name">
                             <div class="n">{{ ex.name }}</div>
                             <div class="t">{{ ex.type?.name || 'Extra' }}</div>
+
+                            @if (isHalfAndHalf() && selectedExtras().has(ex.id)) {
+                              <div class="applies">
+                                <p-selectButton
+                                  [options]="appliesOptions"
+                                  optionLabel="label"
+                                  optionValue="value"
+                                  [ngModel]="selectedExtras().get(ex.id)?.appliesTo ?? 'ALL'"
+                                  (onChange)="setExtraAppliesTo(ex.id, $event.value)">
+                                </p-selectButton>
+                              </div>
+                            }
                           </div>
 
                           <div class="extra-price">
-                            @if (selectedSize()) {
-                              +${{ extraPriceFor(ex) | number:'1.2-2' }}
-                            } @else {
+                            @if (!selectedSize()) {
                               —
+                            } @else if (quoteLoading()) {
+                              …
+                            } @else {
+                              <!-- el precio exacto está en quote, aquí solo UI -->
+                              +
                             }
                           </div>
                         </div>

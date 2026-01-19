@@ -9,13 +9,14 @@ import { ThemeService } from '../../../core/state/theme.service';
 import { AuthStore } from '../../../core/auth/auth.store';
 import { GoogleLoginDialogComponent } from '../google-login-dialog/google-login-dialog';
 import { ScrollService } from '../../ui/scroll.service';
+import { CartPopover } from '../cart-popover/cart-popover';
 
 type PizzaCategory = 'simple' | 'special';
 
 @Component({
   selector: 'app-toolbar',
   standalone: true,
-  imports: [ToolbarModule, ButtonModule, SelectButtonModule, FormsModule, GoogleLoginDialogComponent],
+  imports: [ToolbarModule, ButtonModule, SelectButtonModule, FormsModule, GoogleLoginDialogComponent,CartPopover],
   templateUrl: './toolbar.html',
   styleUrl: './toolbar.scss',
 })

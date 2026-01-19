@@ -11,6 +11,7 @@ import { FirebaseAuthService, GoogleFirebaseProfile } from '../../../core/auth/f
 import { AuthApiService } from '../../../core/auth/auth-api.service';
 import { AuthStore } from '../../../core/auth/auth.store';
 import { ApiErrorResponse, GoogleLoginResponse } from '../../../core/auth/auth.models';
+import { CartStore } from '../../../core/api/cart/cart.store';
 
 @Component({
   selector: 'app-google-login-dialog',
@@ -25,6 +26,7 @@ export class GoogleLoginDialogComponent {
   private readonly api = inject(AuthApiService);
   private readonly auth = inject(AuthStore);
   private readonly cdr = inject(ChangeDetectorRef);
+  private readonly cart = inject(CartStore);
 
   visible = false;
   loading = false;
@@ -67,6 +69,7 @@ export class GoogleLoginDialogComponent {
           // ✅ “inyectamos” la foto para UI (sin tocar backend)
           const userWithPhoto = { ...res.user, photo_url: this.pendingPhotoUrl };
           this.auth.setSession(res.token, userWithPhoto);
+          queueMicrotask(() => this.cart.hydrate());
 
           this.loading = false;
           this.close();

@@ -1,0 +1,105 @@
+<p-button
+  outlined="true"
+  styleClass="cheof-theme-toggle cheof-icon-btn cart-btn"
+  (onClick)="toggle($event)"
+>
+  <ng-template pTemplate="content">
+    <i
+      class="pi pi-shopping-cart"
+      pBadge
+      [value]="cart.totalUnits()"
+      [badgeDisabled]="cart.totalUnits() === 0"
+    ></i>
+  </ng-template>
+</p-button>
+
+<p-popover #op [appendTo]="'body'" [style]="{ width: '420px' }">
+  @if (cart.items().length === 0) {
+    <div class="empty">
+      <div class="title">Tu carrito está vacío</div>
+      <div class="subtitle">Agrega una pizza para verla aquí.</div>
+    </div>
+  } @else {
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-title">Tu carrito</div>
+        <p-button label="Vaciar" text="true" (onClick)="cart.clear()"></p-button>
+      </div>
+
+      <div class="list">
+        @for (it of cart.items(); track it.id) {
+          <div class="item">
+            <img
+              class="thumb"
+              [src]="it.pizza?.image_url || it.pizza_second?.image_url"
+              alt="Pizza"
+              loading="lazy"
+            />
+
+            <div class="meta">
+              <div class="name">
+                @if (it.is_half_and_half) {
+                  {{ it.pizza?.name }} + {{ it.pizza_second?.name }}
+                } @else {
+                  {{ it.pizza?.name }}
+                }
+              </div>
+
+              <div class="subline">
+                @if (it.size?.name) { <span class="chip">{{ it.size?.name }}</span> }
+                @if ((it.extras?.length ?? 0) > 0) { <span class="chip">Extras: {{ it.extras?.length ?? 0 }}</span> }
+              </div>
+
+              <div class="prices">
+                <span class="unit">
+                  {{ it.unit_price | currency:'USD':'symbol':'1.2-2' }} / u
+                </span>
+                <strong class="sub">
+                  {{ it.subtotal | currency:'USD':'symbol':'1.2-2' }}
+                </strong>
+              </div>
+            </div>
+
+            <div class="controls">
+              <p-inputNumber
+                [ngModel]="it.quantity"
+                (ngModelChange)="cart.setQuantity(it.id, $event)"
+                [min]="1"
+                [max]="10"
+                [allowEmpty]="false"
+                [showButtons]="true"
+                buttonLayout="horizontal"
+                incrementButtonIcon="pi pi-plus"
+                decrementButtonIcon="pi pi-minus"
+                styleClass="qty"
+              ></p-inputNumber>
+
+              <p-button
+                icon="pi pi-trash"
+                severity="danger"
+                text="true"
+                (onClick)="cart.remove(it.id)"
+              ></p-button>
+            </div>
+          </div>
+        }
+      </div>
+
+      <p-divider></p-divider>
+
+      <div class="summary">
+        <div class="row">
+          <span>Total</span>
+          <strong>{{ cart.total() | currency:'USD':'symbol':'1.2-2' }}</strong>
+        </div>
+
+        <p-button
+          label="Finalizar pedido"
+          icon="pi pi-credit-card"
+          styleClass="checkout-btn"
+          [routerLink]="['/checkout']"
+        ></p-button>
+      </div>
+    </div>
+  }
+</p-popover>

@@ -1,23 +1,15 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { catchError, map, Observable, shareReplay, throwError } from 'rxjs';
+import { catchError, combineLatest, map, Observable, shareReplay, throwError } from 'rxjs';
 
 import { environment } from '../../../../environments/environment';
-import {
-  ApiCollectionResponse,
-  IngredientDto,
-  PizzaDto
-} from './catalog.models';
+import { ApiCollectionResponse, IngredientDto, PizzaDto } from './catalog.models';
 
 @Injectable({ providedIn: 'root' })
 export class CatalogApiService {
   private readonly http = inject(HttpClient);
 
-  /**
-   * environment.apiUrl ya viene como: http://localhost:8000/api/
-   * Normalizamos para evitar dobles slashes.
-   */
-  private readonly baseUrl = environment.apiUrl.replace(/\/+$/, '/') ;
+  private readonly baseUrl = environment.apiUrl.replace(/\/+$/, '/');
 
   private getCollection<T>(path: string): Observable<T[]> {
     return this.http.get<ApiCollectionResponse<T>>(`${this.baseUrl}${path}`).pipe(
@@ -32,17 +24,6 @@ export class CatalogApiService {
     );
   }
 
-  /** ✅ Para endpoints que devuelven { data: T[] } pero queremos el primero */
-  private getFirst<T>(path: string, notFoundMessage: string): Observable<T> {
-    return this.getCollection<T>(path).pipe(
-      map((arr) => {
-        const first = arr?.[0];
-        if (!first) throw new Error(notFoundMessage);
-        return first;
-      })
-    );
-  }
-
   // ✅ 1) Pizzas sencillas
   private readonly sencillas$ = this.getCollection<PizzaDto>('v1/public/catalog/pizzas/sencillas').pipe(
     shareReplay({ bufferSize: 1, refCount: true })
@@ -53,7 +34,7 @@ export class CatalogApiService {
     shareReplay({ bufferSize: 1, refCount: true })
   );
 
-  // ✅ 3) Ingredientes (para builder)
+  // ✅ 3) Ingredientes
   private readonly ingredients$ = this.getCollection<IngredientDto>('v1/public/catalog/ingredients').pipe(
     shareReplay({ bufferSize: 1, refCount: true })
   );
@@ -70,20 +51,37 @@ export class CatalogApiService {
     return this.ingredients$;
   }
 
-  /** ✅ 4) Buscar pizza por nombre (tu endpoint /pizzas/{name}/search) */
-getPizzaByName(name: string): Observable<PizzaDto> {
-  return this.http.get<ApiCollectionResponse<PizzaDto>>(
-    `${this.baseUrl}v1/public/catalog/pizzas/${encodeURIComponent(name)}/search`
-  ).pipe(
-    map(res => (res?.data?.[0] ?? null)),
-    map(p => {
-      if (!p) throw new Error('Pizza no encontrada.');
-      return p;
+  /**
+   * ✅ PROFESIONAL: Todas las pizzas (sin endpoint nuevo)
+   * Combina sencillas + especiales, elimina duplicados por id y ordena por nombre.
+   */
+  private readonly allPizzas$ = combineLatest([this.sencillas$, this.especiales$]).pipe(
+    map(([a, b]) => {
+      const mapById = new Map<number, PizzaDto>();
+      for (const p of [...(a ?? []), ...(b ?? [])]) mapById.set(p.id, p);
+      return Array.from(mapById.values()).sort((x, y) => (x.name ?? '').localeCompare(y.name ?? ''));
     }),
-    catchError(err => {
-      const message = err?.error?.message || err?.message || 'No se pudo cargar la pizza.';
-      return throwError(() => new Error(message));
-    })
+    shareReplay({ bufferSize: 1, refCount: true })
   );
-}
+
+  getAllPizzas(): Observable<PizzaDto[]> {
+    return this.allPizzas$;
+  }
+
+  /** ✅ 4) Buscar pizza por nombre */
+  getPizzaByName(name: string): Observable<PizzaDto> {
+    return this.http.get<ApiCollectionResponse<PizzaDto>>(
+      `${this.baseUrl}v1/public/catalog/pizzas/${encodeURIComponent(name)}/search`
+    ).pipe(
+      map(res => (res?.data?.[0] ?? null)),
+      map(p => {
+        if (!p) throw new Error('Pizza no encontrada.');
+        return p;
+      }),
+      catchError(err => {
+        const message = err?.error?.message || err?.message || 'No se pudo cargar la pizza.';
+        return throwError(() => new Error(message));
+      })
+    );
+  }
 }

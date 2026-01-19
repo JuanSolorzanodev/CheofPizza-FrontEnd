@@ -1,0 +1,114 @@
+.cart-btn { position: relative; }
+
+.panel {
+  display: grid;
+  gap: 12px;
+}
+
+.panel-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+
+.panel-title {
+  font-weight: 800;
+  font-size: 14px;
+}
+
+.list {
+  display: grid;
+  gap: 12px;
+  max-height: 380px;
+  overflow: auto;
+  padding-right: 6px;
+}
+
+.item {
+  display: grid;
+  grid-template-columns: 56px 1fr auto;
+  gap: 10px;
+  align-items: center;
+  padding: 10px;
+  border: 1px solid var(--p-surface-200);
+  border-radius: 12px;
+  background: var(--p-surface-0);
+}
+
+.thumb {
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+  object-fit: cover;
+  border: 1px solid var(--p-surface-200);
+}
+
+.meta { display: grid; gap: 6px; }
+
+.name {
+  font-weight: 800;
+  font-size: 13px;
+  line-height: 1.2;
+}
+
+.subline {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.chip {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--p-surface-100);
+  border: 1px solid var(--p-surface-200);
+  opacity: .95;
+}
+
+.prices {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.unit { font-size: 12px; opacity: .8; }
+.sub  { font-size: 13px; }
+
+.controls {
+  display: grid;
+  gap: 8px;
+  justify-items: end;
+}
+
+/* InputNumber más pequeño y estable */
+:host ::ng-deep .qty {
+  width: 120px;
+}
+:host ::ng-deep .qty .p-inputnumber-input {
+  text-align: center;
+  font-weight: 700;
+}
+:host ::ng-deep .qty .p-inputnumber-button {
+  width: 34px;
+}
+
+.summary {
+  display: grid;
+  gap: 10px;
+}
+
+.summary .row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.checkout-btn {
+  width: 100%;
+  justify-content: center;
+}
+
+.empty .title { font-weight: 800; }
+.empty .subtitle { opacity: .8; }

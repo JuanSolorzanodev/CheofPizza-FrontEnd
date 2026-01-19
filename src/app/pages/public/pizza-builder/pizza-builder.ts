@@ -1,7 +1,15 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, DestroyRef, computed, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  computed,
+  inject,
+  signal,
+  effect,
+} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { finalize } from 'rxjs';
+import { finalize, Subscription } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 
@@ -12,11 +20,32 @@ import { ChipModule } from 'primeng/chip';
 import { CheckboxModule } from 'primeng/checkbox';
 import { SkeletonModule } from 'primeng/skeleton';
 import { AccordionModule } from 'primeng/accordion';
+import { SelectModule } from 'primeng/select';
+import { SelectButtonModule } from 'primeng/selectbutton';
+import { MessageService } from 'primeng/api';
 
 import { CatalogApiService } from '../../../core/api/catalog/catalog-api.service';
 import { IngredientDto, PizzaDto, SizeDto } from '../../../core/api/catalog/catalog.models';
 
+import { BuilderApiService } from '../../../core/api/builder/builder-api.service';
+import {
+  AppliesTo,
+  BuilderQuoteRequestDto,
+  BuilderQuoteResponseDto,
+} from '../../../core/api/builder/builder.models';
+import { CartStore } from '../../../core/api/cart/cart.store';
+
 type UiSizeKey = 'peq' | 'med' | 'fam' | 'gig';
+
+interface Option<T> {
+  label: string;
+  value: T;
+}
+
+interface SelectedExtra {
+  ingredient: IngredientDto;
+  appliesTo: AppliesTo;
+}
 
 @Component({
   selector: 'app-pizza-builder',
@@ -24,6 +53,7 @@ type UiSizeKey = 'peq' | 'med' | 'fam' | 'gig';
   imports: [
     CommonModule,
     FormsModule,
+
     ButtonModule,
     InputNumberModule,
     DividerModule,
@@ -31,6 +61,9 @@ type UiSizeKey = 'peq' | 'med' | 'fam' | 'gig';
     CheckboxModule,
     SkeletonModule,
     AccordionModule,
+
+    SelectModule,
+    SelectButtonModule,
   ],
   templateUrl: './pizza-builder.html',
   styleUrl: './pizza-builder.scss',
@@ -38,8 +71,11 @@ type UiSizeKey = 'peq' | 'med' | 'fam' | 'gig';
 })
 export class PizzaBuilder {
   private readonly api = inject(CatalogApiService);
+  private readonly builderApi = inject(BuilderApiService);
+
   private readonly route = inject(ActivatedRoute);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly messages = inject(MessageService);
 
   // =========================
   // Config
@@ -48,17 +84,22 @@ export class PizzaBuilder {
   readonly minQty = 1;
   readonly maxQty = 10;
 
-  /**
-   * Reglas "lock":
-   * - NO se puede quitar pasta/salsa de tomate
-   * - NO se puede quitar queso (cualquier variante)
-   *
-   * Nota: Se detecta por tokens para tolerar variaciones en el description.
-   */
   private readonly lockTokens = {
-    sauce: ['pasta', 'salsa', 'tomate'],
+    sauceWords: ['pasta', 'salsa'],
+    tomato: ['tomate'],
     cheese: ['queso', 'mozzarella', 'mosarela'],
   };
+
+  private readonly mandatoryBase = {
+    sauceLabel: 'Pasta de tomate',
+    cheeseLabel: 'Queso',
+  };
+
+  readonly appliesOptions: Option<AppliesTo>[] = [
+    { label: 'Toda la pizza', value: 'ALL' },
+    { label: 'Mitad A', value: 'A' },
+    { label: 'Mitad B', value: 'B' },
+  ];
 
   // =========================
   // State
@@ -66,35 +107,56 @@ export class PizzaBuilder {
   readonly loading = signal(true);
   readonly error = signal<string | null>(null);
 
-  readonly pizza = signal<PizzaDto | null>(null);
+  readonly pizzaA = signal<PizzaDto | null>(null);
 
-  /** SIN preselección */
+  readonly isHalfAndHalf = signal(false);
+  readonly allPizzas = signal<PizzaDto[]>([]);
+  readonly secondPizzaId = signal<number | null>(null);
+
   readonly sizeKey = signal<UiSizeKey | null>(null);
-
-  /** Cantidad */
   readonly quantity = signal<number>(1);
 
-  /** Ingredientes base desde description */
-  readonly baseIngredients = signal<string[]>([]);
+  readonly baseIngredientsA = signal<string[]>([]);
+  readonly baseIngredientsB = signal<string[]>([]);
 
-  /** Extras */
+  readonly originalIngredientsA = signal<string[]>([]);
+  readonly originalIngredientsB = signal<string[]>([]);
+
   readonly extrasCatalog = signal<IngredientDto[]>([]);
-  readonly selectedExtras = signal<Map<number, IngredientDto>>(new Map());
-
-  /** ✅ Accordion cerrado por defecto */
+  readonly selectedExtras = signal<Map<number, SelectedExtra>>(new Map());
   readonly extrasAccordionOpen = signal<boolean>(false);
+
+  // =========================
+  // Quote (Backend)
+  // =========================
+  readonly quoteLoading = signal(false);
+  readonly quoteError = signal<string | null>(null);
+  readonly quote = signal<BuilderQuoteResponseDto | null>(null);
+
+  private quoteTimer: any = null;
+  private quoteSub?: Subscription;
 
   // =========================
   // Computed
   // =========================
-  readonly sizes = computed<SizeDto[]>(() => {
-    const p = this.pizza();
-    if (!p) return [];
-    return (p.category.size_prices ?? []).map(sp => sp.size);
+  readonly pizzaB = computed<PizzaDto | null>(() => {
+    const id = this.secondPizzaId();
+    if (!id) return null;
+    return this.allPizzas().find(p => p.id === id) ?? null;
+  });
+
+  readonly pizzaOptions = computed<Option<number>[]>(() => {
+    const a = this.pizzaA();
+    const list = this.allPizzas();
+    if (!a || list.length === 0) return [];
+
+    return list
+      .filter(p => p.id !== a.id)
+      .map(p => ({ label: p.name, value: p.id }));
   });
 
   readonly selectedSize = computed<SizeDto | null>(() => {
-    const p = this.pizza();
+    const p = this.pizzaA();
     const key = this.sizeKey();
     if (!p || !key) return null;
 
@@ -103,58 +165,39 @@ export class PizzaBuilder {
     return all.find(s => s.name === wanted) ?? null;
   });
 
-  readonly heroImage = computed(() => this.pizza()?.image_url || this.fallbackImage);
+  readonly heroImage = computed(() => this.pizzaA()?.image_url || this.fallbackImage);
 
-  readonly basePrice = computed(() => {
-    const p = this.pizza();
-    const s = this.selectedSize();
-    if (!p || !s) return 0;
-
-    const found = p.category.size_prices?.find(sp => sp.size.id === s.id);
-    return Number(found?.price ?? 0);
-  });
-
-  readonly extrasPrice = computed(() => {
-    const s = this.selectedSize();
-    if (!s) return 0;
-
-    let sum = 0;
-    for (const ex of this.selectedExtras().values()) {
-      const extra = ex.extra_prices?.find(ep => ep.size.id === s.id);
-      sum += Number(extra?.extra_price ?? 0);
-    }
-    return sum;
-  });
-
-  readonly unitPrice = computed(() => {
-    if (!this.selectedSize()) return 0;
-    return this.basePrice() + this.extrasPrice();
-  });
-
-  readonly total = computed(() => this.unitPrice() * this.quantity());
+  // ✅ El builder ahora toma precios del BACKEND si existe quote
+  readonly basePrice = computed(() => this.quote()?.base_price ?? 0);
+  readonly extrasPrice = computed(() => this.quote()?.extras_total ?? 0);
+  readonly unitPrice = computed(() => this.quote()?.unit_price ?? 0);
+  readonly total = computed(() => this.quote()?.total ?? 0);
+  private readonly cart = inject(CartStore);
 
   readonly extrasCount = computed(() => this.selectedExtras().size);
 
-  /** PrimeNG nuevo: accordion usa value */
   readonly extrasAccordionValue = computed(() => (this.extrasAccordionOpen() ? 'extras' : null));
-
   onExtrasAccordionChange(v: any): void {
     this.extrasAccordionOpen.set(v === 'extras');
   }
 
-  /** Checkout habilitado solo con size válido */
   readonly canCheckout = computed(() => {
-    const p = this.pizza();
+    const a = this.pizzaA();
     const s = this.selectedSize();
     const q = this.quantity();
-    return !!p && !!s && q >= this.minQty && q <= this.maxQty;
+
+    if (!a || !s) return false;
+    if (q < this.minQty || q > this.maxQty) return false;
+    if (this.isHalfAndHalf() && !this.pizzaB()) return false;
+
+    // además, idealmente: que haya cotización válida
+    return !!this.quote() && !this.quoteLoading() && !this.quoteError();
   });
 
-  /** Mensaje UX en ingredientes */
-  readonly baseLocksHint = computed(() => {
-    // Siempre mostramos esta regla (tu requerimiento)
-    return 'Pasta/salsa de tomate y queso no se pueden quitar.';
-  });
+  readonly baseLocksHint = computed(() => 'Pasta/salsa de tomate y queso no se pueden quitar.');
+
+  readonly hasIngredientChangesA = computed(() => !this.arraysEqual(this.baseIngredientsA(), this.originalIngredientsA()));
+  readonly hasIngredientChangesB = computed(() => !this.arraysEqual(this.baseIngredientsB(), this.originalIngredientsB()));
 
   readonly fallbackImage =
     'data:image/svg+xml;utf8,' +
@@ -170,6 +213,7 @@ export class PizzaBuilder {
 
   constructor() {
     this.load();
+    this.setupQuoteAutoRecalc();
   }
 
   private load(): void {
@@ -185,6 +229,13 @@ export class PizzaBuilder {
       return;
     }
 
+    this.api.getAllPizzas()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: list => this.allPizzas.set(list ?? []),
+        error: () => this.allPizzas.set([]),
+      });
+
     this.api
       .getPizzaByName(name)
       .pipe(
@@ -193,18 +244,26 @@ export class PizzaBuilder {
       )
       .subscribe({
         next: (p) => {
-          this.pizza.set(p);
+          this.pizzaA.set(p);
 
-          this.baseIngredients.set(this.parseIngredientsFromDescription(p.description));
+          const baseA = this.getBaseIngredientsFromPizza(p);
+          this.baseIngredientsA.set(baseA);
+          this.originalIngredientsA.set([...baseA]);
 
-          // SIN tamaño preseleccionado
+          this.baseIngredientsB.set([]);
+          this.originalIngredientsB.set([]);
+
+          this.isHalfAndHalf.set(false);
+          this.secondPizzaId.set(null);
+
           this.sizeKey.set(null);
+          this.quantity.set(1);
 
-          // reset extras
           this.selectedExtras.set(new Map());
-
-          // accordion cerrado por defecto
           this.extrasAccordionOpen.set(false);
+
+          this.quote.set(null);
+          this.quoteError.set(null);
 
           this.loadExtras();
         },
@@ -222,14 +281,120 @@ export class PizzaBuilder {
       });
   }
 
-  private parseIngredientsFromDescription(desc: string | null): string[] {
-    if (!desc) return [];
-    return desc
-      .split(',')
-      .map(s => s.trim())
-      .filter(Boolean);
+  // =========================
+  // Quote Integration
+  // =========================
+  private buildQuotePayload(): BuilderQuoteRequestDto | null {
+    const a = this.pizzaA();
+    const b = this.pizzaB();
+    const s = this.selectedSize();
+    const q = this.quantity();
+
+    if (!a || !s) return null;
+    if (q < this.minQty || q > this.maxQty) return null;
+    if (this.isHalfAndHalf() && !b) return null;
+
+    return {
+      pizza_id: a.id,
+      is_half_and_half: this.isHalfAndHalf(),
+      second_pizza_id: this.isHalfAndHalf() ? (b?.id ?? null) : null,
+      size_id: s.id,
+      quantity: q,
+      extras: Array.from(this.selectedExtras().entries()).map(([ingredientId, sel]) => ({
+        ingredient_id: ingredientId,
+        applies_to: sel.appliesTo,
+      })),
+    };
   }
 
+  private setupQuoteAutoRecalc(): void {
+    effect(() => {
+      // dependencias reactivas
+      this.pizzaA();
+      this.pizzaB();
+      this.isHalfAndHalf();
+      this.selectedSize();
+      this.quantity();
+      this.selectedExtras();
+
+      const payload = this.buildQuotePayload();
+
+      // si no se puede cotizar aún, limpiamos quote
+      if (!payload) {
+        this.cancelQuoteInFlight();
+        this.quote.set(null);
+        this.quoteError.set(null);
+        this.quoteLoading.set(false);
+        return;
+      }
+
+      // debounce + cancelación
+      this.cancelQuoteTimer();
+      this.quoteTimer = setTimeout(() => {
+        this.cancelQuoteInFlight();
+
+        this.quoteLoading.set(true);
+        this.quoteError.set(null);
+
+        this.quoteSub = this.builderApi
+          .quote(payload)
+          .pipe(finalize(() => this.quoteLoading.set(false)))
+          .subscribe({
+            next: (res) => this.quote.set(res),
+            error: (e: Error) => {
+              this.quote.set(null);
+              this.quoteError.set(e.message);
+            },
+          });
+      }, 250);
+    }, { allowSignalWrites: true });
+  }
+
+  private cancelQuoteTimer(): void {
+    if (this.quoteTimer) {
+      clearTimeout(this.quoteTimer);
+      this.quoteTimer = null;
+    }
+  }
+
+  private cancelQuoteInFlight(): void {
+    if (this.quoteSub) {
+      this.quoteSub.unsubscribe();
+      this.quoteSub = undefined;
+    }
+  }
+
+  // =========================
+  // Half & half
+  // =========================
+  setHalfAndHalf(checked: boolean): void {
+    this.isHalfAndHalf.set(checked);
+
+    if (!checked) {
+      this.secondPizzaId.set(null);
+      this.baseIngredientsB.set([]);
+      this.originalIngredientsB.set([]);
+
+      const current = new Map(this.selectedExtras());
+      for (const [id, sel] of current.entries()) {
+        current.set(id, { ...sel, appliesTo: 'ALL' });
+      }
+      this.selectedExtras.set(current);
+    }
+  }
+
+  setSecondPizzaId(id: number | null): void {
+    this.secondPizzaId.set(id);
+
+    const b = this.pizzaB();
+    const baseB = b ? this.getBaseIngredientsFromPizza(b) : [];
+    this.baseIngredientsB.set(baseB);
+    this.originalIngredientsB.set([...baseB]);
+  }
+
+  // =========================
+  // Helpers
+  // =========================
   private sizeNameByKey(k: UiSizeKey): string {
     switch (k) {
       case 'peq': return 'Pequeña';
@@ -249,28 +414,95 @@ export class PizzaBuilder {
     this.quantity.set(clamped);
   }
 
+  private getBaseIngredientsFromPizza(p: PizzaDto | null): string[] {
+    if (!p) return [];
+
+    const fromRelation =
+      (p.ingredients ?? [])
+        .map(i => i?.name)
+        .filter((x): x is string => !!x)
+        .map(x => x.trim())
+        .filter(Boolean);
+
+    const fallbackFromDesc = (p.description ?? '')
+      .split(',')
+      .map(s => s.trim())
+      .filter(Boolean);
+
+    const base = fromRelation.length ? fromRelation : fallbackFromDesc;
+    return this.ensureMandatoryBase(base);
+  }
+
+  private ensureMandatoryBase(list: string[]): string[] {
+    const norm = list.map(x => this.normalizeText(x));
+
+    const hasSauce =
+      norm.some(n =>
+        this.lockTokens.tomato.some(t => n.includes(t)) &&
+        this.lockTokens.sauceWords.some(w => n.includes(w))
+      ) || norm.includes(this.normalizeText(this.mandatoryBase.sauceLabel));
+
+    const hasCheese =
+      norm.some(n => this.lockTokens.cheese.some(t => n.includes(t))) ||
+      norm.includes(this.normalizeText(this.mandatoryBase.cheeseLabel));
+
+    const next = [...list];
+
+    if (!hasSauce) next.unshift(this.mandatoryBase.sauceLabel);
+    if (!hasCheese) next.unshift(this.mandatoryBase.cheeseLabel);
+
+    const seen = new Set<string>();
+    return next.filter(x => {
+      const k = this.normalizeText(x);
+      if (seen.has(k)) return false;
+      seen.add(k);
+      return true;
+    });
+  }
+
+  private arraysEqual(a: string[], b: string[]): boolean {
+    if (a === b) return true;
+    if (a.length !== b.length) return false;
+    for (let i = 0; i < a.length; i++) {
+      if (a[i] !== b[i]) return false;
+    }
+    return true;
+  }
+
   // =========================
-  // Base ingredients (LOCK real)
+  // Base ingredients (LOCK) + Restablecer
   // =========================
   isBaseIngredientLocked(name: string): boolean {
     const n = this.normalizeText(name);
 
-    // lock queso: si contiene "queso" o "mozzarella/mosarela"
     const isCheese = this.lockTokens.cheese.some(t => n.includes(t));
 
-    // lock pasta/salsa tomate: si contiene tomate y (pasta|salsa)
-    const hasTomato = n.includes('tomate');
-    const hasSauceWord = this.lockTokens.sauce.some(t => n.includes(t));
+    const hasTomato = this.lockTokens.tomato.some(t => n.includes(t));
+    const hasSauceWord = this.lockTokens.sauceWords.some(w => n.includes(w));
     const isSauce = hasTomato && hasSauceWord;
 
-    return isCheese || isSauce;
+    const isForcedSauce = n === this.normalizeText(this.mandatoryBase.sauceLabel);
+    const isForcedCheese = n === this.normalizeText(this.mandatoryBase.cheeseLabel);
+
+    return isCheese || isSauce || isForcedSauce || isForcedCheese;
   }
 
-  removeBaseIngredient(name: string): void {
-    // ✅ bloqueo real
+  removeBaseIngredientA(name: string): void {
     if (this.isBaseIngredientLocked(name)) return;
+    this.baseIngredientsA.set(this.baseIngredientsA().filter(i => i !== name));
+  }
 
-    this.baseIngredients.set(this.baseIngredients().filter(i => i !== name));
+  removeBaseIngredientB(name: string): void {
+    if (this.isBaseIngredientLocked(name)) return;
+    this.baseIngredientsB.set(this.baseIngredientsB().filter(i => i !== name));
+  }
+
+  resetBaseIngredientsA(): void {
+    this.baseIngredientsA.set([...this.originalIngredientsA()]);
+  }
+
+  resetBaseIngredientsB(): void {
+    this.baseIngredientsB.set([...this.originalIngredientsB()]);
   }
 
   // =========================
@@ -287,10 +519,23 @@ export class PizzaBuilder {
 
     if (checked) {
       if (current.size >= this.maxExtras && !current.has(extra.id)) return;
-      current.set(extra.id, extra);
+      current.set(extra.id, { ingredient: extra, appliesTo: 'ALL' });
     } else {
       current.delete(extra.id);
     }
+
+    this.selectedExtras.set(current);
+  }
+
+  setExtraAppliesTo(extraId: number, appliesTo: AppliesTo): void {
+    const current = new Map(this.selectedExtras());
+    const sel = current.get(extraId);
+    if (!sel) return;
+
+    current.set(extraId, {
+      ...sel,
+      appliesTo: this.isHalfAndHalf() ? appliesTo : 'ALL',
+    });
 
     this.selectedExtras.set(current);
   }
@@ -306,8 +551,21 @@ export class PizzaBuilder {
   // Actions
   // =========================
   addToCart(): void {
-    if (!this.canCheckout()) return;
-    console.log('ADD TO CART', this.buildPayload());
+/*     if (!this.canCheckout()) return;
+    console.log('ADD TO CART', this.buildPayload()); */
+ if (!this.canCheckout()) return;
+
+  const payload = this.buildQuotePayload(); // o el método equivalente tuyo
+  if (!payload) return;
+
+  this.cart.addPizza(payload);
+
+  this.messages.add({
+    severity: 'success',
+    summary: 'Agregado',
+    detail: 'La pizza se agregó correctamente al carrito.',
+    life: 2000,
+  });
   }
 
   buyNow(): void {
@@ -316,24 +574,36 @@ export class PizzaBuilder {
   }
 
   private buildPayload() {
-    const p = this.pizza();
+    const a = this.pizzaA();
+    const b = this.pizzaB();
     const s = this.selectedSize();
+    const q = this.quote();
 
     return {
-      pizzaId: p?.id,
-      name: p?.name,
-      sizeId: s?.id,
-      sizeName: s?.name,
+      sizeId: s?.id ?? null,
+      sizeName: s?.name ?? null,
       quantity: this.quantity(),
-      baseIngredients: this.baseIngredients(),
-      extras: Array.from(this.selectedExtras().values()).map(e => ({
-        id: e.id,
-        name: e.name,
-        extra_price: this.extraPriceFor(e),
+
+      isHalfAndHalf: this.isHalfAndHalf(),
+      pizzaA: a ? { id: a.id, name: a.name } : null,
+      pizzaB: this.isHalfAndHalf() && b ? { id: b.id, name: b.name } : null,
+
+      ingredientsA: this.baseIngredientsA(),
+      ingredientsB: this.isHalfAndHalf() ? this.baseIngredientsB() : [],
+
+      extras: Array.from(this.selectedExtras().values()).map(sel => ({
+        id: sel.ingredient.id,
+        name: sel.ingredient.name,
+        appliesTo: sel.appliesTo,
       })),
-      unitPrice: this.unitPrice(),
-      total: this.total(),
-      image_url: p?.image_url ?? null,
+
+      // ✅ Precios ya validados por backend
+      basePrice: q?.base_price ?? 0,
+      extrasTotal: q?.extras_total ?? 0,
+      unitPrice: q?.unit_price ?? 0,
+      total: q?.total ?? 0,
+
+      image_url: a?.image_url ?? null,
     };
   }
 

@@ -1,114 +1,212 @@
 .cart-btn { position: relative; }
 
-.panel {
-  display: grid;
-  gap: 12px;
-}
-
-.panel-head{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-}
-
-.panel-title {
-  font-weight: 800;
-  font-size: 14px;
-}
-
-.list {
-  display: grid;
-  gap: 12px;
-  max-height: 380px;
-  overflow: auto;
-  padding-right: 6px;
-}
-
-.item {
-  display: grid;
-  grid-template-columns: 56px 1fr auto;
-  gap: 10px;
-  align-items: center;
-  padding: 10px;
+/* Popover */
+:host ::ng-deep .cart-popover--ux.p-popover {
+  border-radius: 20px;
+  overflow: hidden;
   border: 1px solid var(--p-surface-200);
-  border-radius: 12px;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.14);
+}
+:host ::ng-deep .cart-popover--ux .p-popover-content {
+  padding: 0;
+  background: var(--p-surface-50);
+}
+
+/* Header */
+.cart-ux__head {
+  padding: 14px 14px 12px;
+  border-bottom: 1px solid var(--p-surface-200);
   background: var(--p-surface-0);
 }
 
-.thumb {
-  width: 56px;
-  height: 56px;
-  border-radius: 12px;
+.head { display: flex; justify-content: space-between; gap: 12px; }
+.head__left { display: flex; gap: 10px; min-width: 0; }
+.head__badge {
+  width: 38px; height: 38px;
+  border-radius: 14px;
+  display: grid; place-items: center;
+  background: var(--p-surface-100);
+  border: 1px solid var(--p-surface-200);
+}
+.head__text { display: grid; gap: 4px; min-width: 0; }
+.head__title-row { display: flex; align-items: center; gap: 10px; }
+.head__title { font-weight: 950; font-size: 15px; }
+.head__pill {
+  height: 24px;
+  padding: 0 10px;
+  border-radius: 999px;
+  border: 1px solid var(--p-surface-200);
+  background: var(--p-surface-100);
+  font-size: 12px;
+  font-weight: 900;
+  display: inline-flex;
+  align-items: center;
+}
+.head__sub { font-size: 12.5px; opacity: .72; }
+.head__clear { flex: 0 0 auto; }
+
+/* ✅ Rail: aquí se define el ancho real para TODO */
+.cart-rail {
+  padding: 12px;
+  display: grid;
+  gap: 12px;
+  background: var(--p-surface-50);
+}
+
+/* ✅ Scroll wrapper: la scrollbar ya NO reduce el ancho de las cards */
+.cart-scroll {
+  max-height: 320px;
+  overflow: auto;
+  overflow-x: hidden;
+  scrollbar-gutter: stable;   /* reserva el espacio y evita “bailes” */
+}
+
+/* lista */
+.cart-list { display: grid; gap: 10px; }
+
+/* Card base */
+.card {
+  width: 100%;
+  box-sizing: border-box;
+  border-radius: 18px;
+  border: 1px solid var(--p-surface-200);
+  background: var(--p-surface-0);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+}
+.card--pad { padding: 12px; }
+
+/* Item */
+.item-ux {
+  display: grid;
+  grid-template-columns: 54px minmax(0, 1fr);
+  gap: 10px;
+  align-items: start;
+}
+.item-ux__img {
+  width: 54px; height: 54px;
+  border-radius: 16px;
   object-fit: cover;
   border: 1px solid var(--p-surface-200);
 }
+.item-ux__content { min-width: 0; display: grid; gap: 8px; }
 
-.meta { display: grid; gap: 6px; }
-
-.name {
-  font-weight: 800;
-  font-size: 13px;
-  line-height: 1.2;
+.item-ux__top { display: flex; justify-content: space-between; gap: 10px; }
+.item-ux__name {
+  font-weight: 950;
+  font-size: 13.5px;
+  line-height: 1.15;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.subline {
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
+/* trash */
+.icon-btn {
+  width: 34px; height: 34px;
+  border-radius: 12px;
+  border: 1px solid var(--p-surface-200);
+  background: var(--p-surface-0);
+  display: grid; place-items: center;
+  cursor: pointer;
 }
+.icon-btn:hover { background: var(--p-surface-100); }
+.icon-btn i { font-size: 13px; }
+.icon-btn.danger i { color: var(--p-red-500, #ef4444); }
 
+/* chips */
+.item-ux__chips { display: flex; flex-wrap: wrap; gap: 6px; }
 .chip {
   font-size: 11px;
-  padding: 2px 8px;
+  padding: 3px 10px;
   border-radius: 999px;
-  background: var(--p-surface-100);
   border: 1px solid var(--p-surface-200);
-  opacity: .95;
+  background: var(--p-surface-0);
+  font-weight: 700;
+}
+.chip--soft { background: var(--p-surface-100); opacity: .9; }
+
+/* bottom row */
+.item-ux__bottom {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 10px;
+}
+.item-ux__prices { display: grid; gap: 2px; }
+.item-ux__prices .unit { font-size: 12px; opacity: .78; }
+.item-ux__prices .sub { font-size: 15px; font-weight: 950; }
+.muted { opacity: .7; }
+
+/* Stepper */
+.qty--ux {
+  width: 150px;
+  height: 36px;
+  display: grid;
+  grid-template-columns: 36px 1fr 36px;
+  align-items: center;
+  border-radius: 14px;
+  border: 1px solid var(--p-surface-200);
+  background: var(--p-surface-0);
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+.qty--ux .qty__value {
+  height: 36px;
+  display: grid;
+  place-items: center;
+  font-weight: 950;
+  font-size: 13px;
+}
+.qty--ux .qty__btn {
+  width: 36px; height: 36px;
+  border: 0;
+  background: transparent;
+  display: grid; place-items: center;
+  cursor: pointer;
+  color: var(--p-green-600, #16a34a);
+}
+.qty--ux .qty__btn:hover { background: var(--p-surface-100); }
+.qty--ux .qty__btn:disabled { opacity: .45; cursor: not-allowed; color: var(--p-text-color); }
+
+/* ✅ Footer sticky: PRO UX (si hay muchos items, siempre ves el CTA) */
+.cart-foot {
+  position: sticky;
+  bottom: 0;
 }
 
-.prices {
+/* Footer card */
+.foot-card {
+  background: rgba(255, 255, 255, 0.90);
+  backdrop-filter: blur(10px);
+  display: grid;
+  gap: 8px;
+  text-align: center;
+}
+
+.foot-card__top {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
-  gap: 10px;
+  gap: 12px;
 }
+.foot-card__label { font-size: 13px; font-weight: 900; opacity: .85; }
+.foot-card__value { font-size: 18px; font-weight: 950; }
 
-.unit { font-size: 12px; opacity: .8; }
-.sub  { font-size: 13px; }
+.foot-card__hint { font-size: 11.5px; opacity: .72; line-height: 1.25; }
 
-.controls {
-  display: grid;
-  gap: 8px;
-  justify-items: end;
-}
-
-/* InputNumber más pequeño y estable */
-:host ::ng-deep .qty {
-  width: 120px;
-}
-:host ::ng-deep .qty .p-inputnumber-input {
-  text-align: center;
-  font-weight: 700;
-}
-:host ::ng-deep .qty .p-inputnumber-button {
-  width: 34px;
-}
-
-.summary {
-  display: grid;
-  gap: 10px;
-}
-
-.summary .row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.checkout-btn {
+/* CTA */
+.checkout-ux {
   width: 100%;
   justify-content: center;
+  font-weight: 950;
+  border-radius: 14px;
 }
 
-.empty .title { font-weight: 800; }
-.empty .subtitle { opacity: .8; }
+/* Responsive */
+@media (max-width: 480px) {
+  :host ::ng-deep .cart-popover--ux.p-popover {
+    width: min(92vw, 440px) !important;
+  }
+  .qty--ux { width: 142px; }
+}

@@ -1,14 +1,13 @@
 import { CommonModule, CurrencyPipe } from '@angular/common';
 import { Component, ViewChild, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
 
 import { Popover, PopoverModule } from 'primeng/popover';
 import { ButtonModule } from 'primeng/button';
-import { DividerModule } from 'primeng/divider';
-import { InputNumberModule } from 'primeng/inputnumber';
 import { BadgeModule } from 'primeng/badge';
+
 import { CartStore } from '../../../core/api/cart/cart.store';
-import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-cart-popover',
@@ -20,19 +19,22 @@ import { RouterModule } from '@angular/router';
     CurrencyPipe,
     PopoverModule,
     ButtonModule,
-    DividerModule,
-    InputNumberModule,
     BadgeModule,
   ],
   templateUrl: './cart-popover.html',
-  styleUrl: './cart-popover.scss',
+  styleUrls: ['./cart-popover.scss'], // <- plural, estable
 })
 export class CartPopover {
   readonly cart = inject(CartStore);
 
   @ViewChild('op') op!: Popover;
 
-  toggle(ev: Event): void {
-    this.op.toggle(ev);
+  /**
+   * Toggle anclado al botón (NO usa $event).
+   * Evita el 99% de errores de tipado/eventos que "matan" el componente.
+   */
+  toggle(btn: any): void {
+    const el = btn?.el?.nativeElement ?? btn?.nativeElement ?? btn;
+    this.op.toggle({ currentTarget: el } as any);
   }
 }

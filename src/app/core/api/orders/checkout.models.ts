@@ -30,5 +30,6 @@ export interface OrderDto {
   address: string | null;
   payment_method: string;
   status: string;
+  whatsapp_receipt_url?: string | null;
   items: OrderItemDto[];
 }

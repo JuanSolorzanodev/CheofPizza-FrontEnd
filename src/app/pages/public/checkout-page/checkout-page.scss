@@ -116,6 +116,18 @@
   background: var(--p-surface-0);
 }
 
+/* ✅ Hint (para paso Pago cuando es transferencia) */
+.hint {
+  padding: 12px;
+  border: 1px dashed var(--p-surface-300);
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--p-primary-50) 25%, transparent);
+  display: grid;
+  gap: 6px;
+
+  strong { font-weight: 900; }
+}
+
 .vsteps { display: grid; gap: 10px; }
 
 .vstep {
@@ -217,16 +229,6 @@
 .sumLine__name { font-weight: 800; }
 .sumLine__price { font-weight: 900; }
 
-.micro { margin-top: 12px; display: grid; gap: 8px; }
-.micro__line {
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-
-  .k { opacity: .8; font-weight: 800; }
-  .v { font-weight: 900; text-align: right; }
-}
-
 .alert {
   margin-top: 14px;
   padding: 12px;
@@ -266,13 +268,6 @@
 
 .confirm__rows { display: grid; gap: 8px; }
 .row { display: flex; justify-content: space-between; gap: 10px; }
-
-.hint {
-  padding: 12px;
-  border: 1px dashed var(--p-surface-300);
-  border-radius: 16px;
-  opacity: .95;
-}
 
 .confirm__actions {
   display: flex;

@@ -1,0 +1,78 @@
+<div class="lp">
+  <div class="lp__header">
+    <div class="lp__actions">
+      <p-button
+        class="lp__btn"
+        [label]="locating() ? 'Obteniendo ubicación…' : 'Usar mi ubicación actual'"
+        icon="pi pi-compass"
+        [loading]="locating()"
+        (onClick)="useMyLocation()"
+        [disabled]="disabled"
+      ></p-button>
+
+      <p-button
+        class="lp__btn"
+        label="Limpiar"
+        icon="pi pi-trash"
+        outlined="true"
+        (onClick)="clear()"
+        [disabled]="disabled"
+      ></p-button>
+    </div>
+
+    <div class="lp__status">
+      @if (precisionLabel()) {
+        <span class="lp__pill" [class.lp__pill--warn]="(accuracyMeters() ?? 0) > 200">
+          {{ precisionLabel() }}
+        </span>
+      }
+
+      @if (resolvingAddress()) {
+        <span class="lp__muted">Detectando dirección…</span>
+      }
+    </div>
+  </div>
+
+  <div class="lp__field">
+    <div class="lp__labelRow">
+      <label class="lp__label">Dirección detectada</label>
+    </div>
+
+    <div class="lp__addressBox">
+      <div class="lp__addressText">
+        {{ formattedAddress() ?? '—' }}
+      </div>
+    </div>
+
+    @if ((accuracyMeters() ?? 0) > 1000) {
+      <small class="lp__hint lp__hint--warn">
+        Precisión baja. Ajusta el pin manualmente para ubicarte exacto.
+      </small>
+    } @else {
+      <small class="lp__hint">
+        Toca el mapa o arrastra el pin para ajustar tu ubicación exacta.
+      </small>
+    }
+  </div>
+
+  <div class="lp__field">
+    <label class="lp__label">Referencia (opcional)</label>
+    <input
+      #refInput
+      pInputText
+      type="text"
+      [disabled]="disabled"
+      [value]="reference()"
+      (input)="onReferenceInput(refInput.value)"
+      placeholder="Ej: Casa blanca, portón negro, timbre dañado"
+    />
+
+  </div>
+
+  <div class="lp__mapWrap">
+    <div #map class="lp__map"></div>
+    <div class="lp__attribution">
+      Map data © OpenStreetMap contributors · Rendered with Leaflet
+    </div>
+  </div>
+</div>

@@ -1,7 +1,6 @@
 <div class="page">
   <app-google-login-dialog></app-google-login-dialog>
 
-  <!-- EMPTY -->
   @if (!hasItems() && !order()) {
     <div class="shell">
       <div class="panel empty">
@@ -11,8 +10,6 @@
       </div>
     </div>
   }
-
-  <!-- CONFIRMATION -->
   @else if (order()) {
     <div class="shell">
       <div class="panel confirm">
@@ -33,23 +30,56 @@
             <span>Total</span>
             <strong>{{ order()!.total | currency:'USD':'symbol':'1.2-2' }}</strong>
           </div>
+
           <div class="row">
             <span>Entrega</span>
             <strong>{{ order()!.delivery_type }}</strong>
           </div>
-          @if (order()!.address) {
+
+          @if (order()!.delivery_location?.formatted_address) {
+            <div class="row">
+              <span>Dirección</span>
+              <strong class="wrapText">{{ order()!.delivery_location!.formatted_address }}</strong>
+            </div>
+          } @else if (order()!.address) {
             <div class="row">
               <span>Dirección</span>
               <strong class="wrapText">{{ order()!.address }}</strong>
             </div>
           }
+
+          @if (order()!.delivery_location?.maps_url) {
+            <div class="row">
+              <span>Ubicación</span>
+              <strong class="wrapText">
+                <a [href]="order()!.delivery_location!.maps_url!" target="_blank" rel="noopener noreferrer">
+                  Abrir en Google Maps
+                </a>
+              </strong>
+            </div>
+          } @else if (order()!.delivery_location?.lat != null && order()!.delivery_location?.lng != null) {
+            <div class="row">
+              <span>Ubicación</span>
+              <strong class="wrapText">
+                {{ order()!.delivery_location!.lat }}, {{ order()!.delivery_location!.lng }}
+              </strong>
+            </div>
+          }
+
+          @if (order()!.delivery_location?.reference) {
+            <div class="row">
+              <span>Referencia</span>
+              <strong class="wrapText">{{ order()!.delivery_location!.reference }}</strong>
+            </div>
+          }
+
           <div class="row">
             <span>Pago</span>
             <strong>{{ order()!.payment_method }}</strong>
           </div>
         </div>
 
-        <!-- Si fue transferencia, muestra datos bancarios aquí también -->
+        <!-- ✅ Transferencia SOLO aquí (confirmación) -->
         @if (order()!.payment_method === 'transfer') {
           <div class="infoCard">
             <div class="infoCard__head">
@@ -105,15 +135,6 @@
           </div>
         }
 
-        <div class="hint">
-          @if (order()!.payment_method === 'transfer') {
-            Tu pedido queda en <strong>pendiente</strong> hasta validar la transferencia.
-            Envía el comprobante por WhatsApp y el operador confirmará el pedido.
-          } @else {
-            Tu pedido fue recibido. El operador lo gestionará según el método seleccionado.
-          }
-        </div>
-
         <div class="confirm__actions">
           @if (order()!.whatsapp_receipt_url) {
             <p-button
@@ -123,17 +144,28 @@
             ></p-button>
           }
 
-          <p-button label="Volver al menú" [routerLink]="['/']" outlined="true"></p-button>
+          <!-- ✅ Limpia estado y vuelve al menú -->
+          <p-button
+            label="Seguir comprando"
+            icon="pi pi-shopping-cart"
+            outlined="true"
+            (onClick)="continueShopping()"
+          ></p-button>
+
+          <!-- ✅ Limpia estado y deja checkout listo -->
+          <p-button
+            label="Nuevo pedido"
+            icon="pi pi-refresh"
+            outlined="true"
+            (onClick)="newOrder()"
+          ></p-button>
         </div>
       </div>
     </div>
   }
-
-  <!-- CHECKOUT -->
   @else {
     <div class="shell">
       <div class="layout">
-        <!-- LEFT -->
         <section class="panel main">
           <div class="titlebar">
             <div>
@@ -149,7 +181,6 @@
 
           <p-divider></p-divider>
 
-          <!-- Vertical stepper -->
           <div class="vsteps">
             @for (s of stepMeta(); track s.id) {
               <button
@@ -173,7 +204,6 @@
           <p-divider></p-divider>
 
           @switch (activeStep()) {
-            <!-- STEP 1 -->
             @case (0) {
               <div class="step">
                 <h2>Entrega</h2>
@@ -192,30 +222,46 @@
                     <p-radioButton name="delivery_type" [value]="'delivery'" [formControl]="form.controls.delivery_type"></p-radioButton>
                     <div>
                       <div class="cardOpt__title">Delivery</div>
-                      <div class="muted">Enviamos tu pedido a tu dirección.</div>
+                      <div class="muted">Enviamos tu pedido a tu ubicación.</div>
                     </div>
                   </label>
                 </div>
 
                 @if (isDelivery()) {
                   <div class="field">
-                    <label>Dirección</label>
-                    <textarea
-                      pInputTextarea
-                      rows="3"
-                      [formControl]="form.controls.address"
-                      placeholder="Ej: Calle X, Av. Y, referencia..."
-                    ></textarea>
+                    <label>Ubicación para delivery</label>
+                    <app-location-picker [formControl]="form.controls.delivery_location"></app-location-picker>
+                    @if (!isLocationOk()) { <small class="err">Selecciona tu ubicación (pin) en el mapa.</small> }
+                  </div>
 
-                    @if (!isAddressOk()) {
-                      <small class="err">Dirección requerida (mínimo 10 caracteres).</small>
+                  <div class="field" style="margin-top: 10px;">
+                    <p-button
+                      [label]="showManualAddress() ? 'Ocultar dirección manual (opcional)' : 'Agregar dirección manual (opcional)'"
+                      outlined="true"
+                      icon="pi pi-pencil"
+                      (onClick)="toggleManualAddress()"
+                    ></p-button>
+
+                    @if (showManualAddress()) {
+                      <div style="margin-top: 10px;">
+                        <label>Dirección manual (opcional)</label>
+                        <textarea
+                          pInputTextarea
+                          rows="3"
+                          [formControl]="form.controls.address"
+                          placeholder="Ej: Calle X, Av. Y, frente al parque..."
+                        ></textarea>
+                        @if (!isOptionalAddressOk()) {
+                          <small class="err">Si escribes una dirección manual, debe tener mínimo 10 caracteres.</small>
+                        }
+                        <small class="muted">Normalmente no hace falta: con el pin + dirección detectada es suficiente.</small>
+                      </div>
                     }
                   </div>
                 }
               </div>
             }
 
-            <!-- STEP 2 -->
             @case (1) {
               <div class="step">
                 <h2>Pago</h2>
@@ -239,12 +285,7 @@
                   </label>
 
                   <label class="cardOpt cardOpt--disabled">
-                    <p-radioButton
-                      name="payment_method"
-                      [value]="'card'"
-                      [formControl]="form.controls.payment_method"
-                      [disabled]="true"
-                    ></p-radioButton>
+                    <p-radioButton name="payment_method" [value]="'card'" [formControl]="form.controls.payment_method" [disabled]="true"></p-radioButton>
                     <div>
                       <div class="cardOpt__title">Tarjeta</div>
                       <div class="muted">Próximamente (pasarela).</div>
@@ -254,72 +295,21 @@
 
                 <div class="field">
                   <label>Notas (opcional)</label>
-                  <textarea
-                    pInputTextarea
-                    rows="3"
-                    [formControl]="form.controls.notes"
-                    placeholder="Ej: sin cebolla, timbre dañado, etc."
-                  ></textarea>
+                  <textarea pInputTextarea rows="3" [formControl]="form.controls.notes" placeholder="Ej: sin cebolla, timbre dañado, etc."></textarea>
                 </div>
 
+                <!-- ✅ En pago SOLO un aviso (no datos bancarios) -->
                 @if (isTransfer()) {
-                  <div class="infoCard">
-                    <div class="infoCard__head">
-                      <div>
-                        <div class="infoCard__title">Datos para transferencia</div>
-                        <div class="muted">Envía el comprobante por WhatsApp para validar el pedido.</div>
-                      </div>
-                      <p-tag value="pendiente" severity="warn"></p-tag>
+                  <div class="hint">
+                    <strong>Transferencia seleccionada.</strong>
+                    <div class="muted">
+                      Al confirmar el pedido te mostraremos los datos bancarios/QR y el botón de WhatsApp para enviar el comprobante.
                     </div>
-
-                    @if (configLoading()) {
-                      <div class="muted">Cargando datos bancarios...</div>
-                    } @else if (transferAccount()) {
-                      <div class="kv">
-                        <div class="kv__row">
-                          <span class="k">Banco</span>
-                          <span class="v">{{ transferAccount()!.bank_name }}</span>
-                        </div>
-                        <div class="kv__row">
-                          <span class="k">Tipo</span>
-                          <span class="v">{{ transferAccount()!.account_type }}</span>
-                        </div>
-                        <div class="kv__row">
-                          <span class="k">N° Cuenta</span>
-                          <span class="v mono">{{ transferAccount()!.account_number }}</span>
-                        </div>
-                        <div class="kv__row">
-                          <span class="k">Titular</span>
-                          <span class="v">{{ transferAccount()!.holder_name }}</span>
-                        </div>
-                        @if (transferAccount()!.holder_id) {
-                          <div class="kv__row">
-                            <span class="k">ID</span>
-                            <span class="v mono">{{ transferAccount()!.holder_id }}</span>
-                          </div>
-                        }
-                      </div>
-
-                      @if (transferAccount()!.instructions) {
-                        <div class="callout">
-                          {{ transferAccount()!.instructions }}
-                        </div>
-                      }
-
-                      @if (transferAccount()!.qr_image_url) {
-                        <div class="qr">
-                          <img [src]="transferAccount()!.qr_image_url" alt="QR transferencia" />
-                        </div>
-                      }
-                    } @else {
-                      <div class="muted">No hay una cuenta activa configurada para transferencia.</div>
-                    }
                   </div>
                 }
               </div>
             }
 
-            <!-- STEP 3 -->
             @case (2) {
               <div class="step">
                 <div class="reviewTop">
@@ -405,7 +395,6 @@
           </div>
         </section>
 
-        <!-- RIGHT -->
         <aside class="panel summary">
           <div class="summary__head">
             <div class="summary__title">Resumen</div>
@@ -434,23 +423,6 @@
               <span>Total</span>
               <strong>{{ cart.total() | currency:'USD':'symbol':'1.2-2' }}</strong>
             </div>
-          </div>
-
-          <div class="micro">
-            <div class="micro__line">
-              <span class="k">Entrega</span>
-              <span class="v">{{ deliveryTypeLabel() }}</span>
-            </div>
-            <div class="micro__line">
-              <span class="k">Pago</span>
-              <span class="v">{{ paymentLabel() }}</span>
-            </div>
-            @if (isDelivery() && (addressText() ?? '').trim().length > 0) {
-              <div class="micro__line">
-                <span class="k">Dirección</span>
-                <span class="v wrapText">{{ (addressText() ?? '').trim() }}</span>
-              </div>
-            }
           </div>
 
           @if (!auth.isAuthenticated()) {

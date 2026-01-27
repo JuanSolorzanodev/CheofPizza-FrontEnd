@@ -1,0 +1,112 @@
+.lp {
+  display: grid;
+  gap: 12px;
+}
+
+.lp__header {
+  display: grid;
+  gap: 10px;
+}
+
+.lp__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.lp__btn {
+  flex: 1 1 220px;
+}
+
+.lp__status {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.lp__muted {
+  font-size: 12px;
+  font-weight: 600;
+  opacity: 0.75;
+}
+
+.lp__pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  border: 1px solid var(--p-surface-200);
+  background: var(--p-surface-0);
+}
+
+.lp__pill--warn {
+  border-color: var(--p-red-200);
+}
+
+.lp__field {
+  display: grid;
+  gap: 6px;
+}
+
+.lp__labelRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.lp__label {
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.lp__addressBox {
+  border: 1px solid var(--p-surface-200);
+  background: var(--p-surface-0);
+  border-radius: 14px;
+  padding: 10px 12px;
+}
+
+.lp__addressText {
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.3;
+  word-break: break-word;
+  opacity: 0.92;
+}
+
+.lp__hint {
+  font-size: 12px;
+  font-weight: 600;
+  opacity: 0.75;
+}
+
+.lp__hint--warn {
+  color: var(--p-red-500);
+  opacity: 0.95;
+}
+
+.lp__mapWrap {
+  border: 1px solid var(--p-surface-200);
+  border-radius: 16px;
+  overflow: hidden;
+  background: var(--p-surface-0);
+}
+
+.lp__map {
+  width: 100%;
+  height: 320px;
+}
+
+.lp__attribution {
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 700;
+  opacity: 0.7;
+  text-align: right;
+  border-top: 1px solid var(--p-surface-200);
+}

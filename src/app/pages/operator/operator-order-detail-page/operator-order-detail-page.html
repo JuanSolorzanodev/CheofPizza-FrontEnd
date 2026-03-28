@@ -1,0 +1,271 @@
+<div class="page">
+  @if (loading()) {
+    <div class="loading-grid">
+      <p-card class="card card-soft">
+        <p-skeleton height="28px" styleClass="mb-3"></p-skeleton>
+        <p-skeleton height="18px" styleClass="mb-2"></p-skeleton>
+        <p-skeleton height="18px" styleClass="mb-2"></p-skeleton>
+        <p-skeleton height="18px"></p-skeleton>
+      </p-card>
+
+      <p-card class="card card-soft">
+        <p-skeleton height="28px" styleClass="mb-3"></p-skeleton>
+        <p-skeleton height="42px" styleClass="mb-3"></p-skeleton>
+        <p-skeleton height="100px"></p-skeleton>
+      </p-card>
+    </div>
+  } @else {
+    @if (!order()) {
+      <div class="empty-state">
+        <div class="empty-icon">
+          <i class="pi pi-exclamation-triangle"></i>
+        </div>
+        <h3>No se pudo cargar el pedido</h3>
+        <p>Ocurrió un problema al obtener el detalle. Intenta nuevamente.</p>
+
+        <p-button
+          label="Reintentar"
+          icon="pi pi-refresh"
+          severity="secondary"
+          (onClick)="load()"
+        ></p-button>
+      </div>
+    } @else {
+      <section class="hero">
+        <div class="hero-left">
+          <div class="order-code">#{{ order()!.order_number }}</div>
+
+          <div class="hero-meta">
+            <p-tag
+              [value]="prettyStatus(order()!.status)"
+              [severity]="statusSeverity(order()!.status)"
+            ></p-tag>
+
+            <span class="meta-chip">
+              <i class="pi pi-shopping-bag"></i>
+              {{ prettyDeliveryType(order()!.delivery_type) }}
+            </span>
+
+            <span class="meta-chip">
+              <i class="pi pi-credit-card"></i>
+              {{ prettyPaymentMethod(order()!.payment_method) }}
+            </span>
+
+            <span class="meta-chip">
+              <i class="pi pi-calendar"></i>
+              {{ formatDate(order()!.ordered_at) }}
+            </span>
+
+            <span class="meta-total">
+              Total: ${{ order()!.total | number: '1.2-2' }}
+            </span>
+          </div>
+        </div>
+
+        <div class="hero-right">
+          <p-button
+            label="Volver"
+            icon="pi pi-arrow-left"
+            severity="secondary"
+            [outlined]="true"
+            routerLink="/operator/orders"
+          ></p-button>
+        </div>
+      </section>
+
+      <section class="content-grid">
+        <p-card class="card info-card">
+          <ng-template pTemplate="title">
+            <div class="card-title">
+              <span class="card-icon client-icon">
+                <i class="pi pi-user"></i>
+              </span>
+              <span>Cliente</span>
+            </div>
+          </ng-template>
+
+          <div class="info-list">
+            <div class="info-item">
+              <span class="info-label">Nombre</span>
+              <span class="info-value">{{ order()!.customer?.name ?? '—' }}</span>
+            </div>
+
+            <div class="info-item">
+              <span class="info-label">Teléfono</span>
+              <span class="info-value">{{ order()!.customer?.phone ?? '—' }}</span>
+            </div>
+
+            <div class="info-item">
+              <span class="info-label">Dirección</span>
+              <span class="info-value">{{ order()!.delivery?.address ?? '—' }}</span>
+            </div>
+
+            @if (order()!.delivery?.reference) {
+              <div class="info-item">
+                <span class="info-label">Referencia</span>
+                <span class="info-value">{{ order()!.delivery?.reference ?? '—' }}</span>
+              </div>
+            }
+          </div>
+
+          @if (order()!.delivery_whatsapp_url) {
+            <div class="primary-action">
+              <p-button
+                label="Solicitar delivery"
+                icon="pi pi-whatsapp"
+                severity="success"
+                size="large"
+                (onClick)="openDeliveryWhatsApp()"
+              ></p-button>
+            </div>
+          }
+        </p-card>
+
+        <p-card class="card info-card">
+          <ng-template pTemplate="title">
+            <div class="card-title">
+              <span class="card-icon status-icon">
+                <i class="pi pi-sync"></i>
+              </span>
+              <span>Estado</span>
+            </div>
+          </ng-template>
+
+          <div class="status-current">
+            <span class="status-label">Actual</span>
+            <span class="status-value">{{ prettyStatus(order()!.status) }}</span>
+          </div>
+
+          <div class="status-form">
+            <label for="statusSelect">Nuevo estado</label>
+
+            <p-select
+              inputId="statusSelect"
+              [options]="statusOptions()"
+              optionLabel="label"
+              optionValue="value"
+              [ngModel]="toStatus"
+              (ngModelChange)="toStatus = $event; onStatusChange($event)"
+              [disabled]="saving()"
+              placeholder="Selecciona un estado"
+            ></p-select>
+
+            <label for="statusNote">Nota (opcional)</label>
+
+            <textarea
+              id="statusNote"
+              pTextarea
+              rows="3"
+              [(ngModel)]="note"
+              [disabled]="saving()"
+              placeholder="Ej: Pedido listo para retiro del servicio de delivery..."
+            ></textarea>
+
+            <small class="status-hint">
+              El estado se actualiza automáticamente al seleccionar una opción.
+            </small>
+          </div>
+        </p-card>
+      </section>
+
+      <p-card class="card kitchen-card">
+        <ng-template pTemplate="title">
+          <div class="card-title">
+            <span class="card-icon kitchen-icon">
+              <i class="pi pi-box"></i>
+            </span>
+            <span>Ticket de cocina</span>
+          </div>
+        </ng-template>
+
+        @if (order()!.kitchen.items.length > 0) {
+          <div class="kitchen-list">
+            @for (it of order()!.kitchen.items; track trackItem($index, it)) {
+              <article class="kitchen-item">
+                <div class="kitchen-head">
+                  <div class="kitchen-main">
+                    <span class="qty-badge">x{{ it.quantity }}</span>
+
+                    @if (it.type === 'pizza') {
+                      <div class="item-heading">
+                        <h4>{{ it.pizza?.pizza_name ?? 'Pizza' }}</h4>
+                      </div>
+                    }
+
+                    @if (it.type === 'half_and_half') {
+                      <div class="item-heading">
+                        <h4>Pizza mitad y mitad</h4>
+                      </div>
+                    }
+
+                    @if (it.type === 'promotion') {
+                      <div class="item-heading">
+                        <h4>{{ it.promotion?.name ?? 'Promoción' }}</h4>
+                      </div>
+                    }
+                  </div>
+
+                  @if (itemMeta(it)) {
+                    <div class="item-meta-chip">
+                      {{ itemMeta(it) }}
+                    </div>
+                  }
+                </div>
+
+                @if (it.type === 'pizza') {
+                  <div class="kitchen-block">
+                    <span class="block-label">Ingredientes</span>
+                    <p class="block-text">{{ ingredientsLabel(it.pizza?.ingredients) }}</p>
+                  </div>
+                }
+
+                @if (it.type === 'half_and_half') {
+                  <div class="split-grid">
+                    <div class="split-card">
+                      <span class="split-title">Mitad A</span>
+                      <h5>{{ it.half?.A?.pizza_name ?? '—' }}</h5>
+                      <p>{{ ingredientsLabel(it.half?.A?.ingredients) }}</p>
+                    </div>
+
+                    <div class="split-card">
+                      <span class="split-title">Mitad B</span>
+                      <h5>{{ it.half?.B?.pizza_name ?? '—' }}</h5>
+                      <p>{{ ingredientsLabel(it.half?.B?.ingredients) }}</p>
+                    </div>
+                  </div>
+                }
+
+                @if (it.type === 'promotion') {
+                  <div class="promo-grid">
+                    @for (p of it.promotion?.pizzas ?? []; track $index) {
+                      <div class="promo-card">
+                        <h5>{{ p.pizza_name }}</h5>
+                        <p>{{ ingredientsLabel(p.ingredients) }}</p>
+                      </div>
+                    }
+                  </div>
+                }
+
+                @if (it.personalizations?.length) {
+                  <div class="kitchen-block">
+                    <span class="block-label">Personalizaciones</span>
+
+                    <ul class="personalization-list">
+                      @for (p of it.personalizations; track $index) {
+                        <li>{{ personalizationText(p) }}</li>
+                      }
+                    </ul>
+                  </div>
+                }
+              </article>
+            }
+          </div>
+        } @else {
+          <div class="empty-kitchen">
+            No hay items de cocina para este pedido.
+          </div>
+        }
+      </p-card>
+    }
+  }
+</div>

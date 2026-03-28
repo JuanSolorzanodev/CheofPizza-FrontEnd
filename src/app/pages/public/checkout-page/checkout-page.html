@@ -1,7 +1,7 @@
 <div class="page">
   <app-google-login-dialog></app-google-login-dialog>
 
-  @if (!hasItems() && !order()) {
+  @if (!hasItems()) {
     <div class="shell">
       <div class="panel empty">
         <div class="empty__title">Tu carrito está vacío</div>
@@ -9,161 +9,7 @@
         <p-button label="Ir al menú" [routerLink]="['/']" outlined="true"></p-button>
       </div>
     </div>
-  }
-  @else if (order()) {
-    <div class="shell">
-      <div class="panel confirm">
-        <div class="confirm__head">
-          <div>
-            <div class="confirm__title">Pedido confirmado</div>
-            <div class="confirm__muted">Tu número de orden</div>
-            <div class="confirm__number">{{ order()!.order_number }}</div>
-          </div>
-
-          <p-tag [value]="order()!.status" [severity]="orderStatusSeverity()"></p-tag>
-        </div>
-
-        <p-divider></p-divider>
-
-        <div class="confirm__rows">
-          <div class="row">
-            <span>Total</span>
-            <strong>{{ order()!.total | currency:'USD':'symbol':'1.2-2' }}</strong>
-          </div>
-
-          <div class="row">
-            <span>Entrega</span>
-            <strong>{{ order()!.delivery_type }}</strong>
-          </div>
-
-          @if (order()!.delivery_location?.formatted_address) {
-            <div class="row">
-              <span>Dirección</span>
-              <strong class="wrapText">{{ order()!.delivery_location!.formatted_address }}</strong>
-            </div>
-          } @else if (order()!.address) {
-            <div class="row">
-              <span>Dirección</span>
-              <strong class="wrapText">{{ order()!.address }}</strong>
-            </div>
-          }
-
-          @if (order()!.delivery_location?.maps_url) {
-            <div class="row">
-              <span>Ubicación</span>
-              <strong class="wrapText">
-                <a [href]="order()!.delivery_location!.maps_url!" target="_blank" rel="noopener noreferrer">
-                  Abrir en Google Maps
-                </a>
-              </strong>
-            </div>
-          } @else if (order()!.delivery_location?.lat != null && order()!.delivery_location?.lng != null) {
-            <div class="row">
-              <span>Ubicación</span>
-              <strong class="wrapText">
-                {{ order()!.delivery_location!.lat }}, {{ order()!.delivery_location!.lng }}
-              </strong>
-            </div>
-          }
-
-          @if (order()!.delivery_location?.reference) {
-            <div class="row">
-              <span>Referencia</span>
-              <strong class="wrapText">{{ order()!.delivery_location!.reference }}</strong>
-            </div>
-          }
-
-          <div class="row">
-            <span>Pago</span>
-            <strong>{{ order()!.payment_method }}</strong>
-          </div>
-        </div>
-
-        <!-- ✅ Transferencia SOLO aquí (confirmación) -->
-        @if (order()!.payment_method === 'transfer') {
-          <div class="infoCard">
-            <div class="infoCard__head">
-              <div>
-                <div class="infoCard__title">Datos para transferencia</div>
-                <div class="muted">Envía el comprobante por WhatsApp para validar el pedido.</div>
-              </div>
-              <p-tag value="pendiente" severity="warn"></p-tag>
-            </div>
-
-            @if (configLoading()) {
-              <div class="muted">Cargando datos bancarios...</div>
-            } @else if (transferAccount()) {
-              <div class="kv">
-                <div class="kv__row">
-                  <span class="k">Banco</span>
-                  <span class="v">{{ transferAccount()!.bank_name }}</span>
-                </div>
-                <div class="kv__row">
-                  <span class="k">Tipo</span>
-                  <span class="v">{{ transferAccount()!.account_type }}</span>
-                </div>
-                <div class="kv__row">
-                  <span class="k">N° Cuenta</span>
-                  <span class="v mono">{{ transferAccount()!.account_number }}</span>
-                </div>
-                <div class="kv__row">
-                  <span class="k">Titular</span>
-                  <span class="v">{{ transferAccount()!.holder_name }}</span>
-                </div>
-                @if (transferAccount()!.holder_id) {
-                  <div class="kv__row">
-                    <span class="k">ID</span>
-                    <span class="v mono">{{ transferAccount()!.holder_id }}</span>
-                  </div>
-                }
-              </div>
-
-              @if (transferAccount()!.instructions) {
-                <div class="callout">
-                  {{ transferAccount()!.instructions }}
-                </div>
-              }
-
-              @if (transferAccount()!.qr_image_url) {
-                <div class="qr">
-                  <img [src]="transferAccount()!.qr_image_url" alt="QR transferencia" />
-                </div>
-              }
-            } @else {
-              <div class="muted">No hay una cuenta activa configurada para transferencia.</div>
-            }
-          </div>
-        }
-
-        <div class="confirm__actions">
-          @if (order()!.whatsapp_receipt_url) {
-            <p-button
-              label="Enviar comprobante por WhatsApp"
-              icon="pi pi-send"
-              (onClick)="openWhatsApp()"
-            ></p-button>
-          }
-
-          <!-- ✅ Limpia estado y vuelve al menú -->
-          <p-button
-            label="Seguir comprando"
-            icon="pi pi-shopping-cart"
-            outlined="true"
-            (onClick)="continueShopping()"
-          ></p-button>
-
-          <!-- ✅ Limpia estado y deja checkout listo -->
-          <p-button
-            label="Nuevo pedido"
-            icon="pi pi-refresh"
-            outlined="true"
-            (onClick)="newOrder()"
-          ></p-button>
-        </div>
-      </div>
-    </div>
-  }
-  @else {
+  } @else {
     <div class="shell">
       <div class="layout">
         <section class="panel main">
@@ -298,12 +144,13 @@
                   <textarea pInputTextarea rows="3" [formControl]="form.controls.notes" placeholder="Ej: sin cebolla, timbre dañado, etc."></textarea>
                 </div>
 
-                <!-- ✅ En pago SOLO un aviso (no datos bancarios) -->
+                <!-- ✅ Aviso: los datos bancarios se ven en Mis pedidos -->
                 @if (isTransfer()) {
                   <div class="hint">
                     <strong>Transferencia seleccionada.</strong>
                     <div class="muted">
-                      Al confirmar el pedido te mostraremos los datos bancarios/QR y el botón de WhatsApp para enviar el comprobante.
+                      Al confirmar el pedido, podrás ver los datos de transferencia y enviar el comprobante en
+                      <b>Mis pedidos</b>.
                     </div>
                   </div>
                 }

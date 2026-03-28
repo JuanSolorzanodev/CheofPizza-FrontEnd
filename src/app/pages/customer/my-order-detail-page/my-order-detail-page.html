@@ -1,0 +1,345 @@
+<section class="od">
+  <header class="od__header">
+    <div class="od__titleWrap">
+      <div class="cheof-title">Detalle del pedido</div>
+      <div class="od__subtitle">Seguimiento, entrega y pago.</div>
+      <div class="cheof-accent-line od__accent"></div>
+    </div>
+
+    <p-button
+      label="Volver"
+      icon="pi pi-arrow-left"
+      styleClass="cheof-btn cheof-btn--outlined"
+      (onClick)="back()"
+    ></p-button>
+  </header>
+
+  @if (loading()) {
+    <p-card styleClass="odCard">
+      <div class="sk">
+        <p-skeleton width="40%" height="1.4rem"></p-skeleton>
+        <p-skeleton width="100%" height="16rem"></p-skeleton>
+      </div>
+    </p-card>
+  } @else {
+    <p-card styleClass="odCard">
+      <ng-template pTemplate="header">
+        <div class="odHero">
+          <div class="odHero__left">
+            <div class="odHero__num">Pedido {{ order()!.order_number }}</div>
+            <div class="odHero__date">{{ order()!.ordered_at | date:'dd/MM/yyyy HH:mm' }}</div>
+
+            <div class="odHero__chips">
+              <span class="heroChip">
+                <i class="pi pi-shopping-bag"></i>
+                {{ totalItems() }} {{ totalItems() === 1 ? 'item' : 'items' }}
+              </span>
+
+              <span class="heroChip">
+                <i class="pi pi-send"></i>
+                {{ deliveryTypeLabel(order()!.delivery_type) }}
+              </span>
+
+              <span class="heroChip">
+                <i class="pi pi-credit-card"></i>
+                {{ paymentLabel(order()!.payment_method) }}
+              </span>
+            </div>
+          </div>
+
+          <div class="odHero__right">
+            <div class="odHero__total">
+              Total
+              <span class="odHero__money">{{ order()!.total | currency:'USD':'symbol':'1.2-2' }}</span>
+            </div>
+
+            <p-tag
+              [value]="statusLabel(order()!.status)"
+              [severity]="statusSeverity(order()!.status)"
+              styleClass="odHero__tag"
+            ></p-tag>
+          </div>
+        </div>
+      </ng-template>
+
+      <div class="odGrid">
+        <div class="odCol">
+          <div class="odSection odSection--timeline">
+            <div class="odSection__head">
+              <div class="odSection__title">Seguimiento</div>
+
+              @if (!isFinalStatus()) {
+                <span class="sectionBadge sectionBadge--live">En curso</span>
+              } @else {
+                <span class="sectionBadge sectionBadge--done">Finalizado</span>
+              }
+            </div>
+
+            @if (timeline().length > 0) {
+              <div class="tl">
+                @for (e of timeline(); track timelineTrackBy($index, e)) {
+                  <div class="tlRow">
+                    <div class="tlRail">
+                      <span class="tlDot" [class.tlDot--final]="e.isFinal"></span>
+                      <span class="tlLine" [class.tlLine--hidden]="e.isLast"></span>
+                    </div>
+
+                    <div class="tlBox" [class.tlBox--current]="e.isCurrent" [class.tlBox--final]="e.isFinal">
+                      <div class="tlTop">
+                        <div class="tlTop__left">
+                          <p-tag
+                            [value]="statusLabel(e.to)"
+                            [severity]="statusSeverity(e.to)"
+                            styleClass="tlTag"
+                          ></p-tag>
+
+                          @if (e.isCurrent) {
+                            <span class="tlState tlState--live">Estado actual</span>
+                          }
+
+                          @if (e.isFinal) {
+                            <span class="tlState tlState--final">Estado final</span>
+                          }
+                        </div>
+
+                        <span class="tlDate">{{ e.changed_at | date:'dd/MM HH:mm' }}</span>
+                      </div>
+
+                      @if (e.durationLabel) {
+                        <div class="tlMeta">
+                          <span class="tlDur">{{ e.durationPrefix }}: {{ e.durationLabel }}</span>
+                        </div>
+                      }
+
+                      @if (e.note) {
+                        <div class="tlNote">{{ e.note }}</div>
+                      }
+                    </div>
+                  </div>
+                }
+              </div>
+            } @else {
+              <p-tag severity="info" value="Aún no hay historial de estados."></p-tag>
+            }
+          </div>
+
+          <div class="odSection">
+            <div class="odSection__head">
+              <div class="odSection__title">Items</div>
+              <span class="sectionBadge">{{ totalItems() }} {{ totalItems() === 1 ? 'unidad' : 'unidades' }}</span>
+            </div>
+
+            <p-table [value]="order()!.items" styleClass="p-datatable-sm odTable">
+              <ng-template pTemplate="header">
+                <tr>
+                  <th>Producto</th>
+                  <th>Tamaño</th>
+                  <th class="t-right">Cant</th>
+                  <th class="t-right">Precio</th>
+                  <th class="t-right">Subtotal</th>
+                </tr>
+              </ng-template>
+
+              <ng-template pTemplate="body" let-it>
+                <tr>
+                  <td class="odProd">{{ itemName(it) }}</td>
+                  <td>{{ it.size?.name ?? '—' }}</td>
+                  <td class="t-right">{{ it.quantity }}</td>
+                  <td class="t-right">{{ it.unit_price | currency:'USD':'symbol':'1.2-2' }}</td>
+                  <td class="t-right">{{ it.subtotal | currency:'USD':'symbol':'1.2-2' }}</td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </div>
+        </div>
+
+        <div class="odCol odCol--side">
+          <div class="odSection odSection--compact">
+            <div class="odSection__head">
+              <div class="odSection__title">Entrega</div>
+              <span class="sectionBadge">{{ deliveryTypeLabel(order()!.delivery_type) }}</span>
+            </div>
+
+            <div class="kv">
+              <div class="kv__k">Dirección</div>
+              <div class="kv__v">{{ deliveryAddress() }}</div>
+
+              @if (deliveryReference()) {
+                <div class="kv__k">Referencia</div>
+                <div class="kv__v">{{ deliveryReference() }}</div>
+              }
+
+              @if (lastStatusChangedAt()) {
+                <div class="kv__k">Actualizado</div>
+                <div class="kv__v">{{ lastStatusChangedAt() | date:'dd/MM/yyyy HH:mm' }}</div>
+              }
+            </div>
+
+            @if (order()!.delivery_location?.maps_url) {
+              <div class="odActionRow">
+                <p-button
+                  label="Ver en Maps"
+                  icon="pi pi-map"
+                  styleClass="cheof-btn cheof-btn--outlined"
+                  (onClick)="openMaps()"
+                ></p-button>
+              </div>
+            }
+          </div>
+
+          <div class="odSection odSection--payment odSection--compact">
+            <div class="odSection__head">
+              <div class="odSection__title">{{ paymentPanelTitle() }}</div>
+            </div>
+
+            <div class="paySummary">
+              <div class="paySummary__row">
+                <span class="paySummary__label">Forma de pago</span>
+                <span class="paySummary__value">{{ paymentLabel(order()!.payment_method) }}</span>
+              </div>
+
+              <div class="paySummary__row">
+                <span class="paySummary__label">Estado del pedido</span>
+                <span class="paySummary__value">
+                  <p-tag
+                    [value]="statusLabel(order()!.status)"
+                    [severity]="statusSeverity(order()!.status)"
+                    styleClass="payStatusTag"
+                  ></p-tag>
+                </span>
+              </div>
+
+              <div class="paySummary__total">
+                <span>Total del pedido</span>
+                <strong>{{ order()!.total | currency:'USD':'symbol':'1.2-2' }}</strong>
+              </div>
+            </div>
+
+            @if (isTransfer()) {
+              <div class="payNote">
+                <i class="pi pi-info-circle"></i>
+                <span>
+                  Transferencia bancaria seleccionada. Usa los datos de abajo y envía el comprobante por WhatsApp.
+                </span>
+              </div>
+            }
+          </div>
+
+          @if (isTransfer()) {
+            <div class="odSection odSection--transfer">
+              <div class="odSection__head">
+                <div class="odSection__title">{{ transferPanelTitle() }}</div>
+
+                @if (hasQrImage()) {
+                  <span class="sectionBadge sectionBadge--qr">QR disponible</span>
+                }
+              </div>
+
+              <div class="hint hint--soft">
+                <i class="pi pi-megaphone"></i>
+                <span>{{ transferHelperText() }}</span>
+              </div>
+
+              @if (order()!.transfer_account) {
+                <div class="transferGrid">
+                  @if (hasQrImage()) {
+                    <div class="qrCard">
+                      <div class="qrCard__header">
+                        <div class="qrCard__title">Paga escaneando el QR</div>
+                        <div class="qrCard__subtitle">Más rápido para el cliente y más claro para validación.</div>
+                      </div>
+
+                      <div class="qrCard__body">
+                        <img
+                          class="qrImage"
+                          [src]="order()!.transfer_account!.qr_image_url!"
+                          alt="Código QR para transferencia"
+                          loading="lazy"
+                        />
+                      </div>
+                    </div>
+                  }
+
+                  <div class="bankCard">
+                    <div class="bankFields">
+                      <div class="bankField">
+                        <span class="bankField__label">Banco</span>
+                        <span class="bankField__value">{{ order()!.transfer_account!.bank_name }}</span>
+                      </div>
+
+                      <div class="bankField">
+                        <span class="bankField__label">Tipo de cuenta</span>
+                        <span class="bankField__value">{{ order()!.transfer_account!.account_type }}</span>
+                      </div>
+
+                      <div class="bankCopyCard">
+                        <div class="bankCopyCard__content">
+                          <span class="bankField__label">N° de cuenta</span>
+                          <span class="bankCopyCard__value mono">{{ order()!.transfer_account!.account_number }}</span>
+                        </div>
+
+                        <p-button
+                          label="Copiar"
+                          icon="pi pi-copy"
+                          styleClass="cheof-btn cheof-btn--outlined p-button-sm"
+                          (onClick)="copy(order()!.transfer_account!.account_number, 'account')"
+                        ></p-button>
+
+                        @if (copied() === 'account') {
+                          <span class="copied">Número de cuenta copiado ✅</span>
+                        }
+                      </div>
+
+                      <div class="bankCopyCard">
+                        <div class="bankCopyCard__content">
+                          <span class="bankField__label">Titular / identificación</span>
+                          <span class="bankCopyCard__value">
+                            <span class="bankHolderName">{{ order()!.transfer_account!.holder_name }}</span>
+
+                            @if (order()!.transfer_account!.holder_id) {
+                              <span class="bankHolderId mono">{{ order()!.transfer_account!.holder_id }}</span>
+                            }
+                          </span>
+                        </div>
+
+                        @if (order()!.transfer_account!.holder_id) {
+                          <p-button
+                            label="Copiar ID"
+                            icon="pi pi-copy"
+                            styleClass="cheof-btn cheof-btn--outlined p-button-sm"
+                            (onClick)="copy(order()!.transfer_account!.holder_id, 'holder')"
+                          ></p-button>
+                        }
+
+                        @if (copied() === 'holder') {
+                          <span class="copied">Identificación copiada ✅</span>
+                        }
+                      </div>
+                    </div>
+
+                    @if (order()!.transfer_account!.instructions) {
+                      <div class="hint">{{ order()!.transfer_account!.instructions }}</div>
+                    }
+
+                    @if (shouldShowReceiptAction()) {
+                      <div class="odActionRow odActionRow--primary">
+                        <p-button
+                          label="Enviar comprobante por WhatsApp"
+                          icon="pi pi-whatsapp"
+                          styleClass="cheof-btn cheof-btn--primary"
+                          (onClick)="openWhatsApp()"
+                        ></p-button>
+                      </div>
+                    }
+                  </div>
+                </div>
+              } @else {
+                <p-tag severity="warn" value="No hay cuenta activa para transferencia."></p-tag>
+              }
+            </div>
+          }
+        </div>
+      </div>
+    </p-card>
+  }
+</section>

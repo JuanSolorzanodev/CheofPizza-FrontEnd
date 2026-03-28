@@ -1,0 +1,119 @@
+<section class="orders">
+  <header class="orders__header">
+    <div class="orders__titleWrap">
+      <div class="cheof-title">Mis pedidos</div>
+      <div class="orders__subtitle">
+        Revisa el estado, detalle, entrega y pago (transferencia).
+      </div>
+      <div class="cheof-accent-line orders__accent"></div>
+    </div>
+
+    <div class="orders__actions">
+      <p-button
+        label="Actualizar"
+        icon="pi pi-refresh"
+        styleClass="cheof-btn cheof-btn--outlined"
+        (onClick)="refresh()"
+      ></p-button>
+    </div>
+  </header>
+
+  @if (loading() && orders().length === 0) {
+    <div class="orders__grid">
+      @for (_ of skeletons; track $index) {
+        <p-card styleClass="oCard">
+          <div class="sk">
+            <p-skeleton width="55%" height="1.1rem"></p-skeleton>
+            <p-skeleton width="80%" height="0.9rem"></p-skeleton>
+            <p-skeleton width="100%" height="3.4rem"></p-skeleton>
+            <p-skeleton width="60%" height="2.2rem"></p-skeleton>
+          </div>
+        </p-card>
+      }
+    </div>
+  } @else {
+    @if (orders().length === 0) {
+      <p-card styleClass="oEmpty">
+        <div class="empty">
+          <div class="empty__icon">
+            <i class="pi pi-shopping-bag"></i>
+          </div>
+          <div class="empty__title">Aún no tienes pedidos</div>
+          <div class="empty__text">Cuando confirmes un pedido, aparecerá aquí.</div>
+        </div>
+      </p-card>
+    } @else {
+      <div class="orders__grid">
+        @for (o of orders(); track o.id) {
+          <p-card styleClass="oCard">
+            <div class="oTop">
+              <div class="oTop__left">
+                <div class="oNumber">Pedido {{ o.order_number }}</div>
+
+                <div class="oMeta">
+                  <span class="oMeta__date">{{ o.ordered_at | date:'dd/MM/yyyy HH:mm' }}</span>
+                  <span class="oMeta__dot">•</span>
+
+                  <span class="chip chip--soft">{{ deliveryLabel(o.delivery_type) }}</span>
+                  <span class="chip">{{ paymentLabel(o.payment_method) }}</span>
+                </div>
+              </div>
+
+              <p-tag
+                [value]="statusLabel(o.status)"
+                [severity]="statusSeverity(o.status)"
+                styleClass="oStatus"
+              ></p-tag>
+            </div>
+
+            <div class="oMid">
+              <div class="oTotal">
+                Total
+                <span class="oTotal__money">{{ o.total | currency:'USD':'symbol':'1.2-2' }}</span>
+              </div>
+
+              @if ((o.delivery_type ).toLowerCase() === 'delivery') {
+                <div class="oAddr">
+                  <i class="pi pi-map-marker"></i>
+                  <span class="oAddr__text">
+                    {{ o.delivery_location?.formatted_address ?? o.address ?? 'Dirección no registrada' }}
+                  </span>
+                </div>
+              }
+            </div>
+
+            <div class="oProgress" [attr.data-steps]="visibleStepsFor(o).length">
+              @for (s of visibleStepsFor(o); track s.key) {
+                <div class="oStep" [class.is-done]="stepDone(o.status, s.key)">
+                  <span class="oStep__dot"></span>
+                  <span class="oStep__label">{{ s.label }}</span>
+                </div>
+              }
+            </div>
+
+            <div class="oFooter">
+              <p-button
+                label="Ver detalle"
+                icon="pi pi-eye"
+                styleClass="cheof-btn cheof-btn--primary"
+                (onClick)="open(o)"
+              ></p-button>
+            </div>
+          </p-card>
+        }
+      </div>
+
+      @if (hasMore()) {
+        <div class="orders__more">
+          <p-button
+            [label]="loadingMore() ? 'Cargando...' : 'Cargar más'"
+            icon="pi pi-plus"
+            styleClass="cheof-btn cheof-btn--outlined"
+            [disabled]="loadingMore()"
+            (onClick)="loadMore()"
+          ></p-button>
+        </div>
+      }
+    }
+  }
+</section>

@@ -1,4 +1,3 @@
-<!-- src/app/shared/components/toolbar/toolbar.html -->
 <p-toolbar class="cheof-toolbar">
   <ng-template pTemplate="start">
     <div class="brand">
@@ -9,85 +8,114 @@
 
   <ng-template pTemplate="end">
     <div class="toolbar-actions">
-      <!-- WEB -->
-      <div class="cats-desktop">
-        <p-button
-          label="Pizzas sencillas"
-          icon="pi pi-star"
-          outlined="true"
-          (click)="goToSencillas()"
-          styleClass="cheof-theme-toggle cheof-btn-simple">
-        </p-button>
 
-        <p-button
-          label="Pizzas especiales"
-          icon="pi pi-bolt"
-          outlined="true"
-          (click)="goToEspeciales()"
-          styleClass="cheof-theme-toggle cheof-btn-special">
-        </p-button>
+      <!-- ✅ SOLO fuera de /operator/* -->
+      @if (!isOperatorView()) {
+        <!-- WEB: botones -->
+        <div class="cats-desktop">
+          <p-button
+            label="Pizzas sencillas"
+            icon="pi pi-star"
+            outlined="true"
+            (onClick)="goToSencillas()"
+            styleClass="cheof-theme-toggle cheof-btn-simple">
+          </p-button>
+
+          <p-button
+            label="Pizzas especiales"
+            icon="pi pi-bolt"
+            outlined="true"
+            (onClick)="goToEspeciales()"
+            styleClass="cheof-theme-toggle cheof-btn-special">
+          </p-button>
+        </div>
+
+        <!-- MOBILE: selector (siempre visible en móvil) -->
+        <div class="cats-mobile">
+          <p-selectButton
+            [options]="pizzaCategoryOptions"
+            [(ngModel)]="pizzaCategory"
+            (onChange)="onCategoryChange($event.value)"
+            optionLabel="label"
+            optionValue="value"
+            styleClass="cheof-cat-select">
+          </p-selectButton>
+        </div>
+      }
+
+      <!-- ✅ Accesos por rol -->
+      <div class="nav-shortcuts">
+        @if (isAuthenticated() && !isOperatorView()) {
+          <p-button
+            label="Mis pedidos"
+            icon="pi pi-box"
+            outlined="true"
+            styleClass="cheof-theme-toggle"
+            (onClick)="goToMyOrders()">
+          </p-button>
+        }
+
+        @if (isAuthenticated() && isOperatorOrAdmin()) {
+          <p-button
+            label="Operativo"
+            icon="pi pi-box"
+            outlined="true"
+            styleClass="cheof-theme-toggle"
+            (onClick)="goToOperator()">
+          </p-button>
+        }
       </div>
 
-      <!-- MÓVIL -->
-      <div class="cats-mobile">
-        <p-selectButton
-          [(ngModel)]="pizzaCategory"
-          [options]="pizzaCategoryOptions"
-          optionLabel="label"
-          optionValue="value"
-          styleClass="cheof-cat-select"
-          (onChange)="onCategoryChange($event.value)">
-          <ng-template pTemplate="item" let-opt>
-            <i [class]="opt.icon"></i>
-            <span class="opt-label">{{ opt.label }}</span>
-          </ng-template>
-        </p-selectButton>
-      </div>
-
-      <!-- Carrito -->
-<app-cart-popover></app-cart-popover>
-
-      <!-- Theme -->
+      <!-- Theme icon -->
       <p-button
         [icon]="themeIcon()"
         outlined="true"
-        styleClass="cheof-theme-toggle cheof-icon-btn"
+        styleClass="cheof-icon-btn cheof-theme-toggle"
         (onClick)="toggleTheme()">
       </p-button>
 
-      <!-- Login -->
+      <!-- Login / User -->
       @if (!isAuthenticated()) {
         <p-button
           label="Iniciar sesión"
           icon="pi pi-user"
           outlined="true"
-          (onClick)="loginDialog.open()"
-          styleClass="cheof-theme-toggle login-desktop">
+          styleClass="cheof-theme-toggle login-btn"
+          (onClick)="loginDialog.open()">
         </p-button>
       } @else {
+
         <p-button
           outlined="true"
-          styleClass="cheof-theme-toggle user-chip-btn"
-          (onClick)="logout()"
-          title="Cerrar sesión">
-          <ng-template pTemplate="content">
-            @if (photoUrl() && !avatarBroken()) {
-              <img
-                class="avatar"
-                [src]="photoUrl()!"
-                alt="Foto de perfil"
-                referrerpolicy="no-referrer"
-                (error)="onAvatarError()"
-              />
-            } @else {
-              <span class="avatar-fallback pi pi-user"></span>
-            }
-            <span class="name">{{ displayName() }}</span>
-          </ng-template>
+          styleClass="user-chip-btn cheof-theme-toggle">
+
+          @if (!avatarBroken() && photoUrl()) {
+            <img class="avatar" [src]="photoUrl()!" (error)="onAvatarError()" alt="avatar" />
+          } @else {
+            <div class="avatar-fallback">
+              {{ (displayName() || 'U').slice(0, 1).toUpperCase() }}
+            </div>
+          }
+
+          <span class="name">{{ displayName() }}</span>
+        </p-button>
+
+        <p-button
+          label="Salir"
+          icon="pi pi-sign-out"
+          outlined="true"
+          styleClass="cheof-theme-toggle"
+          (onClick)="logout()">
         </p-button>
       }
 
-      <app-google-login-dialog #loginDialog></app-google-login-dialog>
+      <!-- ✅ Carrito SOLO fuera de /operator -->
+      @if (!isOperatorView()) {
+        <app-cart-popover></app-cart-popover>
+      }
+
+      <!-- ✅ Dialog único -->
+      <app-google-login-dialog #loginDialog />
     </div>
   </ng-template>
 </p-toolbar>

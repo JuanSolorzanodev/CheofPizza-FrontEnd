@@ -11,14 +11,12 @@ export interface DeliveryLocationDto {
   reference?: string | null;
   formatted_address?: string | null;
 }
+
 export interface CheckoutRequestDto {
   delivery_type: DeliveryTypeCode;
   payment_method: PaymentMethodCode;
 
-  // ya no dependemos de address string
   delivery_location?: DeliveryLocationDto | null;
-
-  // lo dejamos opcional por compatibilidad (no lo usaremos como principal)
   address?: string | null;
 
   notes?: string | null;
@@ -36,19 +34,44 @@ export interface OrderItemDto {
   extras: any[];
 }
 
+export interface TransferAccountDto {
+  bank_name: string;
+  account_type: string;
+  account_number: string;
+  holder_name: string;
+  holder_id?: string | null;
+  qr_image_url?: string | null;
+  instructions?: string | null;
+}
+
+/** ✅ Historial desde backend (OrderResource: status_changes) */
+export interface OrderStatusChangeDto {
+  from?: string | null;
+  to: string;
+  changed_at: string; // ISO string
+  note?: string | null;
+}
+
 export interface OrderDto {
   id: number;
   order_number: string;
   ordered_at: string;
   total: number;
+
   delivery_type: string;
   address: string | null;
-
   delivery_location?: DeliveryLocationDto | null;
 
   payment_method: string;
   status: string;
-  whatsapp_receipt_url?: string | null;
-  items: OrderItemDto[];
-}
 
+  whatsapp_receipt_url?: string | null;
+
+  items: OrderItemDto[];
+
+  transfer_account?: TransferAccountDto | null;
+  payment_hint?: string | null;
+
+  /** ✅ nuevo */
+  status_changes?: OrderStatusChangeDto[];
+}

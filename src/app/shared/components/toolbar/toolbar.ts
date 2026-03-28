@@ -1,5 +1,7 @@
-// src/app/shared/components/toolbar/toolbar.ts
 import { Component, computed, effect, inject, signal } from '@angular/core';
+import { NavigationEnd, Router, RouterModule } from '@angular/router';
+import { filter } from 'rxjs';
+
 import { ToolbarModule } from 'primeng/toolbar';
 import { ButtonModule } from 'primeng/button';
 import { SelectButtonModule } from 'primeng/selectbutton';
@@ -10,13 +12,22 @@ import { AuthStore } from '../../../core/auth/auth.store';
 import { GoogleLoginDialogComponent } from '../google-login-dialog/google-login-dialog';
 import { ScrollService } from '../../ui/scroll.service';
 import { CartPopover } from '../cart-popover/cart-popover';
+import { ROLE_IDS } from '../../../core/auth/roles';
 
 type PizzaCategory = 'simple' | 'special';
 
 @Component({
   selector: 'app-toolbar',
   standalone: true,
-  imports: [ToolbarModule, ButtonModule, SelectButtonModule, FormsModule, GoogleLoginDialogComponent,CartPopover],
+  imports: [
+    ToolbarModule,
+    ButtonModule,
+    SelectButtonModule,
+    FormsModule,
+    RouterModule,
+    GoogleLoginDialogComponent,
+    CartPopover,
+  ],
   templateUrl: './toolbar.html',
   styleUrl: './toolbar.scss',
 })
@@ -24,9 +35,13 @@ export class Toolbar {
   private readonly scroll = inject(ScrollService);
   private readonly theme = inject(ThemeService);
   private readonly auth = inject(AuthStore);
+  private readonly router = inject(Router);
 
-  // Ajusta según tu toolbar real (sticky/fixed)
   private readonly headerOffset = 90;
+
+  // ✅ Detecta si estamos en /operator/*
+  private readonly currentUrl = signal<string>(this.router.url);
+  readonly isOperatorView = computed(() => this.currentUrl().startsWith('/operator'));
 
   readonly mode = this.theme.mode;
   readonly themeIcon = computed(() => (this.mode() === 'dark' ? 'pi pi-sun' : 'pi pi-moon'));
@@ -36,6 +51,16 @@ export class Toolbar {
   readonly photoUrl = this.auth.photoUrl;
 
   readonly avatarBroken = signal(false);
+
+  // Roles
+  readonly roleId = computed(() => this.auth.user()?.role_id ?? null);
+
+  readonly isOperatorOrAdmin = computed(() => {
+    const id = this.roleId();
+    return id === ROLE_IDS.operator || id === ROLE_IDS.admin;
+  });
+
+  readonly isCustomer = computed(() => this.roleId() === ROLE_IDS.customer);
 
   // Mobile select
   pizzaCategory: PizzaCategory = 'simple';
@@ -52,6 +77,11 @@ export class Toolbar {
       },
       { allowSignalWrites: true }
     );
+
+    // ✅ Track URL para isOperatorView()
+    this.router.events
+      .pipe(filter((e): e is NavigationEnd => e instanceof NavigationEnd))
+      .subscribe(e => this.currentUrl.set(e.urlAfterRedirects));
   }
 
   onAvatarError(): void {
@@ -60,8 +90,6 @@ export class Toolbar {
 
   onCategoryChange(value: PizzaCategory) {
     this.pizzaCategory = value;
-
-    // ✅ En móvil, también navega al cambiar
     if (value === 'simple') this.goToSencillas();
     else this.goToEspeciales();
   }
@@ -80,5 +108,13 @@ export class Toolbar {
 
   goToEspeciales(): void {
     this.scroll.scrollToId('menu-especiales', this.headerOffset);
+  }
+
+  goToMyOrders(): void {
+    this.router.navigate(['/my/orders']);
+  }
+
+  goToOperator(): void {
+    this.router.navigate(['/operator/orders']);
   }
 }

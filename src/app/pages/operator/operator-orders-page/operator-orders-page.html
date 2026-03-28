@@ -1,0 +1,168 @@
+<!-- src/app/pages/operator/operator-orders-page/operator-orders-page.html -->
+
+<div class="page">
+  <div class="page-head">
+    <div>
+      <h1>Operativo</h1>
+      <p class="sub">Gestión de pedidos (operator/admin)</p>
+    </div>
+  </div>
+
+  <!-- Cola / Conteos -->
+  <p-card class="queue-card">
+    <ng-template pTemplate="title">Cola por estado</ng-template>
+
+    @if (loadingQueue()) {
+      <div class="queue-skel">
+        <p-skeleton height="44px" styleClass="mb-2"></p-skeleton>
+        <p-skeleton height="44px" styleClass="mb-2"></p-skeleton>
+      </div>
+    } @else {
+      <div class="queue-grid">
+        @for (kv of (queue() | keyvalue); track kv.key) {
+          <div class="queue-item">
+            <span class="label">{{ prettyStatus(kv.key) }}</span>
+            <span class="count">{{ kv.value }}</span>
+          </div>
+        }
+      </div>
+    }
+  </p-card>
+
+  <!-- Filtros -->
+  <p-card class="filters-card">
+    <ng-template pTemplate="title">Filtros</ng-template>
+
+    <div class="filters-row">
+      <span class="p-input-icon-left search">
+        <i class="pi pi-search"></i>
+        <input
+          pInputText
+          type="text"
+          placeholder="Buscar por #orden o dirección"
+          [ngModel]="q()"
+          (ngModelChange)="onSearchTyping($event)"
+        />
+      </span>
+
+      <!-- ✅ PrimeNG 21 Select -->
+      <p-select
+        class="filter"
+        [options]="statusOptions()"
+        optionLabel="label"
+        optionValue="value"
+        placeholder="Estado"
+        [showClear]="true"
+        [ngModel]="status() ?? ''"
+        (ngModelChange)="status.set($event || null); onFilterChange()"
+      ></p-select>
+
+      <p-select
+        class="filter"
+        [options]="deliveryTypeOptions"
+        optionLabel="label"
+        optionValue="value"
+        placeholder="Tipo"
+        [showClear]="true"
+        [ngModel]="deliveryType() ?? ''"
+        (ngModelChange)="deliveryType.set($event || null); onFilterChange()"
+      ></p-select>
+
+      <p-select
+        class="filter"
+        [options]="paymentMethodOptions"
+        optionLabel="label"
+        optionValue="value"
+        placeholder="Pago"
+        [showClear]="true"
+        [ngModel]="paymentMethod() ?? ''"
+        (ngModelChange)="paymentMethod.set($event || null); onFilterChange()"
+      ></p-select>
+
+      <p-button
+        label="Limpiar"
+        icon="pi pi-times"
+        severity="secondary"
+        (onClick)="clearFilters()"
+      ></p-button>
+    </div>
+  </p-card>
+
+  <!-- Lista -->
+  <p-card class="list-card">
+    <ng-template pTemplate="title">Pedidos</ng-template>
+
+    @if (loading()) {
+      <p-skeleton height="110px" styleClass="mb-3"></p-skeleton>
+      <p-skeleton height="110px" styleClass="mb-3"></p-skeleton>
+    } @else {
+      @if (orders().length === 0) {
+        <div class="empty">
+          <i class="pi pi-inbox"></i>
+          <span>No hay pedidos con esos filtros.</span>
+        </div>
+      } @else {
+        <div class="grid">
+          @for (o of orders(); track o.id) {
+            <p-card class="order-card">
+              <ng-template pTemplate="title">
+                <div class="card-title">
+                  <span class="num">#{{ o.order_number }}</span>
+                  <p-tag
+                    [value]="prettyStatus(o.status)"
+                    [severity]="statusSeverity(o.status)"
+                  ></p-tag>
+                </div>
+              </ng-template>
+
+              <div class="meta">
+                <div class="row">
+                  <span class="chip">{{ prettyDeliveryType(o.delivery_type) }}</span>
+                  <span class="chip">{{ prettyPaymentMethod(o.payment_method) }}</span>
+                  <span class="chip">{{ formatDate(o.ordered_at) }}</span>
+                </div>
+
+                <div class="row">
+                  <span class="label">Cliente</span>
+                  <span class="value">{{ o.customer?.name ?? '-' }}</span>
+                </div>
+
+                <div class="row">
+                  <span class="label">Tel</span>
+                  <span class="value">{{ o.customer?.phone ?? '-' }}</span>
+                </div>
+
+                @if (o.kitchen_summary) {
+                  <div class="kitchen">
+                    <div class="k-title">🍕 Preparar</div>
+                    <div class="k-body">{{ o.kitchen_summary }}</div>
+                  </div>
+                }
+              </div>
+
+              <ng-template pTemplate="footer">
+                <div class="actions">
+                  <a
+                    class="p-button p-button-outlined"
+                    [routerLink]="['/operator/orders', o.id]"
+                  >
+                    <i class="pi pi-eye"></i>
+                    <span>Detalle</span>
+                  </a>
+                </div>
+              </ng-template>
+            </p-card>
+          }
+        </div>
+
+        <p-paginator
+          [rows]="perPage()"
+          [totalRecords]="total()"
+          [first]="(page() - 1) * perPage()"
+          [rowsPerPageOptions]="[10, 15, 25, 50]"
+          (onPageChange)="onPageChange($event)"
+        ></p-paginator>
+      }
+    }
+  </p-card>
+</div>

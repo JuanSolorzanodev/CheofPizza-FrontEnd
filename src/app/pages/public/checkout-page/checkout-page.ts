@@ -22,7 +22,6 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { TagModule } from 'primeng/tag';
 
 import { CheckoutApiService } from '../../../core/api/orders/checkout-api.service';
-import { CheckoutConfigApiService, CheckoutConfigResponse } from '../../../core/api/orders/checkout-config-api.service';
 import { AuthStore } from '../../../core/auth/auth.store';
 import { CartStore } from '../../../core/api/cart/cart.store';
 import { GoogleLoginDialogComponent } from '../../../shared/components/google-login-dialog/google-login-dialog';
@@ -31,14 +30,12 @@ import {
   CheckoutRequestDto,
   DeliveryLocationDto,
   DeliveryTypeCode,
-  OrderDto,
   PaymentMethodCode,
 } from '../../../core/api/orders/checkout.models';
 
 import { LocationPicker } from '../../../shared/components/location-picker/location-picker';
 
 type StepId = 0 | 1 | 2;
-type TagSeverity = 'success' | 'secondary' | 'info' | 'warn' | 'danger' | 'contrast';
 
 @Component({
   standalone: true,
@@ -67,7 +64,6 @@ export class CheckoutPage {
   readonly cart = inject(CartStore);
   readonly auth = inject(AuthStore);
   private readonly api = inject(CheckoutApiService);
-  private readonly configApi = inject(CheckoutConfigApiService);
   private readonly msg = inject(MessageService);
   private readonly fb = inject(FormBuilder);
   private readonly router = inject(Router);
@@ -76,14 +72,8 @@ export class CheckoutPage {
 
   readonly activeStep = signal<StepId>(0);
   readonly placing = signal(false);
-  readonly order = signal<OrderDto | null>(null);
-
-  readonly configLoading = signal(false);
-  readonly checkoutConfig = signal<CheckoutConfigResponse['data'] | null>(null);
-  readonly transferAccount = computed(() => this.checkoutConfig()?.transfer ?? null);
 
   readonly hasItems = computed(() => this.cart.items().length > 0);
-
   readonly showManualAddress = signal(false);
 
   readonly form = this.fb.group({
@@ -116,7 +106,7 @@ export class CheckoutPage {
   readonly isOptionalAddressOk = computed(() => {
     if (!this.isDelivery()) return true;
     const raw = (this.addressText() ?? '').trim();
-    if (!raw.length) return true;
+    if (!raw.length) return true; // opcional
     return raw.length >= 10 && raw.length <= 255;
   });
 
@@ -136,29 +126,19 @@ export class CheckoutPage {
     return 'Tarjeta';
   });
 
-  private readonly statusSeverityMap: Record<string, TagSeverity> = {
-    pending: 'warn',
-    preparing: 'info',
-    ready: 'success',
-    delivered: 'success',
-    cancelled: 'danger',
-  };
-
-  readonly orderStatusSeverity = computed<TagSeverity>(() => {
-    const status = (this.order()?.status ?? '').toString().trim().toLowerCase();
-    return this.statusSeverityMap[status] ?? 'secondary';
-  });
-
   readonly canProceed = computed(() => {
     const step = this.activeStep();
 
+    // Step 0: entrega
     if (step === 0) return this.isLocationOk() && this.isOptionalAddressOk();
 
+    // Step 1: pago (por ahora solo transfer/cash)
     if (step === 1) {
       const pm = this.paymentMethod();
       return !!pm && pm !== 'card';
     }
 
+    // Step 2: revisión
     if (step === 2) return this.hasItems() && this.form.valid && this.auth.isAuthenticated();
 
     return false;
@@ -175,8 +155,8 @@ export class CheckoutPage {
 
   constructor() {
     this.cart.hydrate();
-    this.loadCheckoutConfig();
 
+    // Si cambia a pickup, limpiamos delivery inputs
     effect(() => {
       if (!this.isDelivery()) {
         this.form.controls.delivery_location.setValue(null, { emitEvent: false });
@@ -186,25 +166,8 @@ export class CheckoutPage {
     });
   }
 
-  private loadCheckoutConfig(): void {
-    this.configLoading.set(true);
-    this.configApi
-      .getConfig()
-      .pipe(finalize(() => this.configLoading.set(false)))
-      .subscribe({
-        next: (res) => this.checkoutConfig.set(res.data),
-        error: () => this.checkoutConfig.set(null),
-      });
-  }
-
   openLogin(): void {
     this.loginDialog?.open();
-  }
-
-  openWhatsApp(): void {
-    const url = this.order()?.whatsapp_receipt_url;
-    if (!url) return;
-    window.open(url, '_blank', 'noopener,noreferrer');
   }
 
   goTo(step: StepId): void {
@@ -226,35 +189,8 @@ export class CheckoutPage {
     }
   }
 
-  /** ✅ Limpia el estado visual del checkout (sin storage) */
-  private resetCheckout(): void {
-    this.order.set(null);
-    this.activeStep.set(0);
-    this.showManualAddress.set(false);
-
-    // resetea el form a valores por defecto
-    this.form.reset({
-      delivery_type: 'pickup',
-      address: '',
-      delivery_location: null,
-      payment_method: null,
-      notes: '',
-    });
-
-    // opcional: por si el usuario estaba en delivery, vuelves a modo pickup limpio
-    this.form.controls.delivery_type.setValue('pickup', { emitEvent: true });
-  }
-
-  /** ✅ Para cuando el cliente quiere seguir comprando */
   continueShopping(): void {
-    this.resetCheckout();
-    this.router.navigate(['/']); // menú
-  }
-
-  /** ✅ Si quieres permitir hacer otro pedido SIN salir de checkout */
-  newOrder(): void {
-    this.resetCheckout();
-    // te quedas en /checkout
+    this.router.navigate(['/']);
   }
 
   confirm(): void {
@@ -283,6 +219,7 @@ export class CheckoutPage {
       return;
     }
 
+    // Validaciones específicas para delivery
     if (v.delivery_type === 'delivery') {
       if (!this.isLocationOk()) {
         this.msg.add({ severity: 'warn', summary: 'Ubicación', detail: 'Selecciona tu ubicación (pin) en el mapa.' });
@@ -301,10 +238,12 @@ export class CheckoutPage {
     }
 
     const trimmedAddress = (v.address ?? '').trim();
+
     const payload: CheckoutRequestDto = {
       delivery_type: v.delivery_type,
       payment_method: v.payment_method,
       notes: (v.notes ?? '').trim() ? (v.notes ?? '').trim() : null,
+
       delivery_location: v.delivery_type === 'delivery' ? v.delivery_location : null,
       address: v.delivery_type === 'delivery' ? (trimmedAddress ? trimmedAddress : null) : null,
     };
@@ -316,11 +255,13 @@ export class CheckoutPage {
       .pipe(finalize(() => this.placing.set(false)))
       .subscribe({
         next: (res) => {
-          this.order.set(res.data);
-          this.msg.add({ severity: 'success', summary: 'Pedido confirmado', detail: `Orden ${res.data.order_number}` });
+          this.msg.add({ severity: 'success', summary: 'Pedido creado', detail: `Orden ${res.data.order_number}` });
 
-          // ✅ Muy importante: actualizar carrito (normalmente queda vacío o nuevo estado)
+          // ✅ Actualiza carrito (normalmente queda vacío / nuevo)
           this.cart.hydrate();
+
+          // ✅ Flujo PRO: ir a Mis pedidos / detalle (transferencia/WhatsApp allí)
+          this.router.navigate(['/my/orders', res.data.id]);
         },
         error: (err) => {
           const detail =

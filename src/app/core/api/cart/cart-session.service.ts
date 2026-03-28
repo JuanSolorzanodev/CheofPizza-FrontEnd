@@ -1,19 +1,22 @@
-// src/app/core/state/cart/cart-session.service.ts
 import { Injectable } from '@angular/core';
+import { SafeStorageService } from '../../state/safe-storage.service';
 
 @Injectable({ providedIn: 'root' })
 export class CartSessionService {
   private readonly key = 'cheof_cart_session';
 
+  constructor(private readonly storage: SafeStorageService) {}
+
   get(): string | null {
-    return localStorage.getItem(this.key);
+    return this.storage.getItem(this.key);
   }
 
   set(id: string): void {
-    localStorage.setItem(this.key, id);
+    if (!id) return;
+    this.storage.setItem(this.key, id);
   }
 
   clear(): void {
-    localStorage.removeItem(this.key);
+    this.storage.removeItem(this.key);
   }
 }

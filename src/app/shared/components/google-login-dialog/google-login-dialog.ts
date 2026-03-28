@@ -2,6 +2,7 @@ import { Component, ChangeDetectionStrategy, ChangeDetectorRef, inject } from '@
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormControl, Validators } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
+import { Router } from '@angular/router';
 
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
@@ -12,6 +13,7 @@ import { AuthApiService } from '../../../core/auth/auth-api.service';
 import { AuthStore } from '../../../core/auth/auth.store';
 import { ApiErrorResponse, GoogleLoginResponse } from '../../../core/auth/auth.models';
 import { CartStore } from '../../../core/api/cart/cart.store';
+import { ROLE_IDS } from '../../../core/auth/roles';
 
 @Component({
   selector: 'app-google-login-dialog',
@@ -27,6 +29,7 @@ export class GoogleLoginDialogComponent {
   private readonly auth = inject(AuthStore);
   private readonly cdr = inject(ChangeDetectorRef);
   private readonly cart = inject(CartStore);
+  private readonly router = inject(Router);
 
   visible = false;
   loading = false;
@@ -69,7 +72,17 @@ export class GoogleLoginDialogComponent {
           // ✅ “inyectamos” la foto para UI (sin tocar backend)
           const userWithPhoto = { ...res.user, photo_url: this.pendingPhotoUrl };
           this.auth.setSession(res.token, userWithPhoto);
+
+          // ✅ hidrata carrito solo si es cliente
           queueMicrotask(() => this.cart.hydrate());
+
+          // ✅ REDIRECCIÓN POR ROL
+          const roleId = userWithPhoto.role_id ?? null;
+          if (roleId === ROLE_IDS.operator || roleId === ROLE_IDS.admin) {
+            this.router.navigateByUrl('/operator/orders');
+          } else {
+            this.router.navigateByUrl('/');
+          }
 
           this.loading = false;
           this.close();
@@ -126,6 +139,14 @@ export class GoogleLoginDialogComponent {
       next: (res: GoogleLoginResponse) => {
         const userWithPhoto = { ...res.user, photo_url: this.pendingPhotoUrl };
         this.auth.setSession(res.token, userWithPhoto);
+
+        // ✅ REDIRECCIÓN POR ROL (también cuando completa teléfono)
+        const roleId = userWithPhoto.role_id ?? null;
+        if (roleId === ROLE_IDS.operator || roleId === ROLE_IDS.admin) {
+          this.router.navigateByUrl('/operator/orders');
+        } else {
+          this.router.navigateByUrl('/');
+        }
 
         this.loading = false;
         this.close();

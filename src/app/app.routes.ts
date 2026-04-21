@@ -12,6 +12,11 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/public/pizza-builder/pizza-builder').then(m => m.PizzaBuilder),
   },
   {
+    path: 'promociones/:slug',
+    loadComponent: () =>
+      import('./pages/public/promotion-detail-page/promotion-detail-page').then(m => m.PromotionDetailPage),
+  },
+  {
     path: 'checkout',
     loadComponent: () => import('./pages/public/checkout-page/checkout-page').then(m => m.CheckoutPage),
   },
@@ -19,7 +24,7 @@ export const routes: Routes = [
   // CUSTOMER
   {
     path: 'my/orders',
-    canActivate: [authGuard, roleGuard(['customer', 'admin', 'operator'])], // si quieres estricto solo customer -> ['customer']
+    canActivate: [authGuard, roleGuard(['customer', 'admin', 'operator'])],
     loadComponent: () => import('./pages/customer/my-orders-page/my-orders-page').then(m => m.MyOrdersPage),
   },
   {

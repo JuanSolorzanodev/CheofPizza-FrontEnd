@@ -1,8 +1,12 @@
-// src/app/core/api/cart/cart-api.service.ts
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
-import { ApiResponse, CartDto, CartAddPizzaRequestDto } from './cart.models';
+import {
+  ApiResponse,
+  CartDto,
+  CartAddPizzaRequestDto,
+  CartAddPromotionRequestDto,
+} from './cart.models';
 
 @Injectable({ providedIn: 'root' })
 export class CartApiService {
@@ -17,6 +21,10 @@ export class CartApiService {
 
   addPizza(payload: CartAddPizzaRequestDto) {
     return this.http.post<ApiResponse<CartDto>>(`${this.base}/items/pizza`, payload, { observe: 'response' });
+  }
+
+  addPromotion(payload: CartAddPromotionRequestDto) {
+    return this.http.post<ApiResponse<CartDto>>(`${this.base}/items/promotion`, payload, { observe: 'response' });
   }
 
   updateQuantity(itemId: number, quantity: number) {

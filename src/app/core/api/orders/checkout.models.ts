@@ -22,9 +22,24 @@ export interface CheckoutRequestDto {
   notes?: string | null;
 }
 
+export interface OrderSelectedPizzaDto {
+  id: number;
+  name: string;
+}
+
+export interface OrderPromotionDto {
+  id: number;
+  name: string;
+}
+
 export interface OrderItemDto {
   id: number;
+  item_type: 'pizza' | 'promotion';
   is_half_and_half: boolean;
+
+  promotion?: OrderPromotionDto | null;
+  selected_pizzas?: OrderSelectedPizzaDto[];
+
   pizza: { id: number; name: string; category: string } | null;
   pizza_second: { id: number; name: string; category: string } | null;
   size: { id: number; name: string } | null;
@@ -44,11 +59,10 @@ export interface TransferAccountDto {
   instructions?: string | null;
 }
 
-/** ✅ Historial desde backend (OrderResource: status_changes) */
 export interface OrderStatusChangeDto {
   from?: string | null;
   to: string;
-  changed_at: string; // ISO string
+  changed_at: string;
   note?: string | null;
 }
 
@@ -71,7 +85,5 @@ export interface OrderDto {
 
   transfer_account?: TransferAccountDto | null;
   payment_hint?: string | null;
-
-  /** ✅ nuevo */
   status_changes?: OrderStatusChangeDto[];
 }

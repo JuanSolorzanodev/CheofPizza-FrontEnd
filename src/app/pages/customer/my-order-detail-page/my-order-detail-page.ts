@@ -251,6 +251,14 @@ export class MyOrderDetailPage {
   }
 
   itemName(item: OrderItemDto): string {
+    if (item.item_type === 'promotion') {
+      const selected = (item.selected_pizzas ?? []).map(p => p.name).join(' + ');
+      if (selected) {
+        return `${item.promotion?.name ?? 'Promoción'} (${selected})`;
+      }
+      return item.promotion?.name ?? 'Promoción';
+    }
+
     if (!item.is_half_and_half) {
       return item.pizza?.name ?? 'Pizza';
     }

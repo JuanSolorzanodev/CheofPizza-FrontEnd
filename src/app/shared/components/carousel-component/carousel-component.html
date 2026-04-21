@@ -4,18 +4,37 @@
     [numVisible]="1"
     [numScroll]="1"
     [circular]="true"
-    [autoplayInterval]="4000"
+    [autoplayInterval]="4500"
     [showIndicators]="true"
     [showNavigators]="true"
   >
     <ng-template pTemplate="item" let-banner>
-      <div class="banner-wrap">
-        <img
-          [src]="banner.imageUrl"
-          [alt]="banner.alt ?? 'Banner'"
-          class="banner-img"
-        />
-      </div>
+      <button
+        type="button"
+        class="banner-button"
+        (click)="goToPromotion(banner.promotionSlug)"
+        [attr.aria-label]="'Ir a la promoción ' + banner.title"
+      >
+        <div class="banner-wrap">
+          <img
+            [src]="banner.imageUrl"
+            [alt]="banner.alt"
+            class="banner-img"
+          />
+
+          <div class="banner-overlay">
+            <div class="banner-copy">
+              <div class="banner-title">{{ banner.title }}</div>
+              <div class="banner-subtitle">{{ banner.subtitle }}</div>
+
+              <span class="banner-cta">
+                Ver promoción
+                <i class="pi pi-arrow-right"></i>
+              </span>
+            </div>
+          </div>
+        </div>
+      </button>
     </ng-template>
   </p-carousel>
 </div>

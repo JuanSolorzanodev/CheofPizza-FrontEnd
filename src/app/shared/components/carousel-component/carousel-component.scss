@@ -1,68 +1,80 @@
 .hero-carousel {
   width: 100%;
-  padding: 0 16px;        /* margen lateral en mobile */
-  box-sizing: border-box;
+  margin: 0 auto 2rem;
 }
 
-/* Contenedor del banner */
-.banner-wrap {
+.banner-button {
   width: 100%;
-  border-radius: 12px;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+}
+
+.banner-wrap {
+  position: relative;
+  width: 100%;
   overflow: hidden;
-
-  /* Fondo por si usas object-fit: contain */
-  background : var(--p-surface-0) ;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  /* ALTURA RESPONSIVE (reemplaza el height fijo de 500px) */
-  height: clamp(200px, 32vw, 500px);
-  /* - mínimo: 200px (móvil)
-     - ideal: 32vw (se adapta al ancho)
-     - máximo: 500px (desktop) */
+  border-radius: 22px;
 }
 
 .banner-img {
   width: 100%;
-  height: 100%;
-  border-radius: 12px;
+  height: min(62vw, 460px);
+  object-fit: cover;
   display: block;
-
-  /* Escoge 1 según tu objetivo: */
-//object-fit: fill; /* imagen completa (sin recorte) */
-  /* object-fit: cover;  // full-bleed (con recorte) */
 }
 
-/* Opcional: reducir padding en pantallas muy pequeñas */
-@media (max-width: 480px) {
-  .hero-carousel {
-    padding: 0 10px;
-  }
-
-  .banner-wrap {
-    height: 220px; /* un poco más “hero” sin exagerar */
-  }
+.banner-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.08) 15%,
+    rgba(0, 0, 0, 0.55) 100%
+  );
 }
 
-/* Tablet */
-@media (min-width: 768px) {
-  .hero-carousel {
-    padding: 0 24px;
-  }
-
-  .banner-wrap {
-    height: 420px;
-  }
+.banner-copy {
+  padding: 1.5rem;
+  color: #fff;
+  display: grid;
+  gap: .45rem;
 }
 
-/* Ajustes PrimeNG: asegurar que el carrusel use todo el ancho */
-:host ::ng-deep .p-carousel,
-:host ::ng-deep .p-carousel-content,
-:host ::ng-deep .p-carousel-container,
-:host ::ng-deep .p-carousel-items-content,
-:host ::ng-deep .p-carousel-items-container,
-:host ::ng-deep .p-carousel-item {
-  width: 100%;
+.banner-title {
+  font-size: clamp(1.4rem, 3vw, 2.4rem);
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+.banner-subtitle {
+  font-size: clamp(.95rem, 1.6vw, 1.1rem);
+  opacity: .96;
+}
+
+.banner-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: .55rem;
+  width: fit-content;
+  margin-top: .45rem;
+  padding: .65rem 1rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .16);
+  backdrop-filter: blur(6px);
+  font-weight: 700;
+}
+
+@media (max-width: 768px) {
+  .banner-img {
+    height: 250px;
+  }
+
+  .banner-copy {
+    padding: 1rem;
+  }
 }

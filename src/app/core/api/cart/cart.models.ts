@@ -2,14 +2,39 @@ import type { AppliesTo, BuilderQuoteRequestDto } from '../builder/builder.model
 
 export type CartAddPizzaRequestDto = BuilderQuoteRequestDto;
 
+export interface CartAddPromotionRequestDto {
+  promotion_id: number;
+  quantity?: number;
+  selected_pizza_ids: number[];
+}
+
 export interface ApiResponse<T> {
   data: T;
 }
 
+export interface CartSelectedPizzaDto {
+  id: number;
+  name: string;
+  image_url: string | null;
+  category?: string | null;
+}
+
+export interface CartPromotionDto {
+  id: number;
+  slug: string;
+  name: string;
+  description: string | null;
+  banner_image_url: string | null;
+  price: number;
+}
+
 export interface CartItemDto {
   id: number;
-  item_type: 'pizza';
+  item_type: 'pizza' | 'promotion';
   is_half_and_half: boolean;
+
+  promotion?: CartPromotionDto | null;
+  selected_pizzas?: CartSelectedPizzaDto[];
 
   pizza?: { id: number; name: string; image_url: string | null; category?: string | null };
   pizza_second?: { id: number; name: string; image_url: string | null; category?: string | null } | null;

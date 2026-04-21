@@ -24,12 +24,10 @@
     <div class="empty-ux">
       <div class="empty-ux__icon"><i class="pi pi-shopping-cart"></i></div>
       <div class="empty-ux__title">Tu carrito está vacío</div>
-      <div class="empty-ux__subtitle">Agrega una pizza para continuar.</div>
+      <div class="empty-ux__subtitle">Agrega una pizza o promoción para continuar.</div>
     </div>
   } @else {
     <section class="cart-ux">
-
-      <!-- Header -->
       <header class="cart-ux__head">
         <div class="head">
           <div class="head__left">
@@ -57,10 +55,7 @@
         </div>
       </header>
 
-      <!-- ✅ Rail (mismo ancho para items + footer) -->
       <div class="cart-rail">
-
-        <!-- ✅ Scroll SOLO aquí -->
         <div class="cart-scroll">
           <div class="cart-list">
             @for (it of cart.items(); track it.id) {
@@ -68,16 +63,21 @@
 
                 <img
                   class="item-ux__img"
-                  [src]="it.pizza?.image_url || it.pizza_second?.image_url"
-                  alt="Pizza"
+                  [src]="
+                    it.item_type === 'promotion'
+                      ? (it.promotion?.banner_image_url || it.selected_pizzas?.[0]?.image_url)
+                      : (it.pizza?.image_url || it.pizza_second?.image_url)
+                  "
+                  alt="Producto"
                   loading="lazy"
                 />
 
                 <div class="item-ux__content">
-
                   <div class="item-ux__top">
                     <div class="item-ux__name">
-                      @if (it.is_half_and_half) {
+                      @if (it.item_type === 'promotion') {
+                        {{ it.promotion?.name }}
+                      } @else if (it.is_half_and_half) {
                         {{ it.pizza?.name }} + {{ it.pizza_second?.name }}
                       } @else {
                         {{ it.pizza?.name }}
@@ -95,17 +95,36 @@
                     </button>
                   </div>
 
-                  <div class="item-ux__chips">
-                    @if (it.size?.name) {
-                      <span class="chip">Tamaño: {{ it.size?.name }}</span>
+                  @if (it.item_type === 'promotion') {
+                    <div class="item-ux__chips">
+                      @if (it.size?.name) {
+                        <span class="chip">Tamaño: {{ it.size?.name }}</span>
+                      }
+                      <span class="chip chip--soft">Promoción</span>
+                    </div>
+
+                    @if ((it.selected_pizzas?.length ?? 0) > 0) {
+                      <div class="item-ux__promo-list">
+                        @for (pizza of it.selected_pizzas ?? []; track pizza.id) {
+                          <div class="item-ux__promo-line">
+                            • {{ pizza.name }} <span class="muted">({{ pizza.category }})</span>
+                          </div>
+                        }
+                      </div>
                     }
-                    @if ((it.extras?.length ?? 0) > 0) {
-                      <span class="chip chip--soft">Extras: {{ it.extras?.length ?? 0 }}</span>
-                    }
-                    @if (it.is_half_and_half) {
-                      <span class="chip chip--soft">Mitad y mitad</span>
-                    }
-                  </div>
+                  } @else {
+                    <div class="item-ux__chips">
+                      @if (it.size?.name) {
+                        <span class="chip">Tamaño: {{ it.size?.name }}</span>
+                      }
+                      @if ((it.extras?.length ?? 0) > 0) {
+                        <span class="chip chip--soft">Extras: {{ it.extras?.length ?? 0 }}</span>
+                      }
+                      @if (it.is_half_and_half) {
+                        <span class="chip chip--soft">Mitad y mitad</span>
+                      }
+                    </div>
+                  }
 
                   <div class="item-ux__bottom">
                     <div class="item-ux__prices">
@@ -142,14 +161,12 @@
                       </button>
                     </div>
                   </div>
-
                 </div>
               </article>
             }
           </div>
         </div>
 
-        <!-- ✅ Footer sticky (UX pro) -->
         <footer class="cart-foot">
           <div class="card card--pad foot-card">
             <div class="foot-card__top">
@@ -171,7 +188,6 @@
             ></p-button>
           </div>
         </footer>
-
       </div>
     </section>
   }

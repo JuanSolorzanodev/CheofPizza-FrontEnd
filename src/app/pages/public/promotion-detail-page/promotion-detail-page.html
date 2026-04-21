@@ -1,0 +1,157 @@
+<section class="promo-page">
+  @if (loading()) {
+    <div class="promo-shell promo-shell--loading">
+      <div>
+        <p-skeleton width="100%" height="360px" borderRadius="20px"></p-skeleton>
+      </div>
+      <div class="promo-side">
+        <p-skeleton width="70%" height="2rem"></p-skeleton>
+        <p-skeleton width="40%" height="1.4rem"></p-skeleton>
+        <p-skeleton width="100%" height="9rem" borderRadius="16px"></p-skeleton>
+        <p-skeleton width="100%" height="16rem" borderRadius="16px"></p-skeleton>
+      </div>
+    </div>
+  } @else if (error()) {
+    <div class="promo-error">
+      <h2>No se pudo cargar la promoción</h2>
+      <p>{{ error() }}</p>
+
+      <p-button
+        label="Volver al inicio"
+        icon="pi pi-arrow-left"
+        (onClick)="goHome()"
+      ></p-button>
+    </div>
+  } @else {
+    <div class="promo-shell">
+      <div class="promo-left">
+        <div class="promo-hero">
+          <img
+            [src]="promotion()?.banner_image_url || ''"
+            [alt]="promotion()?.name || 'Promoción'"
+            class="promo-hero__img"
+          />
+        </div>
+      </div>
+
+      <div class="promo-right">
+        <div class="promo-head">
+          <p-tag value="Promoción activa" severity="success"></p-tag>
+
+          <h1>{{ promotion()?.name }}</h1>
+
+          <p class="promo-description">
+            {{ promotion()?.description }}
+          </p>
+
+          <div class="promo-price">
+            {{ promotion()?.price | currency:'USD':'symbol':'1.2-2' }}
+          </div>
+
+          <div class="promo-meta">
+            <span class="promo-chip">Tamaño: {{ promotionSizeName() }}</span>
+            <span class="promo-chip">Incluye 1 Especial + 1 Sencilla</span>
+          </div>
+        </div>
+
+        <p-divider></p-divider>
+
+        <div class="promo-steps">
+          <article class="step-card">
+            <div class="step-card__number">1</div>
+            <div class="step-card__body">
+              <div class="step-card__title">Selecciona la pizza especial</div>
+              <p-select
+                [options]="especialOptions()"
+                optionLabel="label"
+                optionValue="value"
+                [ngModel]="selectedEspecialId()"
+                (ngModelChange)="selectedEspecialId.set($event)"
+                placeholder="Elige una pizza especial"
+                styleClass="w-full"
+              ></p-select>
+
+              @if (selectedEspecial()) {
+                <div class="picked picked--ok">
+                  Elegida: <strong>{{ selectedEspecial()?.name }}</strong>
+                </div>
+              }
+            </div>
+          </article>
+
+          <article class="step-card">
+            <div class="step-card__number">2</div>
+            <div class="step-card__body">
+              <div class="step-card__title">Selecciona la pizza sencilla</div>
+              <p-select
+                [options]="sencillaOptions()"
+                optionLabel="label"
+                optionValue="value"
+                [ngModel]="selectedSencillaId()"
+                (ngModelChange)="selectedSencillaId.set($event)"
+                placeholder="Elige una pizza sencilla"
+                styleClass="w-full"
+              ></p-select>
+
+              @if (selectedSencilla()) {
+                <div class="picked picked--ok">
+                  Elegida: <strong>{{ selectedSencilla()?.name }}</strong>
+                </div>
+              }
+            </div>
+          </article>
+
+          <article class="step-card">
+            <div class="step-card__number">3</div>
+            <div class="step-card__body">
+              <div class="step-card__title">Cantidad</div>
+
+              <p-inputNumber
+                [ngModel]="quantity()"
+                (ngModelChange)="setQuantity($event)"
+                [min]="1"
+                [max]="10"
+                [showButtons]="true"
+                buttonLayout="horizontal"
+                incrementButtonIcon="pi pi-plus"
+                decrementButtonIcon="pi pi-minus"
+                inputId="promo-qty"
+                styleClass="qty-input"
+              ></p-inputNumber>
+            </div>
+          </article>
+        </div>
+
+        <div class="promo-summary">
+          <div class="promo-summary__row">
+            <span>Promoción</span>
+            <strong>{{ promotion()?.name }}</strong>
+          </div>
+
+          <div class="promo-summary__row">
+            <span>Total</span>
+            <strong>{{ (promotion()?.price ?? 0) * quantity() | currency:'USD':'symbol':'1.2-2' }}</strong>
+          </div>
+        </div>
+
+        <div class="promo-actions">
+          <p-button
+            label="Agregar al carrito"
+            icon="pi pi-shopping-cart"
+            [disabled]="!canSubmit()"
+            [loading]="submitting()"
+            (onClick)="addPromotionToCart()"
+          ></p-button>
+
+          <p-button
+            label="Ir al checkout"
+            icon="pi pi-credit-card"
+            severity="secondary"
+            [outlined]="true"
+            (onClick)="goCheckout()"
+          ></p-button>
+        </div>
+      </div>
+    </div>
+  }
+</section>

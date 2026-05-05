@@ -1,5 +1,5 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
-import { finalize } from 'rxjs';
+import { catchError, finalize, map, Observable, tap, throwError } from 'rxjs';
 
 import { CartSessionService } from './cart-session.service';
 import {
@@ -44,28 +44,38 @@ export class CartStore {
       });
   }
 
-  addPizza(payload: CartAddPizzaRequestDto): void {
+  addPizza(payload: CartAddPizzaRequestDto): Observable<CartDto | null> {
     this._loading.set(true);
-    this.api.addPizza(payload)
-      .pipe(finalize(() => this._loading.set(false)))
-      .subscribe({
-        next: (res) => {
-          this._cart.set(res.body?.data ?? null);
-          this.persistSessionFromResponse(res);
-        },
-      });
+
+    return this.api.addPizza(payload).pipe(
+      tap((res) => {
+        this._cart.set(res.body?.data ?? null);
+        this.persistSessionFromResponse(res);
+      }),
+      map((res) => res.body?.data ?? null),
+      finalize(() => this._loading.set(false)),
+      catchError((error) => {
+        this._loading.set(false);
+        return throwError(() => error);
+      })
+    );
   }
 
-  addPromotion(payload: CartAddPromotionRequestDto): void {
+  addPromotion(payload: CartAddPromotionRequestDto): Observable<CartDto | null> {
     this._loading.set(true);
-    this.api.addPromotion(payload)
-      .pipe(finalize(() => this._loading.set(false)))
-      .subscribe({
-        next: (res) => {
-          this._cart.set(res.body?.data ?? null);
-          this.persistSessionFromResponse(res);
-        },
-      });
+
+    return this.api.addPromotion(payload).pipe(
+      tap((res) => {
+        this._cart.set(res.body?.data ?? null);
+        this.persistSessionFromResponse(res);
+      }),
+      map((res) => res.body?.data ?? null),
+      finalize(() => this._loading.set(false)),
+      catchError((error) => {
+        this._loading.set(false);
+        return throwError(() => error);
+      })
+    );
   }
 
   setQuantity(itemId: number, quantity: number | null | undefined): void {

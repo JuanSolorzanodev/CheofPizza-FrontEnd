@@ -1,4 +1,11 @@
 export type AppliesTo = 'ALL' | 'A' | 'B';
+export type CustomAction = 'extra' | 'remove';
+
+export interface CustomizationDto {
+  action: CustomAction;
+  ingredient_id: number;
+  applies_to: AppliesTo;
+}
 
 export interface BuilderQuoteRequestDto {
   pizza_id: number;
@@ -6,10 +13,26 @@ export interface BuilderQuoteRequestDto {
   second_pizza_id?: number | null;
   size_id: number;
   quantity: number;
-  extras: Array<{
+
+  // nuevo contrato
+  customizations: CustomizationDto[];
+
+  // compatibilidad opcional
+  extras?: Array<{
     ingredient_id: number;
     applies_to: AppliesTo;
   }>;
+}
+
+export interface BuilderQuoteBreakdownDto {
+  action: CustomAction;
+  ingredient_id: number;
+  ingredient_name: string;
+  applies_to: AppliesTo;
+  size_id?: number;
+  unit_extra_price?: number;
+  multiplier?: number;
+  line_total: number;
 }
 
 export interface BuilderQuoteResponseDto {
@@ -27,15 +50,9 @@ export interface BuilderQuoteResponseDto {
   unit_price: number;
   total: number;
 
-  extras_breakdown: Array<{
-    ingredient_id: number;
-    ingredient_name: string;
-    applies_to: AppliesTo;
-    size_id: number;
-    unit_extra_price: number;
-    multiplier: number;
-    line_total: number;
-  }>;
+  extras_breakdown: BuilderQuoteBreakdownDto[];
+  removes_breakdown?: BuilderQuoteBreakdownDto[];
+  customizations_breakdown?: BuilderQuoteBreakdownDto[];
 }
 
 export interface ApiResponse<T> {

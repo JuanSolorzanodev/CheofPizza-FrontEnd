@@ -284,28 +284,35 @@ export class PizzaBuilder {
   // =========================
   // Quote Integration
   // =========================
-  private buildQuotePayload(): BuilderQuoteRequestDto | null {
-    const a = this.pizzaA();
-    const b = this.pizzaB();
-    const s = this.selectedSize();
-    const q = this.quantity();
+private buildQuotePayload(): BuilderQuoteRequestDto | null {
+  const a = this.pizzaA();
+  const b = this.pizzaB();
+  const s = this.selectedSize();
+  const q = this.quantity();
 
-    if (!a || !s) return null;
-    if (q < this.minQty || q > this.maxQty) return null;
-    if (this.isHalfAndHalf() && !b) return null;
+  if (!a || !s) return null;
+  if (q < this.minQty || q > this.maxQty) return null;
+  if (this.isHalfAndHalf() && !b) return null;
 
-    return {
-      pizza_id: a.id,
-      is_half_and_half: this.isHalfAndHalf(),
-      second_pizza_id: this.isHalfAndHalf() ? (b?.id ?? null) : null,
-      size_id: s.id,
-      quantity: q,
-      extras: Array.from(this.selectedExtras().entries()).map(([ingredientId, sel]) => ({
-        ingredient_id: ingredientId,
-        applies_to: sel.appliesTo,
-      })),
-    };
-  }
+  const extras = Array.from(this.selectedExtras().entries()).map(([ingredientId, sel]) => ({
+    ingredient_id: ingredientId,
+    applies_to: sel.appliesTo,
+  }));
+
+  return {
+    pizza_id: a.id,
+    is_half_and_half: this.isHalfAndHalf(),
+    second_pizza_id: this.isHalfAndHalf() ? (b?.id ?? null) : null,
+    size_id: s.id,
+    quantity: q,
+    customizations: extras.map(extra => ({
+      action: 'extra' as const,
+      ingredient_id: extra.ingredient_id,
+      applies_to: extra.applies_to,
+    })),
+    extras,
+  };
+}
 
   private setupQuoteAutoRecalc(): void {
     effect(() => {

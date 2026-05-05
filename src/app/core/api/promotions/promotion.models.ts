@@ -27,8 +27,11 @@ export interface PromotionDetailDto {
 export interface PromotionSelectionRulesDto {
   type: 'fixed_combo' | string;
   allows_extras: boolean;
+  allows_remove_ingredients?: boolean;
   allows_half_and_half: boolean;
   selection_count: number;
+  max_extras_per_pizza?: number;
+  allow_duplicate_ingredients_as_extra?: boolean;
 }
 
 export interface PromotionDto {

@@ -1,11 +1,27 @@
-import type { AppliesTo, BuilderQuoteRequestDto } from '../builder/builder.models';
+import type { AppliesTo, CustomAction, BuilderQuoteRequestDto } from '../builder/builder.models';
 
 export type CartAddPizzaRequestDto = BuilderQuoteRequestDto;
+
+export interface PromotionSelectedItemCustomizationDto {
+  action: CustomAction;
+  ingredient_id: number;
+  applies_to?: AppliesTo;
+}
+
+export interface PromotionSelectedItemDto {
+  pizza_id: number;
+  customizations: PromotionSelectedItemCustomizationDto[];
+}
 
 export interface CartAddPromotionRequestDto {
   promotion_id: number;
   quantity?: number;
-  selected_pizza_ids: number[];
+
+  // nuevo contrato
+  selected_items: PromotionSelectedItemDto[];
+
+  // compatibilidad opcional
+  selected_pizza_ids?: number[];
 }
 
 export interface ApiResponse<T> {

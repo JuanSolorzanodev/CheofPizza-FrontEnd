@@ -8,7 +8,7 @@ import {
   signal,
   effect,
 } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { finalize, Subscription } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
@@ -72,8 +72,10 @@ interface SelectedExtra {
 export class PizzaBuilder {
   private readonly api = inject(CatalogApiService);
   private readonly builderApi = inject(BuilderApiService);
+  private readonly cart = inject(CartStore);
 
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
   private readonly messages = inject(MessageService);
 
@@ -133,6 +135,11 @@ export class PizzaBuilder {
   readonly quoteError = signal<string | null>(null);
   readonly quote = signal<BuilderQuoteResponseDto | null>(null);
 
+  // =========================
+  // Cart submit state
+  // =========================
+  readonly cartSubmitting = signal(false);
+
   private quoteTimer: any = null;
   private quoteSub?: Subscription;
 
@@ -167,19 +174,14 @@ export class PizzaBuilder {
 
   readonly heroImage = computed(() => this.pizzaA()?.image_url || this.fallbackImage);
 
-  // ✅ El builder ahora toma precios del BACKEND si existe quote
   readonly basePrice = computed(() => this.quote()?.base_price ?? 0);
   readonly extrasPrice = computed(() => this.quote()?.extras_total ?? 0);
   readonly unitPrice = computed(() => this.quote()?.unit_price ?? 0);
   readonly total = computed(() => this.quote()?.total ?? 0);
-  private readonly cart = inject(CartStore);
 
   readonly extrasCount = computed(() => this.selectedExtras().size);
 
   readonly extrasAccordionValue = computed(() => (this.extrasAccordionOpen() ? 'extras' : null));
-  onExtrasAccordionChange(v: any): void {
-    this.extrasAccordionOpen.set(v === 'extras');
-  }
 
   readonly canCheckout = computed(() => {
     const a = this.pizzaA();
@@ -190,8 +192,12 @@ export class PizzaBuilder {
     if (q < this.minQty || q > this.maxQty) return false;
     if (this.isHalfAndHalf() && !this.pizzaB()) return false;
 
-    // además, idealmente: que haya cotización válida
-    return !!this.quote() && !this.quoteLoading() && !this.quoteError();
+    return (
+      !!this.quote() &&
+      !this.quoteLoading() &&
+      !this.quoteError() &&
+      !this.cartSubmitting()
+    );
   });
 
   readonly baseLocksHint = computed(() => 'Pasta/salsa de tomate y queso no se pueden quitar.');
@@ -214,6 +220,10 @@ export class PizzaBuilder {
   constructor() {
     this.load();
     this.setupQuoteAutoRecalc();
+  }
+
+  onExtrasAccordionChange(v: any): void {
+    this.extrasAccordionOpen.set(v === 'extras');
   }
 
   private load(): void {
@@ -264,6 +274,7 @@ export class PizzaBuilder {
 
           this.quote.set(null);
           this.quoteError.set(null);
+          this.cartSubmitting.set(false);
 
           this.loadExtras();
         },
@@ -284,39 +295,38 @@ export class PizzaBuilder {
   // =========================
   // Quote Integration
   // =========================
-private buildQuotePayload(): BuilderQuoteRequestDto | null {
-  const a = this.pizzaA();
-  const b = this.pizzaB();
-  const s = this.selectedSize();
-  const q = this.quantity();
+  private buildQuotePayload(): BuilderQuoteRequestDto | null {
+    const a = this.pizzaA();
+    const b = this.pizzaB();
+    const s = this.selectedSize();
+    const q = this.quantity();
 
-  if (!a || !s) return null;
-  if (q < this.minQty || q > this.maxQty) return null;
-  if (this.isHalfAndHalf() && !b) return null;
+    if (!a || !s) return null;
+    if (q < this.minQty || q > this.maxQty) return null;
+    if (this.isHalfAndHalf() && !b) return null;
 
-  const extras = Array.from(this.selectedExtras().entries()).map(([ingredientId, sel]) => ({
-    ingredient_id: ingredientId,
-    applies_to: sel.appliesTo,
-  }));
+    const extras = Array.from(this.selectedExtras().entries()).map(([ingredientId, sel]) => ({
+      ingredient_id: ingredientId,
+      applies_to: sel.appliesTo,
+    }));
 
-  return {
-    pizza_id: a.id,
-    is_half_and_half: this.isHalfAndHalf(),
-    second_pizza_id: this.isHalfAndHalf() ? (b?.id ?? null) : null,
-    size_id: s.id,
-    quantity: q,
-    customizations: extras.map(extra => ({
-      action: 'extra' as const,
-      ingredient_id: extra.ingredient_id,
-      applies_to: extra.applies_to,
-    })),
-    extras,
-  };
-}
+    return {
+      pizza_id: a.id,
+      is_half_and_half: this.isHalfAndHalf(),
+      second_pizza_id: this.isHalfAndHalf() ? (b?.id ?? null) : null,
+      size_id: s.id,
+      quantity: q,
+      customizations: extras.map(extra => ({
+        action: 'extra' as const,
+        ingredient_id: extra.ingredient_id,
+        applies_to: extra.applies_to,
+      })),
+      extras,
+    };
+  }
 
   private setupQuoteAutoRecalc(): void {
     effect(() => {
-      // dependencias reactivas
       this.pizzaA();
       this.pizzaB();
       this.isHalfAndHalf();
@@ -326,7 +336,6 @@ private buildQuotePayload(): BuilderQuoteRequestDto | null {
 
       const payload = this.buildQuotePayload();
 
-      // si no se puede cotizar aún, limpiamos quote
       if (!payload) {
         this.cancelQuoteInFlight();
         this.quote.set(null);
@@ -335,7 +344,6 @@ private buildQuotePayload(): BuilderQuoteRequestDto | null {
         return;
       }
 
-      // debounce + cancelación
       this.cancelQuoteTimer();
       this.quoteTimer = setTimeout(() => {
         this.cancelQuoteInFlight();
@@ -395,6 +403,7 @@ private buildQuotePayload(): BuilderQuoteRequestDto | null {
 
     const b = this.pizzaB();
     const baseB = b ? this.getBaseIngredientsFromPizza(b) : [];
+
     this.baseIngredientsB.set(baseB);
     this.originalIngredientsB.set([...baseB]);
   }
@@ -558,26 +567,55 @@ private buildQuotePayload(): BuilderQuoteRequestDto | null {
   // Actions
   // =========================
   addToCart(): void {
-/*     if (!this.canCheckout()) return;
-    console.log('ADD TO CART', this.buildPayload()); */
- if (!this.canCheckout()) return;
-
-  const payload = this.buildQuotePayload(); // o el método equivalente tuyo
-  if (!payload) return;
-
-  this.cart.addPizza(payload);
-
-  this.messages.add({
-    severity: 'success',
-    summary: 'Agregado',
-    detail: 'La pizza se agregó correctamente al carrito.',
-    life: 2000,
-  });
+    this.submitPizzaToCart({ goToCheckout: false });
   }
 
   buyNow(): void {
+    this.submitPizzaToCart({ goToCheckout: true });
+  }
+
+  private submitPizzaToCart(options: { goToCheckout: boolean }): void {
     if (!this.canCheckout()) return;
-    console.log('BUY NOW', this.buildPayload());
+    if (this.cartSubmitting()) return;
+
+    const payload = this.buildQuotePayload();
+    if (!payload) return;
+
+    this.cartSubmitting.set(true);
+
+    this.cart
+      .addPizza(payload)
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => this.cartSubmitting.set(false))
+      )
+      .subscribe({
+        next: () => {
+          this.messages.add({
+            severity: 'success',
+            summary: options.goToCheckout ? 'Continuemos con tu pedido' : 'Agregado',
+            detail: options.goToCheckout
+              ? 'Tu pizza se agregó correctamente. Te llevamos al checkout.'
+              : 'La pizza se agregó correctamente al carrito.',
+            life: 2200,
+          });
+
+          if (options.goToCheckout) {
+            this.router.navigate(['/checkout']);
+          }
+        },
+        error: (err) => {
+          this.messages.add({
+            severity: 'error',
+            summary: 'No se pudo agregar',
+            detail:
+              err?.error?.message ||
+              err?.message ||
+              'Ocurrió un error al agregar la pizza al carrito.',
+            life: 3000,
+          });
+        },
+      });
   }
 
   private buildPayload() {
@@ -604,7 +642,6 @@ private buildQuotePayload(): BuilderQuoteRequestDto | null {
         appliesTo: sel.appliesTo,
       })),
 
-      // ✅ Precios ya validados por backend
       basePrice: q?.base_price ?? 0,
       extrasTotal: q?.extras_total ?? 0,
       unitPrice: q?.unit_price ?? 0,

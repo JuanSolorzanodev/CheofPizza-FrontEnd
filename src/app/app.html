@@ -1,6 +1,12 @@
-<app-toolbar></app-toolbar>
-<p-toast position="top-right"></p-toast>
+@if (!isAdminRoute()) {
+  <app-toolbar />
+}
 
-<main class="app-shell">
-  <router-outlet></router-outlet>
+<p-toast position="top-right" />
+
+<main
+  class="app-shell"
+  [class.app-shell--admin]="isAdminRoute()"
+>
+  <router-outlet />
 </main>

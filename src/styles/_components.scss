@@ -1,0 +1,205 @@
+/* =========================================================
+   TARJETAS
+   ========================================================= */
+
+.cheof-card {
+  min-width: 0;
+
+  border:
+    1px solid
+    var(--cheof-card-border);
+
+  border-radius:
+    var(--cheof-radius-lg);
+
+  background:
+    var(--cheof-card-background);
+
+  color:
+    var(--p-text-color);
+
+  box-shadow:
+    var(--cheof-shadow-sm);
+}
+
+.cheof-card__body {
+  padding:
+    var(--cheof-space-5);
+}
+
+.cheof-card__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap:
+    var(--cheof-space-4);
+
+  margin-bottom:
+    var(--cheof-space-4);
+}
+
+.cheof-card__title {
+  margin: 0;
+
+  font-size: 1.2rem;
+  font-weight: 750;
+}
+
+.cheof-card__subtitle {
+  margin:
+    var(--cheof-space-1)
+    0
+    0;
+
+  color:
+    var(--p-text-muted-color);
+
+  font-size: 0.9rem;
+}
+
+/* =========================================================
+   SUPERFICIES
+   ========================================================= */
+
+.cheof-surface {
+  border:
+    1px solid
+    var(--cheof-card-border);
+
+  border-radius:
+    var(--cheof-radius-md);
+
+  background:
+    var(--cheof-card-background);
+}
+
+.cheof-surface-muted {
+  background:
+    var(--cheof-muted-background);
+}
+
+/* =========================================================
+   BADGES
+   ========================================================= */
+
+.cheof-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap:
+    var(--cheof-space-2);
+
+  min-height: 30px;
+
+  padding:
+    0.3rem
+    0.7rem;
+
+  border:
+    1px solid
+    var(--cheof-card-border);
+
+  border-radius:
+    var(--cheof-radius-pill);
+
+  background:
+    var(--cheof-card-background);
+
+  color:
+    var(--p-text-color);
+
+  font-size: 0.78rem;
+  font-weight: 750;
+}
+
+.cheof-badge--success {
+  border-color:
+    color-mix(
+      in srgb,
+      var(--p-green-500) 28%,
+      transparent
+    );
+
+  background:
+    color-mix(
+      in srgb,
+      var(--p-green-500) 13%,
+      var(--cheof-card-background)
+    );
+
+  color:
+    var(--p-green-600);
+}
+
+.cheof-badge--danger {
+  border-color:
+    color-mix(
+      in srgb,
+      var(--p-red-500) 28%,
+      transparent
+    );
+
+  background:
+    color-mix(
+      in srgb,
+      var(--p-red-500) 12%,
+      var(--cheof-card-background)
+    );
+
+  color:
+    var(--p-red-600);
+}
+
+/* =========================================================
+   ESTADOS VACÍOS
+   ========================================================= */
+
+.cheof-empty-state {
+  display: grid;
+  justify-items: center;
+
+  padding:
+    var(--cheof-space-12)
+    var(--cheof-space-4);
+
+  text-align: center;
+}
+
+.cheof-empty-state__icon {
+  display: grid;
+
+  width: 72px;
+  height: 72px;
+
+  place-items: center;
+
+  border-radius:
+    var(--cheof-radius-xl);
+
+  background:
+    color-mix(
+      in srgb,
+      var(--p-primary-color) 13%,
+      var(--cheof-card-background)
+    );
+
+  color:
+    var(--p-primary-color);
+
+  font-size: 1.8rem;
+}
+
+.cheof-empty-state h2 {
+  margin:
+    var(--cheof-space-4)
+    0
+    var(--cheof-space-2);
+}
+
+.cheof-empty-state p {
+  max-width: 540px;
+  margin:
+    0
+    0
+    var(--cheof-space-5);
+}

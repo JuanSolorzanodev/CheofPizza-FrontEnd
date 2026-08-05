@@ -1,271 +1,993 @@
-<div class="page">
+<section class="page">
   @if (loading()) {
-    <div class="loading-grid">
-      <p-card class="card card-soft">
-        <p-skeleton height="28px" styleClass="mb-3"></p-skeleton>
-        <p-skeleton height="18px" styleClass="mb-2"></p-skeleton>
-        <p-skeleton height="18px" styleClass="mb-2"></p-skeleton>
-        <p-skeleton height="18px"></p-skeleton>
-      </p-card>
+    <div class="loading-header">
+      <p-skeleton width="150px" height="42px" borderRadius="12px" />
 
-      <p-card class="card card-soft">
-        <p-skeleton height="28px" styleClass="mb-3"></p-skeleton>
-        <p-skeleton height="42px" styleClass="mb-3"></p-skeleton>
-        <p-skeleton height="100px"></p-skeleton>
-      </p-card>
-    </div>
-  } @else {
-    @if (!order()) {
-      <div class="empty-state">
-        <div class="empty-icon">
-          <i class="pi pi-exclamation-triangle"></i>
-        </div>
-        <h3>No se pudo cargar el pedido</h3>
-        <p>Ocurrió un problema al obtener el detalle. Intenta nuevamente.</p>
+      <div class="loading-header__copy">
+        <p-skeleton width="280px" height="38px" borderRadius="10px" />
 
-        <p-button
-          label="Reintentar"
-          icon="pi pi-refresh"
-          severity="secondary"
-          (onClick)="load()"
-        ></p-button>
+        <p-skeleton width="420px" height="18px" borderRadius="8px" />
       </div>
-    } @else {
-      <section class="hero">
-        <div class="hero-left">
-          <div class="order-code">#{{ order()!.order_number }}</div>
+    </div>
 
-          <div class="hero-meta">
-            <p-tag
-              [value]="prettyStatus(order()!.status)"
-              [severity]="statusSeverity(order()!.status)"
-            ></p-tag>
+    <div class="loading-grid">
+      <p-skeleton height="360px" borderRadius="22px" />
 
-            <span class="meta-chip">
-              <i class="pi pi-shopping-bag"></i>
-              {{ prettyDeliveryType(order()!.delivery_type) }}
-            </span>
+      <p-skeleton height="360px" borderRadius="22px" />
+    </div>
 
-            <span class="meta-chip">
-              <i class="pi pi-credit-card"></i>
-              {{ prettyPaymentMethod(order()!.payment_method) }}
-            </span>
+    <p-skeleton height="320px" borderRadius="22px" />
 
-            <span class="meta-chip">
-              <i class="pi pi-calendar"></i>
-              {{ formatDate(order()!.ordered_at) }}
-            </span>
+    <p-skeleton height="430px" borderRadius="22px" />
+  } @else if (errorMessage() && !order()) {
+    <article class="error-state">
+      <span class="error-state__icon">
+        <i class="pi pi-exclamation-triangle" aria-hidden="true"></i>
+      </span>
 
-            <span class="meta-total">
-              Total: ${{ order()!.total | number: '1.2-2' }}
-            </span>
-          </div>
+      <span class="error-state__eyebrow"> No se pudo abrir el pedido </span>
+
+      <h1>Ocurrió un problema</h1>
+
+      <p>{{ errorMessage() }}</p>
+
+      <div class="error-state__actions">
+        <a class="back-link" [routerLink]="backUrl()">
+          <i class="pi pi-arrow-left" aria-hidden="true"></i>
+
+          Volver a pedidos
+        </a>
+
+        <p-button label="Reintentar" icon="pi pi-refresh" severity="success" (onClick)="load()" />
+      </div>
+    </article>
+  } @else if (order(); as currentOrder) {
+    <!-- =====================================================
+         CABECERA DEL PEDIDO
+         ===================================================== -->
+
+    <header class="hero">
+      <div class="hero-left">
+        <a class="back-link" [routerLink]="backUrl()">
+          <i class="pi pi-arrow-left" aria-hidden="true"></i>
+
+          Volver a pedidos
+        </a>
+
+        <div class="hero-copy">
+          <span class="hero-eyebrow"> Detalle del pedido </span>
+
+          <h1 class="order-code">#{{ currentOrder.order_number }}</h1>
+
+          <p>
+            Revisa la información del cliente, el pago, la preparación y el estado operativo del
+            pedido.
+          </p>
         </div>
 
-        <div class="hero-right">
-          <p-button
-            label="Volver"
-            icon="pi pi-arrow-left"
-            severity="secondary"
-            [outlined]="true"
-            routerLink="/operator/orders"
-          ></p-button>
-        </div>
-      </section>
+        <div class="hero-meta">
+          <span class="meta-chip">
+            <i class="pi pi-calendar" aria-hidden="true"></i>
 
-      <section class="content-grid">
-        <p-card class="card info-card">
-          <ng-template pTemplate="title">
+            {{ formatDate(currentOrder.ordered_at) }}
+          </span>
+
+          <span class="meta-chip">
+            <i
+              [class]="currentOrder.delivery_type === 'delivery' ? 'pi pi-truck' : 'pi pi-shop'"
+              aria-hidden="true"
+            ></i>
+
+            {{ prettyDeliveryType(currentOrder.delivery_type) }}
+          </span>
+
+          <span class="meta-chip">
+            <i class="pi pi-wallet" aria-hidden="true"></i>
+
+            {{ prettyPaymentMethod(currentOrder.payment_method) }}
+          </span>
+
+          <span class="meta-total">
+            Total:
+            {{ currentOrder.total | currency: 'USD' : 'symbol' : '1.2-2' }}
+          </span>
+        </div>
+      </div>
+
+      <div class="hero-right">
+        <p-tag
+          [value]="prettyStatus(currentOrder.status)"
+          [severity]="statusSeverity(currentOrder.status)"
+          [rounded]="true"
+          styleClass="hero-status-tag"
+        />
+      </div>
+    </header>
+
+    @if (errorMessage()) {
+      <p-message severity="error" [text]="errorMessage()!" styleClass="page-message" />
+    }
+
+    @if (successMessage()) {
+      <p-message severity="success" [text]="successMessage()!" styleClass="page-message" />
+    }
+
+    <!-- =====================================================
+         INFORMACIÓN Y ESTADO OPERATIVO
+         ===================================================== -->
+
+    <div class="content-grid">
+      <p-card styleClass="info-card card">
+        <ng-template pTemplate="header">
+          <div class="card-header">
             <div class="card-title">
               <span class="card-icon client-icon">
-                <i class="pi pi-user"></i>
+                <i class="pi pi-user" aria-hidden="true"></i>
               </span>
-              <span>Cliente</span>
-            </div>
-          </ng-template>
 
-          <div class="info-list">
-            <div class="info-item">
-              <span class="info-label">Nombre</span>
-              <span class="info-value">{{ order()!.customer?.name ?? '—' }}</span>
-            </div>
+              <div>
+                <span class="card-kicker"> Información </span>
 
-            <div class="info-item">
-              <span class="info-label">Teléfono</span>
-              <span class="info-value">{{ order()!.customer?.phone ?? '—' }}</span>
-            </div>
-
-            <div class="info-item">
-              <span class="info-label">Dirección</span>
-              <span class="info-value">{{ order()!.delivery?.address ?? '—' }}</span>
-            </div>
-
-            @if (order()!.delivery?.reference) {
-              <div class="info-item">
-                <span class="info-label">Referencia</span>
-                <span class="info-value">{{ order()!.delivery?.reference ?? '—' }}</span>
+                <strong>Cliente y entrega</strong>
               </div>
-            }
-          </div>
-
-          @if (order()!.delivery_whatsapp_url) {
-            <div class="primary-action">
-              <p-button
-                label="Solicitar delivery"
-                icon="pi pi-whatsapp"
-                severity="success"
-                size="large"
-                (onClick)="openDeliveryWhatsApp()"
-              ></p-button>
             </div>
-          }
-        </p-card>
-
-        <p-card class="card info-card">
-          <ng-template pTemplate="title">
-            <div class="card-title">
-              <span class="card-icon status-icon">
-                <i class="pi pi-sync"></i>
-              </span>
-              <span>Estado</span>
-            </div>
-          </ng-template>
-
-          <div class="status-current">
-            <span class="status-label">Actual</span>
-            <span class="status-value">{{ prettyStatus(order()!.status) }}</span>
-          </div>
-
-          <div class="status-form">
-            <label for="statusSelect">Nuevo estado</label>
-
-            <p-select
-              inputId="statusSelect"
-              [options]="statusOptions()"
-              optionLabel="label"
-              optionValue="value"
-              [ngModel]="toStatus"
-              (ngModelChange)="toStatus = $event; onStatusChange($event)"
-              [disabled]="saving()"
-              placeholder="Selecciona un estado"
-            ></p-select>
-
-            <label for="statusNote">Nota (opcional)</label>
-
-            <textarea
-              id="statusNote"
-              pTextarea
-              rows="3"
-              [(ngModel)]="note"
-              [disabled]="saving()"
-              placeholder="Ej: Pedido listo para retiro del servicio de delivery..."
-            ></textarea>
-
-            <small class="status-hint">
-              El estado se actualiza automáticamente al seleccionar una opción.
-            </small>
-          </div>
-        </p-card>
-      </section>
-
-      <p-card class="card kitchen-card">
-        <ng-template pTemplate="title">
-          <div class="card-title">
-            <span class="card-icon kitchen-icon">
-              <i class="pi pi-box"></i>
-            </span>
-            <span>Ticket de cocina</span>
           </div>
         </ng-template>
 
-        @if (order()!.kitchen.items.length > 0) {
-          <div class="kitchen-list">
-            @for (it of order()!.kitchen.items; track trackItem($index, it)) {
-              <article class="kitchen-item">
-                <div class="kitchen-head">
-                  <div class="kitchen-main">
-                    <span class="qty-badge">x{{ it.quantity }}</span>
+        <div class="info-list">
+          <div class="info-item">
+            <span class="info-label"> Cliente </span>
 
-                    @if (it.type === 'pizza') {
-                      <div class="item-heading">
-                        <h4>{{ it.pizza?.pizza_name ?? 'Pizza' }}</h4>
-                      </div>
-                    }
+            <strong class="info-value">
+              {{ currentOrder.customer?.name || 'Cliente no identificado' }}
+            </strong>
+          </div>
 
-                    @if (it.type === 'half_and_half') {
-                      <div class="item-heading">
-                        <h4>Pizza mitad y mitad</h4>
-                      </div>
-                    }
+          <div class="info-item">
+            <span class="info-label"> Teléfono </span>
 
-                    @if (it.type === 'promotion') {
-                      <div class="item-heading">
-                        <h4>{{ it.promotion?.name ?? 'Promoción' }}</h4>
-                      </div>
-                    }
-                  </div>
+            <strong class="info-value">
+              {{ currentOrder.customer?.phone || 'No registrado' }}
+            </strong>
+          </div>
 
-                  @if (itemMeta(it)) {
-                    <div class="item-meta-chip">
-                      {{ itemMeta(it) }}
-                    </div>
-                  }
-                </div>
+          @if (currentOrder.customer?.email; as customerEmail) {
+            <div class="info-item">
+              <span class="info-label"> Correo electrónico </span>
 
-                @if (it.type === 'pizza') {
-                  <div class="kitchen-block">
-                    <span class="block-label">Ingredientes</span>
-                    <p class="block-text">{{ ingredientsLabel(it.pizza?.ingredients) }}</p>
-                  </div>
-                }
+              <strong class="info-value">
+                {{ customerEmail }}
+              </strong>
+            </div>
+          }
 
-                @if (it.type === 'half_and_half') {
-                  <div class="split-grid">
-                    <div class="split-card">
-                      <span class="split-title">Mitad A</span>
-                      <h5>{{ it.half?.A?.pizza_name ?? '—' }}</h5>
-                      <p>{{ ingredientsLabel(it.half?.A?.ingredients) }}</p>
-                    </div>
+          <div class="info-item">
+            <span class="info-label"> Tipo de entrega </span>
 
-                    <div class="split-card">
-                      <span class="split-title">Mitad B</span>
-                      <h5>{{ it.half?.B?.pizza_name ?? '—' }}</h5>
-                      <p>{{ ingredientsLabel(it.half?.B?.ingredients) }}</p>
-                    </div>
-                  </div>
-                }
+            <strong class="info-value">
+              {{ prettyDeliveryType(currentOrder.delivery_type) }}
+            </strong>
+          </div>
 
-                @if (it.type === 'promotion') {
-                  <div class="promo-grid">
-                    @for (p of it.promotion?.pizzas ?? []; track $index) {
-                      <div class="promo-card">
-                        <h5>{{ p.pizza_name }}</h5>
-                        <p>{{ ingredientsLabel(p.ingredients) }}</p>
-                      </div>
-                    }
-                  </div>
-                }
+          @if (currentOrder.delivery_type === 'delivery') {
+            <div class="info-item">
+              <span class="info-label"> Dirección </span>
 
-                @if (it.personalizations?.length) {
-                  <div class="kitchen-block">
-                    <span class="block-label">Personalizaciones</span>
+              <strong class="info-value">
+                {{ currentOrder.delivery?.address || 'Dirección no registrada' }}
+              </strong>
+            </div>
 
-                    <ul class="personalization-list">
-                      @for (p of it.personalizations; track $index) {
-                        <li>{{ personalizationText(p) }}</li>
-                      }
-                    </ul>
-                  </div>
-                }
-              </article>
+            <div class="info-item">
+              <span class="info-label"> Referencia </span>
+
+              <strong class="info-value">
+                {{ currentOrder.delivery?.reference || 'Sin referencia adicional' }}
+              </strong>
+            </div>
+          }
+
+          <div class="info-item">
+            <span class="info-label"> Método de pago </span>
+
+            <strong class="info-value">
+              {{ prettyPaymentMethod(currentOrder.payment_method) }}
+            </strong>
+          </div>
+        </div>
+
+        @if (
+          currentOrder.customer_confirmation_whatsapp_url ||
+          currentOrder.delivery_whatsapp_url ||
+          currentOrder.delivery?.maps_url
+        ) {
+          <div
+            class="contact-actions"
+            [class.contact-actions--single]="
+              (currentOrder.customer_confirmation_whatsapp_url ? 1 : 0) +
+                (currentOrder.delivery_whatsapp_url ? 1 : 0) +
+                (currentOrder.delivery?.maps_url ? 1 : 0) ===
+              1
+            "
+          >
+            @if (currentOrder.customer_confirmation_whatsapp_url) {
+              <p-button
+                label="Confirmar con el cliente"
+                icon="pi pi-whatsapp"
+                severity="success"
+                class="contact-button contact-button--customer"
+                (onClick)="openCustomerConfirmationWhatsApp()"
+              />
+            }
+
+            @if (currentOrder.delivery_whatsapp_url) {
+              <p-button
+                label="Solicitar delivery"
+                icon="pi pi-send"
+                severity="secondary"
+                [outlined]="true"
+                class="contact-button contact-button--delivery"
+                (onClick)="openDeliveryWhatsApp()"
+              />
+            }
+
+            @if (currentOrder.delivery?.maps_url) {
+              <p-button
+                label="Abrir ubicación"
+                icon="pi pi-map-marker"
+                severity="secondary"
+                [outlined]="true"
+                class="contact-button contact-button--maps"
+                (onClick)="openMaps()"
+              />
             }
           </div>
+        }
+      </p-card>
+
+      <p-card styleClass="status-card card">
+        <ng-template pTemplate="header">
+          <div class="card-header">
+            <div class="card-title">
+              <span class="card-icon status-icon">
+                <i class="pi pi-sync" aria-hidden="true"></i>
+              </span>
+
+              <div>
+                <span class="card-kicker"> Operación </span>
+
+                <strong>Estado del pedido</strong>
+              </div>
+            </div>
+          </div>
+        </ng-template>
+
+        <div class="status-current">
+          <div>
+            <span class="status-label"> Estado actual </span>
+
+            <strong class="status-value">
+              {{ prettyStatus(currentOrder.status) }}
+            </strong>
+          </div>
+
+          <p-tag
+            [value]="prettyStatus(currentOrder.status)"
+            [severity]="statusSeverity(currentOrder.status)"
+            [rounded]="true"
+          />
+        </div>
+
+        @if (hasAvailableTransitions()) {
+          <div class="status-form">
+            <div>
+              <label for="status-note"> Nota del cambio </label>
+
+              <textarea
+                id="status-note"
+                pTextarea
+                rows="4"
+                maxlength="500"
+                placeholder="Agrega una observación opcional para el historial..."
+                [(ngModel)]="note"
+                [disabled]="saving()"
+              ></textarea>
+
+              <small class="status-hint">
+                La nota quedará registrada junto con el cambio de estado.
+              </small>
+            </div>
+
+            <div class="transition-actions">
+              @for (transition of allowedTransitions(); track transition) {
+                <p-button
+                  [label]="transitionLabel(transition)"
+                  [icon]="transitionIcon(transition)"
+                  [severity]="transitionSeverity(transition)"
+                  [outlined]="transition === 'cancelled'"
+                  [loading]="saving()"
+                  [disabled]="saving()"
+                  styleClass="transition-button"
+                  (onClick)="changeStatus(transition)"
+                />
+              }
+            </div>
+          </div>
         } @else {
-          <div class="empty-kitchen">
-            No hay items de cocina para este pedido.
+          <div class="terminal-status">
+            <span class="terminal-status__icon">
+              <i
+                [class]="
+                  currentOrder.status === 'cancelled' ? 'pi pi-times-circle' : 'pi pi-check-circle'
+                "
+                aria-hidden="true"
+              ></i>
+            </span>
+
+            <div>
+              <strong>
+                {{
+                  currentOrder.status === 'cancelled' ? 'Pedido cancelado' : 'Proceso finalizado'
+                }}
+              </strong>
+
+              <p>Este pedido no tiene más transiciones de estado disponibles.</p>
+            </div>
+          </div>
+        }
+      </p-card>
+    </div>
+
+    <!-- =====================================================
+         COMPROBANTE DE TRANSFERENCIA
+         ===================================================== -->
+
+    @if (isTransferOrder()) {
+      <p-card styleClass="receipt-card card">
+        <ng-template pTemplate="header">
+          <div class="card-header receipt-card__header">
+            <div class="card-title">
+              <span class="card-icon receipt-icon">
+                <i class="pi pi-receipt" aria-hidden="true"></i>
+              </span>
+
+              <div>
+                <span class="card-kicker"> Validación del pago </span>
+
+                <strong> Comprobante de transferencia </strong>
+              </div>
+            </div>
+
+            @if (paymentReceipt(); as receipt) {
+              <p-tag
+                [value]="receiptStatusLabel(receipt.status)"
+                [severity]="receiptStatusSeverity(receipt.status)"
+                [rounded]="true"
+              />
+            }
+          </div>
+        </ng-template>
+
+        @if (receiptError()) {
+          <p-message severity="error" [text]="receiptError()!" styleClass="receipt-message" />
+        }
+
+        @if (receiptSuccess()) {
+          <p-message severity="success" [text]="receiptSuccess()!" styleClass="receipt-message" />
+        }
+
+        @if (paymentReceipt(); as receipt) {
+          <div class="receipt-layout">
+            <section class="receipt-file">
+              <div
+                class="receipt-file__preview"
+                [class.receipt-file__preview--image]="isReceiptImage(receipt)"
+                [class.receipt-file__preview--pdf]="isReceiptPdf(receipt)"
+              >
+                @if (isReceiptImage(receipt)) {
+                  <i class="pi pi-image" aria-hidden="true"></i>
+
+                  <strong> Comprobante en imagen </strong>
+                } @else if (isReceiptPdf(receipt)) {
+                  <i class="pi pi-file-pdf" aria-hidden="true"></i>
+
+                  <strong> Documento PDF </strong>
+                } @else {
+                  <i class="pi pi-file" aria-hidden="true"></i>
+
+                  <strong> Archivo adjunto </strong>
+                }
+
+                <span> Haz clic en “Ver comprobante” para abrir el archivo privado. </span>
+              </div>
+
+              <div class="receipt-file__information">
+                <div class="receipt-file__name">
+                  <span> Archivo </span>
+
+                  <strong>
+                    {{ receipt.original_name }}
+                  </strong>
+                </div>
+
+                <div class="receipt-file__metadata">
+                  <span>
+                    <i class="pi pi-file" aria-hidden="true"></i>
+
+                    {{ receipt.mime_type }}
+                  </span>
+
+                  <span>
+                    <i class="pi pi-database" aria-hidden="true"></i>
+
+                    {{ receiptFileSize(receipt.file_size) }}
+                  </span>
+
+                  <span>
+                    <i class="pi pi-calendar" aria-hidden="true"></i>
+
+                    Enviado:
+                    {{ formatDate(receipt.submitted_at) }}
+                  </span>
+                </div>
+
+                <p-button
+                  label="Ver comprobante"
+                  icon="pi pi-eye"
+                  severity="secondary"
+                  [outlined]="true"
+                  [loading]="receiptLoading()"
+                  [disabled]="receiptLoading() || !receipt.file_available"
+                  styleClass="receipt-view-button"
+                  (onClick)="openReceiptPreview()"
+                />
+              </div>
+            </section>
+
+            <section class="receipt-review">
+              <div class="receipt-review__summary">
+                <div class="receipt-review__status">
+                  <span
+                    class="receipt-review__status-icon"
+                    [class.is-pending]="receipt.status === 'pending'"
+                    [class.is-approved]="receipt.status === 'approved'"
+                    [class.is-rejected]="receipt.status === 'rejected'"
+                  >
+                    <i
+                      [class]="
+                        receipt.status === 'approved'
+                          ? 'pi pi-check'
+                          : receipt.status === 'rejected'
+                            ? 'pi pi-times'
+                            : 'pi pi-clock'
+                      "
+                      aria-hidden="true"
+                    ></i>
+                  </span>
+
+                  <div>
+                    <span> Estado de revisión </span>
+
+                    <strong>
+                      {{ receiptStatusLabel(receipt.status) }}
+                    </strong>
+                  </div>
+                </div>
+
+                @if (receipt.reviewed_at) {
+                  <div class="receipt-review__detail">
+                    <span> Fecha de revisión </span>
+
+                    <strong>
+                      {{ formatDate(receipt.reviewed_at) }}
+                    </strong>
+                  </div>
+                }
+
+                @if (receipt.reviewed_by; as reviewer) {
+                  <div class="receipt-review__detail">
+                    <span> Revisado por </span>
+
+                    <strong>
+                      {{ reviewer.name }}
+                    </strong>
+                  </div>
+                }
+
+                @if (receipt.status === 'rejected' && receipt.rejection_reason) {
+                  <div class="receipt-rejection-reason">
+                    <span> Motivo del rechazo </span>
+
+                    <p>
+                      {{ receipt.rejection_reason }}
+                    </p>
+                  </div>
+                }
+              </div>
+
+              @if (canReviewReceipt()) {
+                <div class="receipt-review__notice">
+                  <i class="pi pi-info-circle" aria-hidden="true"></i>
+
+                  <p>
+                    Revisa que el valor, la fecha y los datos bancarios sean correctos antes de
+                    aprobar el comprobante.
+                  </p>
+                </div>
+
+                <div class="receipt-review__actions">
+                  <p-button
+                    label="Aprobar comprobante"
+                    icon="pi pi-check"
+                    severity="success"
+                    [loading]="receiptReviewing()"
+                    [disabled]="receiptReviewing()"
+                    styleClass="receipt-action-button"
+                    (onClick)="approveReceipt()"
+                  />
+
+                  <p-button
+                    label="Rechazar"
+                    icon="pi pi-times"
+                    severity="danger"
+                    [outlined]="true"
+                    [disabled]="receiptReviewing()"
+                    styleClass="receipt-action-button"
+                    (onClick)="openRejectReceiptDialog()"
+                  />
+                </div>
+              } @else if (receipt.status === 'approved') {
+                <div class="receipt-result receipt-result--approved">
+                  <i class="pi pi-check-circle" aria-hidden="true"></i>
+
+                  <div>
+                    <strong> Pago validado </strong>
+
+                    <p>El comprobante fue aprobado y no requiere más acciones.</p>
+                  </div>
+                </div>
+              } @else if (receipt.status === 'rejected') {
+                <div class="receipt-result receipt-result--rejected">
+                  <i class="pi pi-times-circle" aria-hidden="true"></i>
+
+                  <div>
+                    <strong> Comprobante rechazado </strong>
+
+                    <p>
+                      El cliente deberá enviar un nuevo comprobante para continuar con la
+                      validación.
+                    </p>
+                  </div>
+                </div>
+              } @else if (!receipt.file_available) {
+                <div class="receipt-result receipt-result--unavailable">
+                  <i class="pi pi-file-excel" aria-hidden="true"></i>
+
+                  <div>
+                    <strong> Archivo no disponible </strong>
+
+                    <p>El comprobante ya no está disponible para visualización.</p>
+                  </div>
+                </div>
+              }
+            </section>
+          </div>
+        } @else {
+          <div class="receipt-empty">
+            <span class="receipt-empty__icon">
+              <i class="pi pi-cloud-upload" aria-hidden="true"></i>
+            </span>
+
+            <div>
+              <strong> El cliente todavía no ha enviado el comprobante </strong>
+
+              <p>
+                Esta sección se actualizará cuando el cliente cargue el archivo de la transferencia.
+              </p>
+            </div>
           </div>
         }
       </p-card>
     }
+
+    <!-- =====================================================
+         TICKET DE COCINA
+         ===================================================== -->
+
+    <p-card styleClass="kitchen-card card">
+      <ng-template pTemplate="header">
+        <div class="card-header card-header--kitchen">
+          <div class="card-title">
+            <span class="card-icon kitchen-icon">
+              <i class="pi pi-list-check" aria-hidden="true"></i>
+            </span>
+
+            <div>
+              <span class="card-kicker"> Producción </span>
+
+              <strong>Ticket de cocina</strong>
+            </div>
+          </div>
+
+          <span class="items-counter">
+            {{ currentOrder.kitchen.items.length }}
+
+            {{ currentOrder.kitchen.items.length === 1 ? 'ítem' : 'ítems' }}
+          </span>
+        </div>
+      </ng-template>
+
+      @if (currentOrder.kitchen.items.length > 0) {
+        <div class="kitchen-list">
+          @for (
+            item of currentOrder.kitchen.items;
+            track trackItem($index, item);
+            let itemIndex = $index
+          ) {
+            <article class="kitchen-item">
+              <header class="kitchen-head">
+                <div class="kitchen-main">
+                  <span class="qty-badge"> {{ item.quantity }}× </span>
+
+                  <div class="item-heading">
+                    <span class="item-number">
+                      Preparación
+                      {{ itemIndex + 1 }}
+                    </span>
+
+                    @if (item.type === 'pizza' && item.pizza) {
+                      <h4>
+                        {{ item.pizza.pizza_name }}
+                      </h4>
+                    } @else if (item.type === 'half_and_half' && item.half) {
+                      <h4>
+                        {{ item.half.A.pizza_name }}
+                        /
+                        {{ item.half.B.pizza_name }}
+                      </h4>
+                    } @else if (item.type === 'promotion' && item.promotion) {
+                      <h4>
+                        {{ item.promotion.name }}
+                      </h4>
+                    } @else {
+                      <h4>Producto del pedido</h4>
+                    }
+                  </div>
+                </div>
+
+                @if (itemMeta(item)) {
+                  <span class="item-meta-chip">
+                    {{ itemMeta(item) }}
+                  </span>
+                }
+              </header>
+
+              @if (item.type === 'pizza' && item.pizza) {
+                <div class="kitchen-block">
+                  <span class="block-label"> Ingredientes </span>
+
+                  <p class="block-text">
+                    {{ ingredientsLabel(item.pizza.ingredients) }}
+                  </p>
+                </div>
+              }
+
+              @if (item.type === 'half_and_half' && item.half) {
+                <div class="split-grid">
+                  <section class="split-card">
+                    <span class="split-title"> Mitad A </span>
+
+                    <h5>
+                      {{ item.half.A.pizza_name }}
+                    </h5>
+
+                    <p>
+                      {{ ingredientsLabel(item.half.A.ingredients) }}
+                    </p>
+                  </section>
+
+                  <section class="split-card">
+                    <span class="split-title"> Mitad B </span>
+
+                    <h5>
+                      {{ item.half.B.pizza_name }}
+                    </h5>
+
+                    <p>
+                      {{ ingredientsLabel(item.half.B.ingredients) }}
+                    </p>
+                  </section>
+                </div>
+              }
+
+              @if (item.type === 'promotion' && item.promotion) {
+                <div class="promotion-section">
+                  <span class="block-label"> Pizzas incluidas </span>
+
+                  <div class="promo-grid">
+                    @for (pizza of item.promotion.pizzas; track pizza.pizza_id) {
+                      <section class="promo-card">
+                        <h5>
+                          {{ pizza.pizza_name }}
+                        </h5>
+
+                        <p>
+                          {{ ingredientsLabel(pizza.ingredients) }}
+                        </p>
+                      </section>
+                    }
+                  </div>
+                </div>
+              }
+
+              @if (item.personalizations && item.personalizations.length > 0) {
+                <div class="personalizations">
+                  <span class="block-label"> Personalizaciones </span>
+
+                  <ul class="personalization-list">
+                    @for (
+                      personalization of item.personalizations;
+                      track personalization.ingredient_id +
+                        '-' +
+                        personalization.action +
+                        '-' +
+                        personalization.applies_to
+                    ) {
+                      <li>
+                        <i
+                          [class]="
+                            personalization.action === 'remove'
+                              ? 'pi pi-minus-circle'
+                              : 'pi pi-plus-circle'
+                          "
+                          aria-hidden="true"
+                        ></i>
+
+                        {{ personalizationText(personalization) }}
+                      </li>
+                    }
+                  </ul>
+                </div>
+              } @else {
+                <div class="no-personalizations">
+                  <i class="pi pi-check" aria-hidden="true"></i>
+
+                  Sin modificaciones adicionales
+                </div>
+              }
+            </article>
+          }
+        </div>
+      } @else {
+        <div class="empty-kitchen">
+          <i class="pi pi-inbox" aria-hidden="true"></i>
+
+          No hay preparaciones registradas para este pedido.
+        </div>
+      }
+    </p-card>
+
+    <!-- =====================================================
+         HISTORIAL DE ESTADOS
+         ===================================================== -->
+
+    @if (currentOrder.status_changes && currentOrder.status_changes.length > 0) {
+      <p-card styleClass="history-card card">
+        <ng-template pTemplate="header">
+          <div class="card-header">
+            <div class="card-title">
+              <span class="card-icon history-icon">
+                <i class="pi pi-history" aria-hidden="true"></i>
+              </span>
+
+              <div>
+                <span class="card-kicker"> Seguimiento </span>
+
+                <strong> Historial de estados </strong>
+              </div>
+            </div>
+          </div>
+        </ng-template>
+
+        <div class="history-list">
+          @for (
+            change of currentOrder.status_changes;
+            track change.changed_at + '-' + change.to;
+            let last = $last
+          ) {
+            <article class="history-item" [class.is-last]="last">
+              <span class="history-marker">
+                <i class="pi pi-check" aria-hidden="true"></i>
+              </span>
+
+              <div class="history-content">
+                <div class="history-heading">
+                  <div>
+                    <strong>
+                      {{ prettyStatus(change.to || '') }}
+                    </strong>
+
+                    @if (change.from) {
+                      <span>
+                        Desde
+                        {{ prettyStatus(change.from) }}
+                      </span>
+                    }
+                  </div>
+
+                  <time>
+                    {{ formatDate(change.changed_at) }}
+                  </time>
+                </div>
+
+                @if (change.note) {
+                  <p>{{ change.note }}</p>
+                }
+
+                <small>
+                  Actualizado por
+                  {{ change.changed_by?.name || change.by || 'Sistema' }}
+                </small>
+              </div>
+            </article>
+          }
+        </div>
+      </p-card>
+    }
+
+    <!-- =====================================================
+         DIÁLOGO DE VISTA PREVIA
+         ===================================================== -->
+
+    <p-dialog
+      header="Comprobante de transferencia"
+      [visible]="receiptPreviewVisible()"
+      [modal]="true"
+      [draggable]="false"
+      [resizable]="false"
+      [dismissableMask]="true"
+      [style]="{
+        width: 'min(94vw, 900px)',
+      }"
+      styleClass="receipt-preview-dialog"
+      (onHide)="closeReceiptPreview()"
+    >
+      @if (receiptPreviewUrl(); as previewUrl) {
+        <div class="receipt-preview-dialog__content">
+          @if (previewIsImage()) {
+            <img
+              [src]="previewUrl"
+              alt="Comprobante de transferencia enviado por el cliente"
+              class="receipt-preview-image"
+            />
+          } @else if (previewIsPdf()) {
+            <div class="receipt-pdf-preview">
+              <span class="receipt-pdf-preview__icon">
+                <i class="pi pi-file-pdf" aria-hidden="true"></i>
+              </span>
+
+              <strong> Documento PDF cargado </strong>
+
+              <p>
+                El comprobante se descargó correctamente. Puedes abrirlo en una pestaña nueva para
+                revisarlo con mayor detalle.
+              </p>
+
+              <a
+                [href]="previewUrl"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="receipt-open-file-link"
+              >
+                <i class="pi pi-external-link" aria-hidden="true"></i>
+
+                Abrir PDF
+              </a>
+            </div>
+          } @else {
+            <div class="receipt-pdf-preview">
+              <span class="receipt-pdf-preview__icon">
+                <i class="pi pi-file" aria-hidden="true"></i>
+              </span>
+
+              <strong> Archivo cargado </strong>
+
+              <p>Este tipo de archivo no permite una vista previa directa.</p>
+
+              <a
+                [href]="previewUrl"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="receipt-open-file-link"
+              >
+                <i class="pi pi-external-link" aria-hidden="true"></i>
+
+                Abrir archivo
+              </a>
+            </div>
+          }
+        </div>
+      }
+    </p-dialog>
+
+    <!-- =====================================================
+         DIÁLOGO DE RECHAZO
+         ===================================================== -->
+
+    <p-dialog
+      header="Rechazar comprobante"
+      [visible]="rejectionDialogVisible()"
+      [modal]="true"
+      [draggable]="false"
+      [resizable]="false"
+      [closable]="!receiptReviewing()"
+      [dismissableMask]="!receiptReviewing()"
+      [style]="{
+        width: 'min(92vw, 520px)',
+      }"
+      styleClass="receipt-rejection-dialog"
+      (onHide)="closeRejectReceiptDialog()"
+    >
+      <div class="rejection-dialog-content">
+        <div class="rejection-dialog-warning">
+          <i class="pi pi-exclamation-triangle" aria-hidden="true"></i>
+
+          <p>
+            El cliente podrá ver este motivo. Describe claramente qué debe corregir antes de enviar
+            otro comprobante.
+          </p>
+        </div>
+
+        <div class="rejection-field">
+          <label for="rejection-reason"> Motivo del rechazo </label>
+
+          <textarea
+            id="rejection-reason"
+            pTextarea
+            rows="6"
+            minlength="5"
+            maxlength="500"
+            placeholder="Ejemplo: La imagen está borrosa y no permite verificar el valor transferido."
+            [(ngModel)]="rejectionReason"
+            [disabled]="receiptReviewing()"
+          ></textarea>
+
+          <div class="rejection-field__footer">
+            <small> Mínimo 5 caracteres. </small>
+
+            <small> {{ rejectionReason.length }}/500 </small>
+          </div>
+        </div>
+
+        @if (receiptError()) {
+          <p-message
+            severity="error"
+            [text]="receiptError()!"
+            styleClass="receipt-dialog-message"
+          />
+        }
+      </div>
+
+      <ng-template pTemplate="footer">
+        <div class="rejection-dialog-actions">
+          <p-button
+            label="Cancelar"
+            severity="secondary"
+            [text]="true"
+            [disabled]="receiptReviewing()"
+            (onClick)="closeRejectReceiptDialog()"
+          />
+
+          <p-button
+            label="Confirmar rechazo"
+            icon="pi pi-times"
+            severity="danger"
+            [loading]="receiptReviewing()"
+            [disabled]="receiptReviewing() || rejectionReason.trim().length < 5"
+            (onClick)="rejectReceipt()"
+          />
+        </div>
+      </ng-template>
+    </p-dialog>
   }
-</div>
+</section>

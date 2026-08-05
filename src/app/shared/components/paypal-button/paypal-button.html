@@ -1,0 +1,95 @@
+<div class="paypal-payment">
+  @if (loadingSdk()) {
+    <div class="paypal-payment__loading">
+      <p-progressSpinner
+        ariaLabel="Cargando PayPal"
+        strokeWidth="4"
+        [style]="{
+          width: '38px',
+          height: '38px'
+        }"
+      ></p-progressSpinner>
+
+      <span>Cargando pago seguro…</span>
+    </div>
+  }
+
+  @if (recovering()) {
+    <div class="paypal-payment__processing">
+      <p-progressSpinner
+        ariaLabel="Recuperando pago"
+        strokeWidth="4"
+        [style]="{
+          width: '34px',
+          height: '34px'
+        }"
+      ></p-progressSpinner>
+
+      <div>
+        <strong>Verificando pago anterior</strong>
+
+        <span>
+          Estamos consultando si PayPal ya confirmó tu pedido.
+        </span>
+      </div>
+    </div>
+  } @else if (processing()) {
+    <div class="paypal-payment__processing">
+      <p-progressSpinner
+        ariaLabel="Procesando pago"
+        strokeWidth="4"
+        [style]="{
+          width: '34px',
+          height: '34px'
+        }"
+      ></p-progressSpinner>
+
+      <div>
+        <strong>Procesando pago</strong>
+
+        <span>
+          No cierres ni recargues esta ventana.
+        </span>
+      </div>
+    </div>
+  }
+
+  <div
+    #paypalContainer
+    class="paypal-payment__buttons"
+    [class.paypal-payment__buttons--hidden]="
+      loadingSdk() ||
+      processing() ||
+      recovering()
+    "
+  ></div>
+
+  @if (errorMessage(); as error) {
+    <div class="paypal-payment__error">
+      <i class="pi pi-exclamation-triangle"></i>
+
+      <div>
+        <strong>No se pudo completar el proceso</strong>
+
+        <span>{{ error }}</span>
+
+        <button
+          type="button"
+          class="paypal-payment__retry"
+          (click)="retry()"
+        >
+          Verificar e intentar nuevamente
+        </button>
+      </div>
+    </div>
+  }
+
+  <div class="paypal-payment__security">
+    <i class="pi pi-lock"></i>
+
+    <span>
+      Pago cifrado y procesado directamente por PayPal.
+      CheofPizza no almacena los datos de tu tarjeta.
+    </span>
+  </div>
+</div>

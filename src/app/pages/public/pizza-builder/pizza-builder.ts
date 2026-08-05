@@ -4,38 +4,49 @@ import {
   Component,
   DestroyRef,
   computed,
+  effect,
   inject,
   signal,
-  effect,
 } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { finalize, Subscription } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import {
+  EMPTY,
+  Subject,
+  catchError,
+  debounceTime,
+  distinctUntilChanged,
+  finalize,
+  switchMap,
+} from 'rxjs';
 
-import { ButtonModule } from 'primeng/button';
-import { InputNumberModule } from 'primeng/inputnumber';
-import { DividerModule } from 'primeng/divider';
-import { ChipModule } from 'primeng/chip';
-import { CheckboxModule } from 'primeng/checkbox';
-import { SkeletonModule } from 'primeng/skeleton';
+import { MessageService } from 'primeng/api';
 import { AccordionModule } from 'primeng/accordion';
+import { ButtonModule } from 'primeng/button';
+import { CheckboxModule } from 'primeng/checkbox';
+import { ChipModule } from 'primeng/chip';
+import { InputNumberModule } from 'primeng/inputnumber';
 import { SelectModule } from 'primeng/select';
 import { SelectButtonModule } from 'primeng/selectbutton';
-import { MessageService } from 'primeng/api';
+import { SkeletonModule } from 'primeng/skeleton';
+import { ToggleSwitchModule } from 'primeng/toggleswitch';
 
-import { CatalogApiService } from '../../../core/api/catalog/catalog-api.service';
-import { IngredientDto, PizzaDto, SizeDto } from '../../../core/api/catalog/catalog.models';
-
-import { BuilderApiService } from '../../../core/api/builder/builder-api.service';
 import {
   AppliesTo,
   BuilderQuoteRequestDto,
   BuilderQuoteResponseDto,
+  CustomizationDto,
 } from '../../../core/api/builder/builder.models';
+import { BuilderApiService } from '../../../core/api/builder/builder-api.service';
 import { CartStore } from '../../../core/api/cart/cart.store';
-
-type UiSizeKey = 'peq' | 'med' | 'fam' | 'gig';
+import { CatalogApiService } from '../../../core/api/catalog/catalog-api.service';
+import {
+  CategorySizePriceDto,
+  IngredientDto,
+  PizzaDto,
+  SizeDto,
+} from '../../../core/api/catalog/catalog.models';
 
 interface Option<T> {
   label: string;
@@ -53,38 +64,38 @@ interface SelectedExtra {
   imports: [
     CommonModule,
     FormsModule,
-
-    ButtonModule,
-    InputNumberModule,
-    DividerModule,
-    ChipModule,
-    CheckboxModule,
-    SkeletonModule,
     AccordionModule,
-
+    ButtonModule,
+    CheckboxModule,
+    ChipModule,
+    InputNumberModule,
     SelectModule,
     SelectButtonModule,
+    SkeletonModule,
+    ToggleSwitchModule,
   ],
   templateUrl: './pizza-builder.html',
   styleUrl: './pizza-builder.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PizzaBuilder {
-  private readonly api = inject(CatalogApiService);
+  private readonly catalogApi = inject(CatalogApiService);
   private readonly builderApi = inject(BuilderApiService);
   private readonly cart = inject(CartStore);
-
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
   private readonly messages = inject(MessageService);
 
-  // =========================
-  // Config
-  // =========================
   readonly maxExtras = 4;
-  readonly minQty = 1;
-  readonly maxQty = 10;
+  readonly minQuantity = 1;
+  readonly maxQuantity = 10;
+
+  private readonly quoteRequests =
+    new Subject<BuilderQuoteRequestDto | null>();
+
+  private readonly quotedPayloadKey =
+    signal<string | null>(null);
 
   private readonly lockTokens = {
     sauceWords: ['pasta', 'salsa'],
@@ -98,564 +109,1015 @@ export class PizzaBuilder {
   };
 
   readonly appliesOptions: Option<AppliesTo>[] = [
-    { label: 'Toda la pizza', value: 'ALL' },
+    { label: 'Completa', value: 'ALL' },
     { label: 'Mitad A', value: 'A' },
     { label: 'Mitad B', value: 'B' },
   ];
 
-  // =========================
-  // State
-  // =========================
   readonly loading = signal(true);
   readonly error = signal<string | null>(null);
+  readonly quoteLoading = signal(false);
+  readonly quoteError = signal<string | null>(null);
+  readonly cartSubmitting = signal(false);
 
   readonly pizzaA = signal<PizzaDto | null>(null);
+  readonly allPizzas = signal<PizzaDto[]>([]);
+  readonly extrasCatalog = signal<IngredientDto[]>([]);
 
   readonly isHalfAndHalf = signal(false);
-  readonly allPizzas = signal<PizzaDto[]>([]);
   readonly secondPizzaId = signal<number | null>(null);
-
-  readonly sizeKey = signal<UiSizeKey | null>(null);
-  readonly quantity = signal<number>(1);
+  readonly selectedSizeId = signal<number | null>(null);
+  readonly quantity = signal(1);
 
   readonly baseIngredientsA = signal<string[]>([]);
   readonly baseIngredientsB = signal<string[]>([]);
-
   readonly originalIngredientsA = signal<string[]>([]);
   readonly originalIngredientsB = signal<string[]>([]);
 
-  readonly extrasCatalog = signal<IngredientDto[]>([]);
-  readonly selectedExtras = signal<Map<number, SelectedExtra>>(new Map());
-  readonly extrasAccordionOpen = signal<boolean>(false);
+  readonly selectedExtras =
+    signal<Map<number, SelectedExtra>>(new Map());
 
-  // =========================
-  // Quote (Backend)
-  // =========================
-  readonly quoteLoading = signal(false);
-  readonly quoteError = signal<string | null>(null);
-  readonly quote = signal<BuilderQuoteResponseDto | null>(null);
+  readonly extrasAccordionOpen = signal(false);
+  readonly quote =
+    signal<BuilderQuoteResponseDto | null>(null);
 
-  // =========================
-  // Cart submit state
-  // =========================
-  readonly cartSubmitting = signal(false);
+  readonly fallbackImage =
+    'data:image/svg+xml;utf8,' +
+    encodeURIComponent(
+      `<svg xmlns="http://www.w3.org/2000/svg" width="900" height="700" viewBox="0 0 900 700">
+        <rect width="900" height="700" fill="#f3f5f4"/>
+        <circle cx="450" cy="320" r="190" fill="#e7ece9"/>
+        <text x="50%" y="75%" dominant-baseline="middle" text-anchor="middle"
+              fill="#66736a" font-family="Arial" font-size="28">Sin imagen disponible</text>
+      </svg>`,
+    );
 
-  private quoteTimer: any = null;
-  private quoteSub?: Subscription;
-
-  // =========================
-  // Computed
-  // =========================
   readonly pizzaB = computed<PizzaDto | null>(() => {
     const id = this.secondPizzaId();
-    if (!id) return null;
-    return this.allPizzas().find(p => p.id === id) ?? null;
+
+    return id
+      ? this.allPizzas().find(
+          pizza => pizza.id === id,
+        ) ?? null
+      : null;
   });
 
-  readonly pizzaOptions = computed<Option<number>[]>(() => {
-    const a = this.pizzaA();
-    const list = this.allPizzas();
-    if (!a || list.length === 0) return [];
+  readonly pizzaOptions =
+    computed<Option<number>[]>(() => {
+      const currentPizza = this.pizzaA();
 
-    return list
-      .filter(p => p.id !== a.id)
-      .map(p => ({ label: p.name, value: p.id }));
+      if (!currentPizza) {
+        return [];
+      }
+
+      return this.allPizzas()
+        .filter(pizza => pizza.id !== currentPizza.id)
+        .map(pizza => ({
+          label: pizza.name,
+          value: pizza.id,
+        }));
+    });
+
+  readonly availableSizePrices =
+    computed<CategorySizePriceDto[]>(() => {
+      const sizePrices =
+        this.pizzaA()?.category.size_prices ?? [];
+
+      return [...sizePrices]
+        .filter(item => this.isValidSizePrice(item))
+        .sort(
+          (left, right) =>
+            left.size.portion - right.size.portion,
+        );
+    });
+
+  readonly selectedSizePrice =
+    computed<CategorySizePriceDto | null>(() => {
+      const sizeId = this.selectedSizeId();
+
+      return (
+        this.availableSizePrices().find(
+          item => item.size.id === sizeId,
+        ) ?? null
+      );
+    });
+
+  readonly selectedSize = computed<SizeDto | null>(
+    () => this.selectedSizePrice()?.size ?? null,
+  );
+
+  readonly heroImage = computed(
+    () => this.pizzaA()?.image_url || this.fallbackImage,
+  );
+
+  readonly extrasCount = computed(
+    () => this.selectedExtras().size,
+  );
+
+  readonly extrasAccordionValue = computed(() =>
+    this.extrasAccordionOpen() ? 'extras' : null,
+  );
+
+  readonly basePrice = computed(
+    () => this.quote()?.base_price ?? 0,
+  );
+
+  readonly extrasPrice = computed(
+    () => this.quote()?.extras_total ?? 0,
+  );
+
+  readonly unitPrice = computed(
+    () => this.quote()?.unit_price ?? 0,
+  );
+
+  readonly total = computed(
+    () => this.quote()?.total ?? 0,
+  );
+
+  readonly estimatedBaseTotal = computed(() => {
+    const price = Number(
+      this.selectedSizePrice()?.price ?? 0,
+    );
+
+    return price * this.quantity();
   });
 
-  readonly selectedSize = computed<SizeDto | null>(() => {
-    const p = this.pizzaA();
-    const key = this.sizeKey();
-    if (!p || !key) return null;
+  readonly displayTotal = computed(
+    () => this.quote()?.total ?? this.estimatedBaseTotal(),
+  );
 
-    const wanted = this.sizeNameByKey(key);
-    const all = p.category.size_prices?.map(sp => sp.size) ?? [];
-    return all.find(s => s.name === wanted) ?? null;
+  readonly displayUnitPrice = computed(
+    () =>
+      this.quote()?.unit_price ??
+      Number(this.selectedSizePrice()?.price ?? 0),
+  );
+
+  readonly quoteBreakdown = computed(
+    () => this.quote()?.extras_breakdown ?? [],
+  );
+
+  readonly hasIngredientChangesA = computed(
+    () =>
+      !this.arraysEqual(
+        this.baseIngredientsA(),
+        this.originalIngredientsA(),
+      ),
+  );
+
+  readonly hasIngredientChangesB = computed(
+    () =>
+      !this.arraysEqual(
+        this.baseIngredientsB(),
+        this.originalIngredientsB(),
+      ),
+  );
+
+  readonly currentPayload = computed(
+    () => this.buildQuotePayload(),
+  );
+
+  readonly currentPayloadKey = computed(() =>
+    this.payloadKey(this.currentPayload()),
+  );
+
+  readonly quoteIsCurrent = computed(
+    () =>
+      !!this.quote() &&
+      this.quotedPayloadKey() ===
+        this.currentPayloadKey(),
+  );
+
+  readonly hasValidSizes = computed(
+    () => this.availableSizePrices().length > 0,
+  );
+
+  readonly dinersLabel = computed(() => {
+    const size = this.selectedSize();
+
+    if (!size) {
+      return 'Elige un tamaño para ver la capacidad.';
+    }
+
+    return this.getServingHint(size.portion);
   });
 
-  readonly heroImage = computed(() => this.pizzaA()?.image_url || this.fallbackImage);
+  readonly configurationTitle = computed(() => {
+    const pizza = this.pizzaA();
+    const pizzaB = this.pizzaB();
 
-  readonly basePrice = computed(() => this.quote()?.base_price ?? 0);
-  readonly extrasPrice = computed(() => this.quote()?.extras_total ?? 0);
-  readonly unitPrice = computed(() => this.quote()?.unit_price ?? 0);
-  readonly total = computed(() => this.quote()?.total ?? 0);
+    if (!pizza) {
+      return 'Tu pizza';
+    }
 
-  readonly extrasCount = computed(() => this.selectedExtras().size);
+    if (this.isHalfAndHalf() && pizzaB) {
+      return `${pizza.name} + ${pizzaB.name}`;
+    }
 
-  readonly extrasAccordionValue = computed(() => (this.extrasAccordionOpen() ? 'extras' : null));
+    return pizza.name;
+  });
 
   readonly canCheckout = computed(() => {
-    const a = this.pizzaA();
-    const s = this.selectedSize();
-    const q = this.quantity();
+    if (!this.currentPayload()) {
+      return false;
+    }
 
-    if (!a || !s) return false;
-    if (q < this.minQty || q > this.maxQty) return false;
-    if (this.isHalfAndHalf() && !this.pizzaB()) return false;
+    if (!this.hasValidSizes()) {
+      return false;
+    }
+
+    if (this.displayUnitPrice() <= 0) {
+      return false;
+    }
+
+    if (this.displayTotal() <= 0) {
+      return false;
+    }
 
     return (
-      !!this.quote() &&
+      this.quoteIsCurrent() &&
       !this.quoteLoading() &&
       !this.quoteError() &&
       !this.cartSubmitting()
     );
   });
 
-  readonly baseLocksHint = computed(() => 'Pasta/salsa de tomate y queso no se pueden quitar.');
-
-  readonly hasIngredientChangesA = computed(() => !this.arraysEqual(this.baseIngredientsA(), this.originalIngredientsA()));
-  readonly hasIngredientChangesB = computed(() => !this.arraysEqual(this.baseIngredientsB(), this.originalIngredientsB()));
-
-  readonly fallbackImage =
-    'data:image/svg+xml;utf8,' +
-    encodeURIComponent(
-      `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="500" viewBox="0 0 800 500">
-        <rect width="800" height="500" fill="#f2f2f2"/>
-        <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle"
-              fill="#666" font-family="Arial" font-size="28">
-          Sin imagen
-        </text>
-      </svg>`
-    );
-
-  constructor() {
-    this.load();
-    this.setupQuoteAutoRecalc();
-  }
-
-  onExtrasAccordionChange(v: any): void {
-    this.extrasAccordionOpen.set(v === 'extras');
-  }
-
-  private load(): void {
-    this.loading.set(true);
-    this.error.set(null);
-
-    const raw = this.route.snapshot.paramMap.get('name') ?? '';
-    const name = decodeURIComponent(raw).trim();
-
-    if (!name) {
-      this.error.set('Nombre de pizza inválido.');
-      this.loading.set(false);
-      return;
+  readonly configurationHint = computed(() => {
+    if (!this.hasValidSizes()) {
+      return 'Esta pizza no tiene tamaños disponibles para pedido en este momento.';
     }
 
-    this.api.getAllPizzas()
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: list => this.allPizzas.set(list ?? []),
-        error: () => this.allPizzas.set([]),
-      });
+    if (!this.selectedSize()) {
+      return 'Selecciona un tamaño para continuar.';
+    }
 
-    this.api
-      .getPizzaByName(name)
-      .pipe(
-        takeUntilDestroyed(this.destroyRef),
-        finalize(() => this.loading.set(false))
-      )
-      .subscribe({
-        next: (p) => {
-          this.pizzaA.set(p);
+    if (this.displayUnitPrice() <= 0) {
+      return 'El tamaño seleccionado no está disponible para esta pizza.';
+    }
 
-          const baseA = this.getBaseIngredientsFromPizza(p);
-          this.baseIngredientsA.set(baseA);
-          this.originalIngredientsA.set([...baseA]);
+    if (this.isHalfAndHalf() && !this.pizzaB()) {
+      return 'Selecciona la segunda mitad para continuar.';
+    }
 
-          this.baseIngredientsB.set([]);
-          this.originalIngredientsB.set([]);
+    if (this.quoteError()) {
+      return this.quoteError()!;
+    }
 
-          this.isHalfAndHalf.set(false);
-          this.secondPizzaId.set(null);
+    if (this.quoteLoading()) {
+      return 'Actualizando el precio de tu pedido…';
+    }
 
-          this.sizeKey.set(null);
-          this.quantity.set(1);
+    return 'Tu pedido está validado y listo para agregar al carrito.';
+  });
 
-          this.selectedExtras.set(new Map());
-          this.extrasAccordionOpen.set(false);
+  readonly baseLocksHint = computed(
+    () =>
+      'La salsa de tomate y el queso son ingredientes base y no se pueden quitar.',
+  );
 
-          this.quote.set(null);
-          this.quoteError.set(null);
-          this.cartSubmitting.set(false);
+  constructor() {
+    this.setupQuotePipeline();
+    this.setupQuoteAutoRecalculation();
+    this.load();
 
-          this.loadExtras();
-        },
-        error: (e: Error) => this.error.set(e.message),
-      });
-  }
-
-  private loadExtras(): void {
-    this.api
-      .getIngredients()
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: (list) => this.extrasCatalog.set(list ?? []),
-        error: () => this.extrasCatalog.set([]),
-      });
-  }
-
-  // =========================
-  // Quote Integration
-  // =========================
-  private buildQuotePayload(): BuilderQuoteRequestDto | null {
-    const a = this.pizzaA();
-    const b = this.pizzaB();
-    const s = this.selectedSize();
-    const q = this.quantity();
-
-    if (!a || !s) return null;
-    if (q < this.minQty || q > this.maxQty) return null;
-    if (this.isHalfAndHalf() && !b) return null;
-
-    const extras = Array.from(this.selectedExtras().entries()).map(([ingredientId, sel]) => ({
-      ingredient_id: ingredientId,
-      applies_to: sel.appliesTo,
-    }));
-
-    return {
-      pizza_id: a.id,
-      is_half_and_half: this.isHalfAndHalf(),
-      second_pizza_id: this.isHalfAndHalf() ? (b?.id ?? null) : null,
-      size_id: s.id,
-      quantity: q,
-      customizations: extras.map(extra => ({
-        action: 'extra' as const,
-        ingredient_id: extra.ingredient_id,
-        applies_to: extra.applies_to,
-      })),
-      extras,
-    };
-  }
-
-  private setupQuoteAutoRecalc(): void {
     effect(() => {
-      this.pizzaA();
-      this.pizzaB();
-      this.isHalfAndHalf();
-      this.selectedSize();
-      this.quantity();
-      this.selectedExtras();
+      const available = this.availableSizePrices();
+      const current = this.selectedSizeId();
 
-      const payload = this.buildQuotePayload();
-
-      if (!payload) {
-        this.cancelQuoteInFlight();
-        this.quote.set(null);
-        this.quoteError.set(null);
-        this.quoteLoading.set(false);
+      if (available.length === 0) {
+        if (current !== null) {
+          this.selectedSizeId.set(null);
+        }
         return;
       }
 
-      this.cancelQuoteTimer();
-      this.quoteTimer = setTimeout(() => {
-        this.cancelQuoteInFlight();
+      const exists = available.some(
+        item => item.size.id === current,
+      );
 
-        this.quoteLoading.set(true);
-        this.quoteError.set(null);
-
-        this.quoteSub = this.builderApi
-          .quote(payload)
-          .pipe(finalize(() => this.quoteLoading.set(false)))
-          .subscribe({
-            next: (res) => this.quote.set(res),
-            error: (e: Error) => {
-              this.quote.set(null);
-              this.quoteError.set(e.message);
-            },
-          });
-      }, 250);
-    }, { allowSignalWrites: true });
-  }
-
-  private cancelQuoteTimer(): void {
-    if (this.quoteTimer) {
-      clearTimeout(this.quoteTimer);
-      this.quoteTimer = null;
-    }
-  }
-
-  private cancelQuoteInFlight(): void {
-    if (this.quoteSub) {
-      this.quoteSub.unsubscribe();
-      this.quoteSub = undefined;
-    }
-  }
-
-  // =========================
-  // Half & half
-  // =========================
-  setHalfAndHalf(checked: boolean): void {
-    this.isHalfAndHalf.set(checked);
-
-    if (!checked) {
-      this.secondPizzaId.set(null);
-      this.baseIngredientsB.set([]);
-      this.originalIngredientsB.set([]);
-
-      const current = new Map(this.selectedExtras());
-      for (const [id, sel] of current.entries()) {
-        current.set(id, { ...sel, appliesTo: 'ALL' });
+      if (!exists) {
+        this.selectedSizeId.set(
+          available[0].size.id,
+        );
       }
-      this.selectedExtras.set(current);
+    });
+  }
+
+  goBack(): void {
+    void this.router.navigateByUrl('/');
+  }
+
+  retryLoad(): void {
+    this.load();
+  }
+
+  setSize(sizeId: number): void {
+    const exists = this.availableSizePrices().some(
+      item => item.size.id === sizeId,
+    );
+
+    if (!exists) {
+      return;
     }
+
+    if (this.selectedSizeId() === sizeId) {
+      return;
+    }
+
+    this.selectedSizeId.set(sizeId);
+  }
+
+  setQuantity(value: number | null | undefined): void {
+    const numericValue = Number(
+      value ?? this.minQuantity,
+    );
+
+    const normalized = Number.isFinite(numericValue)
+      ? Math.trunc(numericValue)
+      : this.minQuantity;
+
+    this.quantity.set(
+      Math.max(
+        this.minQuantity,
+        Math.min(this.maxQuantity, normalized),
+      ),
+    );
+  }
+
+  setHalfAndHalf(enabled: boolean): void {
+    this.isHalfAndHalf.set(enabled);
+
+    if (enabled) {
+      return;
+    }
+
+    this.secondPizzaId.set(null);
+    this.baseIngredientsB.set([]);
+    this.originalIngredientsB.set([]);
+
+    const normalizedExtras = new Map(
+      this.selectedExtras(),
+    );
+
+    for (const [id, selected] of normalizedExtras.entries()) {
+      normalizedExtras.set(id, {
+        ...selected,
+        appliesTo: 'ALL',
+      });
+    }
+
+    this.selectedExtras.set(normalizedExtras);
   }
 
   setSecondPizzaId(id: number | null): void {
     this.secondPizzaId.set(id);
 
-    const b = this.pizzaB();
-    const baseB = b ? this.getBaseIngredientsFromPizza(b) : [];
+    const pizza = id
+      ? this.allPizzas().find(
+          item => item.id === id,
+        ) ?? null
+      : null;
 
-    this.baseIngredientsB.set(baseB);
-    this.originalIngredientsB.set([...baseB]);
+    const ingredients =
+      this.getBaseIngredientsFromPizza(pizza);
+
+    this.baseIngredientsB.set(ingredients);
+    this.originalIngredientsB.set([...ingredients]);
   }
 
-  // =========================
-  // Helpers
-  // =========================
-  private sizeNameByKey(k: UiSizeKey): string {
-    switch (k) {
-      case 'peq': return 'Pequeña';
-      case 'med': return 'Mediana';
-      case 'fam': return 'Familiar';
-      case 'gig': return 'Gigante';
-    }
+  onExtrasAccordionChange(value: unknown): void {
+    this.extrasAccordionOpen.set(
+      value === 'extras',
+    );
   }
 
-  setSize(k: UiSizeKey): void {
-    this.sizeKey.set(k);
-  }
-
-  setQty(v: number): void {
-    const n = Number(v || 1);
-    const clamped = Math.min(this.maxQty, Math.max(this.minQty, n));
-    this.quantity.set(clamped);
-  }
-
-  private getBaseIngredientsFromPizza(p: PizzaDto | null): string[] {
-    if (!p) return [];
-
-    const fromRelation =
-      (p.ingredients ?? [])
-        .map(i => i?.name)
-        .filter((x): x is string => !!x)
-        .map(x => x.trim())
-        .filter(Boolean);
-
-    const fallbackFromDesc = (p.description ?? '')
-      .split(',')
-      .map(s => s.trim())
-      .filter(Boolean);
-
-    const base = fromRelation.length ? fromRelation : fallbackFromDesc;
-    return this.ensureMandatoryBase(base);
-  }
-
-  private ensureMandatoryBase(list: string[]): string[] {
-    const norm = list.map(x => this.normalizeText(x));
-
-    const hasSauce =
-      norm.some(n =>
-        this.lockTokens.tomato.some(t => n.includes(t)) &&
-        this.lockTokens.sauceWords.some(w => n.includes(w))
-      ) || norm.includes(this.normalizeText(this.mandatoryBase.sauceLabel));
-
-    const hasCheese =
-      norm.some(n => this.lockTokens.cheese.some(t => n.includes(t))) ||
-      norm.includes(this.normalizeText(this.mandatoryBase.cheeseLabel));
-
-    const next = [...list];
-
-    if (!hasSauce) next.unshift(this.mandatoryBase.sauceLabel);
-    if (!hasCheese) next.unshift(this.mandatoryBase.cheeseLabel);
-
-    const seen = new Set<string>();
-    return next.filter(x => {
-      const k = this.normalizeText(x);
-      if (seen.has(k)) return false;
-      seen.add(k);
-      return true;
-    });
-  }
-
-  private arraysEqual(a: string[], b: string[]): boolean {
-    if (a === b) return true;
-    if (a.length !== b.length) return false;
-    for (let i = 0; i < a.length; i++) {
-      if (a[i] !== b[i]) return false;
-    }
-    return true;
-  }
-
-  // =========================
-  // Base ingredients (LOCK) + Restablecer
-  // =========================
   isBaseIngredientLocked(name: string): boolean {
-    const n = this.normalizeText(name);
+    const normalized = this.normalizeText(name);
 
-    const isCheese = this.lockTokens.cheese.some(t => n.includes(t));
+    const isCheese =
+      this.lockTokens.cheese.some(token =>
+        normalized.includes(token),
+      );
 
-    const hasTomato = this.lockTokens.tomato.some(t => n.includes(t));
-    const hasSauceWord = this.lockTokens.sauceWords.some(w => n.includes(w));
-    const isSauce = hasTomato && hasSauceWord;
+    const isTomatoSauce =
+      this.lockTokens.tomato.some(token =>
+        normalized.includes(token),
+      ) &&
+      this.lockTokens.sauceWords.some(token =>
+        normalized.includes(token),
+      );
 
-    const isForcedSauce = n === this.normalizeText(this.mandatoryBase.sauceLabel);
-    const isForcedCheese = n === this.normalizeText(this.mandatoryBase.cheeseLabel);
-
-    return isCheese || isSauce || isForcedSauce || isForcedCheese;
+    return (
+      isCheese ||
+      isTomatoSauce ||
+      normalized ===
+        this.normalizeText(
+          this.mandatoryBase.sauceLabel,
+        ) ||
+      normalized ===
+        this.normalizeText(
+          this.mandatoryBase.cheeseLabel,
+        )
+    );
   }
 
   removeBaseIngredientA(name: string): void {
-    if (this.isBaseIngredientLocked(name)) return;
-    this.baseIngredientsA.set(this.baseIngredientsA().filter(i => i !== name));
+    if (this.isBaseIngredientLocked(name)) {
+      return;
+    }
+
+    this.baseIngredientsA.set(
+      this.baseIngredientsA().filter(
+        item => item !== name,
+      ),
+    );
   }
 
   removeBaseIngredientB(name: string): void {
-    if (this.isBaseIngredientLocked(name)) return;
-    this.baseIngredientsB.set(this.baseIngredientsB().filter(i => i !== name));
+    if (this.isBaseIngredientLocked(name)) {
+      return;
+    }
+
+    this.baseIngredientsB.set(
+      this.baseIngredientsB().filter(
+        item => item !== name,
+      ),
+    );
   }
 
   resetBaseIngredientsA(): void {
-    this.baseIngredientsA.set([...this.originalIngredientsA()]);
+    this.baseIngredientsA.set([
+      ...this.originalIngredientsA(),
+    ]);
   }
 
   resetBaseIngredientsB(): void {
-    this.baseIngredientsB.set([...this.originalIngredientsB()]);
+    this.baseIngredientsB.set([
+      ...this.originalIngredientsB(),
+    ]);
   }
 
-  // =========================
-  // Extras
-  // =========================
   isExtraDisabled(extra: IngredientDto): boolean {
-    const selected = this.selectedExtras().has(extra.id);
-    if (selected) return false;
-    return this.extrasCount() >= this.maxExtras;
+    return (
+      !this.selectedExtras().has(extra.id) &&
+      this.extrasCount() >= this.maxExtras
+    );
   }
 
-  toggleExtra(extra: IngredientDto, checked: boolean): void {
-    const current = new Map(this.selectedExtras());
+  toggleExtra(
+    extra: IngredientDto,
+    checked: boolean,
+  ): void {
+    const extras = new Map(this.selectedExtras());
 
     if (checked) {
-      if (current.size >= this.maxExtras && !current.has(extra.id)) return;
-      current.set(extra.id, { ingredient: extra, appliesTo: 'ALL' });
+      if (
+        extras.size >= this.maxExtras &&
+        !extras.has(extra.id)
+      ) {
+        return;
+      }
+
+      extras.set(extra.id, {
+        ingredient: extra,
+        appliesTo: 'ALL',
+      });
     } else {
-      current.delete(extra.id);
+      extras.delete(extra.id);
     }
 
-    this.selectedExtras.set(current);
+    this.selectedExtras.set(extras);
   }
 
-  setExtraAppliesTo(extraId: number, appliesTo: AppliesTo): void {
-    const current = new Map(this.selectedExtras());
-    const sel = current.get(extraId);
-    if (!sel) return;
+  setExtraAppliesTo(
+    extraId: number,
+    appliesTo: AppliesTo,
+  ): void {
+    const extras = new Map(this.selectedExtras());
+    const selected = extras.get(extraId);
 
-    current.set(extraId, {
-      ...sel,
-      appliesTo: this.isHalfAndHalf() ? appliesTo : 'ALL',
+    if (!selected) {
+      return;
+    }
+
+    extras.set(extraId, {
+      ...selected,
+      appliesTo: this.isHalfAndHalf()
+        ? appliesTo
+        : 'ALL',
     });
 
-    this.selectedExtras.set(current);
+    this.selectedExtras.set(extras);
   }
 
   extraPriceFor(extra: IngredientDto): number {
-    const s = this.selectedSize();
-    if (!s) return 0;
-    const found = extra.extra_prices?.find(ep => ep.size.id === s.id);
-    return Number(found?.extra_price ?? 0);
+    const sizeId = this.selectedSizeId();
+
+    if (!sizeId) {
+      return 0;
+    }
+
+    const price =
+      extra.extra_prices?.find(
+        item => item.size.id === sizeId,
+      )?.extra_price;
+
+    return Number(price ?? 0);
   }
 
-  // =========================
-  // Actions
-  // =========================
+  formatMoney(
+    value: number | string | null | undefined,
+  ): string {
+    const numericValue = Number(value ?? 0);
+
+    return new Intl.NumberFormat('es-EC', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(
+      Number.isFinite(numericValue)
+        ? numericValue
+        : 0,
+    );
+  }
+
+  formatPortions(size: SizeDto | null): string {
+    if (!size) {
+      return 'Sin tamaño seleccionado';
+    }
+
+    return `${size.portion} porciones`;
+  }
+
+  getServingHint(portions: number): string {
+    if (portions <= 4) {
+      return 'Ideal para 1 persona';
+    }
+
+    if (portions <= 6) {
+      return 'Ideal para 1 o 2 personas';
+    }
+
+    if (portions <= 8) {
+      return 'Ideal para 2 o 3 personas';
+    }
+
+    if (portions <= 10) {
+      return 'Ideal para 3 o 4 personas';
+    }
+
+    return 'Ideal para compartir';
+  }
+
   addToCart(): void {
-    this.submitPizzaToCart({ goToCheckout: false });
+    this.submitPizzaToCart(false);
   }
 
   buyNow(): void {
-    this.submitPizzaToCart({ goToCheckout: true });
+    this.submitPizzaToCart(true);
   }
 
-  private submitPizzaToCart(options: { goToCheckout: boolean }): void {
-    if (!this.canCheckout()) return;
-    if (this.cartSubmitting()) return;
+  private load(): void {
+    this.loading.set(true);
+    this.error.set(null);
+    this.resetConfiguration();
 
-    const payload = this.buildQuotePayload();
-    if (!payload) return;
+    const rawName =
+      this.route.snapshot.paramMap.get('name') ?? '';
+    const name =
+      decodeURIComponent(rawName).trim();
+
+    if (!name) {
+      this.error.set(
+        'No se encontró la pizza solicitada.',
+      );
+      this.loading.set(false);
+      return;
+    }
+
+    this.catalogApi
+      .getAllPizzas()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: pizzas =>
+          this.allPizzas.set(pizzas ?? []),
+        error: () => this.allPizzas.set([]),
+      });
+
+    this.catalogApi
+      .getIngredients()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: ingredients =>
+          this.extrasCatalog.set(
+            ingredients ?? [],
+          ),
+        error: () => this.extrasCatalog.set([]),
+      });
+
+    this.catalogApi
+      .getPizzaByName(name)
+      .pipe(
+        finalize(() => this.loading.set(false)),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe({
+        next: pizza => {
+          this.pizzaA.set(pizza);
+
+          const baseIngredients =
+            this.getBaseIngredientsFromPizza(pizza);
+
+          this.baseIngredientsA.set(baseIngredients);
+          this.originalIngredientsA.set([
+            ...baseIngredients,
+          ]);
+
+          const firstAvailableSize =
+            [...(pizza.category.size_prices ?? [])]
+              .filter(item =>
+                this.isValidSizePrice(item),
+              )
+              .sort(
+                (left, right) =>
+                  left.size.portion -
+                  right.size.portion,
+              )
+              .at(0);
+
+          this.selectedSizeId.set(
+            firstAvailableSize?.size.id ?? null,
+          );
+        },
+        error: (error: Error) => {
+          this.error.set(
+            error.message ||
+              'No se pudo cargar la pizza.',
+          );
+        },
+      });
+  }
+
+  private resetConfiguration(): void {
+    this.pizzaA.set(null);
+    this.isHalfAndHalf.set(false);
+    this.secondPizzaId.set(null);
+    this.selectedSizeId.set(null);
+    this.quantity.set(1);
+    this.baseIngredientsA.set([]);
+    this.baseIngredientsB.set([]);
+    this.originalIngredientsA.set([]);
+    this.originalIngredientsB.set([]);
+    this.selectedExtras.set(new Map());
+    this.extrasAccordionOpen.set(false);
+    this.quote.set(null);
+    this.quoteError.set(null);
+    this.quoteLoading.set(false);
+    this.quotedPayloadKey.set(null);
+  }
+
+  private setupQuoteAutoRecalculation(): void {
+    effect(() => {
+      const payload = this.currentPayload();
+      this.quoteRequests.next(payload);
+    });
+  }
+
+  private setupQuotePipeline(): void {
+    this.quoteRequests
+      .pipe(
+        debounceTime(250),
+        distinctUntilChanged(
+          (previous, current) =>
+            this.payloadKey(previous) ===
+            this.payloadKey(current),
+        ),
+        switchMap(payload => {
+          if (!payload) {
+            this.quote.set(null);
+            this.quoteError.set(null);
+            this.quoteLoading.set(false);
+            this.quotedPayloadKey.set(null);
+            return EMPTY;
+          }
+
+          const key = this.payloadKey(payload);
+
+          this.quoteLoading.set(true);
+          this.quoteError.set(null);
+
+          return this.builderApi.quote(payload).pipe(
+            catchError((error: Error) => {
+              this.quoteError.set(
+                error.message ||
+                  'No se pudo actualizar el precio.',
+              );
+              this.quotedPayloadKey.set(null);
+              return EMPTY;
+            }),
+            finalize(() =>
+              this.quoteLoading.set(false),
+            ),
+            switchMap(response => {
+              this.quote.set(response);
+              this.quotedPayloadKey.set(key);
+              return EMPTY;
+            }),
+          );
+        }),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe();
+  }
+
+  private buildQuotePayload():
+    | BuilderQuoteRequestDto
+    | null {
+    const pizzaA = this.pizzaA();
+    const pizzaB = this.pizzaB();
+    const selectedSize = this.selectedSize();
+    const selectedSizePrice =
+      this.selectedSizePrice();
+    const quantity = this.quantity();
+
+    if (!pizzaA || !selectedSize || !selectedSizePrice) {
+      return null;
+    }
+
+    if (Number(selectedSizePrice.price) <= 0) {
+      return null;
+    }
+
+    if (
+      quantity < this.minQuantity ||
+      quantity > this.maxQuantity
+    ) {
+      return null;
+    }
+
+    if (this.isHalfAndHalf() && !pizzaB) {
+      return null;
+    }
+
+    const customizations: CustomizationDto[] = [
+      ...this.buildRemovedIngredientCustomizations(
+        pizzaA,
+        this.originalIngredientsA(),
+        this.baseIngredientsA(),
+        this.isHalfAndHalf() ? 'A' : 'ALL',
+      ),
+      ...(pizzaB
+        ? this.buildRemovedIngredientCustomizations(
+            pizzaB,
+            this.originalIngredientsB(),
+            this.baseIngredientsB(),
+            'B',
+          )
+        : []),
+      ...Array.from(
+        this.selectedExtras().entries(),
+      ).map(([ingredientId, selected]) => ({
+        action: 'extra' as const,
+        ingredient_id: ingredientId,
+        applies_to: this.isHalfAndHalf()
+          ? selected.appliesTo
+          : 'ALL',
+      })),
+    ];
+
+    const extras = customizations
+      .filter(item => item.action === 'extra')
+      .map(item => ({
+        ingredient_id: item.ingredient_id,
+        applies_to: item.applies_to,
+      }));
+
+    return {
+      pizza_id: pizzaA.id,
+      is_half_and_half: this.isHalfAndHalf(),
+      second_pizza_id: this.isHalfAndHalf()
+        ? pizzaB?.id ?? null
+        : null,
+      size_id: selectedSize.id,
+      quantity,
+      customizations,
+      extras,
+    };
+  }
+
+  private buildRemovedIngredientCustomizations(
+    pizza: PizzaDto,
+    originalNames: string[],
+    currentNames: string[],
+    appliesTo: AppliesTo,
+  ): CustomizationDto[] {
+    const current = new Set(
+      currentNames.map(name =>
+        this.normalizeText(name),
+      ),
+    );
+
+    const removedNames = originalNames.filter(
+      name =>
+        !current.has(this.normalizeText(name)) &&
+        !this.isBaseIngredientLocked(name),
+    );
+
+    return removedNames.flatMap(name => {
+      const ingredient =
+        pizza.ingredients?.find(
+          item =>
+            this.normalizeText(item.name) ===
+            this.normalizeText(name),
+        );
+
+      return ingredient
+        ? [
+            {
+              action: 'remove' as const,
+              ingredient_id: ingredient.id,
+              applies_to: appliesTo,
+            },
+          ]
+        : [];
+    });
+  }
+
+  private submitPizzaToCart(
+    goToCheckout: boolean,
+  ): void {
+    if (!this.canCheckout() || this.cartSubmitting()) {
+      return;
+    }
+
+    const payload = this.currentPayload();
+
+    if (!payload) {
+      return;
+    }
 
     this.cartSubmitting.set(true);
 
     this.cart
       .addPizza(payload)
       .pipe(
+        finalize(() =>
+          this.cartSubmitting.set(false),
+        ),
         takeUntilDestroyed(this.destroyRef),
-        finalize(() => this.cartSubmitting.set(false))
       )
       .subscribe({
         next: () => {
           this.messages.add({
             severity: 'success',
-            summary: options.goToCheckout ? 'Continuemos con tu pedido' : 'Agregado',
-            detail: options.goToCheckout
-              ? 'Tu pizza se agregó correctamente. Te llevamos al checkout.'
+            summary: goToCheckout
+              ? 'Pedido listo'
+              : 'Pizza agregada',
+            detail: goToCheckout
+              ? 'Tu pizza quedó lista. Continuemos con el pago.'
               : 'La pizza se agregó correctamente al carrito.',
-            life: 2200,
+            life: 2400,
           });
 
-          if (options.goToCheckout) {
-            this.router.navigate(['/checkout']);
+          if (goToCheckout) {
+            void this.router.navigate([
+              '/checkout',
+            ]);
           }
         },
-        error: (err) => {
+        error: (error: unknown) => {
+          const message =
+            typeof error === 'object' &&
+            error !== null &&
+            'message' in error
+              ? String(error.message)
+              : 'No fue posible agregar la pizza al carrito.';
+
           this.messages.add({
             severity: 'error',
             summary: 'No se pudo agregar',
-            detail:
-              err?.error?.message ||
-              err?.message ||
-              'Ocurrió un error al agregar la pizza al carrito.',
-            life: 3000,
+            detail: message,
+            life: 3200,
           });
         },
       });
   }
 
-  private buildPayload() {
-    const a = this.pizzaA();
-    const b = this.pizzaB();
-    const s = this.selectedSize();
-    const q = this.quote();
+  private getBaseIngredientsFromPizza(
+    pizza: PizzaDto | null,
+  ): string[] {
+    if (!pizza) {
+      return [];
+    }
 
-    return {
-      sizeId: s?.id ?? null,
-      sizeName: s?.name ?? null,
-      quantity: this.quantity(),
+    const fromRelationship =
+      (pizza.ingredients ?? [])
+        .map(ingredient => ingredient.name?.trim())
+        .filter(
+          (name): name is string => !!name,
+        );
 
-      isHalfAndHalf: this.isHalfAndHalf(),
-      pizzaA: a ? { id: a.id, name: a.name } : null,
-      pizzaB: this.isHalfAndHalf() && b ? { id: b.id, name: b.name } : null,
+    const fromDescription =
+      (pizza.description ?? '')
+        .split(',')
+        .map(name => name.trim())
+        .filter(Boolean);
 
-      ingredientsA: this.baseIngredientsA(),
-      ingredientsB: this.isHalfAndHalf() ? this.baseIngredientsB() : [],
-
-      extras: Array.from(this.selectedExtras().values()).map(sel => ({
-        id: sel.ingredient.id,
-        name: sel.ingredient.name,
-        appliesTo: sel.appliesTo,
-      })),
-
-      basePrice: q?.base_price ?? 0,
-      extrasTotal: q?.extras_total ?? 0,
-      unitPrice: q?.unit_price ?? 0,
-      total: q?.total ?? 0,
-
-      image_url: a?.image_url ?? null,
-    };
+    return this.ensureMandatoryBase(
+      fromRelationship.length
+        ? fromRelationship
+        : fromDescription,
+    );
   }
 
-  private normalizeText(v: string): string {
-    return (v ?? '')
+  private ensureMandatoryBase(
+    ingredients: string[],
+  ): string[] {
+    const normalized = ingredients.map(ingredient =>
+      this.normalizeText(ingredient),
+    );
+
+    const hasSauce = normalized.some(
+      name =>
+        this.lockTokens.tomato.some(token =>
+          name.includes(token),
+        ) &&
+        this.lockTokens.sauceWords.some(token =>
+          name.includes(token),
+        ),
+    );
+
+    const hasCheese = normalized.some(name =>
+      this.lockTokens.cheese.some(token =>
+        name.includes(token),
+      ),
+    );
+
+    const result = [...ingredients];
+
+    if (!hasCheese) {
+      result.unshift(
+        this.mandatoryBase.cheeseLabel,
+      );
+    }
+
+    if (!hasSauce) {
+      result.unshift(
+        this.mandatoryBase.sauceLabel,
+      );
+    }
+
+    const unique = new Set<string>();
+
+    return result.filter(ingredient => {
+      const key =
+        this.normalizeText(ingredient);
+
+      if (unique.has(key)) {
+        return false;
+      }
+
+      unique.add(key);
+      return true;
+    });
+  }
+
+  private arraysEqual(
+    left: string[],
+    right: string[],
+  ): boolean {
+    return (
+      left.length === right.length &&
+      left.every(
+        (value, index) =>
+          value === right[index],
+      )
+    );
+  }
+
+  private payloadKey(
+    payload: BuilderQuoteRequestDto | null,
+  ): string | null {
+    return payload ? JSON.stringify(payload) : null;
+  }
+
+  private normalizeText(value: string): string {
+    return (value ?? '')
       .toLowerCase()
       .normalize('NFD')
       .replace(/[\u0300-\u036f]/g, '')
       .trim();
+  }
+
+  private isValidSizePrice(
+    item: CategorySizePriceDto | null | undefined,
+  ): boolean {
+    const price = Number(item?.price ?? 0);
+
+    return (
+      !!item?.size?.id &&
+      Number.isFinite(price) &&
+      price > 0
+    );
   }
 }

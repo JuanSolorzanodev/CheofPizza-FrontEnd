@@ -1,0 +1,696 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+
+.cash-detail-page {
+  display: grid;
+  max-width: 1500px;
+  margin-inline: auto;
+  gap: 1.25rem;
+}
+
+.cash-detail-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.5rem;
+
+  padding: clamp(1.35rem, 3vw, 2rem);
+
+  border: 1px solid var(--cheof-card-border);
+
+  border-radius: var(--cheof-radius-xl);
+
+  background:
+    radial-gradient(
+      circle at 92% 8%,
+      color-mix(in srgb, var(--p-primary-color) 14%, transparent),
+      transparent 38%
+    ),
+    var(--cheof-card-background);
+
+  box-shadow: var(--cheof-shadow-sm);
+}
+
+.cash-detail-header__copy {
+  min-width: 0;
+}
+
+.cash-detail-eyebrow {
+  display: block;
+
+  color: var(--p-primary-color);
+
+  font-size: 0.72rem;
+  font-weight: 850;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.cash-detail-header h2 {
+  margin: 0.4rem 0 0;
+
+  color: var(--p-text-color);
+
+  font-size: clamp(1.6rem, 4vw, 2.35rem);
+
+  line-height: 1.1;
+}
+
+.cash-detail-header p {
+  max-width: 720px;
+  margin: 0.75rem 0 0;
+
+  color: var(--p-text-muted-color);
+
+  line-height: 1.65;
+}
+
+.cash-detail-header__actions {
+  display: flex;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.65rem;
+}
+
+.cash-detail-session {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+
+  padding: 1.15rem 1.25rem;
+
+  border: 1px solid var(--cheof-card-border);
+
+  border-radius: var(--cheof-radius-xl);
+
+  background: var(--cheof-card-background);
+
+  box-shadow: var(--cheof-shadow-xs);
+}
+
+.cash-detail-session__status {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.cash-detail-session__indicator {
+  width: 14px;
+  min-width: 14px;
+  height: 14px;
+
+  border-radius: 50%;
+}
+
+.cash-detail-session__indicator--open {
+  background: var(--p-green-500);
+
+  box-shadow: 0 0 0 7px color-mix(in srgb, var(--p-green-500) 15%, transparent);
+}
+
+.cash-detail-session__indicator--closed {
+  background: var(--p-text-muted-color);
+
+  box-shadow: 0 0 0 7px color-mix(in srgb, var(--p-text-muted-color) 14%, transparent);
+}
+
+.cash-detail-session__status > div {
+  display: grid;
+  min-width: 0;
+  gap: 0.15rem;
+}
+
+.cash-detail-session__status span,
+.cash-detail-session__status small {
+  color: var(--p-text-muted-color);
+
+  font-size: 0.72rem;
+}
+
+.cash-detail-session__status strong {
+  color: var(--p-text-color);
+
+  font-size: 1rem;
+}
+
+.cash-detail-session__status small {
+  overflow: hidden;
+  max-width: 520px;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cash-detail-info-grid {
+  display: grid;
+
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+
+  gap: 1rem;
+}
+
+.cash-detail-info-card {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 0.85rem;
+
+  padding: 1rem;
+
+  border: 1px solid var(--cheof-card-border);
+
+  border-radius: var(--cheof-radius-lg);
+
+  background: var(--cheof-card-background);
+
+  box-shadow: var(--cheof-shadow-xs);
+}
+
+.cash-detail-info-card__icon {
+  display: grid;
+  width: 46px;
+  min-width: 46px;
+  height: 46px;
+  place-items: center;
+
+  border-radius: 14px;
+
+  background: color-mix(in srgb, var(--p-primary-color) 11%, var(--cheof-card-background));
+
+  color: var(--p-primary-color);
+}
+
+.cash-detail-info-card > div {
+  display: grid;
+  min-width: 0;
+  gap: 0.2rem;
+}
+
+.cash-detail-info-card span,
+.cash-detail-info-card small {
+  color: var(--p-text-muted-color);
+
+  font-size: 0.7rem;
+}
+
+.cash-detail-info-card strong {
+  overflow: hidden;
+
+  color: var(--p-text-color);
+
+  font-size: 0.86rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cash-detail-summary,
+.cash-detail-collections,
+.cash-detail-notes,
+.cash-detail-section {
+  min-width: 0;
+
+  padding: clamp(1rem, 2.5vw, 1.45rem);
+
+  border: 1px solid var(--cheof-card-border);
+
+  border-radius: var(--cheof-radius-xl);
+
+  background: var(--cheof-card-background);
+
+  box-shadow: var(--cheof-shadow-xs);
+}
+
+.cash-detail-section-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+
+  margin-bottom: 1rem;
+}
+
+.cash-detail-section-header > div {
+  min-width: 0;
+}
+
+.cash-detail-section-header span {
+  display: block;
+
+  color: var(--p-primary-color);
+
+  font-size: 0.7rem;
+  font-weight: 850;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.cash-detail-section-header h3 {
+  margin: 0.3rem 0 0;
+
+  color: var(--p-text-color);
+
+  font-size: 1.12rem;
+}
+
+.cash-detail-section-header p {
+  margin: 0.4rem 0 0;
+
+  color: var(--p-text-muted-color);
+
+  font-size: 0.77rem;
+  line-height: 1.55;
+}
+
+.cash-detail-section-count {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+
+  border-radius: 14px;
+
+  background: color-mix(in srgb, var(--p-primary-color) 11%, var(--cheof-card-background));
+
+  color: var(--p-primary-color);
+
+  font-size: 0.82rem;
+}
+
+.cash-detail-summary-grid {
+  display: grid;
+
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+
+  gap: 0.8rem;
+}
+
+.cash-detail-summary-card {
+  display: grid;
+  min-width: 0;
+  gap: 0.35rem;
+
+  padding: 1rem;
+
+  border: 1px solid var(--cheof-card-border);
+
+  border-radius: var(--cheof-radius-md);
+
+  background: color-mix(in srgb, var(--cheof-card-background) 96%, transparent);
+}
+
+.cash-detail-summary-card span {
+  color: var(--p-text-muted-color);
+
+  font-size: 0.68rem;
+}
+
+.cash-detail-summary-card strong {
+  color: var(--p-text-color);
+
+  font-size: 1rem;
+  white-space: nowrap;
+}
+
+.cash-detail-summary-card--income strong {
+  color: var(--p-green-500);
+}
+
+.cash-detail-summary-card--expense strong {
+  color: var(--p-red-500);
+}
+
+.cash-detail-summary-card--expected {
+  border-color: color-mix(in srgb, var(--p-primary-color) 30%, var(--cheof-card-border));
+
+  background: color-mix(in srgb, var(--p-primary-color) 7%, var(--cheof-card-background));
+}
+
+.cash-detail-summary-card--expected strong {
+  color: var(--p-primary-color);
+}
+
+.cash-detail-summary-card--counted strong {
+  color: var(--p-text-color);
+}
+
+.cash-detail-result {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+
+  margin-top: 1rem;
+  padding: 1rem 1.1rem;
+
+  border: 1px solid var(--cheof-card-border);
+
+  border-radius: var(--cheof-radius-lg);
+
+  background: color-mix(in srgb, var(--p-surface-100) 45%, var(--cheof-card-background));
+}
+
+.cash-detail-result > div {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.cash-detail-result span {
+  color: var(--p-text-muted-color);
+
+  font-size: 0.7rem;
+}
+
+.cash-detail-result strong {
+  color: var(--p-text-color);
+}
+
+.cash-detail-difference {
+  font-size: 1.25rem;
+  white-space: nowrap;
+}
+
+.cash-detail-difference--neutral {
+  color: var(--p-text-muted-color);
+}
+
+.cash-detail-difference--positive {
+  color: var(--p-green-500);
+}
+
+.cash-detail-difference--negative {
+  color: var(--p-red-500);
+}
+
+.cash-detail-notes-grid {
+  display: grid;
+
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  gap: 1rem;
+}
+
+.cash-detail-notes-grid article {
+  padding: 1rem;
+
+  border: 1px solid var(--cheof-card-border);
+
+  border-radius: var(--cheof-radius-md);
+
+  background: color-mix(in srgb, var(--p-surface-100) 35%, var(--cheof-card-background));
+}
+
+.cash-detail-notes-grid span {
+  color: var(--p-text-muted-color);
+
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.cash-detail-notes-grid p {
+  margin: 0.55rem 0 0;
+
+  color: var(--p-text-color);
+
+  font-size: 0.78rem;
+  line-height: 1.6;
+}
+
+.cash-detail-order-number {
+  color: var(--p-primary-color);
+
+  white-space: nowrap;
+}
+
+.cash-detail-customer,
+.cash-detail-movement {
+  display: grid;
+  min-width: 190px;
+  gap: 0.15rem;
+}
+
+.cash-detail-customer strong,
+.cash-detail-movement strong {
+  color: var(--p-text-color);
+
+  font-size: 0.78rem;
+}
+
+.cash-detail-customer small,
+.cash-detail-movement small,
+.cash-detail-date {
+  color: var(--p-text-muted-color);
+
+  font-size: 0.7rem;
+}
+
+.cash-detail-movement small {
+  overflow: hidden;
+  max-width: 220px;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cash-detail-table__amount {
+  text-align: right;
+}
+
+.cash-detail-table__amount strong {
+  white-space: nowrap;
+}
+
+.cash-detail-table__actions {
+  text-align: right;
+}
+
+.cash-detail-movement--income {
+  color: var(--p-green-500);
+}
+
+.cash-detail-movement--expense {
+  color: var(--p-red-500);
+}
+
+.cash-detail-empty {
+  display: grid;
+  min-height: 240px;
+  place-items: center;
+  align-content: center;
+  gap: 0.65rem;
+
+  text-align: center;
+}
+
+.cash-detail-empty__icon {
+  display: grid;
+  width: 60px;
+  height: 60px;
+  place-items: center;
+
+  border-radius: 18px;
+
+  background: color-mix(in srgb, var(--p-primary-color) 11%, var(--cheof-card-background));
+
+  color: var(--p-primary-color);
+
+  font-size: 1.25rem;
+}
+
+.cash-detail-empty h4 {
+  margin: 0;
+
+  color: var(--p-text-color);
+}
+
+.cash-detail-empty p {
+  max-width: 480px;
+  margin: 0;
+
+  color: var(--p-text-muted-color);
+
+  font-size: 0.78rem;
+  line-height: 1.55;
+}
+
+.cash-detail-loading {
+  display: grid;
+  gap: 1rem;
+}
+
+.cash-detail-loading__cards {
+  display: grid;
+
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+
+  gap: 1rem;
+}
+
+:host ::ng-deep {
+  .cash-detail-orders-table {
+    min-width: 920px;
+  }
+
+  .cash-detail-movements-table {
+    min-width: 780px;
+  }
+
+  .cash-detail-orders-table .p-datatable-thead > tr > th,
+  .cash-detail-movements-table .p-datatable-thead > tr > th {
+    padding-block: 0.8rem;
+
+    color: var(--p-text-muted-color);
+
+    font-size: 0.68rem;
+    font-weight: 800;
+    text-transform: uppercase;
+  }
+
+  .cash-detail-orders-table .p-datatable-tbody > tr > td,
+  .cash-detail-movements-table .p-datatable-tbody > tr > td {
+    padding-block: 0.8rem;
+  }
+}
+
+.cash-detail-collections__total {
+  display: grid;
+  flex-shrink: 0;
+  gap: 0.1rem;
+
+  min-width: 180px;
+
+  padding: 0.8rem 1rem;
+
+  border: 1px solid color-mix(in srgb, var(--p-primary-color) 25%, var(--cheof-card-border));
+
+  border-radius: var(--cheof-radius-md);
+
+  background: color-mix(in srgb, var(--p-primary-color) 7%, var(--cheof-card-background));
+
+  text-align: right;
+}
+
+.cash-detail-collections__total span,
+.cash-detail-collections__total small {
+  color: var(--p-text-muted-color);
+
+  font-size: 0.68rem;
+}
+
+.cash-detail-collections__total strong {
+  color: var(--p-primary-color);
+
+  font-size: 1.35rem;
+}
+
+.cash-detail-collections__grid {
+  display: grid;
+
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+
+  gap: 1rem;
+}
+
+.cash-detail-collection-card {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 0.85rem;
+
+  padding: 1rem;
+
+  border: 1px solid var(--cheof-card-border);
+
+  border-radius: var(--cheof-radius-lg);
+
+  background: color-mix(in srgb, var(--p-surface-50) 35%, var(--cheof-card-background));
+}
+
+.cash-detail-collection-card__icon {
+  display: grid;
+  width: 46px;
+  min-width: 46px;
+  height: 46px;
+  place-items: center;
+
+  border-radius: 14px;
+
+  background: color-mix(in srgb, var(--p-primary-color) 11%, var(--cheof-card-background));
+
+  color: var(--p-primary-color);
+}
+
+.cash-detail-collection-card > div {
+  display: grid;
+  min-width: 0;
+  gap: 0.2rem;
+}
+
+.cash-detail-collection-card span,
+.cash-detail-collection-card small {
+  color: var(--p-text-muted-color);
+
+  font-size: 0.7rem;
+}
+
+.cash-detail-collection-card strong {
+  color: var(--p-text-color);
+
+  font-size: 1.05rem;
+}
+
+@media (max-width: 1200px) {
+  .cash-detail-info-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .cash-detail-summary-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .cash-detail-loading__cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .cash-detail-header,
+  .cash-detail-section-header,
+  .cash-detail-session,
+  .cash-detail-result {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .cash-detail-header__actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .cash-detail-info-grid,
+  .cash-detail-summary-grid,
+  .cash-detail-notes-grid,
+  .cash-detail-loading__cards {
+    grid-template-columns: 1fr;
+  }
+
+  .cash-detail-header__actions :is(p-button, .p-button) {
+    width: 100%;
+  }
+
+  .cash-detail-difference {
+    font-size: 1.05rem;
+  }
+  .cash-detail-collections__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cash-detail-collections__total {
+    width: 100%;
+    text-align: left;
+  }
+}

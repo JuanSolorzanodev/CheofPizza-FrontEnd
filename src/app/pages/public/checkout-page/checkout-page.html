@@ -1,286 +1,493 @@
-<div class="page">
-  <app-google-login-dialog></app-google-login-dialog>
+<section class="checkout-page">
+  <app-google-login-dialog />
 
-  @if (!hasItems()) {
-    <div class="shell">
-      <div class="panel empty">
-        <div class="empty__title">Tu carrito está vacío</div>
-        <div class="empty__subtitle">Vuelve al menú y agrega pizzas para continuar.</div>
-        <p-button label="Ir al menú" [routerLink]="['/']" outlined="true"></p-button>
+  <div class="checkout-shell">
+    @if (configLoading()) {
+      <div class="checkout-loading">
+        <p-skeleton height="112px" borderRadius="24px" />
+        <div class="checkout-loading__grid">
+          <p-skeleton height="560px" borderRadius="24px" />
+          <p-skeleton height="360px" borderRadius="24px" />
+        </div>
       </div>
-    </div>
-  } @else {
-    <div class="shell">
-      <div class="layout">
-        <section class="panel main">
-          <div class="titlebar">
-            <div>
-              <h1>Checkout</h1>
-              <p class="muted">Finaliza tu pedido en pocos pasos.</p>
-            </div>
+    } @else if (!checkoutConfig()) {
+      <article class="state-card state-card--error">
+        <span class="state-card__icon"><i class="pi pi-wifi"></i></span>
+        <h1>No pudimos cargar el checkout</h1>
+        <p>Comprueba tu conexión e inténtalo nuevamente.</p>
+        <p-button label="Volver al menú" icon="pi pi-arrow-left" routerLink="/" />
+      </article>
+    } @else if (!hasItems()) {
+      <article class="state-card">
+        <span class="state-card__icon"><i class="pi pi-shopping-cart"></i></span>
+        <h1>Tu carrito está vacío</h1>
+        <p>Agrega pizzas o promociones antes de iniciar el checkout.</p>
+        <p-button label="Explorar el menú" icon="pi pi-arrow-right" iconPos="right" routerLink="/" />
+      </article>
+    } @else if (!storeAcceptsOrders()) {
+      <article class="state-card state-card--closed">
+        <span class="state-card__icon"><i class="pi pi-clock"></i></span>
+        <span class="state-card__eyebrow">Tienda temporalmente cerrada</span>
+        <h1>Ahora no estamos recibiendo pedidos</h1>
+        <p>
+          {{ store()?.closed_message || 'Regresa más tarde para completar tu pedido.' }}
+        </p>
+        <div class="state-card__actions">
+          <p-button label="Volver al menú" icon="pi pi-arrow-left" routerLink="/" />
+        </div>
+      </article>
+    } @else {
+      <header class="checkout-header">
+        <div>
+          <span class="checkout-header__eyebrow">Compra segura</span>
+          <h1>Finaliza tu pedido</h1>
+          <p>Revisa cada detalle antes de confirmar y pagar.</p>
+        </div>
 
-            <div class="chips">
-              <p-tag [value]="deliveryTypeLabel()" severity="info"></p-tag>
-              <p-tag [value]="paymentLabel()" severity="success"></p-tag>
-            </div>
-          </div>
+        <div class="checkout-header__meta">
+          <span><i class="pi pi-clock"></i> {{ store()?.estimated_minutes }} min aprox.</span>
+          <span><i class="pi pi-lock"></i> Pago protegido</span>
+        </div>
+      </header>
 
-          <p-divider></p-divider>
+      <nav class="checkout-steps" aria-label="Progreso del checkout">
+        @for (step of steps(); track step.id) {
+          <button
+            type="button"
+            class="checkout-step"
+            [class.checkout-step--active]="step.active"
+            [class.checkout-step--done]="step.done"
+            [disabled]="step.id > activeStep()"
+            (click)="goTo(step.id)"
+          >
+            <span class="checkout-step__number">
+              @if (step.done) {
+                <i class="pi pi-check"></i>
+              } @else {
+                {{ step.id + 1 }}
+              }
+            </span>
 
-          <div class="vsteps">
-            @for (s of stepMeta(); track s.id) {
-              <button
-                class="vstep"
-                type="button"
-                [class.vstep--active]="s.active"
-                [class.vstep--done]="s.done"
-                (click)="goTo(s.id)"
-              >
-                <div class="vstep__dot">
-                  @if (s.done) { <i class="pi pi-check"></i> } @else { <span>{{ s.id + 1 }}</span> }
+            <span class="checkout-step__copy">
+              <strong>{{ step.title }}</strong>
+              <small>{{ step.description }}</small>
+            </span>
+          </button>
+        }
+      </nav>
+
+      <div class="checkout-layout">
+        <main class="checkout-main">
+          <form [formGroup]="form" novalidate>
+            @if (activeStep() === 0) {
+              <section class="checkout-card checkout-section">
+                <div class="section-heading">
+                  <span class="section-heading__icon"><i class="pi pi-map-marker"></i></span>
+                  <div>
+                    <span>Paso 1</span>
+                    <h2>¿Cómo recibirás tu pedido?</h2>
+                    <p>Selecciona una modalidad disponible.</p>
+                  </div>
                 </div>
-                <div class="vstep__text">
-                  <div class="vstep__title">{{ s.title }}</div>
-                  <div class="vstep__desc">{{ s.desc }}</div>
-                </div>
-              </button>
-            }
-          </div>
 
-          <p-divider></p-divider>
+                <div class="option-grid option-grid--delivery">
+                  <button
+                    type="button"
+                    class="choice-card"
+                    [class.choice-card--selected]="deliveryType() === 'pickup'"
+                    [class.choice-card--disabled]="!pickupEnabled()"
+                    [disabled]="!pickupEnabled()"
+                    (click)="selectDelivery('pickup')"
+                  >
+                    <span class="choice-card__icon"><i class="pi pi-shop"></i></span>
+                    <span class="choice-card__content">
+                      <strong>Retiro en el local</strong>
+                      <small>Recoge tu pedido sin costo de envío.</small>
+                      @if (!pickupEnabled()) {
+                        <em>No disponible</em>
+                      }
+                    </span>
+                    <span class="choice-card__radio">
+                      <p-radioButton
+                        name="deliveryType"
+                        value="pickup"
+                        formControlName="delivery_type"
+                        [disabled]="!pickupEnabled()"
+                      />
+                    </span>
+                  </button>
 
-          @switch (activeStep()) {
-            @case (0) {
-              <div class="step">
-                <h2>Entrega</h2>
-                <p class="muted">Selecciona retiro o delivery.</p>
-
-                <div class="cards2">
-                  <label class="cardOpt">
-                    <p-radioButton name="delivery_type" [value]="'pickup'" [formControl]="form.controls.delivery_type"></p-radioButton>
-                    <div>
-                      <div class="cardOpt__title">Retiro en local</div>
-                      <div class="muted">Te acercas al local a retirar tu pedido.</div>
-                    </div>
-                  </label>
-
-                  <label class="cardOpt">
-                    <p-radioButton name="delivery_type" [value]="'delivery'" [formControl]="form.controls.delivery_type"></p-radioButton>
-                    <div>
-                      <div class="cardOpt__title">Delivery</div>
-                      <div class="muted">Enviamos tu pedido a tu ubicación.</div>
-                    </div>
-                  </label>
+                  <button
+                    type="button"
+                    class="choice-card"
+                    [class.choice-card--selected]="deliveryType() === 'delivery'"
+                    [class.choice-card--disabled]="!deliveryEnabled()"
+                    [disabled]="!deliveryEnabled()"
+                    (click)="selectDelivery('delivery')"
+                  >
+                    <span class="choice-card__icon"><i class="pi pi-truck"></i></span>
+                    <span class="choice-card__content">
+                      <strong>Entrega a domicilio</strong>
+                      <small>
+                        Recíbelo en tu ubicación por
+                        {{ delivery()?.delivery_fee | currency: 'USD' : 'symbol' : '1.2-2' }}.
+                      </small>
+                      @if (!deliveryEnabled()) {
+                        <em>No disponible</em>
+                      }
+                    </span>
+                    <span class="choice-card__radio">
+                      <p-radioButton
+                        name="deliveryType"
+                        value="delivery"
+                        formControlName="delivery_type"
+                        [disabled]="!deliveryEnabled()"
+                      />
+                    </span>
+                  </button>
                 </div>
 
                 @if (isDelivery()) {
-                  <div class="field">
-                    <label>Ubicación para delivery</label>
-                    <app-location-picker [formControl]="form.controls.delivery_location"></app-location-picker>
-                    @if (!isLocationOk()) { <small class="err">Selecciona tu ubicación (pin) en el mapa.</small> }
-                  </div>
+                  <div class="delivery-location">
+                    <div class="delivery-location__heading">
+                      <div>
+                        <h3>Ubicación de entrega</h3>
+                        <p>Marca el punto exacto y agrega una referencia clara.</p>
+                      </div>
+                      <p-tag value="Obligatorio" severity="warn" [rounded]="true" />
+                    </div>
 
-                  <div class="field" style="margin-top: 10px;">
-                    <p-button
-                      [label]="showManualAddress() ? 'Ocultar dirección manual (opcional)' : 'Agregar dirección manual (opcional)'"
-                      outlined="true"
-                      icon="pi pi-pencil"
-                      (onClick)="toggleManualAddress()"
-                    ></p-button>
+                    <app-location-picker formControlName="delivery_location" />
+
+                    @if (!isLocationOk() && form.controls.delivery_location.touched) {
+                      <small class="field-error">Selecciona una ubicación válida en el mapa.</small>
+                    }
+
+                    <button
+                      type="button"
+                      class="manual-address-toggle"
+                      (click)="toggleManualAddress()"
+                    >
+                      <i class="pi" [class.pi-plus]="!showManualAddress()" [class.pi-minus]="showManualAddress()"></i>
+                      {{ showManualAddress() ? 'Ocultar dirección adicional' : 'Agregar dirección escrita' }}
+                    </button>
 
                     @if (showManualAddress()) {
-                      <div style="margin-top: 10px;">
-                        <label>Dirección manual (opcional)</label>
+                      <label class="form-field">
+                        <span>Dirección escrita <small>Opcional</small></span>
                         <textarea
-                          pInputTextarea
+                          pTextarea
+                          formControlName="address"
                           rows="3"
-                          [formControl]="form.controls.address"
-                          placeholder="Ej: Calle X, Av. Y, frente al parque..."
+                          placeholder="Ej. Calle principal, edificio o número de casa"
                         ></textarea>
+                        <small>Entre 10 y 500 caracteres cuando se completa.</small>
                         @if (!isOptionalAddressOk()) {
-                          <small class="err">Si escribes una dirección manual, debe tener mínimo 10 caracteres.</small>
+                          <em class="field-error">La dirección debe tener entre 10 y 500 caracteres.</em>
                         }
-                        <small class="muted">Normalmente no hace falta: con el pin + dirección detectada es suficiente.</small>
-                      </div>
+                      </label>
                     }
                   </div>
                 }
-              </div>
+              </section>
             }
 
-            @case (1) {
-              <div class="step">
-                <h2>Pago</h2>
-                <p class="muted">Elige tu método de pago.</p>
-
-                <div class="cards3">
-                  <label class="cardOpt">
-                    <p-radioButton name="payment_method" [value]="'transfer'" [formControl]="form.controls.payment_method"></p-radioButton>
-                    <div>
-                      <div class="cardOpt__title">Transferencia</div>
-                      <div class="muted">Validación manual con comprobante.</div>
-                    </div>
-                  </label>
-
-                  <label class="cardOpt">
-                    <p-radioButton name="payment_method" [value]="'cash'" [formControl]="form.controls.payment_method"></p-radioButton>
-                    <div>
-                      <div class="cardOpt__title">Efectivo</div>
-                      <div class="muted">Pagas al recibir.</div>
-                    </div>
-                  </label>
-
-                  <label class="cardOpt cardOpt--disabled">
-                    <p-radioButton name="payment_method" [value]="'card'" [formControl]="form.controls.payment_method" [disabled]="true"></p-radioButton>
-                    <div>
-                      <div class="cardOpt__title">Tarjeta</div>
-                      <div class="muted">Próximamente (pasarela).</div>
-                    </div>
-                  </label>
+            @if (activeStep() === 1) {
+              <section class="checkout-card checkout-section">
+                <div class="section-heading">
+                  <span class="section-heading__icon"><i class="pi pi-shopping-bag"></i></span>
+                  <div>
+                    <span>Paso 2</span>
+                    <h2>Revisa tu pedido</h2>
+                    <p>Confirma productos, cantidades y observaciones.</p>
+                  </div>
                 </div>
 
-                <div class="field">
-                  <label>Notas (opcional)</label>
-                  <textarea pInputTextarea rows="3" [formControl]="form.controls.notes" placeholder="Ej: sin cebolla, timbre dañado, etc."></textarea>
+                <div class="review-delivery">
+                  <div>
+                    <span>Modalidad</span>
+                    <strong>{{ selectedDeliveryLabel() }}</strong>
+                  </div>
+                  @if (isDelivery()) {
+                    <div>
+                      <span>Referencia</span>
+                      <strong>{{ deliveryLocation()?.reference || 'Sin referencia adicional' }}</strong>
+                    </div>
+                  }
                 </div>
 
-                <!-- ✅ Aviso: los datos bancarios se ven en Mis pedidos -->
-                @if (isTransfer()) {
-                  <div class="hint">
-                    <strong>Transferencia seleccionada.</strong>
-                    <div class="muted">
-                      Al confirmar el pedido, podrás ver los datos de transferencia y enviar el comprobante en
-                      <b>Mis pedidos</b>.
+                <div class="review-items">
+                  @for (item of cart.items(); track item.id) {
+                    <article class="review-item">
+                      <div class="review-item__media">
+                        @if (
+                          item.promotion?.banner_image_url ||
+                          item.pizza?.image_url ||
+                          item.pizza_second?.image_url
+                        ) {
+                          <img [src]="itemImage(item)" [alt]="itemTitle(item)" />
+                        } @else {
+                          <i class="pi pi-image"></i>
+                        }
+                      </div>
+
+                      <div class="review-item__content">
+                        <div class="review-item__heading">
+                          <div>
+                            <strong>{{ itemTitle(item) }}</strong>
+                            <span>{{ item.size?.name || 'Tamaño incluido' }}</span>
+                          </div>
+                          <strong>{{ item.subtotal | currency: 'USD' : 'symbol' : '1.2-2' }}</strong>
+                        </div>
+
+                        @if (item.selected_pizzas?.length) {
+                          <div class="review-item__details">
+                            @for (pizza of item.selected_pizzas; track pizza.id) {
+                              <span>{{ pizza.name }}</span>
+                            }
+                          </div>
+                        }
+
+                        @if (item.extras?.length) {
+                          <div class="review-item__details">
+                            @for (extra of item.extras; track extra.id) {
+                              <span>{{ extra.action.name }} {{ extra.ingredient.name }}</span>
+                            }
+                          </div>
+                        }
+
+                        <div class="review-item__footer">
+                          <span>
+                            {{ item.unit_price | currency: 'USD' : 'symbol' : '1.2-2' }} por unidad
+                          </span>
+
+                          <p-inputNumber
+                            [ngModel]="item.quantity"
+                            [ngModelOptions]="{ standalone: true }"
+                            (ngModelChange)="cart.setQuantity(item.id, $event ?? 1)"
+                            [min]="1"
+                            [max]="10"
+                            [allowEmpty]="false"
+                            [showButtons]="true"
+                            buttonLayout="horizontal"
+                            incrementButtonIcon="pi pi-plus"
+                            decrementButtonIcon="pi pi-minus"
+                            class="quantity-control"
+                          />
+                        </div>
+                      </div>
+                    </article>
+                  }
+                </div>
+
+                <label class="form-field form-field--notes">
+                  <span>Observaciones para el pedido <small>Opcional</small></span>
+                  <textarea
+                    pTextarea
+                    formControlName="notes"
+                    rows="4"
+                    maxlength="500"
+                    placeholder="Ej. Sin cebolla, llamar al llegar o indicaciones generales"
+                  ></textarea>
+                  <small>{{ form.controls.notes.value.length }}/500 caracteres</small>
+                </label>
+
+                @if (!meetsMinimumOrder()) {
+                  <div class="minimum-alert">
+                    <i class="pi pi-exclamation-circle"></i>
+                    <div>
+                      <strong>Pedido mínimo no alcanzado</strong>
+                      <span>
+                        Faltan
+                        {{ minimumOrder() - subtotal() | currency: 'USD' : 'symbol' : '1.2-2' }}
+                        para continuar.
+                      </span>
+                    </div>
+                    <p-button label="Agregar productos" severity="secondary" [outlined]="true" routerLink="/" />
+                  </div>
+                }
+              </section>
+            }
+
+            @if (activeStep() === 2) {
+              <section class="checkout-card checkout-section">
+                <div class="section-heading">
+                  <span class="section-heading__icon"><i class="pi pi-credit-card"></i></span>
+                  <div>
+                    <span>Paso 3</span>
+                    <h2>Pago y confirmación</h2>
+                    <p>Selecciona cómo pagarás el pedido revisado.</p>
+                  </div>
+                </div>
+
+                <div class="option-grid option-grid--payment">
+                  <button
+                    type="button"
+                    class="payment-card"
+                    [class.payment-card--selected]="paymentMethod() === 'cash'"
+                    [class.payment-card--disabled]="!cashEnabled()"
+                    [disabled]="!cashEnabled()"
+                    (click)="selectPayment('cash')"
+                  >
+                    <span class="payment-card__icon"><i class="pi pi-money-bill"></i></span>
+                    <span><strong>Efectivo</strong><small>Paga al recibir o retirar.</small></span>
+                    <p-radioButton name="paymentMethod" value="cash" formControlName="payment_method" [disabled]="!cashEnabled()" />
+                  </button>
+
+                  <button
+                    type="button"
+                    class="payment-card"
+                    [class.payment-card--selected]="paymentMethod() === 'transfer'"
+                    [class.payment-card--disabled]="!transferEnabled()"
+                    [disabled]="!transferEnabled()"
+                    (click)="selectPayment('transfer')"
+                  >
+                    <span class="payment-card__icon"><i class="pi pi-building-columns"></i></span>
+                    <span><strong>Transferencia</strong><small>Recibirás los datos bancarios.</small></span>
+                    <p-radioButton name="paymentMethod" value="transfer" formControlName="payment_method" [disabled]="!transferEnabled()" />
+                  </button>
+
+                  <button
+                    type="button"
+                    class="payment-card"
+                    [class.payment-card--selected]="paymentMethod() === 'card'"
+                    [class.payment-card--disabled]="!paypalEnabled()"
+                    [disabled]="!paypalEnabled()"
+                    (click)="selectPayment('card')"
+                  >
+                    <span class="payment-card__icon"><i class="pi pi-credit-card"></i></span>
+                    <span><strong>Tarjeta o PayPal</strong><small>Pago cifrado procesado por PayPal.</small></span>
+                    <p-radioButton name="paymentMethod" value="card" formControlName="payment_method" [disabled]="!paypalEnabled()" />
+                  </button>
+                </div>
+
+                @if (isTransfer() && transferConfig(); as transfer) {
+                  <div class="payment-information">
+                    <span class="payment-information__icon"><i class="pi pi-info-circle"></i></span>
+                    <div>
+                      <strong>Transferencia bancaria</strong>
+                      <p>
+                        Al confirmar verás los datos de {{ transfer.bank_name }} y podrás enviar el comprobante por WhatsApp.
+                      </p>
                     </div>
                   </div>
                 }
-              </div>
-            }
-
-            @case (2) {
-              <div class="step">
-                <div class="reviewTop">
-                  <div>
-                    <h2>Revisión</h2>
-                    <p class="muted">Verifica tu pedido antes de confirmar.</p>
-                  </div>
-
-                  @if (!auth.isAuthenticated()) {
-                    <p-button label="Iniciar sesión" icon="pi pi-user" outlined="true" (onClick)="openLogin()"></p-button>
-                  }
-                </div>
-
-                <div class="items">
-                  @for (it of cart.items(); track it.id) {
-                    <div class="item">
-                      <img class="thumb" [src]="it.pizza?.image_url || it.pizza_second?.image_url" alt="Pizza" />
-                      <div class="meta">
-                        <div class="name">
-                          @if (it.is_half_and_half) { {{ it.pizza?.name }} + {{ it.pizza_second?.name }} }
-                          @else { {{ it.pizza?.name }} }
-                        </div>
-                        <div class="muted">@if (it.size?.name) { {{ it.size?.name }} }</div>
-                        <div class="muted">{{ it.unit_price | currency:'USD':'symbol':'1.2-2' }} / u</div>
-                      </div>
-
-                      <div class="actions">
-                        <p-inputNumber
-                          [ngModel]="it.quantity"
-                          [ngModelOptions]="{ standalone: true }"
-                          (ngModelChange)="cart.setQuantity(it.id, ($event ?? 1))"
-                          [min]="1"
-                          [max]="10"
-                          [allowEmpty]="false"
-                          [showButtons]="true"
-                          buttonLayout="horizontal"
-                          incrementButtonIcon="pi pi-plus"
-                          decrementButtonIcon="pi pi-minus"
-                          styleClass="qty"
-                        ></p-inputNumber>
-
-                        <strong>{{ it.subtotal | currency:'USD':'symbol':'1.2-2' }}</strong>
-                      </div>
-                    </div>
-                  }
-                </div>
 
                 @if (!auth.isAuthenticated()) {
-                  <small class="err">Debes iniciar sesión para confirmar el pedido.</small>
+                  <div class="login-notice">
+                    <i class="pi pi-user"></i>
+                    <div>
+                      <strong>Inicia sesión para confirmar</strong>
+                      <span>Tu pedido quedará asociado a tu cuenta y podrás seguir su estado.</span>
+                    </div>
+                    <p-button label="Iniciar sesión" icon="pi pi-sign-in" (onClick)="openLogin()" />
+                  </div>
                 }
-              </div>
+
+                @if (isCard()) {
+                  <div class="paypal-final-step">
+                    <div class="paypal-final-step__heading">
+                      <i class="pi pi-shield"></i>
+                      <div>
+                        <strong>Pago seguro por {{ total() | currency: 'USD' : 'symbol' : '1.2-2' }}</strong>
+                        <span>PayPal permite pagar con una cuenta o con una tarjeta compatible.</span>
+                      </div>
+                    </div>
+
+                    @if (!auth.isAuthenticated()) {
+                      <p-button label="Iniciar sesión para pagar" icon="pi pi-user" class="paypal-login-button" (onClick)="openLogin()" />
+                    } @else if (paypalConfig(); as paypal) {
+                      <app-paypal-button
+                        [config]="paypal"
+                        [payload]="paypalPayload()"
+                        [cartFingerprint]="paypalCartFingerprint()"
+                        [disabled]="!canProceed()"
+                        (paymentCompleted)="handlePayPalCompleted($event)"
+                      />
+                    }
+                  </div>
+                }
+              </section>
             }
-          }
 
-          <p-divider></p-divider>
-
-          <div class="nav">
-            <p-button
-              label="Atrás"
-              icon="pi pi-arrow-left"
-              outlined="true"
-              (onClick)="prev()"
-              [disabled]="activeStep() === 0 || placing()"
-            ></p-button>
-
-            @if (activeStep() < 2) {
+            <footer class="checkout-navigation">
               <p-button
-                label="Continuar"
-                icon="pi pi-arrow-right"
-                iconPos="right"
-                (onClick)="next()"
-                [disabled]="!canProceed() || placing()"
-              ></p-button>
-            } @else {
-              <p-button
-                label="Confirmar pedido"
-                icon="pi pi-check"
-                (onClick)="confirm()"
-                [loading]="placing()"
-                [disabled]="!canProceed()"
-              ></p-button>
-            }
+                label="Atrás"
+                icon="pi pi-arrow-left"
+                severity="secondary"
+                [outlined]="true"
+                [disabled]="activeStep() === 0 || placing()"
+                (onClick)="prev()"
+              />
+
+              @if (activeStep() < 2) {
+                <p-button
+                  label="Continuar"
+                  icon="pi pi-arrow-right"
+                  iconPos="right"
+                  [disabled]="!canProceed() || placing()"
+                  (onClick)="next()"
+                />
+              } @else if (!isCard()) {
+                <p-button
+                  label="Confirmar pedido"
+                  icon="pi pi-check"
+                  [loading]="placing()"
+                  [disabled]="!canProceed()"
+                  (onClick)="confirm()"
+                />
+              }
+            </footer>
+          </form>
+        </main>
+
+        <aside class="checkout-summary checkout-card">
+          <div class="checkout-summary__heading">
+            <div>
+              <span>Resumen</span>
+              <h2>Tu pedido</h2>
+            </div>
+            <p-tag [value]="cart.totalUnits() + ' productos'" severity="secondary" [rounded]="true" />
           </div>
-        </section>
 
-        <aside class="panel summary">
-          <div class="summary__head">
-            <div class="summary__title">Resumen</div>
-            <div class="muted">{{ cart.totalUnits() }} ítems</div>
-          </div>
-
-          <p-divider></p-divider>
-
-          <div class="summary__list">
-            @for (it of cart.items(); track it.id) {
-              <div class="sumLine">
-                <div class="sumLine__name">
-                  @if (it.is_half_and_half) { {{ it.pizza?.name }} + {{ it.pizza_second?.name }} }
-                  @else { {{ it.pizza?.name }} }
-                  <span class="muted">· {{ it.size?.name }}</span>
+          <div class="checkout-summary__products">
+            @for (item of cart.items(); track item.id) {
+              <div class="summary-product">
+                <span class="summary-product__quantity">{{ item.quantity }}</span>
+                <div>
+                  <strong>{{ itemTitle(item) }}</strong>
+                  <small>{{ item.size?.name || 'Combo' }}</small>
                 </div>
-                <div class="sumLine__price">{{ it.subtotal | currency:'USD':'symbol':'1.2-2' }}</div>
+                <span>{{ item.subtotal | currency: 'USD' : 'symbol' : '1.2-2' }}</span>
               </div>
             }
           </div>
 
-          <p-divider></p-divider>
-
-          <div class="totals">
-            <div class="row">
-              <span>Total</span>
-              <strong>{{ cart.total() | currency:'USD':'symbol':'1.2-2' }}</strong>
+          <div class="checkout-summary__delivery">
+            <div>
+              <i class="pi" [class.pi-shop]="!isDelivery()" [class.pi-truck]="isDelivery()"></i>
+              <span>{{ selectedDeliveryLabel() }}</span>
             </div>
+            <strong>{{ deliveryFee() | currency: 'USD' : 'symbol' : '1.2-2' }}</strong>
           </div>
 
-          @if (!auth.isAuthenticated()) {
-            <div class="alert">
-              <div class="alert__title">Necesitas iniciar sesión</div>
-              <div class="muted">Para confirmar el pedido.</div>
-              <p-button label="Iniciar sesión" icon="pi pi-user" outlined="true" (onClick)="openLogin()"></p-button>
-            </div>
-          }
+          <div class="checkout-summary__totals">
+            <div><span>Subtotal</span><strong>{{ subtotal() | currency: 'USD' : 'symbol' : '1.2-2' }}</strong></div>
+            <div><span>Envío</span><strong>{{ deliveryFee() | currency: 'USD' : 'symbol' : '1.2-2' }}</strong></div>
+            <div class="checkout-summary__total"><span>Total</span><strong>{{ total() | currency: 'USD' : 'symbol' : '1.2-2' }}</strong></div>
+          </div>
+
+          <div class="checkout-summary__facts">
+            <span><i class="pi pi-clock"></i> {{ store()?.estimated_minutes }} min aprox.</span>
+            <span><i class="pi pi-wallet"></i> Pedido mínimo {{ minimumOrder() | currency: 'USD' : 'symbol' : '1.2-2' }}</span>
+            <span><i class="pi pi-shield"></i> Total validado por el servidor</span>
+          </div>
+
+          <button type="button" class="continue-shopping" (click)="continueShopping()">
+            <i class="pi pi-plus"></i> Agregar más productos
+          </button>
         </aside>
       </div>
-    </div>
-  }
-</div>
+    }
+  </div>
+</section>

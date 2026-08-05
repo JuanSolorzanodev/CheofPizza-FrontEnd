@@ -1,0 +1,691 @@
+<section class="pizzas-page">
+  <header class="pizzas-hero">
+    <div>
+      <span class="eyebrow">
+        Catálogo
+      </span>
+
+      <h2>
+        Pizzas del menú
+      </h2>
+
+      <p>
+        Administra los productos, imágenes,
+        ingredientes y visibilidad del catálogo.
+      </p>
+    </div>
+
+    <div class="hero-actions">
+      <p-button
+        label="Actualizar"
+        icon="pi pi-refresh"
+        severity="secondary"
+        [outlined]="true"
+        [loading]="refreshing()"
+        [disabled]="saving()"
+        (onClick)="refresh()"
+      />
+
+      <p-button
+        label="Nueva pizza"
+        icon="pi pi-plus"
+        (onClick)="openNewPizza()"
+      />
+    </div>
+  </header>
+
+  <section
+    class="summary-grid"
+    aria-label="Resumen de pizzas"
+  >
+    <article class="summary-card">
+      <span class="summary-icon is-primary">
+        <i class="pi pi-box"></i>
+      </span>
+
+      <div>
+        <span>Total de pizzas</span>
+
+        @if (loading()) {
+          <p-skeleton
+            width="52px"
+            height="28px"
+          />
+        } @else {
+          <strong>
+            {{ totalPizzas() }}
+          </strong>
+        }
+
+        <small>
+          Productos registrados
+        </small>
+      </div>
+    </article>
+
+    <article class="summary-card">
+      <span class="summary-icon is-success">
+        <i class="pi pi-eye"></i>
+      </span>
+
+      <div>
+        <span>Visibles</span>
+
+        @if (loading()) {
+          <p-skeleton
+            width="52px"
+            height="28px"
+          />
+        } @else {
+          <strong>
+            {{ visiblePizzas() }}
+          </strong>
+        }
+
+        <small>
+          Disponibles al cliente
+        </small>
+      </div>
+    </article>
+
+    <article class="summary-card">
+      <span class="summary-icon is-muted">
+        <i class="pi pi-eye-slash"></i>
+      </span>
+
+      <div>
+        <span>Ocultas</span>
+
+        @if (loading()) {
+          <p-skeleton
+            width="52px"
+            height="28px"
+          />
+        } @else {
+          <strong>
+            {{ hiddenPizzas() }}
+          </strong>
+        }
+
+        <small>
+          Fuera del catálogo público
+        </small>
+      </div>
+    </article>
+
+    <article class="summary-card">
+      <span class="summary-icon is-warning">
+        <i class="pi pi-lock"></i>
+      </span>
+
+      <div>
+        <span>Protegidas</span>
+
+        @if (loading()) {
+          <p-skeleton
+            width="52px"
+            height="28px"
+          />
+        } @else {
+          <strong>
+            {{ protectedPizzas() }}
+          </strong>
+        }
+
+        <small>
+          Con registros asociados
+        </small>
+      </div>
+    </article>
+  </section>
+
+  <section class="filters-panel">
+    <label class="search-box">
+      <i class="pi pi-search"></i>
+
+      <input
+        pInputText
+        type="search"
+        placeholder="Buscar por nombre, categoría o ingrediente..."
+        [value]="search()"
+        (input)="
+          onSearch(
+            $any($event.target).value
+          )
+        "
+      />
+    </label>
+
+    <p-select
+      [options]="categoryOptions()"
+      optionLabel="label"
+      optionValue="value"
+      placeholder="Todas las categorías"
+      [ngModel]="selectedCategoryId()"
+      (ngModelChange)="
+        selectedCategoryId.set($event)
+      "
+    />
+
+    <p-select
+      [options]="visibilityOptions()"
+      optionLabel="label"
+      optionValue="value"
+      placeholder="Toda visibilidad"
+      [ngModel]="selectedVisibility()"
+      (ngModelChange)="
+        selectedVisibility.set($event)
+      "
+    />
+
+    <p-button
+      label="Limpiar"
+      icon="pi pi-filter-slash"
+      severity="secondary"
+      [text]="true"
+      (onClick)="clearFilters()"
+    />
+  </section>
+
+  <section class="pizzas-panel">
+    <header class="panel-header">
+      <div>
+        <span class="eyebrow">
+          Productos
+        </span>
+
+        <h3>
+          Pizzas registradas
+        </h3>
+
+        <p>
+          {{
+            filteredPizzas().length
+          }}
+          resultados encontrados.
+        </p>
+      </div>
+    </header>
+
+    @if (loading()) {
+      <div class="pizza-list skeleton-list">
+        @for (
+          item of [1, 2, 3, 4];
+          track item
+        ) {
+          <p-skeleton
+            height="156px"
+            borderRadius="18px"
+          />
+        }
+      </div>
+    } @else if (
+      filteredPizzas().length === 0
+    ) {
+      <div class="empty-state">
+        <span>
+          <i class="pi pi-box"></i>
+        </span>
+
+        <h3>
+          No encontramos pizzas
+        </h3>
+
+        <p>
+          No existen coincidencias para los
+          filtros seleccionados.
+        </p>
+
+        <p-button
+          label="Limpiar filtros"
+          icon="pi pi-filter-slash"
+          severity="secondary"
+          [outlined]="true"
+          (onClick)="clearFilters()"
+        />
+      </div>
+    } @else {
+      <div class="pizza-list">
+        @for (
+          pizza of filteredPizzas();
+          track pizza.id
+        ) {
+          <article
+            class="pizza-card"
+            [class.is-hidden]="
+              !pizza.is_visible
+            "
+          >
+            <div class="pizza-image">
+              @if (pizza.image_url) {
+                <img
+                  [src]="pizza.image_url"
+                  [alt]="pizza.name"
+                  loading="lazy"
+                />
+              } @else {
+                <div class="image-placeholder">
+                  <i class="pi pi-image"></i>
+
+                  <span>
+                    Sin imagen
+                  </span>
+                </div>
+              }
+
+              <span
+                class="visibility-badge"
+                [class.is-visible]="
+                  pizza.is_visible
+                "
+              >
+                <i
+                  [class]="
+                    pizza.is_visible
+                      ? 'pi pi-eye'
+                      : 'pi pi-eye-slash'
+                  "
+                ></i>
+
+                {{
+                  pizza.is_visible
+                    ? 'Visible'
+                    : 'Oculta'
+                }}
+              </span>
+            </div>
+
+            <div class="pizza-content">
+              <div class="pizza-title-row">
+                <div>
+                  <h4>
+                    {{ pizza.name }}
+                  </h4>
+
+                  <p-tag
+                    [value]="
+                      pizza.category.name
+                    "
+                    severity="secondary"
+                    [rounded]="true"
+                  />
+                </div>
+
+                @if (!pizza.can_delete) {
+                  <span
+                    class="protected-badge"
+                    pTooltip="Esta pizza tiene carritos, pedidos, promociones o historial asociado."
+                    tooltipPosition="top"
+                  >
+                    <i class="pi pi-lock"></i>
+                    Protegida
+                  </span>
+                }
+              </div>
+
+              <p class="pizza-description">
+                {{
+                  pizza.description ||
+                  'Sin descripción registrada.'
+                }}
+              </p>
+
+              <div class="ingredients">
+                @for (
+                  ingredient of pizza.ingredients;
+                  track ingredient.id
+                ) {
+                  <span>
+                    {{ ingredient.name }}
+                  </span>
+                }
+              </div>
+
+              <div class="pizza-meta">
+                <span>
+                  <i class="pi pi-list"></i>
+
+                  {{
+                    pizza.ingredients_count
+                  }}
+                  ingredientes
+                </span>
+
+                <span>
+                  <i class="pi pi-database"></i>
+
+                  {{
+                    usageLabel(pizza)
+                  }}
+                </span>
+
+                @if (
+                  pizza.usage.order_items_total > 0
+                ) {
+                  <span>
+                    <i class="pi pi-shopping-bag"></i>
+
+                    {{
+                      pizza.usage
+                        .order_items_total
+                    }}
+                    pedidos
+                  </span>
+                }
+              </div>
+            </div>
+
+            <div class="pizza-actions">
+              <p-button
+                label="Editar"
+                icon="pi pi-pencil"
+                severity="secondary"
+                [outlined]="true"
+                (onClick)="
+                  openEditPizza(pizza)
+                "
+              />
+
+              <p-button
+                [label]="
+                  pizza.is_visible
+                    ? 'Ocultar'
+                    : 'Mostrar'
+                "
+                [icon]="
+                  pizza.is_visible
+                    ? 'pi pi-eye-slash'
+                    : 'pi pi-eye'
+                "
+                [severity]="
+                  pizza.is_visible
+                    ? 'warn'
+                    : 'success'
+                "
+                [outlined]="true"
+                [loading]="
+                  changingVisibilityId() ===
+                  pizza.id
+                "
+                [disabled]="
+                  changingVisibilityId() !==
+                  null
+                "
+                (onClick)="
+                  confirmVisibility(pizza)
+                "
+              />
+
+              <p-button
+                icon="pi pi-trash"
+                severity="danger"
+                [text]="true"
+                [rounded]="true"
+                [loading]="
+                  deletingId() ===
+                  pizza.id
+                "
+                [disabled]="
+                  deletingId() !== null
+                "
+                [pTooltip]="
+                  pizza.can_delete
+                    ? 'Eliminar pizza'
+                    : 'La pizza tiene registros asociados'
+                "
+                tooltipPosition="top"
+                (onClick)="
+                  confirmDelete(pizza)
+                "
+              />
+            </div>
+          </article>
+        }
+      </div>
+    }
+  </section>
+</section>
+
+<p-dialog
+  [visible]="dialogVisible()"
+  (visibleChange)="
+    onDialogVisibleChange($event)
+  "
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [closable]="!saving()"
+  [closeOnEscape]="!saving()"
+  [style]="{
+    width: 'min(96vw, 780px)'
+  }"
+  appendTo="body"
+  styleClass="pizza-form-dialog"
+>
+  <ng-template pTemplate="header">
+    <div class="dialog-title">
+      <span>
+        <i class="pi pi-box"></i>
+      </span>
+
+      <div>
+        <small>
+          Catálogo
+        </small>
+
+        <strong>
+          {{
+            editingPizza()
+              ? 'Editar pizza'
+              : 'Nueva pizza'
+          }}
+        </strong>
+      </div>
+    </div>
+  </ng-template>
+
+  <form
+    class="pizza-form"
+    [formGroup]="pizzaForm"
+    (ngSubmit)="savePizza()"
+  >
+    <section class="form-grid">
+      <label class="field">
+        <span>
+          Nombre <em>*</em>
+        </span>
+
+        <input
+          pInputText
+          formControlName="name"
+          maxlength="150"
+          placeholder="Ej. Americana"
+        />
+
+        @if (
+          pizzaForm.controls.name.touched &&
+          pizzaForm.controls.name.invalid
+        ) {
+          <small class="field-error">
+            Ingresa un nombre de al menos
+            2 caracteres.
+          </small>
+        }
+      </label>
+
+      <label class="field">
+        <span>
+          Categoría <em>*</em>
+        </span>
+
+        <p-select
+          formControlName="category_id"
+          [options]="categories()"
+          optionLabel="name"
+          optionValue="id"
+          placeholder="Selecciona una categoría"
+          appendTo="body"
+        />
+
+        @if (
+          pizzaForm.controls
+            .category_id.touched &&
+          pizzaForm.controls
+            .category_id.invalid
+        ) {
+          <small class="field-error">
+            Selecciona una categoría.
+          </small>
+        }
+      </label>
+    </section>
+
+    <label class="field">
+      <span>
+        Descripción
+      </span>
+
+      <textarea
+        pTextarea
+        formControlName="description"
+        rows="4"
+        maxlength="3000"
+        placeholder="Describe los ingredientes y características de la pizza..."
+      ></textarea>
+
+      <small class="field-help">
+        {{
+          pizzaForm.controls
+            .description.value.length
+        }}/3000 caracteres
+      </small>
+    </label>
+
+    <label class="field">
+      <span>
+        URL de imagen
+      </span>
+
+      <input
+        pInputText
+        formControlName="image_url"
+        maxlength="2048"
+        placeholder="https://res.cloudinary.com/..."
+        (input)="
+          imagePreviewError.set(false)
+        "
+      />
+
+      @if (
+        pizzaForm.controls
+          .image_url.touched &&
+        pizzaForm.controls
+          .image_url.invalid
+      ) {
+        <small class="field-error">
+          Ingresa una URL válida que comience
+          con http:// o https://.
+        </small>
+      }
+    </label>
+
+    @if (
+      imageUrl() &&
+      !pizzaForm.controls.image_url.invalid
+    ) {
+      <div class="image-preview">
+        @if (!imagePreviewError()) {
+          <img
+            [src]="imageUrl()"
+            alt="Vista previa de la pizza"
+            (error)="
+              imagePreviewError.set(true)
+            "
+          />
+        } @else {
+          <div class="image-preview-error">
+            <i class="pi pi-image"></i>
+
+            <span>
+              No se pudo cargar la imagen.
+            </span>
+          </div>
+        }
+      </div>
+    }
+
+    <label class="field">
+      <span>
+        Ingredientes <em>*</em>
+      </span>
+
+      <p-multiselect
+        formControlName="ingredient_ids"
+        [options]="ingredientOptions()"
+        optionLabel="label"
+        optionValue="value"
+        placeholder="Selecciona ingredientes"
+        display="chip"
+        [filter]="true"
+        filterPlaceholder="Buscar ingrediente..."
+        [showClear]="true"
+        [maxSelectedLabels]="6"
+        selectedItemsLabel="{0} ingredientes seleccionados"
+        appendTo="body"
+      />
+
+      @if (
+        pizzaForm.controls
+          .ingredient_ids.touched &&
+        pizzaForm.controls
+          .ingredient_ids.invalid
+      ) {
+        <small class="field-error">
+          Selecciona al menos un ingrediente.
+        </small>
+      }
+    </label>
+
+    <div class="visibility-field">
+      <div>
+        <strong>
+          Visible en el catálogo
+        </strong>
+
+        <span>
+          Al desactivar esta opción, la pizza
+          dejará de mostrarse a los clientes.
+        </span>
+      </div>
+
+      <p-toggleswitch
+        formControlName="is_visible"
+      />
+    </div>
+  </form>
+
+  <ng-template pTemplate="footer">
+    <p-button
+      label="Cancelar"
+      severity="secondary"
+      [text]="true"
+      [disabled]="saving()"
+      (onClick)="closeDialog()"
+    />
+
+    <p-button
+      [label]="
+        editingPizza()
+          ? 'Guardar cambios'
+          : 'Crear pizza'
+      "
+      icon="pi pi-check"
+      [loading]="saving()"
+      (onClick)="savePizza()"
+    />
+  </ng-template>
+</p-dialog>
+
+<p-confirmdialog
+  appendTo="body"
+/>

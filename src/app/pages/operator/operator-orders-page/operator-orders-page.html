@@ -1,168 +1,727 @@
-<!-- src/app/pages/operator/operator-orders-page/operator-orders-page.html -->
+<section class="operator-workspace">
+  <div class="operator-workspace__container">
+    <!-- CABECERA -->
 
-<div class="page">
-  <div class="page-head">
-    <div>
-      <h1>Operativo</h1>
-      <p class="sub">Gestión de pedidos (operator/admin)</p>
-    </div>
-  </div>
+    <header class="workspace-header">
+      <div class="workspace-header__content">
+        <span class="workspace-header__eyebrow">
+          <i class="pi pi-briefcase" aria-hidden="true"></i>
+          Centro operativo
+        </span>
 
-  <!-- Cola / Conteos -->
-  <p-card class="queue-card">
-    <ng-template pTemplate="title">Cola por estado</ng-template>
+        <div class="workspace-header__title">
+          <div>
+            <h1>Pedidos</h1>
 
-    @if (loadingQueue()) {
-      <div class="queue-skel">
-        <p-skeleton height="44px" styleClass="mb-2"></p-skeleton>
-        <p-skeleton height="44px" styleClass="mb-2"></p-skeleton>
-      </div>
-    } @else {
-      <div class="queue-grid">
-        @for (kv of (queue() | keyvalue); track kv.key) {
-          <div class="queue-item">
-            <span class="label">{{ prettyStatus(kv.key) }}</span>
-            <span class="count">{{ kv.value }}</span>
+            <p>
+              Consulta la operación, identifica prioridades y abre cada
+              pedido para gestionarlo.
+            </p>
           </div>
-        }
+
+          <span class="active-orders-counter">
+            @if (loadingQueue()) {
+              <p-skeleton width="5rem" height="1rem" />
+            } @else {
+              <strong>{{ activeOrdersTotal() }}</strong>
+              activos
+            }
+          </span>
+        </div>
       </div>
-    }
-  </p-card>
 
-  <!-- Filtros -->
-  <p-card class="filters-card">
-    <ng-template pTemplate="title">Filtros</ng-template>
+      <div
+        class="live-status"
+        role="status"
+        aria-label="Operación actualizada automáticamente"
+      >
+        <span
+          class="live-status__indicator"
+          aria-hidden="true"
+        ></span>
 
-    <div class="filters-row">
-      <span class="p-input-icon-left search">
-        <i class="pi pi-search"></i>
+        <div>
+          <strong>Operación en vivo</strong>
+          <span>Actualización automática</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- NAVEGACIÓN POR ESTADOS -->
+
+    <section
+      class="status-board"
+      aria-labelledby="status-board-title"
+    >
+      <header class="status-board__header">
+        <div>
+          <h2 id="status-board-title">Estado de la operación</h2>
+
+          <p>
+            Selecciona una etapa para mostrar únicamente esos pedidos.
+          </p>
+        </div>
+
+        @if (status()) {
+          <button
+            type="button"
+            class="show-all-button"
+            (click)="
+              status.set(null);
+              onFilterChange()
+            "
+          >
+            <i class="pi pi-list" aria-hidden="true"></i>
+            Ver todos
+          </button>
+        }
+      </header>
+
+      @if (queueError()) {
+        <div class="queue-error" role="alert">
+          <i
+            class="pi pi-exclamation-circle"
+            aria-hidden="true"
+          ></i>
+
+          <span>{{ queueError() }}</span>
+
+          <button type="button" (click)="loadQueue()">
+            Reintentar
+          </button>
+        </div>
+      }
+
+      <div class="status-board__content">
+        <div class="status-group status-group--active">
+          <span class="status-group__label">
+            Operación activa
+          </span>
+
+          <div class="status-group__items">
+            @if (loadingQueue()) {
+              @for (_ of skeletonRows.slice(0, 5); track $index) {
+                <div class="status-filter status-filter--skeleton">
+                  <p-skeleton shape="circle" size="2rem" />
+                  <p-skeleton width="5rem" height=".75rem" />
+                  <p-skeleton width="1.6rem" height="1.4rem" />
+                </div>
+              }
+            } @else {
+              @for (item of activeStatusItems(); track item.key) {
+                <button
+                  type="button"
+                  [class]="statusItemClass(item)"
+                  [attr.aria-pressed]="item.active"
+                  (click)="selectStatus(item.key)"
+                >
+                  <span class="status-filter__icon">
+                    <i [class]="item.icon" aria-hidden="true"></i>
+                  </span>
+
+                  <span class="status-filter__label">
+                    {{ item.label }}
+                  </span>
+
+                  <span class="status-filter__count">
+                    {{ item.count }}
+                  </span>
+                </button>
+              }
+            }
+          </div>
+        </div>
+
+        <div class="status-divider" aria-hidden="true"></div>
+
+        <div class="status-group status-group--history">
+          <span class="status-group__label">
+            Historial
+          </span>
+
+          <div class="status-group__items">
+            @if (loadingQueue()) {
+              @for (_ of skeletonRows.slice(0, 2); track $index) {
+                <div class="status-filter status-filter--skeleton">
+                  <p-skeleton shape="circle" size="2rem" />
+                  <p-skeleton width="5rem" height=".75rem" />
+                  <p-skeleton width="1.6rem" height="1.4rem" />
+                </div>
+              }
+            } @else {
+              @for (
+                item of historicalStatusItems();
+                track item.key
+              ) {
+                <button
+                  type="button"
+                  [class]="statusItemClass(item)"
+                  [attr.aria-pressed]="item.active"
+                  (click)="selectStatus(item.key)"
+                >
+                  <span class="status-filter__icon">
+                    <i [class]="item.icon" aria-hidden="true"></i>
+                  </span>
+
+                  <span class="status-filter__label">
+                    {{ item.label }}
+                  </span>
+
+                  <span class="status-filter__count">
+                    {{ item.count }}
+                  </span>
+                </button>
+              }
+            }
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FILTROS -->
+
+    <section
+      class="orders-toolbar"
+      aria-label="Filtros de pedidos"
+    >
+      <div class="orders-search">
+        <i class="pi pi-search" aria-hidden="true"></i>
+
         <input
           pInputText
-          type="text"
-          placeholder="Buscar por #orden o dirección"
+          type="search"
+          autocomplete="off"
+          placeholder="Buscar número de pedido, cliente o teléfono"
           [ngModel]="q()"
           (ngModelChange)="onSearchTyping($event)"
         />
-      </span>
 
-      <!-- ✅ PrimeNG 21 Select -->
-      <p-select
-        class="filter"
-        [options]="statusOptions()"
-        optionLabel="label"
-        optionValue="value"
-        placeholder="Estado"
-        [showClear]="true"
-        [ngModel]="status() ?? ''"
-        (ngModelChange)="status.set($event || null); onFilterChange()"
-      ></p-select>
+        @if (q().length > 0) {
+          <button
+            type="button"
+            aria-label="Limpiar búsqueda"
+            (click)="clearSearch()"
+          >
+            <i class="pi pi-times" aria-hidden="true"></i>
+          </button>
+        }
+      </div>
 
       <p-select
-        class="filter"
         [options]="deliveryTypeOptions"
         optionLabel="label"
         optionValue="value"
-        placeholder="Tipo"
+        placeholder="Tipo de entrega"
         [showClear]="true"
         [ngModel]="deliveryType() ?? ''"
-        (ngModelChange)="deliveryType.set($event || null); onFilterChange()"
-      ></p-select>
+        class="orders-filter"
+        (ngModelChange)="
+          deliveryType.set($event || null);
+          onFilterChange()
+        "
+      />
 
       <p-select
-        class="filter"
         [options]="paymentMethodOptions"
         optionLabel="label"
         optionValue="value"
-        placeholder="Pago"
+        placeholder="Método de pago"
         [showClear]="true"
         [ngModel]="paymentMethod() ?? ''"
-        (ngModelChange)="paymentMethod.set($event || null); onFilterChange()"
-      ></p-select>
+        class="orders-filter"
+        (ngModelChange)="
+          paymentMethod.set($event || null);
+          onFilterChange()
+        "
+      />
 
-      <p-button
-        label="Limpiar"
-        icon="pi pi-times"
-        severity="secondary"
-        (onClick)="clearFilters()"
-      ></p-button>
-    </div>
-  </p-card>
+      @if (hasFilters()) {
+        <button
+          type="button"
+          class="clear-filters"
+          (click)="clearFilters()"
+        >
+          <i class="pi pi-filter-slash" aria-hidden="true"></i>
+          Limpiar
+        </button>
+      }
+    </section>
 
-  <!-- Lista -->
-  <p-card class="list-card">
-    <ng-template pTemplate="title">Pedidos</ng-template>
+    <!-- MESA OPERATIVA -->
 
-    @if (loading()) {
-      <p-skeleton height="110px" styleClass="mb-3"></p-skeleton>
-      <p-skeleton height="110px" styleClass="mb-3"></p-skeleton>
-    } @else {
-      @if (orders().length === 0) {
-        <div class="empty">
-          <i class="pi pi-inbox"></i>
-          <span>No hay pedidos con esos filtros.</span>
+    <section
+      class="orders-panel"
+      aria-labelledby="orders-panel-title"
+    >
+      <header class="orders-panel__header">
+        <div>
+          <span class="orders-panel__icon">
+            <i class="pi pi-list-check" aria-hidden="true"></i>
+          </span>
+
+          <div>
+            <h2 id="orders-panel-title">
+              {{ currentStatusLabel() }}
+            </h2>
+
+            @if (!loading() && total() > 0) {
+              <p>
+                Mostrando
+                <strong>{{ paginationFrom() }}</strong>
+                –
+                <strong>{{ paginationTo() }}</strong>
+                de
+                <strong>{{ total() }}</strong>
+                pedidos
+              </p>
+            } @else {
+              <p>Mesa operativa de pedidos.</p>
+            }
+          </div>
         </div>
-      } @else {
-        <div class="grid">
-          @for (o of orders(); track o.id) {
-            <p-card class="order-card">
-              <ng-template pTemplate="title">
-                <div class="card-title">
-                  <span class="num">#{{ o.order_number }}</span>
-                  <p-tag
-                    [value]="prettyStatus(o.status)"
-                    [severity]="statusSeverity(o.status)"
-                  ></p-tag>
-                </div>
-              </ng-template>
 
-              <div class="meta">
-                <div class="row">
-                  <span class="chip">{{ prettyDeliveryType(o.delivery_type) }}</span>
-                  <span class="chip">{{ prettyPaymentMethod(o.payment_method) }}</span>
-                  <span class="chip">{{ formatDate(o.ordered_at) }}</span>
-                </div>
+        @if (!loading() && total() > 0) {
+          <span class="orders-panel__page">
+            Página {{ page() }} de {{ lastPage() }}
+          </span>
+        }
+      </header>
 
-                <div class="row">
-                  <span class="label">Cliente</span>
-                  <span class="value">{{ o.customer?.name ?? '-' }}</span>
-                </div>
+      @if (errorMessage()) {
+        <div class="orders-error" role="alert">
+          <span class="orders-error__icon">
+            <i class="pi pi-wifi" aria-hidden="true"></i>
+          </span>
 
-                <div class="row">
-                  <span class="label">Tel</span>
-                  <span class="value">{{ o.customer?.phone ?? '-' }}</span>
-                </div>
+          <div>
+            <strong>No pudimos cargar los pedidos</strong>
+            <p>{{ errorMessage() }}</p>
+          </div>
 
-                @if (o.kitchen_summary) {
-                  <div class="kitchen">
-                    <div class="k-title">🍕 Preparar</div>
-                    <div class="k-body">{{ o.kitchen_summary }}</div>
-                  </div>
-                }
-              </div>
-
-              <ng-template pTemplate="footer">
-                <div class="actions">
-                  <a
-                    class="p-button p-button-outlined"
-                    [routerLink]="['/operator/orders', o.id]"
-                  >
-                    <i class="pi pi-eye"></i>
-                    <span>Detalle</span>
-                  </a>
-                </div>
-              </ng-template>
-            </p-card>
+          <p-button
+            label="Reintentar"
+            icon="pi pi-refresh"
+            severity="secondary"
+            [outlined]="true"
+            (onClick)="retry()"
+          />
+        </div>
+      } @else if (loading()) {
+        <div class="orders-loading">
+          @for (_ of skeletonRows; track $index) {
+            <div class="orders-loading__row">
+              <p-skeleton width="7rem" height="1.6rem" />
+              <p-skeleton width="12rem" height="2.3rem" />
+              <p-skeleton width="16rem" height="2.3rem" />
+              <p-skeleton width="10rem" height="2.3rem" />
+              <p-skeleton width="7rem" height="2.4rem" />
+            </div>
           }
         </div>
+      } @else if (orders().length === 0) {
+        <div class="empty-orders">
+          <span class="empty-orders__icon">
+            <i class="pi pi-inbox" aria-hidden="true"></i>
+          </span>
 
-        <p-paginator
-          [rows]="perPage()"
-          [totalRecords]="total()"
-          [first]="(page() - 1) * perPage()"
-          [rowsPerPageOptions]="[10, 15, 25, 50]"
-          (onPageChange)="onPageChange($event)"
-        ></p-paginator>
+          <span class="empty-orders__eyebrow">
+            Sin pedidos
+          </span>
+
+          <h3>No encontramos resultados</h3>
+
+          <p>
+            No existen pedidos que coincidan con los filtros
+            seleccionados.
+          </p>
+
+          @if (hasFilters()) {
+            <p-button
+              label="Limpiar filtros"
+              icon="pi pi-filter-slash"
+              severity="secondary"
+              [outlined]="true"
+              (onClick)="clearFilters()"
+            />
+          }
+        </div>
+      } @else {
+        <div
+          class="orders-content"
+          [class.orders-content--loading]="pageLoading()"
+          [attr.aria-busy]="pageLoading()"
+        >
+          @if (pageLoading()) {
+            <div class="page-loader" role="status">
+              <i
+                class="pi pi-spin pi-spinner"
+                aria-hidden="true"
+              ></i>
+
+              Actualizando pedidos...
+            </div>
+          }
+
+          <!-- TABLA DE ESCRITORIO -->
+
+          <div class="orders-table-wrapper">
+            <table class="orders-table">
+              <thead>
+                <tr>
+                  <th scope="col">Prioridad</th>
+                  <th scope="col">Pedido y cliente</th>
+                  <th scope="col">Preparación</th>
+                  <th scope="col">Logística y pago</th>
+                  <th scope="col" class="orders-table__action">
+                    Acción
+                  </th>
+                </tr>
+              </thead>
+
+              <tbody>
+                @for (order of orders(); track order.id) {
+                  <tr [class]="rowClass(order)">
+                    <td>
+                      <div class="priority-cell">
+                        <span
+                          class="priority-cell__icon"
+                          [attr.data-status]="order.status"
+                        >
+                          <i
+                            [class]="statusIcon(order.status)"
+                            aria-hidden="true"
+                          ></i>
+                        </span>
+
+                        <div>
+                          <strong>
+                            {{ statusOperationalLabel(order.status) }}
+                          </strong>
+
+                          <p-tag
+                            [value]="prettyStatus(order.status)"
+                            [severity]="statusSeverity(order.status)"
+                            [rounded]="true"
+                            class="priority-tag"
+                          />
+                        </div>
+                      </div>
+                    </td>
+
+                    <td>
+                      <div class="identity-cell">
+                        <div class="identity-cell__order">
+                          <strong>
+                            #{{ order.order_number }}
+                          </strong>
+
+                          <span>
+                            {{ formatDate(order.ordered_at) }}
+                          </span>
+                        </div>
+
+                        <div class="identity-cell__customer">
+                          <span class="customer-avatar">
+                            <i
+                              class="pi pi-user"
+                              aria-hidden="true"
+                            ></i>
+                          </span>
+
+                          <div>
+                            <strong>
+                              {{ customerName(order) }}
+                            </strong>
+
+                            <span>
+                              <i
+                                class="pi pi-phone"
+                                aria-hidden="true"
+                              ></i>
+
+                              {{ customerPhone(order) }}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+
+                    <td>
+                      <div class="preparation-cell">
+                        <span>
+                          <i
+                            class="pi pi-list-check"
+                            aria-hidden="true"
+                          ></i>
+
+                          Preparación
+                        </span>
+
+                        <p>
+                          {{
+                            order.kitchen_summary ||
+                              'Sin resumen disponible'
+                          }}
+                        </p>
+                      </div>
+                    </td>
+
+                    <td>
+                      <div class="logistics-cell">
+                        <div class="logistics-cell__row">
+                          <span class="logistics-cell__icon">
+                            <i
+                              [class]="deliveryIcon(order)"
+                              aria-hidden="true"
+                            ></i>
+                          </span>
+
+                          <div>
+                            <span>Entrega</span>
+
+                            <strong>
+                              {{
+                                prettyDeliveryType(
+                                  order.delivery_type
+                                )
+                              }}
+                            </strong>
+                          </div>
+                        </div>
+
+                        <div class="logistics-cell__row">
+                          <span class="logistics-cell__icon">
+                            <i
+                              [class]="paymentIcon(order)"
+                              aria-hidden="true"
+                            ></i>
+                          </span>
+
+                          <div>
+                            <span>Pago</span>
+
+                            <strong>
+                              {{
+                                prettyPaymentMethod(
+                                  order.payment_method
+                                )
+                              }}
+                              ·
+                              {{
+                                order.total
+                                  | currency:
+                                      'USD':
+                                      'symbol':
+                                      '1.2-2'
+                              }}
+                            </strong>
+                          </div>
+                        </div>
+
+                        @if (isTransfer(order)) {
+                          <span class="transfer-badge">
+                            <i
+                              class="pi pi-receipt"
+                              aria-hidden="true"
+                            ></i>
+
+                            Revisar comprobante en el detalle
+                          </span>
+                        }
+                      </div>
+                    </td>
+
+                    <td class="orders-table__action">
+                      <a
+                        class="open-order"
+                        [routerLink]="[
+                          '/operator/orders',
+                          order.id
+                        ]"
+                        [attr.aria-label]="
+                          'Abrir pedido ' +
+                          order.order_number
+                        "
+                      >
+                        <span>
+                          Abrir pedido
+                        </span>
+
+                        <i
+                          class="pi pi-arrow-right"
+                          aria-hidden="true"
+                        ></i>
+                      </a>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+
+          <!-- TARJETAS MÓVILES -->
+
+          <div class="mobile-orders">
+            @for (order of orders(); track order.id) {
+              <article [class]="mobileCardClass(order)">
+                <header class="mobile-order__header">
+                  <div class="mobile-order__status">
+                    <span
+                      class="mobile-order__status-icon"
+                      [attr.data-status]="order.status"
+                    >
+                      <i
+                        [class]="statusIcon(order.status)"
+                        aria-hidden="true"
+                      ></i>
+                    </span>
+
+                    <div>
+                      <strong>
+                        {{ statusOperationalLabel(order.status) }}
+                      </strong>
+
+                      <span>
+                        {{ formatDate(order.ordered_at) }}
+                      </span>
+                    </div>
+                  </div>
+
+                  <p-tag
+                    [value]="prettyStatus(order.status)"
+                    [severity]="statusSeverity(order.status)"
+                    [rounded]="true"
+                  />
+                </header>
+
+                <div class="mobile-order__identity">
+                  <span>Pedido</span>
+
+                  <h3>#{{ order.order_number }}</h3>
+
+                  <div class="mobile-order__customer">
+                    <i class="pi pi-user" aria-hidden="true"></i>
+
+                    <div>
+                      <strong>{{ customerName(order) }}</strong>
+                      <span>{{ customerPhone(order) }}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="mobile-order__preparation">
+                  <span>
+                    <i
+                      class="pi pi-list-check"
+                      aria-hidden="true"
+                    ></i>
+
+                    Preparación
+                  </span>
+
+                  <p>
+                    {{
+                      order.kitchen_summary ||
+                        'Sin resumen disponible'
+                    }}
+                  </p>
+                </div>
+
+                <div class="mobile-order__logistics">
+                  <div>
+                    <i
+                      [class]="deliveryIcon(order)"
+                      aria-hidden="true"
+                    ></i>
+
+                    <span>
+                      {{
+                        prettyDeliveryType(
+                          order.delivery_type
+                        )
+                      }}
+                    </span>
+                  </div>
+
+                  <div>
+                    <i
+                      [class]="paymentIcon(order)"
+                      aria-hidden="true"
+                    ></i>
+
+                    <span>
+                      {{
+                        prettyPaymentMethod(
+                          order.payment_method
+                        )
+                      }}
+                    </span>
+                  </div>
+
+                  <strong>
+                    {{
+                      order.total
+                        | currency:
+                            'USD':
+                            'symbol':
+                            '1.2-2'
+                    }}
+                  </strong>
+                </div>
+
+                @if (isTransfer(order)) {
+                  <div class="mobile-transfer-notice">
+                    <i class="pi pi-receipt" aria-hidden="true"></i>
+                    Revisar comprobante en el detalle
+                  </div>
+                }
+
+                <a
+                  class="mobile-open-order"
+                  [routerLink]="[
+                    '/operator/orders',
+                    order.id
+                  ]"
+                >
+                  <span>Abrir pedido</span>
+
+                  <i
+                    class="pi pi-arrow-right"
+                    aria-hidden="true"
+                  ></i>
+                </a>
+              </article>
+            }
+          </div>
+        </div>
+
+        @if (total() > 0) {
+          <div class="orders-pagination">
+            <p-paginator
+              [rows]="perPage()"
+              [totalRecords]="total()"
+              [first]="
+                (page() - 1) * perPage()
+              "
+              [rowsPerPageOptions]="[
+                10,
+                15,
+                25,
+                50
+              ]"
+              [showFirstLastIcon]="true"
+              [showPageLinks]="true"
+              [showCurrentPageReport]="false"
+              class="operator-paginator"
+              (onPageChange)="onPageChange($event)"
+            />
+
+            <span>
+              Página {{ page() }} de {{ lastPage() }}
+            </span>
+          </div>
+        }
       }
-    }
-  </p-card>
-</div>
+    </section>
+  </div>
+</section>

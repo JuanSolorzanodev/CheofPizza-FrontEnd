@@ -1,47 +1,119 @@
-import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
-import { environment } from '../../../../environments/environment';
+import {
+  HttpClient,
+  HttpParams,
+} from '@angular/common/http';
+import {
+  Injectable,
+  inject,
+} from '@angular/core';
+import {
+  Observable,
+} from 'rxjs';
+
+import {
+  environment,
+} from '../../../../environments/environment';
+
 import {
   ApiPaginated,
   ApiResource,
   OperatorOrderDetailDto,
   OperatorOrderListDto,
-  QueueCountsDto,
+  OperatorOrdersFilters,
+  OperatorQueueResponse,
+  OperatorStatusesResponse,
 } from './operator-orders.models';
 
-@Injectable({ providedIn: 'root' })
+@Injectable({
+  providedIn: 'root',
+})
 export class OperatorOrdersApiService {
-  private readonly http = inject(HttpClient);
-  private readonly apiBase = environment.apiUrl.replace(/\/$/, '');
-  private readonly base = `${this.apiBase}/v1/operator/orders`;
+  private readonly http =
+    inject(HttpClient);
 
-  list(filters: Record<string, any> = {}) {
+  private readonly apiBase =
+    environment.apiUrl.replace(
+      /\/$/,
+      '',
+    );
+
+  private readonly baseUrl =
+    `${this.apiBase}/v1/operator/orders`;
+
+  list(
+    filters: OperatorOrdersFilters = {},
+  ): Observable<
+    ApiPaginated<OperatorOrderListDto>
+  > {
     let params = new HttpParams();
-    Object.entries(filters).forEach(([k, v]) => {
-      if (v === null || v === undefined || v === '') return;
-      params = params.set(k, String(v));
-    });
 
-    // Laravel Resource Collection paginada suele devolver { data: [...], meta, links }
-    return this.http.get<ApiPaginated<OperatorOrderListDto>>(this.base, { params });
+    for (
+      const [key, value]
+      of Object.entries(filters)
+    ) {
+      if (
+        value === null ||
+        value === undefined ||
+        value === ''
+      ) {
+        continue;
+      }
+
+      params = params.set(
+        key,
+        String(value),
+      );
+    }
+
+    return this.http.get<
+      ApiPaginated<OperatorOrderListDto>
+    >(
+      this.baseUrl,
+      {
+        params,
+      },
+    );
   }
 
-  show(orderId: number) {
-    return this.http.get<ApiResource<OperatorOrderDetailDto>>(`${this.base}/${orderId}`);
+  show(
+    orderId: number,
+  ): Observable<
+    ApiResource<OperatorOrderDetailDto>
+  > {
+    return this.http.get<
+      ApiResource<OperatorOrderDetailDto>
+    >(
+      `${this.baseUrl}/${orderId}`,
+    );
   }
 
-  queue() {
-    return this.http.get<{ data: QueueCountsDto }>(`${this.base}/queue`);
+  queue(): Observable<OperatorQueueResponse> {
+    return this.http.get<OperatorQueueResponse>(
+      `${this.baseUrl}/queue`,
+    );
   }
 
-  statuses() {
-    return this.http.get<{ data: string[] }>(`${this.base}/statuses`);
+  statuses(): Observable<OperatorStatusesResponse> {
+    return this.http.get<OperatorStatusesResponse>(
+      `${this.baseUrl}/statuses`,
+    );
   }
 
-  updateStatus(orderId: number, to_status: string, note?: string) {
-    return this.http.patch<ApiResource<OperatorOrderDetailDto>>(`${this.base}/${orderId}/status`, {
-      to_status,
-      note: note ?? null,
-    });
+  updateStatus(
+    orderId: number,
+    toStatus: string,
+    note?: string,
+  ): Observable<
+    ApiResource<OperatorOrderDetailDto>
+  > {
+    return this.http.patch<
+      ApiResource<OperatorOrderDetailDto>
+    >(
+      `${this.baseUrl}/${orderId}/status`,
+      {
+        to_status: toStatus,
+        note: note?.trim() || null,
+      },
+    );
   }
 }

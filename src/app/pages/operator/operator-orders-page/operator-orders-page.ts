@@ -1,24 +1,38 @@
-import { CommonModule, KeyValuePipe } from '@angular/common';
-import { Component, DestroyRef, inject, signal } from '@angular/core';
-import { RouterModule } from '@angular/router';
-import { FormsModule } from '@angular/forms';
-import { Subject, auditTime, debounceTime } from 'rxjs';
+import { CommonModule } from '@angular/common';
+import {
+  Component,
+  DestroyRef,
+  OnDestroy,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
+import {
+  Subject,
+  auditTime,
+  debounceTime,
+  finalize,
+} from 'rxjs';
 
-import { CardModule } from 'primeng/card';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
-import { TagModule } from 'primeng/tag';
 import { PaginatorModule } from 'primeng/paginator';
-import { SkeletonModule } from 'primeng/skeleton';
 import { SelectModule } from 'primeng/select';
+import { SkeletonModule } from 'primeng/skeleton';
+import { TagModule } from 'primeng/tag';
 
-import { OperatorRealtimeService } from '../../../core/realtime/operator-realtime.service';
 import { OperatorOrdersApiService } from '../../../core/api/operator/operator-orders-api.service';
 import {
   OperatorOrderListDto,
+  OperatorOrdersFilters,
+  OrderStatusName,
   QueueCountsDto,
 } from '../../../core/api/operator/operator-orders.models';
+import { OperatorRealtimeService } from '../../../core/realtime/operator-realtime.service';
+
 import {
   formatOperatorDate,
   prettyDeliveryType,
@@ -36,6 +50,39 @@ type TagSeverity =
   | null
   | undefined;
 
+interface SelectOption {
+  label: string;
+  value: string;
+}
+
+interface StatusFilterItem {
+  key: OrderStatusName;
+  label: string;
+  icon: string;
+  count: number;
+  active: boolean;
+  historical: boolean;
+}
+
+interface OperatorPaginatorEvent {
+  first?: number;
+  rows?: number;
+  page?: number;
+}
+
+interface OperatorRealtimeCreatedPayload {
+  status?: unknown;
+  summary?: unknown;
+  order?: unknown;
+}
+
+interface OperatorRealtimeStatusPayload {
+  from_status?: unknown;
+  to_status?: unknown;
+  fromStatus?: unknown;
+  toStatus?: unknown;
+}
+
 @Component({
   selector: 'app-operator-orders-page',
   standalone: true,
@@ -43,70 +90,189 @@ type TagSeverity =
     CommonModule,
     RouterModule,
     FormsModule,
-    CardModule,
     ButtonModule,
     InputTextModule,
     TagModule,
     PaginatorModule,
     SkeletonModule,
     SelectModule,
-    KeyValuePipe,
   ],
   templateUrl: './operator-orders-page.html',
   styleUrl: './operator-orders-page.scss',
 })
-export class OperatorOrdersPage {
+export class OperatorOrdersPage implements OnDestroy {
   private readonly api = inject(OperatorOrdersApiService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly realtime = inject(OperatorRealtimeService);
 
-  private readonly search$ = new Subject<string>();
-  private readonly listRefresh$ = new Subject<void>();
+  private readonly searchInput$ = new Subject<string>();
+  private readonly realtimeRefresh$ = new Subject<void>();
 
   readonly loading = signal(true);
+  readonly pageLoading = signal(false);
   readonly loadingQueue = signal(true);
 
-  readonly orders = signal<OperatorOrderListDto[]>([]);
-  readonly total = signal(0);
-  readonly queue = signal<QueueCountsDto>({} as QueueCountsDto);
+  readonly errorMessage = signal<string | null>(null);
+  readonly queueError = signal<string | null>(null);
 
+  readonly orders = signal<OperatorOrderListDto[]>([]);
+  readonly queue = signal<QueueCountsDto>({});
+
+  readonly total = signal(0);
   readonly page = signal(1);
   readonly perPage = signal(15);
 
-  readonly q = signal<string>('');
+  readonly q = signal('');
   readonly status = signal<string | null>(null);
   readonly deliveryType = signal<string | null>(null);
   readonly paymentMethod = signal<string | null>(null);
 
-  readonly statusOptions = signal<Array<{ label: string; value: string }>>([]);
+  readonly statusOptions = signal<SelectOption[]>([
+    {
+      label: 'Todos los estados',
+      value: '',
+    },
+  ]);
 
-  readonly deliveryTypeOptions = [
-    { label: 'Todos', value: '' },
-    { label: 'Delivery', value: 'delivery' },
-    { label: 'Retiro en local', value: 'pickup' },
+  readonly deliveryTypeOptions: SelectOption[] = [
+    {
+      label: 'Todos los tipos',
+      value: '',
+    },
+    {
+      label: 'Entrega a domicilio',
+      value: 'delivery',
+    },
+    {
+      label: 'Retiro en el local',
+      value: 'pickup',
+    },
   ];
 
-  readonly paymentMethodOptions = [
-    { label: 'Todos', value: '' },
-    { label: 'Efectivo', value: 'cash' },
-    { label: 'Transferencia', value: 'transfer' },
-    { label: 'Tarjeta', value: 'card' },
+  readonly paymentMethodOptions: SelectOption[] = [
+    {
+      label: 'Todos los métodos',
+      value: '',
+    },
+    {
+      label: 'Efectivo',
+      value: 'cash',
+    },
+    {
+      label: 'Transferencia',
+      value: 'transfer',
+    },
+    {
+      label: 'Tarjeta',
+      value: 'card',
+    },
+    {
+      label: 'PayPal',
+      value: 'paypal',
+    },
   ];
+
+  readonly skeletonRows = Array.from({
+    length: 8,
+  });
+
+  private readonly activeStatuses: readonly OrderStatusName[] = [
+    'pending',
+    'confirmed',
+    'preparing',
+    'ready',
+    'on_the_way',
+  ];
+
+  private readonly statusOrder: readonly OrderStatusName[] = [
+    'pending',
+    'confirmed',
+    'preparing',
+    'ready',
+    'on_the_way',
+    'delivered',
+    'cancelled',
+  ];
+
+  readonly statusItems = computed<StatusFilterItem[]>(() => {
+    const counts = this.queue();
+
+    return this.statusOrder.map((statusName) => ({
+      key: statusName,
+      label: this.statusNavigationLabel(statusName),
+      icon: this.statusIcon(statusName),
+      count: Number(counts[statusName] ?? 0),
+      active: this.status() === statusName,
+      historical:
+        statusName === 'delivered' ||
+        statusName === 'cancelled',
+    }));
+  });
+
+  readonly activeStatusItems = computed(() =>
+    this.statusItems().filter((item) => !item.historical),
+  );
+
+  readonly historicalStatusItems = computed(() =>
+    this.statusItems().filter((item) => item.historical),
+  );
+
+  readonly activeOrdersTotal = computed(() => {
+    const counts = this.queue();
+
+    return this.activeStatuses.reduce(
+      (total, statusName) =>
+        total + Number(counts[statusName] ?? 0),
+      0,
+    );
+  });
+
+  readonly currentStatusLabel = computed(() => {
+    const selectedStatus = this.status();
+
+    return selectedStatus
+      ? this.prettyStatus(selectedStatus)
+      : 'Todos los pedidos';
+  });
+
+  readonly hasFilters = computed(() => {
+    return (
+      this.q().trim().length > 0 ||
+      this.status() !== null ||
+      this.deliveryType() !== null ||
+      this.paymentMethod() !== null
+    );
+  });
+
+  readonly paginationFrom = computed(() => {
+    if (this.total() === 0 || this.orders().length === 0) {
+      return 0;
+    }
+
+    return (this.page() - 1) * this.perPage() + 1;
+  });
+
+  readonly paginationTo = computed(() => {
+    if (this.total() === 0 || this.orders().length === 0) {
+      return 0;
+    }
+
+    return Math.min(
+      this.paginationFrom() + this.orders().length - 1,
+      this.total(),
+    );
+  });
+
+  readonly lastPage = computed(() => {
+    return Math.max(
+      1,
+      Math.ceil(this.total() / this.perPage()),
+    );
+  });
 
   constructor() {
-    this.search$
-      .pipe(debounceTime(250), takeUntilDestroyed(this.destroyRef))
-      .subscribe((term) => {
-        this.q.set(term);
-        this.page.set(1);
-        this.load();
-      });
-
-    this.listRefresh$
-      .pipe(auditTime(250), takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => {
-        this.load(false);
-      });
+    this.configureSearch();
+    this.configureRealtimeRefresh();
 
     this.loadStatuses();
     this.load();
@@ -114,127 +280,29 @@ export class OperatorOrdersPage {
     this.setupRealtime();
   }
 
-  private setupRealtime(): void {
-    this.realtime.ensureOperatorOrdersSubscription();
-
-    this.realtime.orderCreated$
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((payload) => {
-        console.log('[operator page] orderCreated$', payload);
-
-        const createdStatus = String(payload?.summary?.status ?? 'pending');
-        this.incrementQueue(createdStatus);
-        this.requestListRefresh();
-      });
-
-    this.realtime.orderStatusChanged$
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((payload) => {
-        console.log('[operator page] orderStatusChanged$', payload);
-
-        const from = String(payload?.from_status ?? '');
-        const to = String(payload?.to_status ?? '');
-
-        if (from && to) {
-          this.moveQueue(from, to);
-        }
-
-        this.requestListRefresh();
-      });
-  }
-
-  private requestListRefresh(): void {
-    this.listRefresh$.next();
-  }
-
-  private incrementQueue(status: string): void {
-    this.queue.update((current) => ({
-      ...current,
-      [status]: (current?.[status] ?? 0) + 1,
-    }));
-  }
-
-  private moveQueue(from: string, to: string): void {
-    this.queue.update((current) => ({
-      ...current,
-      [from]: Math.max((current?.[from] ?? 0) - 1, 0),
-      [to]: (current?.[to] ?? 0) + 1,
-    }));
-  }
-
-  load(showSkeleton = true): void {
-    if (showSkeleton) {
-      this.loading.set(true);
-    }
-
-    const filters: Record<string, any> = {
-      page: this.page(),
-      per_page: this.perPage(),
-      q: this.q().trim() || undefined,
-      status: this.status() || undefined,
-      delivery_type: this.deliveryType() || undefined,
-      payment_method: this.paymentMethod() || undefined,
-    };
-
-    this.api
-      .list(filters)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: (res: any) => {
-          const data = res?.data ?? res?.data?.data ?? res?.items ?? [];
-          const meta = res?.meta ?? res?.data?.meta ?? null;
-
-          this.orders.set(data ?? []);
-          this.total.set(meta?.total ?? res?.total ?? 0);
-        },
-        error: () => {
-          this.orders.set([]);
-          this.total.set(0);
-        },
-        complete: () => this.loading.set(false),
-      });
-  }
-
-  loadQueue(showSkeleton = true): void {
-    if (showSkeleton) {
-      this.loadingQueue.set(true);
-    }
-
-    this.api
-      .queue()
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: (res: any) => {
-          this.queue.set(res?.data ?? res ?? ({} as QueueCountsDto));
-        },
-        error: () => this.queue.set({} as QueueCountsDto),
-        complete: () => this.loadingQueue.set(false),
-      });
-  }
-
-  loadStatuses(): void {
-    this.api
-      .statuses()
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: (res: any) => {
-          const list: string[] = res?.data ?? [];
-          this.statusOptions.set([
-            { label: 'Todos', value: '' },
-            ...list.map((s) => ({ label: this.prettyStatus(s), value: s })),
-          ]);
-        },
-        error: () => this.statusOptions.set([{ label: 'Todos', value: '' }]),
-      });
-  }
-
   onSearchTyping(value: string): void {
-    this.search$.next(value ?? '');
+    this.searchInput$.next(value ?? '');
   }
 
   onFilterChange(): void {
     this.page.set(1);
     this.load();
+  }
+
+  selectStatus(statusName: OrderStatusName): void {
+    this.status.set(
+      this.status() === statusName
+        ? null
+        : statusName,
+    );
+
+    this.page.set(1);
+    this.load();
+  }
+
+  clearSearch(): void {
+    this.q.set('');
+    this.searchInput$.next('');
   }
 
   clearFilters(): void {
@@ -243,13 +311,198 @@ export class OperatorOrdersPage {
     this.deliveryType.set(null);
     this.paymentMethod.set(null);
     this.page.set(1);
+
     this.load();
   }
 
-  onPageChange(event: any): void {
-    this.page.set(Math.floor(event.first / event.rows) + 1);
-    this.perPage.set(event.rows);
+  retry(): void {
     this.load();
+    this.loadQueue();
+  }
+
+  onPageChange(event: OperatorPaginatorEvent): void {
+    const rows = Number(
+      event.rows ?? this.perPage(),
+    );
+
+    const first = Number(event.first ?? 0);
+
+    const nextPerPage =
+      Number.isFinite(rows) && rows > 0
+        ? rows
+        : this.perPage();
+
+    const nextPage =
+      Math.floor(first / nextPerPage) + 1;
+
+    if (
+      nextPage === this.page() &&
+      nextPerPage === this.perPage()
+    ) {
+      return;
+    }
+
+    this.page.set(nextPage);
+    this.perPage.set(nextPerPage);
+
+    this.load(true);
+  }
+
+  load(changingPage = false): void {
+    this.errorMessage.set(null);
+
+    if (
+      changingPage ||
+      this.orders().length > 0
+    ) {
+      this.pageLoading.set(true);
+    } else {
+      this.loading.set(true);
+    }
+
+    const filters: OperatorOrdersFilters = {
+      page: this.page(),
+      per_page: this.perPage(),
+      q: this.q().trim() || undefined,
+      status: this.status() || undefined,
+      delivery_type:
+        this.deliveryType() || undefined,
+      payment_method:
+        this.paymentMethod() || undefined,
+    };
+
+    this.api
+      .list(filters)
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => {
+          this.loading.set(false);
+          this.pageLoading.set(false);
+        }),
+      )
+      .subscribe({
+        next: (response) => {
+          const rows = Array.isArray(response.data)
+            ? response.data
+            : [];
+
+          const responseTotal = Number(
+            response.meta?.total ?? rows.length,
+          );
+
+          const responsePage = Number(
+            response.meta?.current_page ??
+              this.page(),
+          );
+
+          const responsePerPage = Number(
+            response.meta?.per_page ??
+              this.perPage(),
+          );
+
+          this.orders.set(rows);
+
+          this.total.set(
+            Number.isFinite(responseTotal)
+              ? responseTotal
+              : rows.length,
+          );
+
+          if (
+            Number.isFinite(responsePage) &&
+            responsePage > 0
+          ) {
+            this.page.set(responsePage);
+          }
+
+          if (
+            Number.isFinite(responsePerPage) &&
+            responsePerPage > 0
+          ) {
+            this.perPage.set(responsePerPage);
+          }
+        },
+
+        error: (error) => {
+          this.orders.set([]);
+          this.total.set(0);
+
+          this.errorMessage.set(
+            this.resolveErrorMessage(
+              error,
+              'No fue posible cargar los pedidos.',
+            ),
+          );
+        },
+      });
+  }
+
+  loadQueue(showSkeleton = true): void {
+    if (showSkeleton) {
+      this.loadingQueue.set(true);
+    }
+
+    this.queueError.set(null);
+
+    this.api
+      .queue()
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => {
+          this.loadingQueue.set(false);
+        }),
+      )
+      .subscribe({
+        next: (response) => {
+          this.queue.set(response.data ?? {});
+        },
+
+        error: (error) => {
+          this.queue.set({});
+
+          this.queueError.set(
+            this.resolveErrorMessage(
+              error,
+              'No fue posible cargar los estados operativos.',
+            ),
+          );
+        },
+      });
+  }
+
+  loadStatuses(): void {
+    this.api
+      .statuses()
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe({
+        next: (response) => {
+          const statuses = Array.isArray(response.data)
+            ? response.data
+            : [];
+
+          this.statusOptions.set([
+            {
+              label: 'Todos los estados',
+              value: '',
+            },
+            ...statuses.map((statusName) => ({
+              label: this.prettyStatus(statusName),
+              value: statusName,
+            })),
+          ]);
+        },
+
+        error: () => {
+          this.statusOptions.set([
+            {
+              label: 'Todos los estados',
+              value: '',
+            },
+          ]);
+        },
+      });
   }
 
   prettyStatus(value: string): string {
@@ -268,15 +521,370 @@ export class OperatorOrdersPage {
     return formatOperatorDate(value);
   }
 
-  statusSeverity(status: string): TagSeverity {
-    if (status === 'pending') return 'warn';
-    if (status === 'confirmed') return 'info';
-    if (status === 'preparing') return 'warn';
-    if (status === 'ready') return 'success';
-    if (status === 'on_the_way') return 'info';
-    if (status === 'delivered') return 'success';
-    if (status === 'cancelled') return 'danger';
-    return 'secondary';
+  statusSeverity(statusName: string): TagSeverity {
+    switch (statusName) {
+      case 'pending':
+        return 'warn';
+
+      case 'confirmed':
+        return 'info';
+
+      case 'preparing':
+        return 'warn';
+
+      case 'ready':
+        return 'success';
+
+      case 'on_the_way':
+        return 'info';
+
+      case 'delivered':
+        return 'success';
+
+      case 'cancelled':
+        return 'danger';
+
+      default:
+        return 'secondary';
+    }
+  }
+
+  statusIcon(statusName: string): string {
+    const icons: Record<string, string> = {
+      pending: 'pi pi-bell',
+      confirmed: 'pi pi-check',
+      preparing: 'pi pi-hourglass',
+      ready: 'pi pi-check-circle',
+      on_the_way: 'pi pi-truck',
+      delivered: 'pi pi-verified',
+      cancelled: 'pi pi-times-circle',
+    };
+
+    return icons[statusName] ?? 'pi pi-circle';
+  }
+
+  statusOperationalLabel(
+    statusName: string,
+  ): string {
+    const labels: Record<string, string> = {
+      pending: 'Nueva orden',
+      confirmed: 'Confirmada',
+      preparing: 'En cocina',
+      ready: 'Lista para salir',
+      on_the_way: 'En reparto',
+      delivered: 'Entregada',
+      cancelled: 'Cancelada',
+    };
+
+    return labels[statusName] ??
+      this.prettyStatus(statusName);
+  }
+
+  statusItemClass(
+    item: StatusFilterItem,
+  ): string {
+    return [
+      'status-filter',
+      `status-filter--${item.key}`,
+      item.active
+        ? 'status-filter--active'
+        : '',
+      item.historical
+        ? 'status-filter--historical'
+        : '',
+    ]
+      .filter(Boolean)
+      .join(' ');
+  }
+
+  rowClass(order: OperatorOrderListDto): string {
+    return [
+      'order-row',
+      `order-row--${order.status}`,
+      this.isHistoricalOrder(order)
+        ? 'order-row--historical'
+        : '',
+    ]
+      .filter(Boolean)
+      .join(' ');
+  }
+
+  mobileCardClass(
+    order: OperatorOrderListDto,
+  ): string {
+    return [
+      'mobile-order',
+      `mobile-order--${order.status}`,
+      this.isHistoricalOrder(order)
+        ? 'mobile-order--historical'
+        : '',
+    ]
+      .filter(Boolean)
+      .join(' ');
+  }
+
+  customerName(
+    order: OperatorOrderListDto,
+  ): string {
+    return (
+      order.customer?.name?.trim() ||
+      'Cliente no identificado'
+    );
+  }
+
+  customerPhone(
+    order: OperatorOrderListDto,
+  ): string {
+    return (
+      order.customer?.phone?.trim() ||
+      'Sin teléfono'
+    );
+  }
+
+  isTransfer(
+    order: OperatorOrderListDto,
+  ): boolean {
+    return order.payment_method === 'transfer';
+  }
+
+  isDelivery(
+    order: OperatorOrderListDto,
+  ): boolean {
+    return order.delivery_type === 'delivery';
+  }
+
+  isHistoricalOrder(
+    order: OperatorOrderListDto,
+  ): boolean {
+    return (
+      order.status === 'delivered' ||
+      order.status === 'cancelled'
+    );
+  }
+
+  deliveryIcon(
+    order: OperatorOrderListDto,
+  ): string {
+    return this.isDelivery(order)
+      ? 'pi pi-truck'
+      : 'pi pi-shop';
+  }
+
+  paymentIcon(
+    order: OperatorOrderListDto,
+  ): string {
+    switch (order.payment_method) {
+      case 'transfer':
+        return 'pi pi-building-columns';
+
+      case 'cash':
+        return 'pi pi-money-bill';
+
+      case 'paypal':
+        return 'pi pi-wallet';
+
+      default:
+        return 'pi pi-credit-card';
+    }
+  }
+
+  private configureSearch(): void {
+    this.searchInput$
+      .pipe(
+        debounceTime(300),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe((term) => {
+        this.q.set(term);
+        this.page.set(1);
+        this.load();
+      });
+  }
+
+  private configureRealtimeRefresh(): void {
+    this.realtimeRefresh$
+      .pipe(
+        auditTime(300),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe(() => {
+        this.load(false);
+      });
+  }
+
+  private setupRealtime(): void {
+    this.realtime.ensureOperatorOrdersSubscription();
+
+    this.realtime.orderCreated$
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe((payload: unknown) => {
+        const createdStatus =
+          this.extractCreatedStatus(payload);
+
+        this.incrementQueue(createdStatus);
+        this.requestRealtimeRefresh();
+      });
+
+    this.realtime.orderStatusChanged$
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe((payload: unknown) => {
+        const transition =
+          this.extractStatusTransition(payload);
+
+        if (transition) {
+          this.moveQueue(
+            transition.from,
+            transition.to,
+          );
+        } else {
+          this.loadQueue(false);
+        }
+
+        this.requestRealtimeRefresh();
+      });
+  }
+
+  private requestRealtimeRefresh(): void {
+    this.realtimeRefresh$.next();
+  }
+
+  private incrementQueue(
+    statusName: string,
+  ): void {
+    this.queue.update((current) => ({
+      ...current,
+      [statusName]:
+        Number(current[statusName] ?? 0) + 1,
+    }));
+  }
+
+  private moveQueue(
+    fromStatus: string,
+    toStatus: string,
+  ): void {
+    this.queue.update((current) => ({
+      ...current,
+
+      [fromStatus]: Math.max(
+        Number(current[fromStatus] ?? 0) - 1,
+        0,
+      ),
+
+      [toStatus]:
+        Number(current[toStatus] ?? 0) + 1,
+    }));
+  }
+
+  private extractCreatedStatus(
+    payload: unknown,
+  ): string {
+    if (
+      typeof payload !== 'object' ||
+      payload === null
+    ) {
+      return 'pending';
+    }
+
+    const event =
+      payload as OperatorRealtimeCreatedPayload;
+
+    if (typeof event.status === 'string') {
+      return event.status;
+    }
+
+    const candidate =
+      event.summary ??
+      event.order ??
+      null;
+
+    if (
+      typeof candidate !== 'object' ||
+      candidate === null
+    ) {
+      return 'pending';
+    }
+
+    const statusName = (
+      candidate as {
+        status?: unknown;
+      }
+    ).status;
+
+    return typeof statusName === 'string'
+      ? statusName
+      : 'pending';
+  }
+
+  private extractStatusTransition(
+    payload: unknown,
+  ): {
+    from: string;
+    to: string;
+  } | null {
+    if (
+      typeof payload !== 'object' ||
+      payload === null
+    ) {
+      return null;
+    }
+
+    const event =
+      payload as OperatorRealtimeStatusPayload;
+
+    const fromStatus =
+      event.from_status ??
+      event.fromStatus;
+
+    const toStatus =
+      event.to_status ??
+      event.toStatus;
+
+    if (
+      typeof fromStatus !== 'string' ||
+      typeof toStatus !== 'string' ||
+      fromStatus.trim() === '' ||
+      toStatus.trim() === ''
+    ) {
+      return null;
+    }
+
+    return {
+      from: fromStatus.trim(),
+      to: toStatus.trim(),
+    };
+  }
+
+  private statusNavigationLabel(
+    statusName: OrderStatusName,
+  ): string {
+    const labels: Record<OrderStatusName, string> = {
+      pending: 'Pendientes',
+      confirmed: 'Confirmados',
+      preparing: 'En cocina',
+      ready: 'Listos',
+      on_the_way: 'En camino',
+      delivered: 'Entregados',
+      cancelled: 'Cancelados',
+    };
+
+    return labels[statusName];
+  }
+
+  private resolveErrorMessage(
+    error: unknown,
+    fallback: string,
+  ): string {
+    const response = error as {
+      error?: {
+        message?: string;
+      };
+    };
+
+    return response?.error?.message ?? fallback;
   }
 
   ngOnDestroy(): void {

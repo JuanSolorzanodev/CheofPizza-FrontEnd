@@ -1,120 +1,442 @@
-import { Component, computed, effect, inject, signal } from '@angular/core';
-import { NavigationEnd, Router, RouterModule } from '@angular/router';
-import { filter } from 'rxjs';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  ViewChild,
+  computed,
+  effect,
+  inject,
+  signal,
+} from '@angular/core';
 
-import { ToolbarModule } from 'primeng/toolbar';
-import { ButtonModule } from 'primeng/button';
-import { SelectButtonModule } from 'primeng/selectbutton';
-import { FormsModule } from '@angular/forms';
+import {
+  takeUntilDestroyed,
+} from '@angular/core/rxjs-interop';
 
-import { ThemeService } from '../../../core/state/theme.service';
-import { AuthStore } from '../../../core/auth/auth.store';
-import { GoogleLoginDialogComponent } from '../google-login-dialog/google-login-dialog';
-import { ScrollService } from '../../ui/scroll.service';
-import { CartPopover } from '../cart-popover/cart-popover';
-import { ROLE_IDS } from '../../../core/auth/roles';
+import {
+  NavigationEnd,
+  Router,
+} from '@angular/router';
 
-type PizzaCategory = 'simple' | 'special';
+import {
+  filter,
+} from 'rxjs';
+
+import {
+  MessageService,
+} from 'primeng/api';
+
+import {
+  DrawerModule,
+} from 'primeng/drawer';
+
+import {
+  AuthStore,
+} from '../../../core/auth/auth.store';
+
+import {
+  ROLE_IDS,
+} from '../../../core/auth/roles';
+
+import {
+  ThemeService,
+} from '../../../core/state/theme.service';
+
+import {
+  ScrollService,
+} from '../../ui/scroll.service';
+
+import {
+  CartPopover,
+} from '../cart-popover/cart-popover';
+
+import {
+  GoogleLoginDialogComponent,
+} from '../google-login-dialog/google-login-dialog';
 
 @Component({
   selector: 'app-toolbar',
   standalone: true,
   imports: [
-    ToolbarModule,
-    ButtonModule,
-    SelectButtonModule,
-    FormsModule,
-    RouterModule,
+    DrawerModule,
     GoogleLoginDialogComponent,
     CartPopover,
   ],
   templateUrl: './toolbar.html',
   styleUrl: './toolbar.scss',
+  changeDetection:
+    ChangeDetectionStrategy.OnPush,
 })
 export class Toolbar {
-  private readonly scroll = inject(ScrollService);
-  private readonly theme = inject(ThemeService);
-  private readonly auth = inject(AuthStore);
-  private readonly router = inject(Router);
+  @ViewChild(
+    GoogleLoginDialogComponent,
+  )
+  private loginDialog?:
+    GoogleLoginDialogComponent;
 
-  private readonly headerOffset = 90;
+  private readonly scroll =
+    inject(ScrollService);
 
-  // ✅ Detecta si estamos en /operator/*
-  private readonly currentUrl = signal<string>(this.router.url);
-  readonly isOperatorView = computed(() => this.currentUrl().startsWith('/operator'));
+  private readonly theme =
+    inject(ThemeService);
 
-  readonly mode = this.theme.mode;
-  readonly themeIcon = computed(() => (this.mode() === 'dark' ? 'pi pi-sun' : 'pi pi-moon'));
+  private readonly auth =
+    inject(AuthStore);
 
-  readonly isAuthenticated = this.auth.isAuthenticated;
-  readonly displayName = this.auth.displayName;
-  readonly photoUrl = this.auth.photoUrl;
+  private readonly router =
+    inject(Router);
 
-  readonly avatarBroken = signal(false);
+  private readonly toast =
+    inject(MessageService);
 
-  // Roles
-  readonly roleId = computed(() => this.auth.user()?.role_id ?? null);
+  private readonly destroyRef =
+    inject(DestroyRef);
 
-  readonly isOperatorOrAdmin = computed(() => {
-    const id = this.roleId();
-    return id === ROLE_IDS.operator || id === ROLE_IDS.admin;
-  });
+  private readonly headerOffset =
+    82;
 
-  readonly isCustomer = computed(() => this.roleId() === ROLE_IDS.customer);
+  private readonly currentUrl =
+    signal(this.router.url);
 
-  // Mobile select
-  pizzaCategory: PizzaCategory = 'simple';
-  readonly pizzaCategoryOptions = [
-    { label: 'Sencillas', value: 'simple', icon: 'pi pi-star' },
-    { label: 'Especiales', value: 'special', icon: 'pi pi-bolt' },
-  ];
+  readonly mobileMenuVisible =
+    signal(false);
 
-  constructor() {
-    effect(
-      () => {
-        this.photoUrl();
-        this.avatarBroken.set(false);
-      },
-      { allowSignalWrites: true }
+  readonly avatarBroken =
+    signal(false);
+
+  readonly mode =
+    this.theme.mode;
+
+  readonly isAuthenticated =
+    this.auth.isAuthenticated;
+
+  readonly displayName =
+    this.auth.displayName;
+
+  readonly photoUrl =
+    this.auth.photoUrl;
+
+  readonly loggingOut =
+    this.auth.loggingOut;
+
+  readonly roleId =
+    computed(
+      () =>
+        this.auth.user()
+          ?.role_id ??
+        null,
     );
 
-    // ✅ Track URL para isOperatorView()
+  readonly isAdmin =
+    computed(
+      () =>
+        this.roleId() ===
+        ROLE_IDS.admin,
+    );
+
+  readonly isOperator =
+    computed(
+      () =>
+        this.roleId() ===
+        ROLE_IDS.operator,
+    );
+
+  readonly isCustomer =
+    computed(
+      () =>
+        this.roleId() ===
+        ROLE_IDS.customer,
+    );
+
+  readonly isOperatorOrAdmin =
+    computed(() => {
+      const roleId =
+        this.roleId();
+
+      return (
+        roleId ===
+          ROLE_IDS.operator ||
+        roleId ===
+          ROLE_IDS.admin
+      );
+    });
+
+  readonly isBackofficeView =
+    computed(() => {
+      const url =
+        this.currentUrl();
+
+      return (
+        url.startsWith(
+          '/operator',
+        ) ||
+        url.startsWith(
+          '/admin',
+        )
+      );
+    });
+
+  readonly isOperatorView =
+    computed(
+      () =>
+        this.currentUrl()
+          .startsWith(
+            '/operator',
+          ),
+    );
+
+  readonly isAdminView =
+    computed(
+      () =>
+        this.currentUrl()
+          .startsWith(
+            '/admin',
+          ),
+    );
+
+  readonly isMyOrdersView =
+    computed(
+      () =>
+        this.currentUrl()
+          .startsWith(
+            '/my/orders',
+          ),
+    );
+
+  readonly isHomeView =
+    computed(() => {
+      const url =
+        this.currentUrl();
+
+      return (
+        url === '/' ||
+        url.startsWith('/?') ||
+        url.startsWith('/#')
+      );
+    });
+
+  readonly themeIcon =
+    computed(
+      () =>
+        this.mode() ===
+        'dark'
+          ? 'pi pi-sun'
+          : 'pi pi-moon',
+    );
+
+  readonly themeLabel =
+    computed(
+      () =>
+        this.mode() ===
+        'dark'
+          ? 'Activar modo claro'
+          : 'Activar modo oscuro',
+    );
+
+  readonly roleLabel =
+    computed(() => {
+      if (this.isAdmin()) {
+        return 'Administrador';
+      }
+
+      if (this.isOperator()) {
+        return 'Operador';
+      }
+
+      return 'Cliente';
+    });
+
+  readonly userInitial =
+    computed(
+      () =>
+        (
+          this.displayName() ||
+          'U'
+        )
+          .trim()
+          .slice(0, 1)
+          .toUpperCase(),
+    );
+
+  constructor() {
+    effect(() => {
+      this.photoUrl();
+
+      this.avatarBroken.set(
+        false,
+      );
+    });
+
     this.router.events
-      .pipe(filter((e): e is NavigationEnd => e instanceof NavigationEnd))
-      .subscribe(e => this.currentUrl.set(e.urlAfterRedirects));
+      .pipe(
+        filter(
+          (
+            event,
+          ): event is NavigationEnd =>
+            event instanceof
+            NavigationEnd,
+        ),
+
+        takeUntilDestroyed(
+          this.destroyRef,
+        ),
+      )
+      .subscribe(event => {
+        this.currentUrl.set(
+          event.urlAfterRedirects,
+        );
+
+        this.closeMobileMenu();
+      });
+  }
+
+  openLoginDialog(): void {
+    this.closeMobileMenu();
+
+    this.loginDialog?.open();
+  }
+
+  openMobileMenu(): void {
+    this.mobileMenuVisible.set(
+      true,
+    );
+  }
+
+  closeMobileMenu(): void {
+    this.mobileMenuVisible.set(
+      false,
+    );
+  }
+
+  onMobileMenuVisibleChange(
+    visible: boolean,
+  ): void {
+    this.mobileMenuVisible.set(
+      visible,
+    );
   }
 
   onAvatarError(): void {
-    this.avatarBroken.set(true);
-  }
-
-  onCategoryChange(value: PizzaCategory) {
-    this.pizzaCategory = value;
-    if (value === 'simple') this.goToSencillas();
-    else this.goToEspeciales();
+    this.avatarBroken.set(
+      true,
+    );
   }
 
   toggleTheme(): void {
     this.theme.toggle();
   }
 
-  logout(): void {
-    this.auth.logout();
+  async logout(): Promise<void> {
+    if (this.loggingOut()) {
+      return;
+    }
+
+    this.closeMobileMenu();
+
+    await this.auth.logout();
+
+    await this.router.navigateByUrl(
+      '/',
+    );
+
+    this.toast.add({
+      severity: 'success',
+      summary: 'Sesión cerrada',
+      detail:
+        'Tu sesión se cerró correctamente.',
+    });
   }
 
-  goToSencillas(): void {
-    this.scroll.scrollToId('menu-sencillas', this.headerOffset);
+  goToHome(): void {
+    this.closeMobileMenu();
+
+    void this.router.navigateByUrl(
+      '/',
+    );
   }
 
-  goToEspeciales(): void {
-    this.scroll.scrollToId('menu-especiales', this.headerOffset);
-  }
+  goToAnalytics(): void {
+    if (!this.isAdmin()) {
+      return;
+    }
 
-  goToMyOrders(): void {
-    this.router.navigate(['/my/orders']);
+    this.closeMobileMenu();
+
+    void this.router.navigateByUrl(
+      '/admin/analytics',
+    );
   }
 
   goToOperator(): void {
-    this.router.navigate(['/operator/orders']);
+    if (
+      !this.isOperatorOrAdmin()
+    ) {
+      return;
+    }
+
+    this.closeMobileMenu();
+
+    void this.router.navigateByUrl(
+      '/operator/orders',
+    );
+  }
+
+  goToMyOrders(): void {
+    if (
+      !this.isAuthenticated()
+    ) {
+      return;
+    }
+
+    this.closeMobileMenu();
+
+    void this.router.navigateByUrl(
+      '/my/orders',
+    );
+  }
+
+  goToSencillas(): void {
+    this.navigateHomeAndScroll(
+      'menu-sencillas',
+    );
+  }
+
+  goToEspeciales(): void {
+    this.navigateHomeAndScroll(
+      'menu-especiales',
+    );
+  }
+
+  private navigateHomeAndScroll(
+    elementId: string,
+  ): void {
+    this.closeMobileMenu();
+
+    if (this.isHomeView()) {
+      this.scroll.scrollToId(
+        elementId,
+        this.headerOffset,
+      );
+
+      return;
+    }
+
+    void this.router
+      .navigateByUrl('/')
+      .then(navigated => {
+        if (!navigated) {
+          return;
+        }
+
+        window.setTimeout(
+          () => {
+            this.scroll.scrollToId(
+              elementId,
+              this.headerOffset,
+            );
+          },
+          120,
+        );
+      });
   }
 }

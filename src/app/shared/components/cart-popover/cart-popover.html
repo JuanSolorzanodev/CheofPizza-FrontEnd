@@ -1,194 +1,325 @@
-<p-button
-  #cartBtn
-  outlined
-  class="cheof-icon-btn cart-btn"
-  (onClick)="toggle(cartBtn)"
->
-  <ng-template pTemplate="content">
+<div class="cart-trigger-wrapper">
+  <button
+    type="button"
+    class="cart-trigger"
+    [class.cart-trigger-checkout]="
+      isCheckoutPage()
+    "
+    [attr.aria-label]="triggerLabel()"
+    [pTooltip]="triggerLabel()"
+    tooltipPosition="bottom"
+    (click)="onTriggerClick()"
+  >
     <i
       class="pi pi-shopping-cart"
-      pBadge
-      [value]="cart.totalUnits()"
-      [badgeDisabled]="cart.totalUnits() === 0"
+      aria-hidden="true"
     ></i>
-  </ng-template>
-</p-button>
+  </button>
 
-<p-popover
-  #op
-  [appendTo]="'body'"
-  styleClass="cart-popover cart-popover--ux"
-  [style]="{ width: '440px' }"
+  @if (cart.totalUnits() > 0) {
+    <span
+      class="cart-trigger-badge"
+      [attr.aria-label]="itemCountLabel()"
+    >
+      {{
+        cart.totalUnits() > 99
+          ? '99+'
+          : cart.totalUnits()
+      }}
+    </span>
+  }
+</div>
+
+<p-drawer
+  position="right"
+  appendTo="body"
+  styleClass="cheof-cart-drawer"
+  [modal]="true"
+  [dismissible]="true"
+  [blockScroll]="true"
+  [closeOnEscape]="true"
+  [showCloseIcon]="false"
+  [visible]="drawerVisible()"
+  [style]="{
+    width: 'min(430px, 100vw)'
+  }"
+  (visibleChange)="
+    onDrawerVisibleChange($event)
+  "
 >
-  @if (cart.items().length === 0) {
-    <div class="empty-ux">
-      <div class="empty-ux__icon"><i class="pi pi-shopping-cart"></i></div>
-      <div class="empty-ux__title">Tu carrito está vacío</div>
-      <div class="empty-ux__subtitle">Agrega una pizza o promoción para continuar.</div>
-    </div>
-  } @else {
-    <section class="cart-ux">
-      <header class="cart-ux__head">
-        <div class="head">
-          <div class="head__left">
-            <div class="head__badge"><i class="pi pi-shopping-cart"></i></div>
+  <ng-template pTemplate="headless">
+    <section
+      class="cart-drawer"
+      aria-label="Tu pedido"
+    >
+      <header class="cart-drawer-header">
+        <div class="cart-drawer-header__main">
+          <button
+            type="button"
+            class="drawer-close-button"
+            aria-label="Cerrar carrito"
+            (click)="closeDrawer()"
+          >
+            <i class="pi pi-times"></i>
+          </button>
 
-            <div class="head__text">
-              <div class="head__title-row">
-                <div class="head__title">Tu carrito</div>
-                <span class="head__pill">
-                  {{ cart.totalUnits() }} {{ cart.totalUnits() === 1 ? 'ítem' : 'ítems' }}
+          <div>
+            <span class="cart-eyebrow">
+              Tu selección
+            </span>
+
+            <div class="cart-title-row">
+              <h2>
+                Tu pedido
+              </h2>
+
+              @if (
+                cart.totalUnits() > 0
+              ) {
+                <span class="cart-count">
+                  {{ itemCountLabel() }}
                 </span>
-              </div>
-              <div class="head__sub">Revisa cantidades y extras antes de pagar.</div>
+              }
             </div>
-          </div>
 
-          <p-button
-            label="Vaciar"
-            text
-            severity="secondary"
-            size="small"
-            class="head__clear"
-            (onClick)="cart.clear()"
-          ></p-button>
+            <p>
+              Pizzas recién preparadas,
+              exactamente como las elegiste.
+            </p>
+          </div>
         </div>
+
+        @if (
+          cart.totalUnits() > 0
+        ) {
+          <button
+            type="button"
+            class="clear-cart-button"
+            [disabled]="cart.loading()"
+            (click)="clearCart()"
+          >
+            Vaciar
+          </button>
+        }
       </header>
 
-      <div class="cart-rail">
-        <div class="cart-scroll">
-          <div class="cart-list">
-            @for (it of cart.items(); track it.id) {
-              <article class="card card--pad item-ux">
+      @if (
+        cart.error();
+        as errorMessage
+      ) {
+        <div
+          class="cart-error"
+          role="alert"
+        >
+          <i class="pi pi-exclamation-circle"></i>
 
-                <img
-                  class="item-ux__img"
-                  [src]="
-                    it.item_type === 'promotion'
-                      ? (it.promotion?.banner_image_url || it.selected_pizzas?.[0]?.image_url)
-                      : (it.pizza?.image_url || it.pizza_second?.image_url)
-                  "
-                  alt="Producto"
-                  loading="lazy"
-                />
+          <span>
+            {{ errorMessage }}
+          </span>
+        </div>
+      }
 
-                <div class="item-ux__content">
-                  <div class="item-ux__top">
-                    <div class="item-ux__name">
-                      @if (it.item_type === 'promotion') {
-                        {{ it.promotion?.name }}
-                      } @else if (it.is_half_and_half) {
-                        {{ it.pizza?.name }} + {{ it.pizza_second?.name }}
-                      } @else {
-                        {{ it.pizza?.name }}
-                      }
-                    </div>
+      @if (
+        cart.items().length === 0
+      ) {
+        <main class="empty-cart">
+          <span class="empty-cart-icon">
+            <i class="pi pi-shopping-bag"></i>
+          </span>
+
+          <h3>
+            Tu pedido está vacío
+          </h3>
+
+          <p>
+            Elige una pizza del menú y
+            personalízala a tu gusto.
+          </p>
+
+          <p-button
+            label="Explorar el menú"
+            icon="pi pi-arrow-right"
+            iconPos="right"
+            severity="success"
+            [routerLink]="['/']"
+            (onClick)="closeDrawer()"
+          />
+        </main>
+      } @else {
+        <main class="cart-items">
+          @for (
+            item of cart.items();
+            track item.id
+          ) {
+            <article class="cart-item">
+              <div class="cart-item-media">
+                @if (
+                  itemImage(item);
+                  as image
+                ) {
+                  <img
+                    [src]="image"
+                    [alt]="itemName(item)"
+                    loading="lazy"
+                  />
+                } @else {
+                  <span
+                    class="cart-item-placeholder"
+                    aria-hidden="true"
+                  >
+                    <i class="pi pi-star"></i>
+                  </span>
+                }
+              </div>
+
+              <div class="cart-item-content">
+                <div class="cart-item-heading">
+                  <div>
+                    <h3>
+                      {{ itemName(item) }}
+                    </h3>
+
+                    <p>
+                      {{ itemDescription(item) }}
+                    </p>
+                  </div>
+
+                  <button
+                    type="button"
+                    class="remove-item-button"
+                    [disabled]="cart.loading()"
+                    [attr.aria-label]="
+                      'Eliminar ' +
+                      itemName(item)
+                    "
+                    (click)="remove(item)"
+                  >
+                    <i class="pi pi-trash"></i>
+                  </button>
+                </div>
+
+                @if (
+                  selectedPizzasLabel(item);
+                  as selectedPizzas
+                ) {
+                  <p class="selected-pizzas">
+                    {{ selectedPizzas }}
+                  </p>
+                }
+
+                <div class="cart-item-bottom">
+                  <div class="cart-item-price">
+                    <strong>
+                      {{
+                        item.subtotal
+                          | currency:
+                              'USD':
+                              'symbol':
+                              '1.2-2'
+                      }}
+                    </strong>
+
+                    @if (
+                      item.quantity > 1
+                    ) {
+                      <span>
+                        {{
+                          item.unit_price
+                            | currency:
+                                'USD':
+                                'symbol':
+                                '1.2-2'
+                        }}
+                        cada una
+                      </span>
+                    }
+                  </div>
+
+                  <div
+                    class="quantity-control"
+                    role="group"
+                    [attr.aria-label]="
+                      'Cantidad de ' +
+                      itemName(item)
+                    "
+                  >
+                    <button
+                      type="button"
+                      aria-label="Disminuir cantidad"
+                      [disabled]="
+                        cart.loading() ||
+                        item.quantity <= 1
+                      "
+                      (click)="decrease(item)"
+                    >
+                      <i class="pi pi-minus"></i>
+                    </button>
+
+                    <output>
+                      {{ item.quantity }}
+                    </output>
 
                     <button
                       type="button"
-                      class="icon-btn danger"
-                      (click)="cart.remove(it.id)"
-                      aria-label="Eliminar"
-                      title="Eliminar"
+                      aria-label="Aumentar cantidad"
+                      [disabled]="
+                        cart.loading() ||
+                        item.quantity >= 10
+                      "
+                      (click)="increase(item)"
                     >
-                      <i class="pi pi-trash"></i>
+                      <i class="pi pi-plus"></i>
                     </button>
                   </div>
-
-                  @if (it.item_type === 'promotion') {
-                    <div class="item-ux__chips">
-                      @if (it.size?.name) {
-                        <span class="chip">Tamaño: {{ it.size?.name }}</span>
-                      }
-                      <span class="chip chip--soft">Promoción</span>
-                    </div>
-
-                    @if ((it.selected_pizzas?.length ?? 0) > 0) {
-                      <div class="item-ux__promo-list">
-                        @for (pizza of it.selected_pizzas ?? []; track pizza.id) {
-                          <div class="item-ux__promo-line">
-                            • {{ pizza.name }} <span class="muted">({{ pizza.category }})</span>
-                          </div>
-                        }
-                      </div>
-                    }
-                  } @else {
-                    <div class="item-ux__chips">
-                      @if (it.size?.name) {
-                        <span class="chip">Tamaño: {{ it.size?.name }}</span>
-                      }
-                      @if ((it.extras?.length ?? 0) > 0) {
-                        <span class="chip chip--soft">Extras: {{ it.extras?.length ?? 0 }}</span>
-                      }
-                      @if (it.is_half_and_half) {
-                        <span class="chip chip--soft">Mitad y mitad</span>
-                      }
-                    </div>
-                  }
-
-                  <div class="item-ux__bottom">
-                    <div class="item-ux__prices">
-                      <div class="unit">
-                        {{ it.unit_price | currency:'USD':'symbol':'1.2-2' }}
-                        <span class="muted">/ u</span>
-                      </div>
-                      <div class="sub">
-                        {{ it.subtotal | currency:'USD':'symbol':'1.2-2' }}
-                      </div>
-                    </div>
-
-                    <div class="qty qty--ux" role="group" aria-label="Cantidad">
-                      <button
-                        type="button"
-                        class="qty__btn"
-                        [disabled]="it.quantity <= 1"
-                        (click)="cart.setQuantity(it.id, it.quantity - 1)"
-                        aria-label="Disminuir"
-                      >
-                        <i class="pi pi-minus"></i>
-                      </button>
-
-                      <div class="qty__value">{{ it.quantity }}</div>
-
-                      <button
-                        type="button"
-                        class="qty__btn"
-                        [disabled]="it.quantity >= 10"
-                        (click)="cart.setQuantity(it.id, it.quantity + 1)"
-                        aria-label="Aumentar"
-                      >
-                        <i class="pi pi-plus"></i>
-                      </button>
-                    </div>
-                  </div>
                 </div>
-              </article>
-            }
-          </div>
-        </div>
-
-        <footer class="cart-foot">
-          <div class="card card--pad foot-card">
-            <div class="foot-card__top">
-              <div class="foot-card__label">Subtotal</div>
-              <div class="foot-card__value">
-                {{ cart.total() | currency:'USD':'symbol':'1.2-2' }}
               </div>
+            </article>
+          }
+        </main>
+
+        <footer class="cart-footer">
+          <div class="cart-total">
+            <div>
+              <span>
+                Subtotal
+              </span>
+
+              <small>
+                Envío calculado al finalizar
+              </small>
             </div>
 
-            <div class="foot-card__hint">
-              Envío y recargos por delivery se calculan en el checkout.
-            </div>
-
-            <p-button
-              label="Finalizar pedido"
-              icon="pi pi-credit-card"
-              class="checkout-ux"
-              [routerLink]="['/checkout']"
-            ></p-button>
+            <strong>
+              {{
+                cart.total()
+                  | currency:
+                      'USD':
+                      'symbol':
+                      '1.2-2'
+              }}
+            </strong>
           </div>
+
+          <p-button
+            label="Finalizar pedido"
+            icon="pi pi-arrow-right"
+            iconPos="right"
+            severity="success"
+            styleClass="checkout-button"
+            [routerLink]="['/checkout']"
+            [disabled]="cart.loading()"
+            (onClick)="closeDrawer()"
+          />
+
+          <button
+            type="button"
+            class="continue-shopping-button"
+            (click)="closeDrawer()"
+          >
+            Seguir eligiendo pizzas
+          </button>
         </footer>
-      </div>
+      }
     </section>
-  }
-</p-popover>
+  </ng-template>
+</p-drawer>

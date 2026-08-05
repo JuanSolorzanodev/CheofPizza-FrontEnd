@@ -1,0 +1,585 @@
+<section class="admin-users-page">
+  <p-confirmdialog />
+
+  <header class="page-header">
+    <div class="page-header__content">
+      <span class="page-header__eyebrow"> Administración </span>
+
+      <h1>Gestión de usuarios</h1>
+
+      <p>Administra clientes, operadores, administradores y accesos al sistema.</p>
+    </div>
+
+    <div class="page-header__actions">
+      <p-button
+        label="Actualizar"
+        icon="pi pi-refresh"
+        severity="secondary"
+        [outlined]="true"
+        [loading]="refreshing()"
+        (onClick)="refresh()"
+      />
+
+      <p-button label="Crear usuario" icon="pi pi-user-plus" (onClick)="openCreateDialog()" />
+    </div>
+  </header>
+
+  @if (loading() && users().length === 0) {
+    <section class="summary-grid">
+      @for (item of [1, 2, 3, 4]; track item) {
+        <p-skeleton width="100%" height="130px" borderRadius="22px" />
+      }
+    </section>
+
+    <section class="users-panel">
+      <p-skeleton width="100%" height="72px" borderRadius="18px" />
+
+      <p-skeleton width="100%" height="430px" borderRadius="18px" />
+    </section>
+  } @else {
+    <section class="summary-grid">
+      <article class="summary-card">
+        <span class="summary-card__icon">
+          <i class="pi pi-users"></i>
+        </span>
+
+        <div class="summary-card__content">
+          <span> Usuarios totales </span>
+
+          <strong>
+            {{ totalRecords() }}
+          </strong>
+
+          <small> Registros encontrados </small>
+        </div>
+      </article>
+
+      <article class="summary-card summary-card--success">
+        <span class="summary-card__icon">
+          <i class="pi pi-check-circle"></i>
+        </span>
+
+        <div class="summary-card__content">
+          <span> Activos en esta página </span>
+
+          <strong>
+            {{ activeUsersCount() }}
+          </strong>
+
+          <small> Con acceso habilitado </small>
+        </div>
+      </article>
+
+      <article class="summary-card summary-card--warning">
+        <span class="summary-card__icon">
+          <i class="pi pi-id-card"></i>
+        </span>
+
+        <div class="summary-card__content">
+          <span> Operadores </span>
+
+          <strong>
+            {{ operatorsCount() }}
+          </strong>
+
+          <small> En la página actual </small>
+        </div>
+      </article>
+
+      <article class="summary-card summary-card--danger">
+        <span class="summary-card__icon">
+          <i class="pi pi-shield"></i>
+        </span>
+
+        <div class="summary-card__content">
+          <span> Administradores </span>
+
+          <strong>
+            {{ adminsCount() }}
+          </strong>
+
+          <small> En la página actual </small>
+        </div>
+      </article>
+    </section>
+
+    <section class="users-panel">
+      <div class="filters-bar">
+        <div class="search-field">
+          <label for="user-search"> Buscar usuario </label>
+
+          <span class="p-input-icon-left search-control">
+            <i class="pi pi-search"></i>
+
+            <input
+              id="user-search"
+              type="text"
+              pInputText
+              [value]="search()"
+              placeholder="Nombre, correo o teléfono"
+              (input)="onSearchInput($event)"
+              (keyup.enter)="applyFilters()"
+            />
+          </span>
+        </div>
+
+        <div class="filter-field">
+          <label for="role-filter"> Rol </label>
+
+          <p-select
+            inputId="role-filter"
+            [options]="roleOptions()"
+            optionLabel="label"
+            optionValue="value"
+            [ngModel]="selectedRole()"
+            (ngModelChange)="onRoleFilterChange($event)"
+            [loading]="loadingRoles()"
+            appendTo="body"
+            Class="filter-select"
+          />
+        </div>
+
+        <div class="filter-field">
+          <label for="status-filter"> Estado </label>
+
+          <p-select
+            inputId="status-filter"
+            [options]="statusOptions"
+            optionLabel="label"
+            optionValue="value"
+            [ngModel]="selectedStatus()"
+            (ngModelChange)="onStatusFilterChange($event)"
+            appendTo="body"
+            Class="filter-select"
+          />
+        </div>
+
+        <div class="filters-bar__actions">
+          <p-button label="Buscar" icon="pi pi-search" (onClick)="applyFilters()" />
+
+          <p-button
+            label="Limpiar"
+            icon="pi pi-filter-slash"
+            severity="secondary"
+            [outlined]="true"
+            (onClick)="clearFilters()"
+          />
+        </div>
+      </div>
+
+      <div class="table-header">
+        <div>
+          <h2>Usuarios registrados</h2>
+
+          <p>
+            Mostrando
+            {{ from() ?? 0 }}
+            a
+            {{ to() ?? 0 }}
+            de
+            {{ totalRecords() }}
+            registros.
+          </p>
+        </div>
+
+        @if (refreshing()) {
+          <span class="refresh-state">
+            <i class="pi pi-spin pi-spinner"></i>
+            Actualizando
+          </span>
+        }
+      </div>
+
+      @if (users().length === 0) {
+        <div class="empty-state">
+          <span class="empty-state__icon">
+            <i class="pi pi-users"></i>
+          </span>
+
+          <h3>No se encontraron usuarios</h3>
+
+          <p>Cambia los filtros o registra un nuevo usuario.</p>
+
+          <p-button label="Crear usuario" icon="pi pi-user-plus" (onClick)="openCreateDialog()" />
+        </div>
+      } @else {
+        <div class="users-table-wrap">
+          <p-table
+            [value]="users()"
+            dataKey="id"
+            [loading]="loading()"
+            [rowHover]="true"
+            responsiveLayout="scroll"
+            styleClass="users-table"
+          >
+            <ng-template pTemplate="header">
+              <tr>
+                <th>Usuario</th>
+
+                <th>Contacto</th>
+
+                <th>Rol</th>
+
+                <th>Estado</th>
+
+                <th>Actividad</th>
+
+                <th>Registro</th>
+
+                <th class="actions-column">Acciones</th>
+              </tr>
+            </ng-template>
+
+            <ng-template pTemplate="body" let-user>
+              <tr>
+                <td>
+                  <div class="user-cell">
+                    <span class="user-avatar">
+                      {{ userInitials(user) }}
+                    </span>
+
+                    <div class="user-cell__content">
+                      <strong>
+                        {{ user.full_name }}
+                      </strong>
+
+                      <span> ID #{{ user.id }} </span>
+                    </div>
+                  </div>
+                </td>
+
+                <td>
+                  <div class="contact-cell">
+                    <span>
+                      <i class="pi pi-envelope"></i>
+                      {{ user.email }}
+                    </span>
+
+                    <span>
+                      <i class="pi pi-phone"></i>
+                      {{ user.phone }}
+                    </span>
+                  </div>
+                </td>
+
+                <td>
+                  <div class="role-cell">
+                    <p-tag
+                      [value]="roleLabel(user.role.name)"
+                      [severity]="roleSeverity(user.role.name)"
+                      [rounded]="true"
+                    />
+
+                    <p-select
+                      [options]="formRoleOptions()"
+                      optionLabel="label"
+                      optionValue="value"
+                      [ngModel]="user.role.name"
+                      (ngModelChange)="confirmRoleChange(user, $event)"
+                      [disabled]="isRoleUpdating(user.id)"
+                      [loading]="isRoleUpdating(user.id)"
+                      appendTo="body"
+                      Class="role-select"
+                    />
+                  </div>
+                </td>
+
+                <td>
+                  <div class="status-cell">
+                    <p-tag
+                      [value]="statusLabel(user)"
+                      [severity]="statusSeverity(user)"
+                      [rounded]="true"
+                    />
+
+                    <button
+                      type="button"
+                      class="status-action"
+                      [class.status-action--activate]="!user.is_active"
+                      [class.status-action--block]="user.is_active"
+                      [disabled]="isStatusUpdating(user.id)"
+                      (click)="confirmStatusChange(user)"
+                    >
+                      @if (isStatusUpdating(user.id)) {
+                        <i class="pi pi-spin pi-spinner"></i>
+                      } @else {
+                        <i
+                          class="pi"
+                          [class.pi-check-circle]="!user.is_active"
+                          [class.pi-ban]="user.is_active"
+                        ></i>
+                      }
+
+                      {{ user.is_active ? 'Bloquear' : 'Activar' }}
+                    </button>
+                  </div>
+                </td>
+
+                <td>
+                  <div class="usage-cell">
+                    <span>
+                      <strong>
+                        {{ user.usage.orders }}
+                      </strong>
+                      pedidos
+                    </span>
+
+                    <span>
+                      <strong>
+                        {{ user.usage.payments }}
+                      </strong>
+                      pagos
+                    </span>
+
+                    <span>
+                      <strong>
+                        {{ user.usage.carts }}
+                      </strong>
+                      carritos
+                    </span>
+                  </div>
+                </td>
+
+                <td>
+                  <div class="date-cell">
+                    <strong>
+                      {{ user.created_at | date: 'dd MMM yyyy' }}
+                    </strong>
+
+                    <span>
+                      {{ user.created_at | date: 'HH:mm' }}
+                    </span>
+                  </div>
+                </td>
+
+                <td class="actions-column">
+                  <div class="row-actions">
+                    <p-button
+                      icon="pi pi-pencil"
+                      severity="secondary"
+                      [outlined]="true"
+                      [rounded]="true"
+                      pTooltip="Editar usuario"
+                      tooltipPosition="left"
+                      (onClick)="openEditDialog(user)"
+                    />
+                  </div>
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+
+        <div class="pagination-wrap">
+          <div class="pagination-info">
+            Página
+            {{ currentPage() }}
+            de
+            {{ lastPage() }}
+          </div>
+
+          <p-paginator
+            [first]="(currentPage() - 1) * perPage()"
+            [rows]="perPage()"
+            [totalRecords]="totalRecords()"
+            [rowsPerPageOptions]="pageSizeOptions"
+            [showCurrentPageReport]="true"
+            currentPageReportTemplate="{first} - {last} de {totalRecords}"
+            (onPageChange)="onPageChange($event)"
+          />
+        </div>
+      }
+    </section>
+  }
+
+  <p-dialog
+    [visible]="dialogVisible()"
+    (visibleChange)="dialogVisible.set($event)"
+    [modal]="true"
+    [draggable]="false"
+    [resizable]="false"
+    [closable]="!submitting()"
+    [closeOnEscape]="!submitting()"
+    [style]="{
+      width: 'min(94vw, 720px)',
+    }"
+    styleClass="user-dialog"
+    (onHide)="closeDialog()"
+  >
+    <ng-template pTemplate="header">
+      <div class="dialog-header">
+        <span class="dialog-header__icon">
+          <i class="pi" [class.pi-user-edit]="isEditing()" [class.pi-user-plus]="!isEditing()"></i>
+        </span>
+
+        <div>
+          <h2>
+            {{ dialogTitle() }}
+          </h2>
+
+          <p>
+            {{ dialogDescription() }}
+          </p>
+        </div>
+      </div>
+    </ng-template>
+
+    <form class="user-form" [formGroup]="userForm" (ngSubmit)="saveUser()">
+      <div class="form-grid">
+        <label class="form-field">
+          <span> Nombre </span>
+
+          <input
+            type="text"
+            pInputText
+            formControlName="first_name"
+            placeholder="Ej. Juan"
+            [class.ng-invalid]="controlInvalid('first_name')"
+          />
+
+          @if (fieldError('first_name'); as error) {
+            <small class="field-error">
+              {{ error }}
+            </small>
+          }
+        </label>
+
+        <label class="form-field">
+          <span> Apellido </span>
+
+          <input
+            type="text"
+            pInputText
+            formControlName="last_name"
+            placeholder="Ej. Pérez"
+            [class.ng-invalid]="controlInvalid('last_name')"
+          />
+
+          @if (fieldError('last_name'); as error) {
+            <small class="field-error">
+              {{ error }}
+            </small>
+          }
+        </label>
+
+        <label class="form-field">
+          <span> Teléfono </span>
+
+          <input
+            type="text"
+            pInputText
+            formControlName="phone"
+            placeholder="Ej. 0999999999"
+            [class.ng-invalid]="controlInvalid('phone')"
+          />
+
+          @if (fieldError('phone'); as error) {
+            <small class="field-error">
+              {{ error }}
+            </small>
+          }
+        </label>
+
+        <label class="form-field">
+          <span> Correo electrónico </span>
+
+          <input
+            type="email"
+            pInputText
+            formControlName="email"
+            placeholder="usuario@correo.com"
+            [class.ng-invalid]="controlInvalid('email')"
+          />
+
+          @if (fieldError('email'); as error) {
+            <small class="field-error">
+              {{ error }}
+            </small>
+          }
+        </label>
+
+        <label class="form-field">
+          <span> Rol </span>
+
+          <p-select
+            formControlName="role"
+            [options]="formRoleOptions()"
+            optionLabel="label"
+            optionValue="value"
+            placeholder="Selecciona un rol"
+            appendTo="body"
+            Class="form-select"
+          />
+
+          @if (isEditing()) {
+            <small class="field-help">
+              El rol se modifica desde la tabla para aplicar las validaciones de seguridad.
+            </small>
+          } @else if (fieldError('role'); as error) {
+            <small class="field-error">
+              {{ error }}
+            </small>
+          }
+        </label>
+
+        <div class="form-field status-form-field">
+          <span> Estado inicial </span>
+
+          <div class="status-switch-card">
+            <p-toggleswitch formControlName="is_active" />
+
+            <div>
+              <strong>
+                {{ userForm.getRawValue().is_active ? 'Cuenta activa' : 'Cuenta bloqueada' }}
+              </strong>
+
+              <small>
+                {{
+                  userForm.getRawValue().is_active
+                    ? 'El usuario podrá acceder al sistema.'
+                    : 'El usuario no podrá iniciar sesión.'
+                }}
+              </small>
+            </div>
+          </div>
+
+          @if (isEditing()) {
+            <small class="field-help"> El estado se modifica desde la acción de la tabla. </small>
+          }
+        </div>
+      </div>
+
+      @if (editingUser(); as editing) {
+        <div class="editing-notice">
+          <i class="pi pi-info-circle"></i>
+
+          <span>
+            Estás editando únicamente los datos personales de
+            <strong>
+              {{ editing.full_name }} </strong
+            >. El rol y el estado se administran por separado.
+          </span>
+        </div>
+      }
+
+      <div class="dialog-actions">
+        <p-button
+          type="button"
+          label="Cancelar"
+          icon="pi pi-times"
+          severity="secondary"
+          [outlined]="true"
+          [disabled]="submitting()"
+          (onClick)="closeDialog()"
+        />
+
+        <p-button
+          type="submit"
+          [label]="isEditing() ? 'Guardar cambios' : 'Crear usuario'"
+          [icon]="isEditing() ? 'pi pi-save' : 'pi pi-user-plus'"
+          [loading]="submitting()"
+        />
+      </div>
+    </form>
+  </p-dialog>
+</section>

@@ -1,0 +1,313 @@
+<section
+  class="admin-layout"
+  [class.admin-layout--collapsed]="sidebarCollapsed()"
+>
+  <aside class="admin-sidebar">
+    <header class="admin-sidebar__brand">
+      <button
+        type="button"
+        class="admin-brand"
+        aria-label="Ir al resumen administrativo"
+        routerLink="/admin/dashboard"
+      >
+        <span class="admin-brand__mark">
+          <i class="pi pi-shop"></i>
+        </span>
+
+        <span class="admin-brand__copy">
+          <strong>CHEO' PIZZA</strong>
+          <small>Administración</small>
+        </span>
+      </button>
+
+      <button
+        type="button"
+        class="sidebar-collapse"
+        [attr.aria-label]="
+          sidebarCollapsed()
+            ? 'Expandir menú lateral'
+            : 'Contraer menú lateral'
+        "
+        [pTooltip]="
+          sidebarCollapsed()
+            ? 'Expandir menú'
+            : 'Contraer menú'
+        "
+        tooltipPosition="right"
+        (click)="toggleSidebar()"
+      >
+        <i [class]="collapseIcon()"></i>
+      </button>
+    </header>
+
+    <nav
+      class="admin-navigation"
+      aria-label="Navegación administrativa"
+    >
+      @for (
+        group of navigationGroups;
+        track group.label
+      ) {
+        <section class="admin-navigation__group">
+          <span class="admin-navigation__label">
+            {{ group.label }}
+          </span>
+
+          <div class="admin-navigation__items">
+            @for (
+              item of group.items;
+              track item.route
+            ) {
+              <a
+                class="admin-navigation__item"
+                [routerLink]="item.route"
+                routerLinkActive="is-active"
+                [routerLinkActiveOptions]="{
+                  exact: item.exact ?? false
+                }"
+                [pTooltip]="
+                  sidebarCollapsed()
+                    ? item.label
+                    : ''
+                "
+                tooltipPosition="right"
+              >
+                <span class="admin-navigation__icon">
+                  <i [class]="item.icon"></i>
+                </span>
+
+                <span class="admin-navigation__text">
+                  {{ item.label }}
+                </span>
+              </a>
+            }
+          </div>
+        </section>
+      }
+    </nav>
+
+    <footer class="admin-sidebar__footer">
+      <button
+        type="button"
+        class="admin-secondary-action"
+        pTooltip="Abrir módulo operativo"
+        tooltipPosition="right"
+        (click)="goToOperator()"
+      >
+        <i class="pi pi-list-check"></i>
+        <span>Módulo operativo</span>
+      </button>
+
+      <button
+        type="button"
+        class="admin-secondary-action"
+        pTooltip="Volver a la tienda"
+        tooltipPosition="right"
+        (click)="goToStore()"
+      >
+        <i class="pi pi-arrow-left"></i>
+        <span>Volver a la tienda</span>
+      </button>
+    </footer>
+  </aside>
+
+  <div class="admin-main">
+    <header class="admin-topbar">
+      <div class="admin-topbar__start">
+        <button
+          type="button"
+          class="admin-mobile-menu"
+          aria-label="Abrir menú administrativo"
+          (click)="openMobileMenu()"
+        >
+          <i class="pi pi-bars"></i>
+        </button>
+
+        <div class="admin-route-copy">
+          <nav
+            class="admin-breadcrumb"
+            aria-label="Ruta de navegación"
+          >
+            <span>Administración</span>
+            <i class="pi pi-angle-right"></i>
+            <strong>{{ breadcrumb() }}</strong>
+          </nav>
+
+          <h1>{{ pageTitle() }}</h1>
+        </div>
+      </div>
+
+      <div class="admin-topbar__actions">
+        <p-button
+          [icon]="themeIcon()"
+          [outlined]="true"
+          severity="secondary"
+          ariaLabel="Cambiar tema"
+          pTooltip="Cambiar tema"
+          tooltipPosition="bottom"
+          styleClass="admin-icon-button"
+          (onClick)="toggleTheme()"
+        />
+
+        <div class="admin-user">
+          @if (
+            !avatarBroken() &&
+            photoUrl()
+          ) {
+            <img
+              class="admin-user__avatar"
+              [src]="photoUrl()!"
+              [alt]="
+                'Avatar de ' +
+                displayName()
+              "
+              (error)="onAvatarError()"
+            />
+          } @else {
+            <span
+              class="admin-user__avatar admin-user__avatar--fallback"
+              aria-hidden="true"
+            >
+              {{ userInitial() }}
+            </span>
+          }
+
+          <span class="admin-user__copy">
+            <strong>{{ displayName() }}</strong>
+            <small>Administrador</small>
+          </span>
+        </div>
+
+        <p-button
+          icon="pi pi-sign-out"
+          severity="danger"
+          [outlined]="true"
+          [loading]="loggingOut()"
+          [disabled]="loggingOut()"
+          ariaLabel="Cerrar sesión"
+          pTooltip="Cerrar sesión"
+          tooltipPosition="bottom"
+          styleClass="admin-icon-button"
+          (onClick)="logout()"
+        />
+      </div>
+    </header>
+
+    <main class="admin-content">
+      <router-outlet />
+    </main>
+  </div>
+</section>
+
+<p-drawer
+  header="Administración"
+  position="left"
+  appendTo="body"
+  [modal]="true"
+  [dismissible]="true"
+  [blockScroll]="true"
+  [closeOnEscape]="true"
+  [autoZIndex]="true"
+  [baseZIndex]="3000"
+  [visible]="mobileMenuVisible()"
+  [style]="{
+    width: 'min(88vw, 340px)'
+  }"
+  (visibleChange)="
+    onMobileMenuVisibleChange($event)
+  "
+  (onHide)="closeMobileMenu()"
+>
+  <div class="admin-mobile-drawer">
+    <header class="admin-mobile-user">
+      @if (
+        !avatarBroken() &&
+        photoUrl()
+      ) {
+        <img
+          class="admin-user__avatar"
+          [src]="photoUrl()!"
+          [alt]="
+            'Avatar de ' +
+            displayName()
+          "
+          (error)="onAvatarError()"
+        />
+      } @else {
+        <span
+          class="admin-user__avatar admin-user__avatar--fallback"
+          aria-hidden="true"
+        >
+          {{ userInitial() }}
+        </span>
+      }
+
+      <div>
+        <strong>{{ displayName() }}</strong>
+        <span>Administrador</span>
+      </div>
+    </header>
+
+    <nav
+      class="admin-mobile-navigation"
+      aria-label="Navegación administrativa móvil"
+    >
+      @for (
+        group of navigationGroups;
+        track group.label
+      ) {
+        <section class="admin-mobile-navigation__group">
+          <span class="admin-mobile-navigation__label">
+            {{ group.label }}
+          </span>
+
+          @for (
+            item of group.items;
+            track item.route
+          ) {
+            <a
+              class="admin-mobile-navigation__item"
+              [routerLink]="item.route"
+              routerLinkActive="is-active"
+              [routerLinkActiveOptions]="{
+                exact: item.exact ?? false
+              }"
+              (click)="closeMobileMenu()"
+            >
+              <i [class]="item.icon"></i>
+              <span>{{ item.label }}</span>
+            </a>
+          }
+        </section>
+      }
+    </nav>
+
+    <footer class="admin-mobile-drawer__footer">
+      <button
+        type="button"
+        (click)="goToOperator()"
+      >
+        <i class="pi pi-list-check"></i>
+        Módulo operativo
+      </button>
+
+      <button
+        type="button"
+        (click)="goToStore()"
+      >
+        <i class="pi pi-arrow-left"></i>
+        Volver a la tienda
+      </button>
+
+      <button
+        type="button"
+        class="is-danger"
+        [disabled]="loggingOut()"
+        (click)="logout()"
+      >
+        <i class="pi pi-sign-out"></i>
+        Cerrar sesión
+      </button>
+    </footer>
+  </div>
+</p-drawer>

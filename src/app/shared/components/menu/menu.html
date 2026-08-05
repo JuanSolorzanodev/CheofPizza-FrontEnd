@@ -1,0 +1,365 @@
+<section
+  class="menu"
+  aria-labelledby="menu-title"
+>
+  <header class="menu-intro">
+    <div class="menu-intro__copy">
+      <span class="menu-intro__eyebrow">
+        Nuestro menú
+      </span>
+
+      <h1 id="menu-title">
+        Pizzas preparadas al instante para disfrutar!
+      </h1>
+
+      <p>
+        Elige tu receta favorita, selecciona el tamaño y
+        personaliza los ingredientes antes de ordenar.
+      </p>
+    </div>
+
+    <div
+      class="menu-intro__availability"
+      aria-label="Disponibilidad del menú"
+    >
+      <strong>
+        {{
+          simplePizzas().length +
+          specialPizzas().length
+        }}
+      </strong>
+
+      <span>
+        recetas disponibles
+      </span>
+    </div>
+  </header>
+
+  @for (
+    section of sections();
+    track section.id
+  ) {
+    <section
+      class="menu-section"
+      [id]="section.id"
+      [attr.aria-labelledby]="
+        section.id + '-title'
+      "
+    >
+      <header class="section-heading">
+        <div>
+          <span class="section-heading__eyebrow">
+            {{ section.eyebrow }}
+          </span>
+
+          <h2
+            [id]="section.id + '-title'"
+          >
+            {{ section.title }}
+          </h2>
+
+          <p>
+            {{ section.description }}
+          </p>
+        </div>
+
+        @if (
+          !section.loading &&
+          !section.error &&
+          section.pizzas.length > 0
+        ) {
+          <span class="section-heading__count">
+            {{ section.pizzas.length }}
+
+            {{
+              section.pizzas.length === 1
+                ? 'pizza'
+                : 'pizzas'
+            }}
+          </span>
+        }
+      </header>
+
+      @if (section.loading) {
+        <div
+          class="pizza-grid"
+          aria-label="Cargando pizzas"
+          aria-busy="true"
+        >
+          @for (
+            item of skeletonItems;
+            track item
+          ) {
+            <article
+              class="pizza-card pizza-card--loading"
+              aria-hidden="true"
+            >
+              <div class="pizza-card__media">
+                <p-skeleton
+                  width="100%"
+                  height="100%"
+                  borderRadius="0"
+                />
+              </div>
+
+              <div class="pizza-card__body">
+                <p-skeleton
+                  width="48%"
+                  height="1.55rem"
+                />
+
+                <div class="pizza-card__loading-description">
+                  <p-skeleton
+                    width="92%"
+                    height="0.82rem"
+                  />
+
+                  <p-skeleton
+                    width="70%"
+                    height="0.82rem"
+                  />
+                </div>
+
+                <div class="pizza-card__loading-prices">
+                  <p-skeleton
+                    width="100%"
+                    height="1.75rem"
+                    borderRadius="6px"
+                  />
+
+                  <p-skeleton
+                    width="100%"
+                    height="1.75rem"
+                    borderRadius="6px"
+                  />
+
+                  <p-skeleton
+                    width="100%"
+                    height="1.75rem"
+                    borderRadius="6px"
+                  />
+                </div>
+
+                <p-skeleton
+                  width="132px"
+                  height="2.5rem"
+                  borderRadius="10px"
+                />
+              </div>
+            </article>
+          }
+        </div>
+      } @else if (section.error) {
+        <article
+          class="menu-state menu-state--error"
+          role="alert"
+        >
+          <span class="menu-state__icon">
+            <i
+              class="pi pi-exclamation-circle"
+              aria-hidden="true"
+            ></i>
+          </span>
+
+          <div class="menu-state__copy">
+            <h3>
+              No pudimos cargar esta categoría
+            </h3>
+
+            <p>
+              {{ section.error }}
+            </p>
+          </div>
+
+          <button
+            type="button"
+            class="menu-state__button"
+            (click)="reloadSection(section.kind)"
+          >
+            <i
+              class="pi pi-refresh"
+              aria-hidden="true"
+            ></i>
+
+            Reintentar
+          </button>
+        </article>
+      } @else if (
+        section.pizzas.length === 0
+      ) {
+        <article class="menu-state">
+          <span class="menu-state__icon">
+            <i
+              class="pi pi-inbox"
+              aria-hidden="true"
+            ></i>
+          </span>
+
+          <div class="menu-state__copy">
+            <h3>
+              Próximamente
+            </h3>
+
+            <p>
+              Esta categoría todavía no tiene pizzas disponibles.
+            </p>
+          </div>
+        </article>
+      } @else {
+        <div class="pizza-grid">
+          @for (
+            pizza of section.pizzas;
+            track pizza.id
+          ) {
+            <article class="pizza-card">
+              <div class="pizza-card__media">
+                <img
+                  class="pizza-card__image"
+                  [src]="pizza.imageUrl"
+                  [alt]="'Pizza ' + pizza.name"
+                  loading="lazy"
+                  decoding="async"
+                  referrerpolicy="no-referrer"
+                  (error)="onImageError($event)"
+                />
+
+                <div
+                  class="pizza-card__image-shade"
+                  aria-hidden="true"
+                ></div>
+
+                <span
+                  class="pizza-card__category"
+                  [class.pizza-card__category--special]="
+                    pizza.categoryKind === 'special'
+                  "
+                >
+                  {{ pizza.categoryName }}
+                </span>
+              </div>
+
+              <div class="pizza-card__body">
+                <header class="pizza-card__heading">
+                  <div class="pizza-card__title-row">
+                    <h3>
+                      {{ pizza.name }}
+                    </h3>
+
+                    @if (
+                      pizza.formattedMinimumPrice
+                    ) {
+                      <span class="pizza-card__minimum">
+                        <small>
+                          desde
+                        </small>
+
+                        {{
+                          pizza.formattedMinimumPrice
+                        }}
+                      </span>
+                    }
+                  </div>
+
+                  <p>
+                    {{ pizza.description }}
+                  </p>
+                </header>
+
+                @if (
+                  pizza.visibleSizes.length > 0
+                ) {
+                  <div
+                    class="pizza-card__prices"
+                    aria-label="Tamaños y precios disponibles"
+                  >
+                    @for (
+                      size of pizza.visibleSizes;
+                      track size.id
+                    ) {
+                      <div class="pizza-card__price-row">
+                        <span>
+                          {{ size.name }}
+                        </span>
+
+                        <span
+                          class="pizza-card__price-divider"
+                          aria-hidden="true"
+                        ></span>
+
+                        <strong>
+                          {{ size.formattedPrice }}
+                        </strong>
+                      </div>
+                    }
+
+                    @if (
+                      pizza.remainingSizes > 0
+                    ) {
+                      <div
+                        class="
+                          pizza-card__price-row
+                          pizza-card__price-row--more
+                        "
+                      >
+                        <span>
+                          Otros tamaños
+                        </span>
+
+                        <span
+                          class="pizza-card__price-divider"
+                          aria-hidden="true"
+                        ></span>
+
+                        <strong>
+                          +{{ pizza.remainingSizes }}
+                        </strong>
+                      </div>
+                    }
+                  </div>
+                }
+
+                <footer class="pizza-card__footer">
+                  <p class="pizza-card__helper">
+                    Elige tamaño, ingredientes y cantidad.
+                  </p>
+
+                  <button
+                    type="button"
+                    class="pizza-card__action"
+                    [disabled]="
+                      orderingPizzaId() !== null
+                    "
+                    [attr.aria-busy]="
+                      orderingPizzaId() === pizza.id
+                    "
+                    (click)="personalize(pizza)"
+                  >
+                    @if (
+                      orderingPizzaId() === pizza.id
+                    ) {
+                      <i
+                        class="pi pi-spin pi-spinner"
+                        aria-hidden="true"
+                      ></i>
+
+                      Abriendo
+                    } @else {
+                      <span>
+                        Personalizar
+                      </span>
+
+                      <i
+                        class="pi pi-arrow-right"
+                        aria-hidden="true"
+                      ></i>
+                    }
+                  </button>
+                </footer>
+              </div>
+            </article>
+          }
+        </div>
+      }
+    </section>
+  }
+</section>

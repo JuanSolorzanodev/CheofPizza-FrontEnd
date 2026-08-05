@@ -1,121 +1,613 @@
-<p-toolbar class="cheof-toolbar">
-  <ng-template pTemplate="start">
-    <div class="brand">
-      <div class="cheof-title">CHEO' F</div>
-      <div class="cheof-accent-line"></div>
-    </div>
-  </ng-template>
+<header class="app-header">
+  <div class="toolbar-shell">
+    <button
+      type="button"
+      class="brand"
+      aria-label="Ir al inicio"
+      (click)="goToHome()"
+    >
+      <span class="brand__name">
+        CHEO' F
+      </span>
 
-  <ng-template pTemplate="end">
-    <div class="toolbar-actions">
+      <span class="brand__descriptor">
+        Pizza artesanal
+      </span>
+    </button>
 
-      <!-- ✅ SOLO fuera de /operator/* -->
-      @if (!isOperatorView()) {
-        <!-- WEB: botones -->
-        <div class="cats-desktop">
-          <p-button
-            label="Pizzas sencillas"
-            icon="pi pi-star"
-            outlined="true"
-            (onClick)="goToSencillas()"
-            styleClass="cheof-theme-toggle cheof-btn-simple">
-          </p-button>
+    <div class="desktop-toolbar">
+      @if (!isBackofficeView()) {
+        <nav
+          class="primary-navigation"
+          aria-label="Navegación principal"
+        >
+          <button
+            type="button"
+            class="navigation-link"
+            (click)="goToSencillas()"
+          >
+            <span>
+              Sencillas
+            </span>
+          </button>
 
-          <p-button
-            label="Pizzas especiales"
-            icon="pi pi-bolt"
-            outlined="true"
-            (onClick)="goToEspeciales()"
-            styleClass="cheof-theme-toggle cheof-btn-special">
-          </p-button>
-        </div>
+          <button
+            type="button"
+            class="navigation-link"
+            (click)="goToEspeciales()"
+          >
+            <span>
+              Especiales
+            </span>
+          </button>
 
-        <!-- MOBILE: selector (siempre visible en móvil) -->
-        <div class="cats-mobile">
-          <p-selectButton
-            [options]="pizzaCategoryOptions"
-            [(ngModel)]="pizzaCategory"
-            (onChange)="onCategoryChange($event.value)"
-            optionLabel="label"
-            optionValue="value"
-            styleClass="cheof-cat-select">
-          </p-selectButton>
-        </div>
+          @if (
+            isAuthenticated() &&
+            isCustomer()
+          ) {
+            <button
+              type="button"
+              class="navigation-link"
+              [class.navigation-link--active]="
+                isMyOrdersView()
+              "
+              [attr.aria-current]="
+                isMyOrdersView()
+                  ? 'page'
+                  : null
+              "
+              (click)="goToMyOrders()"
+            >
+              <span>
+                Mis pedidos
+              </span>
+            </button>
+          }
+        </nav>
       }
 
-      <!-- ✅ Accesos por rol -->
-      <div class="nav-shortcuts">
-        @if (isAuthenticated() && !isOperatorView()) {
-          <p-button
-            label="Mis pedidos"
-            icon="pi pi-box"
-            outlined="true"
-            styleClass="cheof-theme-toggle"
-            (onClick)="goToMyOrders()">
-          </p-button>
+      @if (
+        isAuthenticated() &&
+        isOperatorOrAdmin()
+      ) {
+        <nav
+          class="primary-navigation"
+          aria-label="Navegación administrativa"
+        >
+          <button
+            type="button"
+            class="navigation-link"
+            [class.navigation-link--active]="
+              isOperatorView()
+            "
+            [attr.aria-current]="
+              isOperatorView()
+                ? 'page'
+                : null
+            "
+            (click)="goToOperator()"
+          >
+            <i
+              class="pi pi-list-check"
+              aria-hidden="true"
+            ></i>
+
+            <span>
+              Operativo
+            </span>
+          </button>
+
+          @if (isAdmin()) {
+            <button
+              type="button"
+              class="navigation-link"
+              [class.navigation-link--active]="
+                isAdminView()
+              "
+              [attr.aria-current]="
+                isAdminView()
+                  ? 'page'
+                  : null
+              "
+              (click)="goToAnalytics()"
+            >
+              <i
+                class="pi pi-chart-line"
+                aria-hidden="true"
+              ></i>
+
+              <span>
+                Analítica
+              </span>
+            </button>
+          }
+        </nav>
+      }
+
+      <div
+        class="toolbar-divider"
+        aria-hidden="true"
+      ></div>
+
+      <div class="toolbar-actions">
+        <button
+          type="button"
+          class="icon-action"
+          [attr.aria-label]="themeLabel()"
+          [attr.title]="themeLabel()"
+          (click)="toggleTheme()"
+        >
+          <i
+            [class]="themeIcon()"
+            aria-hidden="true"
+          ></i>
+        </button>
+
+        @if (!isAuthenticated()) {
+          <button
+            type="button"
+            class="session-action"
+            (click)="openLoginDialog()"
+          >
+            <i
+              class="pi pi-user"
+              aria-hidden="true"
+            ></i>
+
+            <span>
+              Iniciar sesión
+            </span>
+          </button>
+        } @else {
+          <div class="account">
+            <div class="account__avatar">
+              @if (
+                !avatarBroken() &&
+                photoUrl()
+              ) {
+                <img
+                  [src]="photoUrl()!"
+                  [alt]="
+                    'Avatar de ' +
+                    displayName()
+                  "
+                  (error)="onAvatarError()"
+                />
+              } @else {
+                <span aria-hidden="true">
+                  {{ userInitial() }}
+                </span>
+              }
+            </div>
+
+            <div class="account__copy">
+              <strong>
+                {{ displayName() }}
+              </strong>
+
+              <small>
+                {{ roleLabel() }}
+              </small>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            class="icon-action icon-action--logout"
+            aria-label="Cerrar sesión"
+            title="Cerrar sesión"
+            [disabled]="loggingOut()"
+            (click)="logout()"
+          >
+            @if (loggingOut()) {
+              <i
+                class="pi pi-spin pi-spinner"
+                aria-hidden="true"
+              ></i>
+            } @else {
+              <i
+                class="pi pi-sign-out"
+                aria-hidden="true"
+              ></i>
+            }
+          </button>
         }
 
-        @if (isAuthenticated() && isOperatorOrAdmin()) {
-          <p-button
-            label="Operativo"
-            icon="pi pi-box"
-            outlined="true"
-            styleClass="cheof-theme-toggle"
-            (onClick)="goToOperator()">
-          </p-button>
+        @if (!isBackofficeView()) {
+          <app-cart-popover />
         }
       </div>
-
-      <!-- Theme icon -->
-      <p-button
-        [icon]="themeIcon()"
-        outlined="true"
-        styleClass="cheof-icon-btn cheof-theme-toggle"
-        (onClick)="toggleTheme()">
-      </p-button>
-
-      <!-- Login / User -->
-      @if (!isAuthenticated()) {
-        <p-button
-          label="Iniciar sesión"
-          icon="pi pi-user"
-          outlined="true"
-          styleClass="cheof-theme-toggle login-btn"
-          (onClick)="loginDialog.open()">
-        </p-button>
-      } @else {
-
-        <p-button
-          outlined="true"
-          styleClass="user-chip-btn cheof-theme-toggle">
-
-          @if (!avatarBroken() && photoUrl()) {
-            <img class="avatar" [src]="photoUrl()!" (error)="onAvatarError()" alt="avatar" />
-          } @else {
-            <div class="avatar-fallback">
-              {{ (displayName() || 'U').slice(0, 1).toUpperCase() }}
-            </div>
-          }
-
-          <span class="name">{{ displayName() }}</span>
-        </p-button>
-
-        <p-button
-          label="Salir"
-          icon="pi pi-sign-out"
-          outlined="true"
-          styleClass="cheof-theme-toggle"
-          (onClick)="logout()">
-        </p-button>
-      }
-
-      <!-- ✅ Carrito SOLO fuera de /operator -->
-      @if (!isOperatorView()) {
-        <app-cart-popover></app-cart-popover>
-      }
-
-      <!-- ✅ Dialog único -->
-      <app-google-login-dialog #loginDialog />
     </div>
-  </ng-template>
-</p-toolbar>
+
+    <div class="mobile-toolbar">
+      @if (!isBackofficeView()) {
+        <app-cart-popover />
+      }
+
+      <button
+        type="button"
+        class="mobile-menu-trigger"
+        aria-label="Abrir menú de navegación"
+        [attr.aria-expanded]="
+          mobileMenuVisible()
+        "
+        aria-controls="mobile-navigation-drawer"
+        (click)="openMobileMenu()"
+      >
+        <i
+          class="pi pi-bars"
+          aria-hidden="true"
+        ></i>
+      </button>
+    </div>
+  </div>
+</header>
+
+<p-drawer
+  header="Menú"
+  position="right"
+  appendTo="body"
+  styleClass="cheof-mobile-menu"
+  [modal]="true"
+  [dismissible]="true"
+  [blockScroll]="true"
+  [closeOnEscape]="true"
+  [autoZIndex]="true"
+  [baseZIndex]="3000"
+  [visible]="mobileMenuVisible()"
+  [style]="{
+    width: 'min(90vw, 380px)'
+  }"
+  (visibleChange)="
+    onMobileMenuVisibleChange($event)
+  "
+  (onHide)="closeMobileMenu()"
+>
+  <div
+    id="mobile-navigation-drawer"
+    class="drawer-content"
+  >
+    @if (isAuthenticated()) {
+      <header class="drawer-account">
+        <div class="drawer-account__avatar">
+          @if (
+            !avatarBroken() &&
+            photoUrl()
+          ) {
+            <img
+              [src]="photoUrl()!"
+              [alt]="
+                'Avatar de ' +
+                displayName()
+              "
+              (error)="onAvatarError()"
+            />
+          } @else {
+            <span aria-hidden="true">
+              {{ userInitial() }}
+            </span>
+          }
+        </div>
+
+        <div class="drawer-account__copy">
+          <strong>
+            {{ displayName() }}
+          </strong>
+
+          <span>
+            {{ roleLabel() }}
+          </span>
+        </div>
+      </header>
+    } @else {
+      <header class="drawer-welcome">
+        <span class="drawer-welcome__icon">
+          <i
+            class="pi pi-user"
+            aria-hidden="true"
+          ></i>
+        </span>
+
+        <div>
+          <strong>
+            Bienvenido
+          </strong>
+
+          <p>
+            Explora el menú o inicia sesión para consultar tus pedidos.
+          </p>
+        </div>
+      </header>
+    }
+
+    <nav
+      class="drawer-navigation"
+      aria-label="Navegación móvil"
+    >
+      <span class="drawer-section-label">
+        Navegación
+      </span>
+
+      <button
+        type="button"
+        class="drawer-link"
+        [class.drawer-link--active]="
+          isHomeView()
+        "
+        (click)="goToHome()"
+      >
+        <span class="drawer-link__icon">
+          <i
+            class="pi pi-home"
+            aria-hidden="true"
+          ></i>
+        </span>
+
+        <span class="drawer-link__copy">
+          <strong>
+            Inicio
+          </strong>
+
+          <small>
+            Promociones y menú
+          </small>
+        </span>
+
+        <i
+          class="pi pi-angle-right"
+          aria-hidden="true"
+        ></i>
+      </button>
+
+      @if (!isBackofficeView()) {
+        <button
+          type="button"
+          class="drawer-link"
+          (click)="goToSencillas()"
+        >
+          <span class="drawer-link__icon">
+            <i
+              class="pi pi-circle-fill"
+              aria-hidden="true"
+            ></i>
+          </span>
+
+          <span class="drawer-link__copy">
+            <strong>
+              Pizzas sencillas
+            </strong>
+
+            <small>
+              Sabores clásicos
+            </small>
+          </span>
+
+          <i
+            class="pi pi-angle-right"
+            aria-hidden="true"
+          ></i>
+        </button>
+
+        <button
+          type="button"
+          class="drawer-link"
+          (click)="goToEspeciales()"
+        >
+          <span class="drawer-link__icon">
+            <i
+              class="pi pi-sparkles"
+              aria-hidden="true"
+            ></i>
+          </span>
+
+          <span class="drawer-link__copy">
+            <strong>
+              Pizzas especiales
+            </strong>
+
+            <small>
+              Recetas de la casa
+            </small>
+          </span>
+
+          <i
+            class="pi pi-angle-right"
+            aria-hidden="true"
+          ></i>
+        </button>
+      }
+
+      @if (
+        isAuthenticated() &&
+        isCustomer()
+      ) {
+        <button
+          type="button"
+          class="drawer-link"
+          [class.drawer-link--active]="
+            isMyOrdersView()
+          "
+          (click)="goToMyOrders()"
+        >
+          <span class="drawer-link__icon">
+            <i
+              class="pi pi-box"
+              aria-hidden="true"
+            ></i>
+          </span>
+
+          <span class="drawer-link__copy">
+            <strong>
+              Mis pedidos
+            </strong>
+
+            <small>
+              Historial y seguimiento
+            </small>
+          </span>
+
+          <i
+            class="pi pi-angle-right"
+            aria-hidden="true"
+          ></i>
+        </button>
+      }
+
+      @if (
+        isAuthenticated() &&
+        isOperatorOrAdmin()
+      ) {
+        <span class="drawer-section-label drawer-section-label--spaced">
+          Administración
+        </span>
+
+        <button
+          type="button"
+          class="drawer-link"
+          [class.drawer-link--active]="
+            isOperatorView()
+          "
+          (click)="goToOperator()"
+        >
+          <span class="drawer-link__icon">
+            <i
+              class="pi pi-list-check"
+              aria-hidden="true"
+            ></i>
+          </span>
+
+          <span class="drawer-link__copy">
+            <strong>
+              Operativo
+            </strong>
+
+            <small>
+              Gestión de pedidos
+            </small>
+          </span>
+
+          <i
+            class="pi pi-angle-right"
+            aria-hidden="true"
+          ></i>
+        </button>
+
+        @if (isAdmin()) {
+          <button
+            type="button"
+            class="drawer-link"
+            [class.drawer-link--active]="
+              isAdminView()
+            "
+            (click)="goToAnalytics()"
+          >
+            <span class="drawer-link__icon">
+              <i
+                class="pi pi-chart-line"
+                aria-hidden="true"
+              ></i>
+            </span>
+
+            <span class="drawer-link__copy">
+              <strong>
+                Analítica predictiva
+              </strong>
+
+              <small>
+                Pronósticos y modelos
+              </small>
+            </span>
+
+            <i
+              class="pi pi-angle-right"
+              aria-hidden="true"
+            ></i>
+          </button>
+        }
+      }
+    </nav>
+
+    <section
+      class="drawer-preferences"
+      aria-label="Preferencias"
+    >
+      <span class="drawer-section-label">
+        Preferencias
+      </span>
+
+      <button
+        type="button"
+        class="drawer-link"
+        (click)="toggleTheme()"
+      >
+        <span class="drawer-link__icon">
+          <i
+            [class]="themeIcon()"
+            aria-hidden="true"
+          ></i>
+        </span>
+
+        <span class="drawer-link__copy">
+          <strong>
+            Apariencia
+          </strong>
+
+          <small>
+            {{
+              mode() === 'dark'
+                ? 'Cambiar a modo claro'
+                : 'Cambiar a modo oscuro'
+            }}
+          </small>
+        </span>
+
+        <i
+          class="pi pi-angle-right"
+          aria-hidden="true"
+        ></i>
+      </button>
+    </section>
+
+    <footer class="drawer-footer">
+      @if (!isAuthenticated()) {
+        <button
+          type="button"
+          class="drawer-session-button"
+          (click)="openLoginDialog()"
+        >
+          <i
+            class="pi pi-user"
+            aria-hidden="true"
+          ></i>
+
+          Iniciar sesión
+        </button>
+      } @else {
+        <button
+          type="button"
+          class="drawer-session-button drawer-session-button--logout"
+          [disabled]="loggingOut()"
+          (click)="logout()"
+        >
+          @if (loggingOut()) {
+            <i
+              class="pi pi-spin pi-spinner"
+              aria-hidden="true"
+            ></i>
+
+            Cerrando sesión
+          } @else {
+            <i
+              class="pi pi-sign-out"
+              aria-hidden="true"
+            ></i>
+
+            Cerrar sesión
+          }
+        </button>
+      }
+    </footer>
+  </div>
+</p-drawer>
+
+<app-google-login-dialog />

@@ -1,235 +1,1003 @@
 :host {
+  position: sticky;
+  z-index: 1000;
+  top: 0;
+
   display: block;
+
+  --toolbar-height: 72px;
+
+  --toolbar-surface:
+    color-mix(
+      in srgb,
+      var(--p-content-background) 94%,
+      transparent
+    );
+
+  --toolbar-border:
+    color-mix(
+      in srgb,
+      var(--p-content-border-color) 82%,
+      transparent
+    );
+
+  --toolbar-brand:
+    var(
+      --p-primary-color,
+      #159447
+    );
+
+  --toolbar-brand-dark:
+    color-mix(
+      in srgb,
+      var(--toolbar-brand) 82%,
+      #04160a
+    );
+
+  --toolbar-brand-soft:
+    color-mix(
+      in srgb,
+      var(--toolbar-brand) 8%,
+      var(--p-content-background)
+    );
 }
 
-/* =========================
-   Toolbar base
-   ========================= */
-.cheof-toolbar {
-  border: 0;
-  border-radius: 0;
-  padding: 12px 16px;
+/*
+|--------------------------------------------------------------------------
+| Contenedor principal
+|--------------------------------------------------------------------------
+*/
 
-  background: var(--p-surface-0);
-  color: var(--p-text-color);
-  border-bottom: 1px solid var(--p-surface-200);
+.app-header {
+  min-height:
+    var(--toolbar-height);
 
-  min-height: 64px;
+  border-bottom:
+    1px solid
+    var(--toolbar-border);
+
+  background:
+    var(--toolbar-surface);
+
+  box-shadow:
+    0 6px 24px
+    color-mix(
+      in srgb,
+      #000000 7%,
+      transparent
+    );
+
+  backdrop-filter:
+    blur(18px)
+    saturate(1.12);
+
+  -webkit-backdrop-filter:
+    blur(18px)
+    saturate(1.12);
+}
+
+.toolbar-shell {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+
+  width:
+    min(
+      1600px,
+      100%
+    );
+
+  min-height:
+    var(--toolbar-height);
+
+  margin-inline: auto;
+
+  padding:
+    0.65rem
+    clamp(
+      1rem,
+      3vw,
+      2.5rem
+    );
 }
 
-/* =========================
-   Acciones a la derecha
-   ========================= */
+/*
+|--------------------------------------------------------------------------
+| Marca
+|--------------------------------------------------------------------------
+*/
+
+.brand {
+  position: relative;
+
+  display: grid;
+  align-content: center;
+  gap: 0.2rem;
+
+  flex: 0 0 auto;
+
+  min-width: 112px;
+  min-height: 46px;
+  padding: 0;
+
+  border: 0;
+
+  background:
+    transparent;
+
+  color:
+    var(--p-text-color);
+
+  cursor: pointer;
+
+  font: inherit;
+
+  text-align: left;
+}
+
+.brand::after {
+  position: absolute;
+  right: 0;
+  bottom: 1px;
+  left: 0;
+
+  width: 42px;
+  height: 3px;
+
+  border-radius: 999px;
+
+  background:
+    var(--toolbar-brand);
+
+  content: '';
+}
+
+.brand__name {
+  font-size: 1.02rem;
+  font-weight: 800;
+  line-height: 1;
+
+  letter-spacing: 0.08em;
+
+  white-space: nowrap;
+}
+
+.brand__descriptor {
+  padding-bottom: 0.38rem;
+
+  color:
+    var(--p-text-muted-color);
+
+  font-size: 0.58rem;
+  font-weight: 520;
+
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.brand:focus-visible {
+  border-radius: 9px;
+
+  outline:
+    3px solid
+    color-mix(
+      in srgb,
+      var(--toolbar-brand) 25%,
+      transparent
+    );
+
+  outline-offset: 4px;
+}
+
+/*
+|--------------------------------------------------------------------------
+| Escritorio
+|--------------------------------------------------------------------------
+*/
+
+.desktop-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.85rem;
+
+  min-width: 0;
+  flex: 1;
+}
+
+.primary-navigation,
 .toolbar-actions {
   display: flex;
   align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
+  gap: 0.25rem;
+
+  min-width: 0;
 }
 
-/* ✅ Accesos por rol */
-.nav-shortcuts {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-/* WEB: categorías en botones */
-.cats-desktop {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-/* MOBILE: categorías como select */
-.cats-mobile {
-  display: none;
-}
-
-/* Botones ícono (carrito/tema/otros) */
-.cheof-icon-btn {
-  width: 42px;
-  height: 42px;
-  padding: 0;
-  justify-content: center;
-  border-radius: 12px;
-}
-
-/* =========================================================
-   ✅ Usuario autenticado
-   ========================================================= */
-:host ::ng-deep .user-chip-btn.p-button {
-  height: 42px;
-  border-radius: 999px;
-  padding: 0 12px;
+.navigation-link {
+  position: relative;
 
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-}
-
-:host ::ng-deep .user-chip-btn.p-button .p-button-label {
-  padding: 0;
-}
-
-/* Avatar */
-:host ::ng-deep .user-chip-btn .avatar {
-  width: 28px;
-  height: 28px;
-  border-radius: 999px;
-  object-fit: cover;
-  display: block;
-}
-
-/* Fallback */
-:host ::ng-deep .user-chip-btn .avatar-fallback {
-  width: 28px;
-  height: 28px;
-  border-radius: 999px;
-  display: inline-flex;
-  align-items: center;
   justify-content: center;
-}
+  gap: 0.45rem;
 
-/* Nombre */
-:host ::ng-deep .user-chip-btn .name {
-  font-weight: 700;
-  font-size: 0.92rem;
+  min-height: 40px;
+  padding:
+    0.55rem
+    0.72rem;
+
+  border: 0;
+  border-radius: 10px;
+
+  background:
+    transparent;
+
+  color:
+    var(--p-text-muted-color);
+
+  cursor: pointer;
+
+  font: inherit;
+  font-size: 0.76rem;
+  font-weight: 590;
+
   white-space: nowrap;
 
-  max-width: 280px;
+  transition:
+    background-color 160ms ease,
+    color 160ms ease;
+}
+
+.navigation-link::after {
+  position: absolute;
+  right: 0.7rem;
+  bottom: 4px;
+  left: 0.7rem;
+
+  height: 2px;
+
+  border-radius: 999px;
+
+  background:
+    transparent;
+
+  content: '';
+
+  transition:
+    background-color 160ms ease;
+}
+
+.navigation-link:hover {
+  background:
+    var(--toolbar-brand-soft);
+
+  color:
+    var(--p-text-color);
+}
+
+.navigation-link--active {
+  background:
+    var(--toolbar-brand-soft);
+
+  color:
+    var(--toolbar-brand-dark);
+}
+
+.navigation-link--active::after {
+  background:
+    var(--toolbar-brand);
+}
+
+.navigation-link i {
+  color:
+    var(--toolbar-brand);
+
+  font-size: 0.76rem;
+}
+
+.navigation-link:focus-visible,
+.icon-action:focus-visible,
+.session-action:focus-visible,
+.mobile-menu-trigger:focus-visible,
+.drawer-link:focus-visible,
+.drawer-session-button:focus-visible {
+  outline:
+    3px solid
+    color-mix(
+      in srgb,
+      var(--toolbar-brand) 24%,
+      transparent
+    );
+
+  outline-offset: 3px;
+}
+
+.toolbar-divider {
+  width: 1px;
+  height: 28px;
+
+  margin-inline: 0.15rem;
+
+  background:
+    var(--toolbar-border);
+}
+
+/*
+|--------------------------------------------------------------------------
+| Acciones
+|--------------------------------------------------------------------------
+*/
+
+.toolbar-actions {
+  gap: 0.45rem;
+}
+
+.icon-action,
+.mobile-menu-trigger {
+  display: grid;
+
+  width: 40px;
+  min-width: 40px;
+  height: 40px;
+  padding: 0;
+
+  place-items: center;
+
+  border:
+    1px solid
+    var(--toolbar-border);
+
+  border-radius: 11px;
+
+  background:
+    transparent;
+
+  color:
+    var(--p-text-muted-color);
+
+  cursor: pointer;
+
+  font: inherit;
+  font-size: 0.9rem;
+
+  transition:
+    border-color 160ms ease,
+    background-color 160ms ease,
+    color 160ms ease,
+    transform 160ms ease;
+}
+
+.icon-action:hover,
+.mobile-menu-trigger:hover {
+  border-color:
+    color-mix(
+      in srgb,
+      var(--toolbar-brand) 32%,
+      var(--toolbar-border)
+    );
+
+  background:
+    var(--toolbar-brand-soft);
+
+  color:
+    var(--toolbar-brand-dark);
+
+  transform:
+    translateY(-1px);
+}
+
+.icon-action--logout:hover {
+  border-color:
+    color-mix(
+      in srgb,
+      var(--p-red-500) 30%,
+      var(--toolbar-border)
+    );
+
+  background:
+    color-mix(
+      in srgb,
+      var(--p-red-500) 7%,
+      transparent
+    );
+
+  color:
+    var(--p-red-500);
+}
+
+.icon-action:disabled {
+  cursor:
+    not-allowed;
+
+  opacity: 0.5;
+}
+
+.session-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+
+  min-height: 40px;
+
+  padding:
+    0.55rem
+    0.82rem;
+
+  border:
+    1px solid
+    var(--toolbar-brand);
+
+  border-radius: 11px;
+
+  background:
+    var(--toolbar-brand);
+
+  color: #ffffff;
+
+  cursor: pointer;
+
+  font: inherit;
+  font-size: 0.74rem;
+  font-weight: 620;
+
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    transform 160ms ease;
+}
+
+.session-action:hover {
+  border-color:
+    var(--toolbar-brand-dark);
+
+  background:
+    var(--toolbar-brand-dark);
+
+  box-shadow:
+    0 8px 18px
+    color-mix(
+      in srgb,
+      var(--toolbar-brand) 20%,
+      transparent
+    );
+
+  transform:
+    translateY(-1px);
+}
+
+/*
+|--------------------------------------------------------------------------
+| Cuenta
+|--------------------------------------------------------------------------
+*/
+
+.account {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+
+  min-width: 0;
+  max-width: 190px;
+
+  padding:
+    0.25rem
+    0.35rem
+    0.25rem
+    0.25rem;
+}
+
+.account__avatar,
+.drawer-account__avatar {
+  display: grid;
+
   overflow: hidden;
+
+  place-items: center;
+
+  border:
+    1px solid
+    color-mix(
+      in srgb,
+      var(--toolbar-brand) 18%,
+      var(--toolbar-border)
+    );
+
+  border-radius: 50%;
+
+  background:
+    var(--toolbar-brand-soft);
+
+  color:
+    var(--toolbar-brand-dark);
+}
+
+.account__avatar {
+  width: 34px;
+  min-width: 34px;
+  height: 34px;
+}
+
+.account__avatar img,
+.drawer-account__avatar img {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+}
+
+.account__avatar span,
+.drawer-account__avatar span {
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.account__copy {
+  display: grid;
+  gap: 0.05rem;
+
+  min-width: 0;
+}
+
+.account__copy strong {
+  overflow: hidden;
+
+  font-size: 0.72rem;
+  font-weight: 630;
+
   text-overflow: ellipsis;
-}
-
-/* =========================
-   Botón login (responsive: desktop = normal, mobile = icon-only)
-   ========================= */
-:host ::ng-deep .login-btn.p-button {
-  height: 42px;
-  border-radius: 12px;
-}
-
-/* =========================
-   Responsive
-   ========================= */
-@media (max-width: 640px) {
-  .toolbar-actions {
-    gap: 8px;
-  }
-
-  /* Desktop cats OFF, Mobile cats ON */
-  .cats-desktop {
-    display: none;
-  }
-  .cats-mobile {
-    display: block;
-  }
-
-  /* ✅ oculta accesos extra en móvil */
-  .nav-shortcuts {
-    display: none;
-  }
-
-  /* user chip compact */
-  :host ::ng-deep .user-chip-btn .name {
-    display: none;
-  }
-  :host ::ng-deep .user-chip-btn.p-button {
-    padding: 0 10px;
-  }
-
-  /* ✅ Login en móvil: icon-only */
-  :host ::ng-deep .login-btn.p-button {
-    width: 42px;
-    height: 42px;
-    padding: 0;
-    border-radius: 12px;
-    justify-content: center;
-  }
-  :host ::ng-deep .login-btn.p-button .p-button-label {
-    display: none;
-  }
-}
-
-/* =========================
-   Diferenciar botones web
-   ========================= */
-:host ::ng-deep .cheof-btn-simple.p-button {
-  border-color: color-mix(in srgb, var(--p-danger-500) 55%, var(--p-surface-200));
-}
-:host ::ng-deep .cheof-btn-special.p-button {
-  border-color: color-mix(in srgb, var(--p-primary-500) 55%, var(--p-surface-200));
-}
-
-/* =========================================================
-   MÓVIL: SelectButton
-   ========================================================= */
-:host ::ng-deep .cheof-cat-select {
-  display: inline-flex;
-}
-
-:host ::ng-deep .cheof-cat-select .p-togglebutton {
-  border-radius: 0 !important;
-  border: 0 !important;
-
-  background: var(--p-surface-0) !important;
-  color: var(--p-text-color) !important;
-
-  padding: 10px 12px !important;
-}
-
-:host ::ng-deep .cheof-cat-select .p-togglebutton:first-child {
-  border-top-left-radius: 999px !important;
-  border-bottom-left-radius: 999px !important;
-}
-:host ::ng-deep .cheof-cat-select .p-togglebutton:last-child {
-  border-top-right-radius: 999px !important;
-  border-bottom-right-radius: 999px !important;
-}
-
-:host ::ng-deep .cheof-cat-select .p-togglebutton:not(.p-highlight) {
-  box-shadow: inset 0 0 0 1px var(--p-surface-200);
-}
-
-:host ::ng-deep .cheof-cat-select .p-togglebutton:hover {
-  background: var(--p-surface-0) !important;
-}
-
-:host ::ng-deep .cheof-cat-select .p-togglebutton.p-highlight {
-  background: var(--p-surface-0) !important;
-  color: var(--p-text-color) !important;
-}
-
-:host ::ng-deep .cheof-cat-select .p-togglebutton.p-highlight:first-child {
-  box-shadow:
-    inset 0 0 0 1px color-mix(in srgb, var(--p-danger-500) 75%, transparent),
-    0 0 0 1px color-mix(in srgb, var(--p-danger-500) 20%, transparent);
-}
-
-:host ::ng-deep .cheof-cat-select .p-togglebutton.p-highlight:last-child {
-  box-shadow:
-    inset 0 0 0 1px color-mix(in srgb, var(--p-primary-500) 75%, transparent),
-    0 0 0 1px color-mix(in srgb, var(--p-primary-500) 20%, transparent);
-}
-
-:host ::ng-deep .cheof-cat-select .p-togglebutton .p-button-label {
-  font-weight: 800;
-  letter-spacing: 0.2px;
   white-space: nowrap;
 }
 
-:host ::ng-deep .cheof-cat-select i {
-  margin-right: 8px;
+.account__copy small {
+  color:
+    var(--p-text-muted-color);
+
+  font-size: 0.58rem;
 }
 
-@media (max-width: 380px) {
-  :host ::ng-deep .cheof-cat-select .opt-label {
+/*
+|--------------------------------------------------------------------------
+| Móvil
+|--------------------------------------------------------------------------
+*/
+
+.mobile-toolbar {
+  display: none;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/*
+|--------------------------------------------------------------------------
+| Drawer
+|--------------------------------------------------------------------------
+*/
+
+.drawer-content {
+  display: flex;
+  min-height: 100%;
+  flex-direction: column;
+}
+
+.drawer-account,
+.drawer-welcome {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+
+  margin-bottom: 1.25rem;
+  padding: 0.85rem;
+
+  border:
+    1px solid
+    var(--toolbar-border);
+
+  border-radius: 15px;
+
+  background:
+    var(--toolbar-brand-soft);
+}
+
+.drawer-account__avatar {
+  width: 46px;
+  min-width: 46px;
+  height: 46px;
+}
+
+.drawer-account__copy {
+  display: grid;
+  gap: 0.15rem;
+
+  min-width: 0;
+}
+
+.drawer-account__copy strong {
+  overflow: hidden;
+
+  font-size: 0.86rem;
+  font-weight: 650;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.drawer-account__copy span {
+  color:
+    var(--p-text-muted-color);
+
+  font-size: 0.66rem;
+}
+
+.drawer-welcome {
+  align-items: flex-start;
+}
+
+.drawer-welcome__icon {
+  display: grid;
+
+  width: 42px;
+  min-width: 42px;
+  height: 42px;
+
+  place-items: center;
+
+  border-radius: 12px;
+
+  background:
+    var(--p-content-background);
+
+  color:
+    var(--toolbar-brand);
+}
+
+.drawer-welcome strong {
+  font-size: 0.84rem;
+  font-weight: 650;
+}
+
+.drawer-welcome p {
+  margin:
+    0.25rem
+    0
+    0;
+
+  color:
+    var(--p-text-muted-color);
+
+  font-size: 0.67rem;
+  line-height: 1.45;
+}
+
+.drawer-navigation,
+.drawer-preferences {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.drawer-preferences {
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+
+  border-top:
+    1px solid
+    var(--toolbar-border);
+}
+
+.drawer-section-label {
+  display: block;
+
+  padding:
+    0
+    0.35rem
+    0.35rem;
+
+  color:
+    var(--p-text-muted-color);
+
+  font-size: 0.58rem;
+  font-weight: 620;
+
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.drawer-section-label--spaced {
+  margin-top: 1rem;
+}
+
+.drawer-link {
+  display: grid;
+  align-items: center;
+
+  grid-template-columns:
+    auto
+    minmax(0, 1fr)
+    auto;
+
+  gap: 0.7rem;
+
+  width: 100%;
+  min-height: 58px;
+  padding:
+    0.55rem
+    0.65rem;
+
+  border:
+    1px solid
+    transparent;
+
+  border-radius: 13px;
+
+  background:
+    transparent;
+
+  color:
+    var(--p-text-color);
+
+  cursor: pointer;
+
+  font: inherit;
+
+  text-align: left;
+
+  transition:
+    border-color 160ms ease,
+    background-color 160ms ease;
+}
+
+.drawer-link:hover {
+  border-color:
+    var(--toolbar-border);
+
+  background:
+    var(--toolbar-brand-soft);
+}
+
+.drawer-link--active {
+  border-color:
+    color-mix(
+      in srgb,
+      var(--toolbar-brand) 25%,
+      var(--toolbar-border)
+    );
+
+  background:
+    var(--toolbar-brand-soft);
+}
+
+.drawer-link__icon {
+  display: grid;
+
+  width: 36px;
+  min-width: 36px;
+  height: 36px;
+
+  place-items: center;
+
+  border-radius: 11px;
+
+  background:
+    var(--toolbar-brand-soft);
+
+  color:
+    var(--toolbar-brand);
+
+  font-size: 0.82rem;
+}
+
+.drawer-link__copy {
+  display: grid;
+  gap: 0.1rem;
+
+  min-width: 0;
+}
+
+.drawer-link__copy strong {
+  font-size: 0.76rem;
+  font-weight: 620;
+}
+
+.drawer-link__copy small {
+  overflow: hidden;
+
+  color:
+    var(--p-text-muted-color);
+
+  font-size: 0.62rem;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.drawer-link > i {
+  color:
+    var(--p-text-muted-color);
+
+  font-size: 0.72rem;
+}
+
+.drawer-footer {
+  margin-top: auto;
+  padding-top: 1.5rem;
+}
+
+.drawer-session-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+
+  width: 100%;
+  min-height: 44px;
+
+  padding:
+    0.65rem
+    0.85rem;
+
+  border:
+    1px solid
+    var(--toolbar-brand);
+
+  border-radius: 11px;
+
+  background:
+    var(--toolbar-brand);
+
+  color: #ffffff;
+
+  cursor: pointer;
+
+  font: inherit;
+  font-size: 0.73rem;
+  font-weight: 630;
+}
+
+.drawer-session-button--logout {
+  border-color:
+    color-mix(
+      in srgb,
+      var(--p-red-500) 36%,
+      var(--toolbar-border)
+    );
+
+  background:
+    transparent;
+
+  color:
+    var(--p-red-500);
+}
+
+.drawer-session-button:disabled {
+  cursor:
+    not-allowed;
+
+  opacity: 0.55;
+}
+
+/*
+|--------------------------------------------------------------------------
+| Escritorio compacto
+|--------------------------------------------------------------------------
+*/
+
+@media (max-width: 1180px) {
+  .toolbar-shell {
+    gap: 0.8rem;
+
+    padding-inline: 1rem;
+  }
+
+  .desktop-toolbar {
+    gap: 0.45rem;
+  }
+
+  .navigation-link {
+    padding-inline: 0.55rem;
+
+    font-size: 0.7rem;
+  }
+
+  .account {
+    max-width: 145px;
+  }
+
+  .account__copy small {
     display: none;
   }
-  :host ::ng-deep .cheof-cat-select .p-togglebutton {
-    padding: 10px 14px !important;
+}
+
+/*
+|--------------------------------------------------------------------------
+| Cambio a navegación móvil
+|--------------------------------------------------------------------------
+*/
+
+@media (max-width: 930px) {
+  :host {
+    --toolbar-height: 66px;
+  }
+
+  .toolbar-shell {
+    min-height:
+      var(--toolbar-height);
+  }
+
+  .desktop-toolbar {
+    display: none;
+  }
+
+  .mobile-toolbar {
+    display: flex;
+  }
+
+  .brand {
+    min-height: 42px;
+  }
+
+  .brand__descriptor {
+    display: none;
+  }
+
+  .brand::after {
+    bottom: 4px;
+  }
+}
+
+/*
+|--------------------------------------------------------------------------
+| Móvil
+|--------------------------------------------------------------------------
+*/
+
+@media (max-width: 520px) {
+  .toolbar-shell {
+    padding:
+      0.55rem
+      0.75rem;
+  }
+
+  .brand {
+    min-width: 94px;
+  }
+
+  .brand__name {
+    font-size: 0.94rem;
+  }
+
+  .mobile-menu-trigger {
+    width: 42px;
+    min-width: 42px;
+    height: 42px;
+  }
+}
+
+/*
+|--------------------------------------------------------------------------
+| Movimiento reducido
+|--------------------------------------------------------------------------
+*/
+
+@media (
+  prefers-reduced-motion:
+  reduce
+) {
+  .navigation-link,
+  .icon-action,
+  .session-action,
+  .mobile-menu-trigger,
+  .drawer-link {
+    transition: none;
+  }
+
+  .icon-action:hover,
+  .session-action:hover,
+  .mobile-menu-trigger:hover {
+    transform: none;
   }
 }

@@ -1,0 +1,869 @@
+<section class="cash-register-page">
+  @if (store.loading()) {
+    <section class="cash-register-loading">
+      <p-skeleton width="16rem" height="2rem" />
+
+      <p-skeleton width="28rem" height="1rem" />
+
+      <div class="cash-register-loading__cards">
+        @for (item of [1, 2, 3, 4]; track item) {
+          <p-skeleton width="100%" height="8rem" borderRadius="1rem" />
+        }
+      </div>
+
+      <p-skeleton width="100%" height="18rem" borderRadius="1.25rem" />
+    </section>
+  } @else {
+    <header class="cash-register-header">
+      <div class="cash-register-header__copy">
+        <span class="cash-register-eyebrow"> Control financiero </span>
+
+        <h2>Caja administrativa</h2>
+
+        <p>
+          Controla el efectivo disponible, registra movimientos manuales y realiza el arqueo al
+          finalizar la jornada.
+        </p>
+      </div>
+
+      <div class="cash-register-header__actions">
+        <p-button
+          icon="pi pi-history"
+          label="Historial"
+          severity="secondary"
+          [outlined]="true"
+          routerLink="/admin/cash-register/history"
+        />
+
+        <p-button
+          icon="pi pi-refresh"
+          label="Actualizar"
+          severity="secondary"
+          [outlined]="true"
+          [loading]="store.refreshing()"
+          [disabled]="store.refreshing()"
+          (onClick)="refresh()"
+        />
+
+        @if (store.session() === null) {
+          <p-button icon="pi pi-lock-open" label="Abrir caja" (onClick)="showOpenDialog()" />
+        }
+      </div>
+    </header>
+
+    @if (store.session(); as session) {
+      <section class="cash-register-status">
+        <div class="cash-register-status__main">
+          <span class="cash-register-status__indicator"></span>
+
+          <div>
+            <span> Estado actual </span>
+
+            <strong> Caja abierta </strong>
+
+            <small>
+              Abierta
+
+              @if (session.opened_at) {
+                el
+                {{ session.opened_at | date: 'dd/MM/yyyy HH:mm' }}
+              }
+
+              @if (session.opened_by.name) {
+                por {{ session.opened_by.name }}
+              }
+            </small>
+          </div>
+        </div>
+
+        <div class="cash-register-status__actions">
+          <p-button
+            icon="pi pi-arrow-down-left"
+            label="Registrar ingreso"
+            severity="success"
+            [outlined]="true"
+            (onClick)="showMovementDialog('income')"
+          />
+
+          <p-button
+            icon="pi pi-arrow-up-right"
+            label="Registrar egreso"
+            severity="danger"
+            [outlined]="true"
+            (onClick)="showMovementDialog('expense')"
+          />
+
+          <p-button
+            icon="pi pi-lock"
+            label="Cerrar caja"
+            severity="warn"
+            (onClick)="showCloseDialog()"
+          />
+        </div>
+      </section>
+
+      @if (store.summary(); as summary) {
+        <section class="cash-summary-grid">
+          <article class="cash-summary-card">
+            <span class="cash-summary-card__icon">
+              <i class="pi pi-wallet"></i>
+            </span>
+
+            <div>
+              <span> Monto inicial </span>
+
+              <strong>
+                {{ summary.amounts.opening_amount | currency: 'USD' }}
+              </strong>
+
+              <small> Efectivo registrado al abrir </small>
+            </div>
+          </article>
+
+          <article class="cash-summary-card">
+            <span class="cash-summary-card__icon">
+              <i class="pi pi-shopping-bag"></i>
+            </span>
+
+            <div>
+              <span> Ventas en efectivo </span>
+
+              <strong>
+                {{ summary.amounts.cash_sales | currency: 'USD' }}
+              </strong>
+
+              <small>
+                {{ summary.activity.cash_orders }}
+
+                {{ summary.activity.cash_orders === 1 ? 'pedido entregado' : 'pedidos entregados' }}
+              </small>
+            </div>
+          </article>
+
+          <article class="cash-summary-card cash-summary-card--income">
+            <span class="cash-summary-card__icon">
+              <i class="pi pi-arrow-down-left"></i>
+            </span>
+
+            <div>
+              <span> Ingresos manuales </span>
+
+              <strong>
+                {{ summary.amounts.manual_income | currency: 'USD' }}
+              </strong>
+
+              <small>
+                {{ summary.activity.income_movements }}
+
+                {{ summary.activity.income_movements === 1 ? 'movimiento' : 'movimientos' }}
+              </small>
+            </div>
+          </article>
+
+          <article class="cash-summary-card cash-summary-card--expense">
+            <span class="cash-summary-card__icon">
+              <i class="pi pi-arrow-up-right"></i>
+            </span>
+
+            <div>
+              <span> Egresos manuales </span>
+
+              <strong>
+                {{ summary.amounts.manual_expense | currency: 'USD' }}
+              </strong>
+
+              <small>
+                {{ summary.activity.expense_movements }}
+
+                {{ summary.activity.expense_movements === 1 ? 'movimiento' : 'movimientos' }}
+              </small>
+            </div>
+          </article>
+        </section>
+
+        <section class="cash-register-balance">
+          <div class="cash-register-balance__copy">
+            <span> Efectivo esperado </span>
+
+            <strong>
+              {{ summary.amounts.expected_cash | currency: 'USD' }}
+            </strong>
+
+            <p>Monto inicial más ventas e ingresos, menos egresos registrados.</p>
+          </div>
+
+          <div class="cash-register-balance__formula">
+            <div>
+              <span> Inicial </span>
+
+              <strong>
+                {{ summary.amounts.opening_amount | currency: 'USD' }}
+              </strong>
+            </div>
+
+            <i class="pi pi-plus"></i>
+
+            <div>
+              <span> Ventas </span>
+
+              <strong>
+                {{ summary.amounts.cash_sales | currency: 'USD' }}
+              </strong>
+            </div>
+
+            <i class="pi pi-plus"></i>
+
+            <div>
+              <span> Ingresos </span>
+
+              <strong>
+                {{ summary.amounts.manual_income | currency: 'USD' }}
+              </strong>
+            </div>
+
+            <i class="pi pi-minus"></i>
+
+            <div>
+              <span> Egresos </span>
+
+              <strong>
+                {{ summary.amounts.manual_expense | currency: 'USD' }}
+              </strong>
+            </div>
+          </div>
+        </section>
+        <section class="cash-register-collections">
+          <header class="cash-register-section__header">
+            <div>
+              <span> Recaudación comercial </span>
+
+              <h3>Cobros de la sesión</h3>
+
+              <p>
+                Total recibido mediante efectivo, transferencias aprobadas y pagos PayPal
+                completados.
+              </p>
+            </div>
+
+            <div class="cash-register-collections__total">
+              <span> Total recaudado </span>
+
+              <strong>
+                {{ summary.collections.total_collected | currency: 'USD' }}
+              </strong>
+
+              <small>
+                {{ summary.activity.collected_transactions }}
+
+                {{
+                  summary.activity.collected_transactions === 1
+                    ? 'transacción reconocida'
+                    : 'transacciones reconocidas'
+                }}
+              </small>
+            </div>
+          </header>
+
+          <div class="cash-register-collections__grid">
+            <article class="cash-collection-card">
+              <span class="cash-collection-card__icon cash-collection-card__icon--cash">
+                <i class="pi pi-wallet"></i>
+              </span>
+
+              <div>
+                <span> Efectivo </span>
+
+                <strong>
+                  {{ summary.collections.cash.amount | currency: 'USD' }}
+                </strong>
+
+                <small>
+                  {{ summary.collections.cash.transactions }}
+
+                  {{
+                    summary.collections.cash.transactions === 1
+                      ? 'pedido entregado'
+                      : 'pedidos entregados'
+                  }}
+                </small>
+              </div>
+            </article>
+
+            <article class="cash-collection-card">
+              <span class="cash-collection-card__icon cash-collection-card__icon--transfer">
+                <i class="pi pi-building-columns"></i>
+              </span>
+
+              <div>
+                <span> Transferencias </span>
+
+                <strong>
+                  {{ summary.collections.transfer.amount | currency: 'USD' }}
+                </strong>
+
+                <small>
+                  {{ summary.collections.transfer.transactions }}
+
+                  {{
+                    summary.collections.transfer.transactions === 1
+                      ? 'transferencia aprobada'
+                      : 'transferencias aprobadas'
+                  }}
+                </small>
+              </div>
+            </article>
+
+            <article class="cash-collection-card">
+              <span class="cash-collection-card__icon cash-collection-card__icon--paypal">
+                <i class="pi pi-credit-card"></i>
+              </span>
+
+              <div>
+                <span> PayPal </span>
+
+                <strong>
+                  {{ summary.collections.paypal.amount | currency: 'USD' }}
+                </strong>
+
+                <small>
+                  {{ summary.collections.paypal.transactions }}
+
+                  {{
+                    summary.collections.paypal.transactions === 1
+                      ? 'pago completado'
+                      : 'pagos completados'
+                  }}
+                </small>
+              </div>
+            </article>
+          </div>
+
+          <div class="cash-register-collections__notice">
+            <i class="pi pi-info-circle"></i>
+
+            <p>
+              La recaudación total representa todos los cobros reconocidos. El efectivo esperado
+              solo representa el dinero físico que debería existir en caja.
+            </p>
+          </div>
+        </section>
+      }
+
+      <section class="cash-register-section">
+        <header class="cash-register-section__header">
+          <div>
+            <span> Actividad de caja </span>
+
+            <h3>Movimientos recientes</h3>
+
+            <p>Ingresos y egresos manuales registrados durante la sesión actual.</p>
+          </div>
+
+          <p-button
+            icon="pi pi-plus"
+            label="Nuevo movimiento"
+            [outlined]="true"
+            (onClick)="showMovementDialog('income')"
+          />
+        </header>
+
+        @if (store.movements().length > 0) {
+          <p-table
+            [value]="store.movements()"
+            [rowHover]="true"
+            [scrollable]="true"
+            scrollHeight="420px"
+            styleClass="cash-movement-table"
+          >
+            <ng-template pTemplate="header">
+              <tr>
+                <th>Tipo</th>
+
+                <th>Motivo</th>
+
+                <th>Responsable</th>
+
+                <th>Fecha</th>
+
+                <th class="cash-movement-table__amount">Monto</th>
+              </tr>
+            </ng-template>
+
+            <ng-template pTemplate="body" let-movement>
+              <tr>
+                <td>
+                  <p-tag
+                    [value]="movementLabel(movement.type)"
+                    [severity]="movementSeverity(movement.type)"
+                    [icon]="
+                      movement.type === 'income' ? 'pi pi-arrow-down-left' : 'pi pi-arrow-up-right'
+                    "
+                  />
+                </td>
+
+                <td>
+                  <div class="cash-movement-reason">
+                    <strong>
+                      {{ movement.reason }}
+                    </strong>
+
+                    <small>
+                      {{ movement.uuid }}
+                    </small>
+                  </div>
+                </td>
+
+                <td>
+                  <div class="cash-movement-user">
+                    <span>
+                      {{ movement.created_by.name || 'Administrador' }}
+                    </span>
+                  </div>
+                </td>
+
+                <td>
+                  <span class="cash-movement-date">
+                    @if (movement.occurred_at) {
+                      {{ movement.occurred_at | date: 'dd/MM/yyyy HH:mm' }}
+                    } @else {
+                      Sin fecha
+                    }
+                  </span>
+                </td>
+
+                <td class="cash-movement-table__amount">
+                  <strong
+                    [class.cash-movement-amount--income]="movement.type === 'income'"
+                    [class.cash-movement-amount--expense]="movement.type === 'expense'"
+                  >
+                    {{ movementSign(movement.type) }}
+
+                    {{ movement.amount | currency: 'USD' }}
+                  </strong>
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
+        } @else {
+          <div class="cash-register-empty cash-register-empty--compact">
+            <span class="cash-register-empty__icon">
+              <i class="pi pi-inbox"></i>
+            </span>
+
+            <h4>No existen movimientos manuales</h4>
+
+            <p>Los ingresos y egresos que registres aparecerán en esta sección.</p>
+          </div>
+        }
+      </section>
+    } @else {
+      <section class="cash-register-empty">
+        <span class="cash-register-empty__icon">
+          <i class="pi pi-wallet"></i>
+        </span>
+
+        <span class="cash-register-eyebrow"> Caja cerrada </span>
+
+        <h3>No existe una sesión de caja abierta</h3>
+
+        <p>
+          Abre una nueva caja para comenzar a registrar ventas en efectivo, ingresos y egresos de la
+          jornada.
+        </p>
+
+        <p-button
+          icon="pi pi-lock-open"
+          label="Abrir caja"
+          size="large"
+          (onClick)="showOpenDialog()"
+        />
+      </section>
+    }
+  }
+</section>
+
+<!-- Abrir caja -->
+
+<p-dialog
+  header="Abrir caja"
+  appendTo="body"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [closable]="!store.actionLoading()"
+  [closeOnEscape]="!store.actionLoading()"
+  [visible]="openDialogVisible()"
+  [style]="{
+    width: 'min(94vw, 520px)',
+  }"
+  (visibleChange)="openDialogVisible.set($event)"
+>
+  <form class="cash-register-form" [formGroup]="openForm" (ngSubmit)="submitOpen()">
+    <div class="cash-register-dialog-copy">
+      <span class="cash-register-dialog-copy__icon">
+        <i class="pi pi-lock-open"></i>
+      </span>
+
+      <div>
+        <strong> Inicio de jornada </strong>
+
+        <p>Registra el efectivo disponible al momento de comenzar la operación.</p>
+      </div>
+    </div>
+
+    <div class="cash-register-field">
+      <label for="opening_amount">
+        Monto inicial
+        <span>*</span>
+      </label>
+
+      <p-inputnumber
+        inputId="opening_amount"
+        formControlName="opening_amount"
+        mode="currency"
+        currency="USD"
+        locale="en-US"
+        [min]="0"
+        [maxFractionDigits]="2"
+        [minFractionDigits]="2"
+        [fluid]="true"
+        [invalid]="fieldInvalid(openForm.controls.opening_amount)"
+      />
+
+      @if (fieldInvalid(openForm.controls.opening_amount)) {
+        <small class="cash-register-field__error"> Ingresa un monto inicial válido. </small>
+      }
+
+      @if (store.serverErrors()['opening_amount']; as errors) {
+        @for (error of errors; track error) {
+          <small class="cash-register-field__error">
+            {{ error }}
+          </small>
+        }
+      }
+    </div>
+
+    <div class="cash-register-field">
+      <label for="opening_note">
+        Observación
+
+        <small> Opcional </small>
+      </label>
+
+      <textarea
+        id="opening_note"
+        pTextarea
+        formControlName="opening_note"
+        rows="4"
+        maxlength="255"
+        placeholder="Ejemplo: Inicio del turno de la tarde"
+        [fluid]="true"
+      ></textarea>
+
+      <small class="cash-register-field__help"> Máximo 255 caracteres. </small>
+    </div>
+
+    @if (store.serverErrors()['cash_session']; as errors) {
+      @for (error of errors; track error) {
+        <p-message severity="error" [text]="error" />
+      }
+    }
+
+    <footer class="cash-register-dialog-actions">
+      <p-button
+        type="button"
+        label="Cancelar"
+        severity="secondary"
+        [text]="true"
+        [disabled]="store.actionLoading()"
+        (onClick)="openDialogVisible.set(false)"
+      />
+
+      <p-button
+        type="submit"
+        icon="pi pi-lock-open"
+        label="Abrir caja"
+        [loading]="store.actionLoading()"
+        [disabled]="store.actionLoading()"
+      />
+    </footer>
+  </form>
+</p-dialog>
+
+<!-- Registrar movimiento -->
+
+<p-dialog
+  header="Registrar movimiento"
+  appendTo="body"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [closable]="!store.actionLoading()"
+  [closeOnEscape]="!store.actionLoading()"
+  [visible]="movementDialogVisible()"
+  [style]="{
+    width: 'min(94vw, 540px)',
+  }"
+  (visibleChange)="movementDialogVisible.set($event)"
+>
+  <form class="cash-register-form" [formGroup]="movementForm" (ngSubmit)="submitMovement()">
+    <div class="cash-register-field">
+      <label for="movement_type">
+        Tipo de movimiento
+        <span>*</span>
+      </label>
+
+      <p-select
+        inputId="movement_type"
+        formControlName="type"
+        [options]="movementTypes"
+        optionLabel="label"
+        optionValue="value"
+        placeholder="Selecciona el tipo"
+        appendTo="body"
+        [fluid]="true"
+      >
+        <ng-template pTemplate="selectedItem" let-selected>
+          @if (selected) {
+            <div class="cash-movement-option">
+              <i [class]="selected.icon"></i>
+              <span>
+                {{ selected.label }}
+              </span>
+            </div>
+          }
+        </ng-template>
+
+        <ng-template pTemplate="item" let-option>
+          <div class="cash-movement-option">
+            <i [class]="option.icon"></i>
+            <span>
+              {{ option.label }}
+            </span>
+          </div>
+        </ng-template>
+      </p-select>
+    </div>
+
+    <div class="cash-register-field">
+      <label for="movement_amount">
+        Monto
+        <span>*</span>
+      </label>
+
+      <p-inputnumber
+        inputId="movement_amount"
+        formControlName="amount"
+        mode="currency"
+        currency="USD"
+        locale="en-US"
+        [min]="0.01"
+        [minFractionDigits]="2"
+        [maxFractionDigits]="2"
+        [fluid]="true"
+        [invalid]="fieldInvalid(movementForm.controls.amount)"
+      />
+
+      @if (fieldInvalid(movementForm.controls.amount)) {
+        <small class="cash-register-field__error"> El monto debe ser mayor que cero. </small>
+      }
+
+      @if (store.serverErrors()['amount']; as errors) {
+        @for (error of errors; track error) {
+          <small class="cash-register-field__error">
+            {{ error }}
+          </small>
+        }
+      }
+    </div>
+
+    <div class="cash-register-field">
+      <label for="movement_reason">
+        Motivo
+        <span>*</span>
+      </label>
+
+      <textarea
+        id="movement_reason"
+        pTextarea
+        formControlName="reason"
+        rows="4"
+        maxlength="150"
+        placeholder="Describe el motivo del movimiento"
+        [fluid]="true"
+        [class.ng-invalid]="fieldInvalid(movementForm.controls.reason)"
+      ></textarea>
+
+      @if (fieldInvalid(movementForm.controls.reason)) {
+        <small class="cash-register-field__error">
+          El motivo debe tener entre 3 y 150 caracteres.
+        </small>
+      }
+
+      @if (store.serverErrors()['reason']; as errors) {
+        @for (error of errors; track error) {
+          <small class="cash-register-field__error">
+            {{ error }}
+          </small>
+        }
+      }
+    </div>
+
+    @if (store.serverErrors()['cash_session']; as errors) {
+      @for (error of errors; track error) {
+        <p-message severity="error" [text]="error" />
+      }
+    }
+
+    <footer class="cash-register-dialog-actions">
+      <p-button
+        type="button"
+        label="Cancelar"
+        severity="secondary"
+        [text]="true"
+        [disabled]="store.actionLoading()"
+        (onClick)="movementDialogVisible.set(false)"
+      />
+
+      <p-button
+        type="submit"
+        icon="pi pi-check"
+        label="Registrar movimiento"
+        [severity]="movementForm.controls.type.value === 'income' ? 'success' : 'danger'"
+        [loading]="store.actionLoading()"
+        [disabled]="store.actionLoading()"
+      />
+    </footer>
+  </form>
+</p-dialog>
+
+<!-- Cerrar caja -->
+
+<p-dialog
+  header="Cerrar caja"
+  appendTo="body"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [closable]="!store.actionLoading()"
+  [closeOnEscape]="!store.actionLoading()"
+  [visible]="closeDialogVisible()"
+  [style]="{
+    width: 'min(94vw, 560px)',
+  }"
+  (visibleChange)="closeDialogVisible.set($event)"
+>
+  <form class="cash-register-form" [formGroup]="closeForm" (ngSubmit)="submitClose()">
+    <div class="cash-closing-summary">
+      <span> Efectivo esperado </span>
+
+      <strong>
+        {{ expectedCash() | currency: 'USD' }}
+      </strong>
+
+      <p>
+        Cuenta físicamente el efectivo disponible e ingresa el resultado para calcular la
+        diferencia.
+      </p>
+    </div>
+
+    <div class="cash-register-field">
+      <label for="counted_cash">
+        Efectivo contado
+        <span>*</span>
+      </label>
+
+      <p-inputnumber
+        inputId="counted_cash"
+        formControlName="counted_cash"
+        mode="currency"
+        currency="USD"
+        locale="en-US"
+        [min]="0"
+        [minFractionDigits]="2"
+        [maxFractionDigits]="2"
+        [fluid]="true"
+        [invalid]="fieldInvalid(closeForm.controls.counted_cash)"
+      />
+
+      @if (fieldInvalid(closeForm.controls.counted_cash)) {
+        <small class="cash-register-field__error"> Ingresa el efectivo contado. </small>
+      }
+
+      @if (store.serverErrors()['counted_cash']; as errors) {
+        @for (error of errors; track error) {
+          <small class="cash-register-field__error">
+            {{ error }}
+          </small>
+        }
+      }
+    </div>
+
+    <div class="cash-closing-difference">
+      <span> Diferencia estimada </span>
+
+      <strong
+        [class.cash-closing-difference--positive]="
+          closeForm.controls.counted_cash.value - expectedCash() > 0
+        "
+        [class.cash-closing-difference--negative]="
+          closeForm.controls.counted_cash.value - expectedCash() < 0
+        "
+      >
+        {{ closeForm.controls.counted_cash.value - expectedCash() | currency: 'USD' }}
+      </strong>
+    </div>
+
+    <div class="cash-register-field">
+      <label for="closing_note">
+        Observación de cierre
+
+        <small> Opcional </small>
+      </label>
+
+      <textarea
+        id="closing_note"
+        pTextarea
+        formControlName="closing_note"
+        rows="4"
+        maxlength="255"
+        placeholder="Ejemplo: Faltante justificado por compra de insumos"
+        [fluid]="true"
+      ></textarea>
+
+      @if (store.serverErrors()['closing_note']; as errors) {
+        @for (error of errors; track error) {
+          <small class="cash-register-field__error">
+            {{ error }}
+          </small>
+        }
+      }
+    </div>
+
+    @if (store.serverErrors()['cash_session']; as errors) {
+      @for (error of errors; track error) {
+        <p-message severity="error" [text]="error" />
+      }
+    }
+
+    <footer class="cash-register-dialog-actions">
+      <p-button
+        type="button"
+        label="Cancelar"
+        severity="secondary"
+        [text]="true"
+        [disabled]="store.actionLoading()"
+        (onClick)="closeDialogVisible.set(false)"
+      />
+
+      <p-button
+        type="submit"
+        icon="pi pi-lock"
+        label="Confirmar cierre"
+        severity="warn"
+        [loading]="store.actionLoading()"
+        [disabled]="store.actionLoading()"
+      />
+    </footer>
+  </form>
+</p-dialog>

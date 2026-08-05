@@ -1,0 +1,179 @@
+/* =========================================================
+   PRIME BUTTON
+   ========================================================= */
+
+.p-button {
+  min-height:
+    var(--cheof-control-height);
+
+  border-radius:
+    var(--cheof-radius-sm);
+
+  font-weight: 650;
+
+  transition:
+    transform
+      var(--cheof-transition-fast),
+    box-shadow
+      var(--cheof-transition-fast),
+    border-color
+      var(--cheof-transition-fast),
+    background-color
+      var(--cheof-transition-fast);
+}
+
+.p-button:not(:disabled):hover {
+  transform:
+    translateY(-1px);
+}
+
+.p-button:not(:disabled):active {
+  transform:
+    translateY(0);
+}
+
+.p-button:disabled {
+  cursor:
+    not-allowed;
+}
+
+/* =========================================================
+   INPUTS
+   ========================================================= */
+
+.p-inputtext,
+.p-textarea,
+.p-select,
+.p-multiselect,
+.p-datepicker-input,
+.p-inputnumber-input {
+  min-height:
+    var(--cheof-control-height);
+
+  border-radius:
+    var(--cheof-radius-sm);
+}
+
+.p-inputtext,
+.p-textarea,
+.p-select,
+.p-multiselect,
+.p-inputnumber-input {
+  width: 100%;
+}
+
+/* =========================================================
+   CARDS
+   ========================================================= */
+
+.p-card {
+  border:
+    1px solid
+    var(--cheof-card-border);
+
+  border-radius:
+    var(--cheof-radius-lg);
+
+  background:
+    var(--cheof-card-background);
+
+  color:
+    var(--p-text-color);
+
+  box-shadow:
+    var(--cheof-shadow-sm);
+}
+
+.p-card .p-card-title {
+  color:
+    var(--p-text-color);
+
+  font-weight: 750;
+}
+
+.p-card .p-card-subtitle {
+  color:
+    var(--p-text-muted-color);
+}
+
+/* =========================================================
+   TABLE
+   ========================================================= */
+
+.p-datatable {
+  border-radius:
+    var(--cheof-radius-md);
+
+  overflow: hidden;
+}
+
+.p-datatable-table {
+  min-width: 100%;
+}
+
+.p-datatable-thead > tr > th {
+  color:
+    var(--p-text-muted-color);
+
+  font-size: 0.78rem;
+  font-weight: 750;
+
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.p-datatable-tbody > tr {
+  transition:
+    background-color
+    var(--cheof-transition-fast);
+}
+
+.p-datatable-tbody > tr:hover {
+  background:
+    var(--p-content-hover-background);
+}
+
+/* =========================================================
+   TAGS
+   ========================================================= */
+
+.p-tag {
+  border-radius:
+    var(--cheof-radius-pill);
+
+  font-size: 0.76rem;
+  font-weight: 750;
+}
+
+/* =========================================================
+   PAGINATOR
+   ========================================================= */
+
+.p-paginator {
+  border: 0;
+
+  background:
+    transparent;
+}
+
+/* =========================================================
+   TOAST
+   ========================================================= */
+
+.p-toast {
+  width:
+    min(
+      380px,
+      calc(
+        100vw - 1rem
+      )
+    );
+}
+
+.p-toast-message {
+  border-radius:
+    var(--cheof-radius-md);
+
+  box-shadow:
+    var(--cheof-shadow-md);
+}

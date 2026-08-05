@@ -1,0 +1,416 @@
+<section class="cash-history-page">
+  <header class="cash-history-header">
+    <div>
+      <span class="cash-history-eyebrow">
+        Control financiero
+      </span>
+
+      <h2>
+        Historial de cajas
+      </h2>
+
+      <p>
+        Consulta las aperturas, cierres,
+        arqueos y diferencias registradas.
+      </p>
+    </div>
+
+    <div class="cash-history-header__actions">
+      <p-button
+        icon="pi pi-arrow-left"
+        label="Volver a caja"
+        severity="secondary"
+        [outlined]="true"
+        routerLink="/admin/cash-register"
+      />
+
+      <p-button
+        icon="pi pi-refresh"
+        label="Actualizar"
+        severity="secondary"
+        [outlined]="true"
+        [loading]="refreshing()"
+        [disabled]="refreshing()"
+        (onClick)="refresh()"
+      />
+    </div>
+  </header>
+
+  <section class="cash-history-filters">
+    <div class="cash-history-filter">
+      <label for="cash_history_from">
+        Fecha inicial
+      </label>
+
+      <p-datepicker
+        inputId="cash_history_from"
+        [ngModel]="dateFrom()"
+        (ngModelChange)="dateFrom.set($event)"
+        dateFormat="dd/mm/yy"
+        placeholder="Seleccionar fecha"
+        appendTo="body"
+        [showIcon]="true"
+        [showButtonBar]="true"
+        [fluid]="true"
+      />
+    </div>
+
+    <div class="cash-history-filter">
+      <label for="cash_history_to">
+        Fecha final
+      </label>
+
+      <p-datepicker
+        inputId="cash_history_to"
+        [ngModel]="dateTo()"
+        (ngModelChange)="dateTo.set($event)"
+        dateFormat="dd/mm/yy"
+        placeholder="Seleccionar fecha"
+        appendTo="body"
+        [showIcon]="true"
+        [showButtonBar]="true"
+        [fluid]="true"
+      />
+    </div>
+
+    <div class="cash-history-filter">
+      <label for="cash_history_status">
+        Estado
+      </label>
+
+      <p-select
+        inputId="cash_history_status"
+        [ngModel]="status()"
+        (ngModelChange)="status.set($event)"
+        [options]="statusOptions"
+        optionLabel="label"
+        optionValue="value"
+        placeholder="Todos los estados"
+        appendTo="body"
+        [fluid]="true"
+      />
+    </div>
+
+    <div class="cash-history-filter__actions">
+      <p-button
+        icon="pi pi-search"
+        label="Aplicar filtros"
+        (onClick)="applyFilters()"
+      />
+
+      <p-button
+        icon="pi pi-filter-slash"
+        label="Limpiar"
+        severity="secondary"
+        [outlined]="true"
+        [disabled]="!hasFilters()"
+        (onClick)="clearFilters()"
+      />
+    </div>
+  </section>
+
+  <section class="cash-history-content">
+    <header class="cash-history-content__header">
+      <div>
+        <span>
+          Sesiones registradas
+        </span>
+
+        <strong>
+          {{ total() }}
+          {{
+            total() === 1
+              ? 'caja'
+              : 'cajas'
+          }}
+        </strong>
+      </div>
+
+      @if (total() > 0) {
+        <small>
+          Mostrando
+          {{ visibleFrom() }}
+          –
+          {{ visibleTo() }}
+          de
+          {{ total() }}
+        </small>
+      }
+    </header>
+
+    @if (loading()) {
+      <div class="cash-history-loading">
+        @for (
+          item of [1, 2, 3, 4, 5];
+          track item
+        ) {
+          <p-skeleton
+            width="100%"
+            height="4.8rem"
+            borderRadius="0.8rem"
+          />
+        }
+      </div>
+    } @else if (sessions().length > 0) {
+      <p-table
+        [value]="sessions()"
+        [rowHover]="true"
+        [scrollable]="true"
+        styleClass="cash-history-table"
+      >
+        <ng-template pTemplate="header">
+          <tr>
+            <th>
+              Estado
+            </th>
+
+            <th>
+              Apertura
+            </th>
+
+            <th>
+              Responsable
+            </th>
+
+            <th>
+              Cierre
+            </th>
+
+            <th>
+              Inicial
+            </th>
+
+            <th>
+              Esperado
+            </th>
+
+            <th>
+              Contado
+            </th>
+
+            <th>
+              Diferencia
+            </th>
+
+            <th class="cash-history-table__actions">
+              Acciones
+            </th>
+          </tr>
+        </ng-template>
+
+        <ng-template
+          pTemplate="body"
+          let-session
+        >
+          <tr>
+            <td>
+              <p-tag
+                [value]="statusLabel(session.status)"
+                [severity]="statusSeverity(session.status)"
+                [icon]="
+                  session.status === 'open'
+                    ? 'pi pi-lock-open'
+                    : 'pi pi-lock'
+                "
+              />
+            </td>
+
+            <td>
+              <div class="cash-history-date">
+                <strong>
+                  @if (session.opened_at) {
+                    {{
+                      session.opened_at
+                        | date: 'dd/MM/yyyy'
+                    }}
+                  } @else {
+                    Sin fecha
+                  }
+                </strong>
+
+                <small>
+                  @if (session.opened_at) {
+                    {{
+                      session.opened_at
+                        | date: 'HH:mm'
+                    }}
+                  }
+                </small>
+              </div>
+            </td>
+
+            <td>
+              <div class="cash-history-user">
+                <span class="cash-history-user__avatar">
+                  {{
+                    (
+                      session.opened_by.name
+                      || 'A'
+                    ).slice(0, 1)
+                  }}
+                </span>
+
+                <div>
+                  <strong>
+                    {{
+                      session.opened_by.name
+                      || 'Administrador'
+                    }}
+                  </strong>
+
+                  <small>
+                    Apertura
+                  </small>
+                </div>
+              </div>
+            </td>
+
+            <td>
+              <div class="cash-history-date">
+                @if (session.closed_at) {
+                  <strong>
+                    {{
+                      session.closed_at
+                        | date: 'dd/MM/yyyy'
+                    }}
+                  </strong>
+
+                  <small>
+                    {{
+                      session.closed_at
+                        | date: 'HH:mm'
+                    }}
+                  </small>
+                } @else {
+                  <strong>
+                    En curso
+                  </strong>
+
+                  <small>
+                    Caja abierta
+                  </small>
+                }
+              </div>
+            </td>
+
+            <td>
+              <strong class="cash-history-money">
+                {{
+                  session.opening_amount
+                    | currency: 'USD'
+                }}
+              </strong>
+            </td>
+
+            <td>
+              <strong class="cash-history-money">
+                @if (
+                  session.expected_cash !== null
+                ) {
+                  {{
+                    session.expected_cash
+                      | currency: 'USD'
+                  }}
+                } @else {
+                  —
+                }
+              </strong>
+            </td>
+
+            <td>
+              <strong class="cash-history-money">
+                @if (
+                  session.counted_cash !== null
+                ) {
+                  {{
+                    session.counted_cash
+                      | currency: 'USD'
+                  }}
+                } @else {
+                  —
+                }
+              </strong>
+            </td>
+
+            <td>
+              <strong
+                class="cash-history-difference"
+                [class]="
+                  differenceClass(
+                    session.difference
+                  )
+                "
+              >
+                @if (
+                  session.difference !== null
+                ) {
+                  {{
+                    session.difference
+                      | currency: 'USD'
+                  }}
+                } @else {
+                  —
+                }
+              </strong>
+            </td>
+
+            <td class="cash-history-table__actions">
+              <p-button
+                icon="pi pi-eye"
+                severity="secondary"
+                [text]="true"
+                [rounded]="true"
+                pTooltip="Ver detalle"
+                tooltipPosition="left"
+                [routerLink]="[
+                  '/admin/cash-register',
+                  session.uuid
+                ]"
+              />
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+
+      <p-paginator
+        [first]="first()"
+        [rows]="perPage()"
+        [totalRecords]="total()"
+        [rowsPerPageOptions]="[
+          10,
+          15,
+          25,
+          50
+        ]"
+        [showCurrentPageReport]="true"
+        currentPageReportTemplate="{first} - {last} de {totalRecords}"
+        (onPageChange)="onPageChange($event)"
+      />
+    } @else {
+      <div class="cash-history-empty">
+        <span class="cash-history-empty__icon">
+          <i class="pi pi-inbox"></i>
+        </span>
+
+        <h3>
+          No se encontraron cajas
+        </h3>
+
+        <p>
+          No existen sesiones que coincidan
+          con los filtros seleccionados.
+        </p>
+
+        @if (hasFilters()) {
+          <p-button
+            icon="pi pi-filter-slash"
+            label="Limpiar filtros"
+            severity="secondary"
+            [outlined]="true"
+            (onClick)="clearFilters()"
+          />
+        }
+      </div>
+    }
+  </section>
+</section>

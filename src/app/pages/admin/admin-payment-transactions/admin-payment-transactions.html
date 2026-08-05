@@ -1,0 +1,1077 @@
+<section class="transactions-page">
+  <!--
+  |--------------------------------------------------------------------------
+  | Barra de contexto y acciones
+  |--------------------------------------------------------------------------
+  -->
+
+  <section class="transactions-toolbar">
+    <div class="transactions-toolbar__context">
+      <span class="transactions-toolbar__icon">
+        <i class="pi pi-credit-card"></i>
+      </span>
+
+      <div>
+        <span class="transactions-toolbar__eyebrow"> Control financiero </span>
+
+        <strong>
+          {{ periodLabel() }}
+        </strong>
+
+        <small> Resumen global del periodo seleccionado </small>
+      </div>
+    </div>
+
+    <div class="transactions-toolbar__actions">
+      <p-button
+        icon="pi pi-sliders-h"
+        label="Filtros"
+        severity="secondary"
+        [outlined]="true"
+        styleClass="transactions-filter-mobile-button"
+        [badge]="activeFilterCount() > 0 ? activeFilterCount().toString() : undefined"
+        badgeSeverity="contrast"
+        (onClick)="openFilters()"
+      />
+
+      <p-button
+        icon="pi pi-wallet"
+        label="Caja"
+        severity="secondary"
+        [outlined]="true"
+        routerLink="/admin/cash-register"
+      />
+    </div>
+  </section>
+
+  <!--
+  |--------------------------------------------------------------------------
+  | Resumen financiero global
+  |--------------------------------------------------------------------------
+  -->
+
+  @if (loading()) {
+    <section class="transactions-summary-grid">
+      @for (item of [1, 2, 3, 4]; track item) {
+        <p-skeleton width="100%" height="9rem" borderRadius="1.25rem" />
+      }
+    </section>
+  } @else if (summary(); as financialSummary) {
+    <section class="transactions-summary-grid" aria-label="Resumen financiero del periodo">
+      <article class="finance-card finance-card--primary">
+        <div class="finance-card__header">
+          <span class="finance-card__icon">
+            <i class="pi pi-chart-line"></i>
+          </span>
+
+          <span class="finance-card__badge"> Global </span>
+        </div>
+
+        <div class="finance-card__body">
+          <span> Recaudación confirmada </span>
+
+          <strong>
+            {{ financialSummary.collected.amount | currency: 'USD' }}
+          </strong>
+
+          <small>
+            {{ financialSummary.collected.transactions }}
+
+            {{
+              financialSummary.collected.transactions === 1
+                ? 'transacción exitosa'
+                : 'transacciones exitosas'
+            }}
+          </small>
+        </div>
+      </article>
+
+      <article class="finance-card finance-card--cash">
+        <div class="finance-card__header">
+          <span class="finance-card__icon">
+            <i class="pi pi-wallet"></i>
+          </span>
+
+          <span class="finance-card__percentage"> Efectivo </span>
+        </div>
+
+        <div class="finance-card__body">
+          <span> Cobros en efectivo </span>
+
+          <strong>
+            {{ financialSummary.methods.cash.amount | currency: 'USD' }}
+          </strong>
+
+          <small>
+            {{ financialSummary.methods.cash.transactions }}
+
+            {{
+              financialSummary.methods.cash.transactions === 1
+                ? 'pedido cobrado'
+                : 'pedidos cobrados'
+            }}
+          </small>
+        </div>
+      </article>
+
+      <article class="finance-card finance-card--transfer">
+        <div class="finance-card__header">
+          <span class="finance-card__icon">
+            <i class="pi pi-building-columns"></i>
+          </span>
+
+          <span class="finance-card__percentage"> Transferencias </span>
+        </div>
+
+        <div class="finance-card__body">
+          <span> Transferencias aprobadas </span>
+
+          <strong>
+            {{ financialSummary.methods.transfer.amount | currency: 'USD' }}
+          </strong>
+
+          <small>
+            {{ financialSummary.methods.transfer.transactions }}
+
+            {{
+              financialSummary.methods.transfer.transactions === 1
+                ? 'comprobante aprobado'
+                : 'comprobantes aprobados'
+            }}
+          </small>
+        </div>
+      </article>
+
+      <article class="finance-card finance-card--paypal">
+        <div class="finance-card__header">
+          <span class="finance-card__icon">
+            <i class="pi pi-credit-card"></i>
+          </span>
+
+          <span class="finance-card__percentage"> PayPal </span>
+        </div>
+
+        <div class="finance-card__body">
+          <span> Pagos completados </span>
+
+          <strong>
+            {{ financialSummary.methods.paypal.amount | currency: 'USD' }}
+          </strong>
+
+          <small>
+            {{ financialSummary.methods.paypal.transactions }}
+
+            {{
+              financialSummary.methods.paypal.transactions === 1
+                ? 'pago completado'
+                : 'pagos completados'
+            }}
+          </small>
+        </div>
+      </article>
+    </section>
+
+    @if (hasFinancialAlerts()) {
+      <section class="transactions-alerts">
+        @if (financialSummary.pending.transactions > 0) {
+          <article class="financial-alert financial-alert--pending">
+            <span class="financial-alert__icon">
+              <i class="pi pi-clock"></i>
+            </span>
+
+            <div>
+              <strong>
+                {{ financialSummary.pending.transactions }}
+
+                {{
+                  financialSummary.pending.transactions === 1
+                    ? 'operación pendiente'
+                    : 'operaciones pendientes'
+                }}
+              </strong>
+
+              <span>
+                {{ financialSummary.pending.amount | currency: 'USD' }}
+                todavía no forman parte de la recaudación confirmada.
+              </span>
+            </div>
+          </article>
+        }
+
+        @if (financialSummary.unsuccessful.transactions > 0) {
+          <article class="financial-alert financial-alert--danger">
+            <span class="financial-alert__icon">
+              <i class="pi pi-exclamation-triangle"></i>
+            </span>
+
+            <div>
+              <strong>
+                {{ financialSummary.unsuccessful.transactions }}
+
+                {{
+                  financialSummary.unsuccessful.transactions === 1
+                    ? 'operación no exitosa'
+                    : 'operaciones no exitosas'
+                }}
+              </strong>
+
+              <span>
+                Revisa rechazos, fallos, cancelaciones o reembolsos por
+                {{ financialSummary.unsuccessful.amount | currency: 'USD' }}.
+              </span>
+            </div>
+          </article>
+        }
+      </section>
+    }
+  }
+
+  <!--
+  |--------------------------------------------------------------------------
+  | Filtros de escritorio
+  |--------------------------------------------------------------------------
+  -->
+
+  <section class="transactions-filter-panel">
+    <div class="transactions-filter-panel__main">
+      <div class="transactions-search-field">
+        <span class="transactions-search-field__icon">
+          <i class="pi pi-search"></i>
+        </span>
+
+        <input
+          id="transactions_search_desktop"
+          type="search"
+          pInputText
+          autocomplete="off"
+          aria-label="Buscar transacciones"
+          [ngModel]="search()"
+          (ngModelChange)="search.set($event)"
+          (keyup.enter)="onSearchEnter()"
+          placeholder="Buscar por pedido, cliente, teléfono, correo o referencia"
+        />
+
+        @if (search().trim()) {
+          <button
+            type="button"
+            class="transactions-search-field__clear"
+            aria-label="Limpiar búsqueda"
+            (click)="search.set(''); applyFilters()"
+          >
+            <i class="pi pi-times"></i>
+          </button>
+        }
+      </div>
+
+      <div class="transactions-filter-panel__controls">
+        <div class="transactions-control">
+          <span class="transactions-control__label"> Desde </span>
+
+          <p-datepicker
+            inputId="transactions_date_from_desktop"
+            [ngModel]="dateFrom()"
+            (ngModelChange)="dateFrom.set($event)"
+            dateFormat="dd/mm/yy"
+            placeholder="Fecha inicial"
+            appendTo="body"
+            [showIcon]="true"
+            [showButtonBar]="true"
+            [fluid]="true"
+          />
+        </div>
+
+        <div class="transactions-control">
+          <span class="transactions-control__label"> Hasta </span>
+
+          <p-datepicker
+            inputId="transactions_date_to_desktop"
+            [ngModel]="dateTo()"
+            (ngModelChange)="dateTo.set($event)"
+            dateFormat="dd/mm/yy"
+            placeholder="Fecha final"
+            appendTo="body"
+            [showIcon]="true"
+            [showButtonBar]="true"
+            [fluid]="true"
+          />
+        </div>
+
+        <div class="transactions-control">
+          <span class="transactions-control__label"> Método </span>
+
+          <p-select
+            inputId="transactions_method_desktop"
+            [ngModel]="method()"
+            (ngModelChange)="method.set($event)"
+            [options]="methodOptions"
+            optionLabel="label"
+            optionValue="value"
+            placeholder="Todos"
+            appendTo="body"
+            [fluid]="true"
+          />
+        </div>
+
+        <div class="transactions-control">
+          <span class="transactions-control__label"> Estado </span>
+
+          <p-select
+            inputId="transactions_status_desktop"
+            [ngModel]="status()"
+            (ngModelChange)="status.set($event)"
+            [options]="statusOptions"
+            optionLabel="label"
+            optionValue="value"
+            placeholder="Todos"
+            appendTo="body"
+            [fluid]="true"
+          />
+        </div>
+
+        <div class="transactions-filter-panel__actions">
+          <p-button icon="pi pi-search" label="Aplicar" (onClick)="applyFilters()" />
+
+          <p-button
+            icon="pi pi-filter-slash"
+            severity="secondary"
+            [outlined]="true"
+            [rounded]="true"
+            pTooltip="Restablecer filtros"
+            tooltipPosition="top"
+            ariaLabel="Restablecer filtros"
+            (onClick)="clearFilters()"
+          />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!--
+  |--------------------------------------------------------------------------
+  | Listado
+  |--------------------------------------------------------------------------
+  -->
+
+  <section class="transactions-list-panel">
+    <header class="transactions-list-panel__header">
+      <div>
+        <span> Movimientos financieros </span>
+
+        <strong>
+          {{ total() }}
+
+          {{ total() === 1 ? 'resultado' : 'resultados' }}
+        </strong>
+      </div>
+
+      <div class="transactions-list-panel__meta">
+        @if (activeFilterCount() > 0) {
+          <span class="transactions-active-filters">
+            <i class="pi pi-filter"></i>
+
+            {{ activeFilterCount() }}
+
+            {{ activeFilterCount() === 1 ? 'filtro activo' : 'filtros activos' }}
+          </span>
+        }
+
+        @if (total() > 0) {
+          <span class="transactions-page-range">
+            {{ visibleFrom() }}–{{ visibleTo() }} de {{ total() }}
+          </span>
+        }
+      </div>
+    </header>
+
+    @if (loading()) {
+      <div class="transactions-loading-list">
+        @for (item of [1, 2, 3, 4, 5]; track item) {
+          <p-skeleton width="100%" height="5.5rem" borderRadius="0.9rem" />
+        }
+      </div>
+    } @else if (transactions().length > 0) {
+      <!-- Vista de escritorio -->
+
+      <div class="transactions-desktop-table">
+        <p-table
+          [value]="transactions()"
+          [rowHover]="true"
+          dataKey="transaction_key"
+          styleClass="transactions-professional-table"
+        >
+          <ng-template pTemplate="header">
+            <tr>
+              <th>Método</th>
+
+              <th>Pedido y cliente</th>
+
+              <th>Estado</th>
+
+              <th>Fecha efectiva</th>
+
+              <th class="transactions-column-amount">Monto</th>
+
+              <th class="transactions-column-action">Acción</th>
+            </tr>
+          </ng-template>
+
+          <ng-template pTemplate="body" let-transaction>
+            <tr>
+              <td>
+                <div
+                  class="transaction-method"
+                  [class.transaction-method--cash]="transaction.method === 'cash'"
+                  [class.transaction-method--transfer]="transaction.method === 'transfer'"
+                  [class.transaction-method--paypal]="transaction.method === 'paypal'"
+                >
+                  <span class="transaction-method__icon">
+                    <i [class]="methodIcon(transaction.method)"></i>
+                  </span>
+
+                  <div>
+                    <strong>
+                      {{ methodLabel(transaction.method) }}
+                    </strong>
+
+                    <small>
+                      {{ transactionSourceLabel(transaction.source) }}
+                    </small>
+                  </div>
+                </div>
+              </td>
+
+              <td>
+                <div class="transaction-identity">
+                  <div class="transaction-identity__primary">
+                    <strong
+                      [pTooltip]="transaction.order_number || 'Sin pedido relacionado'"
+                      tooltipPosition="top"
+                    >
+                      {{ transaction.order_number || 'Sin pedido' }}
+                    </strong>
+
+                    <span>
+                      {{ transaction.customer.name || 'Cliente sin nombre' }}
+                    </span>
+                  </div>
+
+                  <div class="transaction-identity__secondary">
+                    <span>
+                      {{ customerContact(transaction) }}
+                    </span>
+
+                    <span class="transaction-reference-inline">
+                      {{ transaction.reference || transaction.transaction_key }}
+                    </span>
+                  </div>
+                </div>
+              </td>
+
+              <td>
+                <p-tag
+                  [value]="statusLabel(transaction.status)"
+                  [severity]="statusSeverity(transaction.status)"
+                  [icon]="statusIcon(transaction.status)"
+                  styleClass="transaction-status-tag"
+                />
+              </td>
+
+              <td>
+                <div class="transaction-effective-date">
+                  @if (transaction.effective_at) {
+                    <strong>
+                      {{ transaction.effective_at | date: 'dd/MM/yyyy' }}
+                    </strong>
+
+                    <small>
+                      {{ transaction.effective_at | date: 'HH:mm' }}
+                    </small>
+                  } @else {
+                    <strong> Sin fecha </strong>
+
+                    <small> No disponible </small>
+                  }
+                </div>
+              </td>
+
+              <td class="transactions-column-amount">
+                <div class="transaction-amount">
+                  <strong>
+                    {{ transaction.amount | currency: transaction.currency }}
+                  </strong>
+
+                  <small>
+                    {{ transaction.currency }}
+                  </small>
+                </div>
+              </td>
+
+              <td class="transactions-column-action">
+                <p-button
+                  icon="pi pi-eye"
+                  severity="secondary"
+                  [text]="true"
+                  [rounded]="true"
+                  pTooltip="Ver detalle"
+                  tooltipPosition="left"
+                  ariaLabel="Ver detalle de la transacción"
+                  (onClick)="showTransactionDetail(transaction)"
+                />
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+
+      <!-- Vista de móvil y tablet -->
+
+      <div class="transactions-mobile-list">
+        @for (transaction of transactions(); track transaction.transaction_key) {
+          <article class="transaction-mobile-card">
+            <header class="transaction-mobile-card__header">
+              <div
+                class="transaction-method"
+                [class.transaction-method--cash]="transaction.method === 'cash'"
+                [class.transaction-method--transfer]="transaction.method === 'transfer'"
+                [class.transaction-method--paypal]="transaction.method === 'paypal'"
+              >
+                <span class="transaction-method__icon">
+                  <i [class]="methodIcon(transaction.method)"></i>
+                </span>
+
+                <div>
+                  <strong>
+                    {{ methodLabel(transaction.method) }}
+                  </strong>
+
+                  <small>
+                    {{ transactionSourceLabel(transaction.source) }}
+                  </small>
+                </div>
+              </div>
+
+              <p-tag
+                [value]="statusLabel(transaction.status)"
+                [severity]="statusSeverity(transaction.status)"
+                [icon]="statusIcon(transaction.status)"
+                styleClass="transaction-status-tag"
+              />
+            </header>
+
+            <div class="transaction-mobile-card__body">
+              <div class="transaction-mobile-order">
+                <span> Pedido </span>
+
+                <strong>
+                  {{ transaction.order_number || 'Sin pedido relacionado' }}
+                </strong>
+              </div>
+
+              <div class="transaction-mobile-customer">
+                <span class="transaction-mobile-customer__avatar">
+                  {{ (transaction.customer.name || 'C').slice(0, 1).toUpperCase() }}
+                </span>
+
+                <div>
+                  <strong>
+                    {{ transaction.customer.name || 'Cliente' }}
+                  </strong>
+
+                  <small>
+                    {{ customerContact(transaction) }}
+                  </small>
+                </div>
+              </div>
+
+              <div class="transaction-mobile-card__meta">
+                <div>
+                  <span> Fecha </span>
+
+                  <strong>
+                    @if (transaction.effective_at) {
+                      {{ transaction.effective_at | date: 'dd/MM/yyyy HH:mm' }}
+                    } @else {
+                      Sin fecha
+                    }
+                  </strong>
+                </div>
+
+                <div class="transaction-mobile-card__amount">
+                  <span> Monto </span>
+
+                  <strong>
+                    {{ transaction.amount | currency: transaction.currency }}
+                  </strong>
+                </div>
+              </div>
+            </div>
+
+            <footer class="transaction-mobile-card__footer">
+              <span
+                class="transaction-mobile-reference"
+                [pTooltip]="transaction.reference || transaction.transaction_key"
+                tooltipPosition="top"
+              >
+                {{ transaction.reference || transaction.transaction_key }}
+              </span>
+
+              <p-button
+                icon="pi pi-arrow-right"
+                label="Ver detalle"
+                severity="secondary"
+                [text]="true"
+                (onClick)="showTransactionDetail(transaction)"
+              />
+            </footer>
+          </article>
+        }
+      </div>
+
+      <footer class="transactions-pagination">
+        <span>
+          Mostrando
+          {{ visibleFrom() }}–{{ visibleTo() }} de {{ total() }}
+        </span>
+
+        <p-paginator
+          [first]="first()"
+          [rows]="perPage()"
+          [totalRecords]="total()"
+          [rowsPerPageOptions]="[10, 15, 25, 50]"
+          [showCurrentPageReport]="false"
+          (onPageChange)="onPageChange($event)"
+        />
+      </footer>
+    } @else {
+      <div class="transactions-empty-state">
+        <span class="transactions-empty-state__icon">
+          <i class="pi pi-search"></i>
+        </span>
+
+        <h3>No encontramos transacciones</h3>
+
+        <p>No existen movimientos que coincidan con el periodo y los filtros seleccionados.</p>
+
+        <p-button
+          icon="pi pi-filter-slash"
+          label="Restablecer filtros"
+          severity="secondary"
+          [outlined]="true"
+          (onClick)="clearFilters()"
+        />
+      </div>
+    }
+  </section>
+
+  <!--
+  |--------------------------------------------------------------------------
+  | Panel móvil de filtros
+  |--------------------------------------------------------------------------
+  -->
+
+  <p-drawer
+    header="Filtrar transacciones"
+    position="right"
+    [visible]="filtersDrawerVisible()"
+    (visibleChange)="filtersDrawerVisible.set($event)"
+    styleClass="transactions-filter-drawer"
+  >
+    <div class="transactions-drawer-content">
+      <div class="transactions-drawer-intro">
+        <span class="transactions-drawer-intro__icon">
+          <i class="pi pi-sliders-h"></i>
+        </span>
+
+        <div>
+          <strong> Búsqueda avanzada </strong>
+
+          <span> Ajusta el periodo y los criterios del listado. </span>
+        </div>
+      </div>
+
+      <div class="transactions-drawer-field">
+        <span> Buscar </span>
+
+        <div class="transactions-search-field">
+          <span class="transactions-search-field__icon">
+            <i class="pi pi-search"></i>
+          </span>
+
+          <input
+            id="transactions_search_mobile"
+            type="search"
+            pInputText
+            autocomplete="off"
+            aria-label="Buscar transacciones"
+            [ngModel]="search()"
+            (ngModelChange)="search.set($event)"
+            placeholder="Pedido, cliente o referencia"
+          />
+        </div>
+      </div>
+
+      <div class="transactions-drawer-field">
+        <span> Fecha inicial </span>
+
+        <p-datepicker
+          inputId="transactions_date_from_mobile"
+          [ngModel]="dateFrom()"
+          (ngModelChange)="dateFrom.set($event)"
+          dateFormat="dd/mm/yy"
+          appendTo="body"
+          [showIcon]="true"
+          [showButtonBar]="true"
+          [fluid]="true"
+        />
+      </div>
+
+      <div class="transactions-drawer-field">
+        <span> Fecha final </span>
+
+        <p-datepicker
+          inputId="transactions_date_to_mobile"
+          [ngModel]="dateTo()"
+          (ngModelChange)="dateTo.set($event)"
+          dateFormat="dd/mm/yy"
+          appendTo="body"
+          [showIcon]="true"
+          [showButtonBar]="true"
+          [fluid]="true"
+        />
+      </div>
+
+      <div class="transactions-drawer-field">
+        <span> Método </span>
+
+        <p-select
+          inputId="transactions_method_mobile"
+          [ngModel]="method()"
+          (ngModelChange)="method.set($event)"
+          [options]="methodOptions"
+          optionLabel="label"
+          optionValue="value"
+          appendTo="body"
+          [fluid]="true"
+        />
+      </div>
+
+      <div class="transactions-drawer-field">
+        <span> Estado </span>
+
+        <p-select
+          inputId="transactions_status_mobile"
+          [ngModel]="status()"
+          (ngModelChange)="status.set($event)"
+          [options]="statusOptions"
+          optionLabel="label"
+          optionValue="value"
+          appendTo="body"
+          [fluid]="true"
+        />
+      </div>
+    </div>
+
+    <ng-template pTemplate="footer">
+      <div class="transactions-drawer-actions">
+        <p-button
+          label="Limpiar"
+          icon="pi pi-filter-slash"
+          severity="secondary"
+          [outlined]="true"
+          (onClick)="clearFilters()"
+        />
+
+        <p-button label="Aplicar filtros" icon="pi pi-check" (onClick)="applyFilters()" />
+      </div>
+    </ng-template>
+  </p-drawer>
+
+  <!--
+  |--------------------------------------------------------------------------
+  | Detalle de transacción
+  |--------------------------------------------------------------------------
+  -->
+
+  <p-dialog
+    header="Detalle de la transacción"
+    [modal]="true"
+    [visible]="detailVisible()"
+    (visibleChange)="detailVisible.set($event)"
+    [draggable]="false"
+    [resizable]="false"
+    [dismissableMask]="true"
+    [closeOnEscape]="true"
+    [breakpoints]="{
+      '960px': '72vw',
+      '640px': '94vw',
+    }"
+    [style]="{
+      width: '600px',
+    }"
+    styleClass="transaction-detail-dialog"
+  >
+    @if (selectedTransaction(); as transaction) {
+      <section class="transaction-detail">
+        <!-- Encabezado -->
+
+        <header class="transaction-detail__header">
+          <div
+            class="transaction-method"
+            [class.transaction-method--cash]="transaction.method === 'cash'"
+            [class.transaction-method--transfer]="transaction.method === 'transfer'"
+            [class.transaction-method--paypal]="transaction.method === 'paypal'"
+          >
+            <span class="transaction-method__icon">
+              <i [class]="methodIcon(transaction.method)"></i>
+            </span>
+
+            <div>
+              <strong>
+                {{ methodLabel(transaction.method) }}
+              </strong>
+
+              <small>
+                {{ transactionSourceLabel(transaction.source) }}
+              </small>
+            </div>
+          </div>
+
+          <p-tag
+            [value]="statusLabel(transaction.status)"
+            [severity]="statusSeverity(transaction.status)"
+            [icon]="statusIcon(transaction.status)"
+          />
+        </header>
+
+        <!-- Importe -->
+
+        <section class="transaction-detail__amount">
+          <span> Importe de la transacción </span>
+
+          <strong>
+            {{ transaction.amount | currency: transaction.currency }}
+          </strong>
+
+          <small>
+            {{ transaction.currency }}
+          </small>
+        </section>
+
+        <!-- Datos principales -->
+
+        <section class="transaction-detail__grid">
+          <article class="transaction-detail-card">
+            <span class="transaction-detail-card__icon">
+              <i class="pi pi-receipt"></i>
+            </span>
+
+            <div>
+              <span> Pedido </span>
+
+              @if (transaction.order_id !== null) {
+                <a
+                  class="transaction-detail-card__link"
+                  [routerLink]="['/admin/orders', transaction.order_id]"
+                  (click)="closeTransactionDetail()"
+                >
+                  {{ transaction.order_number || 'Abrir pedido' }}
+
+                  <i class="pi pi-arrow-up-right"></i>
+                </a>
+              } @else {
+                <strong> Sin pedido relacionado </strong>
+              }
+            </div>
+          </article>
+
+          <article class="transaction-detail-card">
+            <span class="transaction-detail-card__icon">
+              <i class="pi pi-calendar"></i>
+            </span>
+
+            <div>
+              <span> Fecha efectiva </span>
+
+              <strong>
+                @if (transaction.effective_at) {
+                  {{ transaction.effective_at | date: 'dd/MM/yyyy HH:mm' }}
+                } @else {
+                  Sin fecha registrada
+                }
+              </strong>
+            </div>
+          </article>
+
+          <article class="transaction-detail-card">
+            <span class="transaction-detail-card__icon">
+              <i class="pi pi-user"></i>
+            </span>
+
+            <div>
+              <span> Cliente </span>
+
+              <strong>
+                {{ transaction.customer.name || 'Cliente sin nombre' }}
+              </strong>
+            </div>
+          </article>
+
+          <article class="transaction-detail-card">
+            <span class="transaction-detail-card__icon">
+              <i class="pi pi-phone"></i>
+            </span>
+
+            <div>
+              <span> Contacto </span>
+
+              <strong>
+                {{ customerContact(transaction) }}
+              </strong>
+            </div>
+          </article>
+        </section>
+
+        <!-- Información técnica -->
+
+        <section class="transaction-detail__technical">
+          <header class="transaction-detail__technical-header">
+            <div>
+              <span> Información técnica </span>
+
+              <strong> Identificadores y referencias </strong>
+            </div>
+
+            <i class="pi pi-shield"></i>
+          </header>
+
+          <div class="transaction-technical-row">
+            <div>
+              <span> Referencia </span>
+
+              <code>
+                {{ transaction.reference || 'Sin referencia' }}
+              </code>
+            </div>
+
+            <button
+              type="button"
+              class="transaction-copy-button"
+              aria-label="Copiar referencia"
+              pTooltip="Copiar referencia"
+              tooltipPosition="left"
+              [disabled]="!transaction.reference"
+              (click)="copyToClipboard(transaction.reference, 'Referencia')"
+            >
+              <i class="pi pi-copy"></i>
+            </button>
+          </div>
+
+          <div class="transaction-technical-row">
+            <div>
+              <span> Identificador interno </span>
+
+              <code>
+                {{ transaction.transaction_key }}
+              </code>
+            </div>
+
+            <button
+              type="button"
+              class="transaction-copy-button"
+              aria-label="Copiar identificador interno"
+              pTooltip="Copiar identificador"
+              tooltipPosition="left"
+              (click)="copyToClipboard(transaction.transaction_key, 'Identificador interno')"
+            >
+              <i class="pi pi-copy"></i>
+            </button>
+          </div>
+
+          @if (transaction.receipt_uuid) {
+            <div class="transaction-technical-row">
+              <div>
+                <span> UUID del comprobante </span>
+
+                <code>
+                  {{ transaction.receipt_uuid }}
+                </code>
+              </div>
+
+              <button
+                type="button"
+                class="transaction-copy-button"
+                aria-label="Copiar UUID del comprobante"
+                pTooltip="Copiar UUID"
+                tooltipPosition="left"
+                (click)="copyToClipboard(transaction.receipt_uuid, 'UUID del comprobante')"
+              >
+                <i class="pi pi-copy"></i>
+              </button>
+            </div>
+          }
+
+          @if (transaction.reviewed_by) {
+            <div class="transaction-technical-row">
+              <div>
+                <span> Revisado por </span>
+
+                <strong>
+                  {{ transaction.reviewed_by }}
+                </strong>
+              </div>
+
+              <span class="transaction-technical-row__verified">
+                <i class="pi pi-verified"></i>
+              </span>
+            </div>
+          }
+
+          @if (transaction.failure_code) {
+            <div class="transaction-technical-row transaction-technical-row--failure">
+              <div>
+                <span> Código de error </span>
+
+                <code>
+                  {{ transaction.failure_code }}
+                </code>
+              </div>
+
+              <button
+                type="button"
+                class="transaction-copy-button"
+                aria-label="Copiar código de error"
+                pTooltip="Copiar código"
+                tooltipPosition="left"
+                (click)="copyToClipboard(transaction.failure_code, 'Código de error')"
+              >
+                <i class="pi pi-copy"></i>
+              </button>
+            </div>
+          }
+        </section>
+      </section>
+    }
+
+    <ng-template pTemplate="footer">
+      <div class="transaction-detail__actions">
+        <p-button
+          label="Cerrar"
+          severity="secondary"
+          [outlined]="true"
+          (onClick)="closeTransactionDetail()"
+        />
+
+        @if (
+          selectedTransaction()?.order_id !== null && selectedTransaction()?.order_id !== undefined
+        ) {
+          <p-button
+            icon="pi pi-arrow-up-right"
+            label="Ver pedido"
+            [routerLink]="['/admin/orders', selectedTransaction()!.order_id]"
+            (onClick)="closeTransactionDetail()"
+          />
+        }
+      </div>
+    </ng-template>
+  </p-dialog>
+</section>

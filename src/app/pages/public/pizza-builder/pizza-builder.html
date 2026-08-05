@@ -1,374 +1,584 @@
-<section class="builder-page">
+<section class="builder-page cheof-page">
   @if (loading()) {
-    <div class="shell">
-      <div class="left">
-        <p-skeleton width="100%" height="520px" borderRadius="16px"></p-skeleton>
-      </div>
-      <div class="right">
-        <p-skeleton width="70%" height="34px"></p-skeleton>
-        <p-skeleton width="45%" height="28px"></p-skeleton>
-        <p-skeleton width="100%" height="140px" borderRadius="16px"></p-skeleton>
-        <p-skeleton width="100%" height="220px" borderRadius="16px"></p-skeleton>
+    <div class="builder-skeleton">
+      <p-skeleton height="44px" width="260px" borderRadius="12px" />
+      <div class="builder-skeleton-grid">
+        <p-skeleton height="620px" borderRadius="24px" />
+        <p-skeleton height="620px" borderRadius="24px" />
       </div>
     </div>
   } @else if (error()) {
-    <div class="error-box">
-      <h2>Error</h2>
+    <article class="builder-error cheof-card">
+      <span class="builder-error__icon">
+        <i class="pi pi-exclamation-triangle" aria-hidden="true"></i>
+      </span>
+
+      <h1>No pudimos abrir esta pizza</h1>
       <p>{{ error() }}</p>
-    </div>
-  } @else {
-    <div class="shell">
-      <!-- LEFT -->
-      <div class="left">
-        <div class="image-card">
-          <img class="hero" [src]="heroImage()" [alt]="pizzaA()?.name || 'Pizza'" />
-        </div>
+
+      <div class="builder-error__actions">
+        <p-button
+          label="Volver al menú"
+          icon="pi pi-arrow-left"
+          severity="secondary"
+          [outlined]="true"
+          (onClick)="goBack()"
+        />
+
+        <p-button
+          label="Reintentar"
+          icon="pi pi-refresh"
+          (onClick)="retryLoad()"
+        />
       </div>
+    </article>
+  } @else if (pizzaA()) {
+    @let pizza = pizzaA()!;
 
-      <!-- RIGHT -->
-      <div class="right">
-        <h1 class="title">{{ pizzaA()?.name }}</h1>
+    <header class="builder-header">
+      <button
+        type="button"
+        class="builder-back"
+        aria-label="Volver al menú"
+        (click)="goBack()"
+      >
+        <i class="pi pi-arrow-left" aria-hidden="true"></i>
+      </button>
 
-        <!-- Price -->
-        <div class="price-row">
-          <div class="price">
-            @if (!selectedSize()) {
-              <span class="muted">Selecciona un tamaño para ver el precio</span>
-            } @else if (quoteLoading()) {
-              <span class="muted">Cotizando…</span>
-            } @else if (!quote()) {
-              <span class="muted">—</span>
-            } @else {
-              ${{ unitPrice() | number:'1.2-2' }}
-              <span class="unit">/ unidad</span>
-            }
-          </div>
+      <div>
+        <span class="builder-eyebrow">Personalización</span>
+        <h1>Personaliza tu pizza</h1>
+        <p>
+          Elige tamaño, ingredientes extra y cantidad.
+          El precio de tu pedido se valida en tiempo real.
+        </p>
+      </div>
+    </header>
 
-          <div class="total">
-            @if (!selectedSize() || quoteLoading() || !quote()) {
-              Total: <strong>—</strong>
-            } @else {
-              Total: <strong>${{ total() | number:'1.2-2' }}</strong>
-            }
-          </div>
-        </div>
+    <div class="builder-layout">
+      <aside class="builder-preview cheof-card">
+        <div class="preview-image-wrap">
+          <img
+            class="preview-image"
+            [src]="heroImage()"
+            [alt]="'Pizza ' + pizza.name"
+            loading="eager"
+          />
 
-        @if (quoteError()) {
-          <div class="hint warn">{{ quoteError() }}</div>
-        }
+          <span class="preview-badge">
+            <i class="pi pi-star-fill" aria-hidden="true"></i>
+            {{ pizza.category.name }}
+          </span>
 
-        <p-divider></p-divider>
-
-        <!-- Tamaño -->
-        <div class="block">
-          <div class="block-title">Tamaño</div>
-
-          <div class="size-row">
-            <button pButton type="button" label="Peq"
-              [outlined]="sizeKey() !== 'peq'"
-              [severity]="sizeKey() === 'peq' ? 'success' : undefined"
-              (click)="setSize('peq')"></button>
-
-            <button pButton type="button" label="Med"
-              [outlined]="sizeKey() !== 'med'"
-              [severity]="sizeKey() === 'med' ? 'success' : undefined"
-              (click)="setSize('med')"></button>
-
-            <button pButton type="button" label="Fam"
-              [outlined]="sizeKey() !== 'fam'"
-              [severity]="sizeKey() === 'fam' ? 'success' : undefined"
-              (click)="setSize('fam')"></button>
-
-            <button pButton type="button" label="Gig"
-              [outlined]="sizeKey() !== 'gig'"
-              [severity]="sizeKey() === 'gig' ? 'success' : undefined"
-              (click)="setSize('gig')"></button>
-          </div>
-
-          @if (!selectedSize()) {
-            <div class="hint warn">Debes seleccionar un tamaño para continuar.</div>
-          } @else if (isHalfAndHalf() && !pizzaB()) {
-            <div class="hint warn">Selecciona la segunda especialidad para cotizar.</div>
-          } @else if (quoteLoading()) {
-            <div class="hint">Cotizando precios…</div>
-          } @else if (!quote()) {
-            <div class="hint warn">No se pudo obtener la cotización. Revisa tu selección.</div>
-          } @else {
-            <div class="hint">
-              Precio base: <strong>${{ basePrice() | number:'1.2-2' }}</strong>
-              | Extras: <strong>${{ extrasPrice() | number:'1.2-2' }}</strong>
-            </div>
+          @if (isHalfAndHalf() && pizzaB()) {
+            <span class="preview-badge preview-badge--secondary">
+              <i class="pi pi-clone" aria-hidden="true"></i>
+              Mitad y mitad
+            </span>
           }
         </div>
 
-        <!-- MITAD Y MITAD -->
-        <div class="block">
-          <div class="half-head">
-            <div class="q">¿Desea la pizza mitad y mitad (2 especialidades)?</div>
+        <div class="preview-copy">
+          <span class="preview-category">Recién hecha a tu gusto</span>
+          <h2>{{ configurationTitle() }}</h2>
 
-            <p-checkbox
-              [binary]="true"
-              [ngModel]="isHalfAndHalf()"
-              (onChange)="setHalfAndHalf($event.checked)">
-            </p-checkbox>
+          @if (pizza.description) {
+            <p>{{ pizza.description }}</p>
+          } @else {
+            <p>
+              Ajusta el tamaño, los ingredientes y la cantidad
+              para dejar tu pedido exactamente como lo quieres.
+            </p>
+          }
+
+          <div class="preview-notes">
+            <div class="preview-note">
+              <span>Tamaño</span>
+              <strong>{{ selectedSize()?.name || 'Por seleccionar' }}</strong>
+            </div>
+
+            <div class="preview-note">
+              <span>Rinde para</span>
+              <strong>{{ dinersLabel() }}</strong>
+            </div>
+
+            <div class="preview-note">
+              <span>Extras</span>
+              <strong>{{ extrasCount() }}/{{ maxExtras }}</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="preview-summary">
+          <div>
+            <span>Precio por pizza</span>
+            <strong>{{ formatMoney(displayUnitPrice()) }}</strong>
           </div>
 
-          <div class="hint">
-            El precio base se toma de la especialidad/categoría más cara.
+          <div>
+            <span>Cantidad</span>
+            <strong>{{ quantity() }}</strong>
           </div>
 
-          @if (isHalfAndHalf()) {
-            <div class="half-select">
-              <p-select
-                [options]="pizzaOptions()"
-                optionLabel="label"
-                optionValue="value"
-                [filter]="true"
-                [showClear]="true"
-                placeholder="Selecciona la segunda especialidad"
-                [ngModel]="secondPizzaId()"
-                (onChange)="setSecondPizzaId($event.value)">
-              </p-select>
+          <div>
+            <span>Total actual</span>
+            <strong>{{ formatMoney(displayTotal()) }}</strong>
+          </div>
+        </div>
+      </aside>
 
-              @if (!pizzaB()) {
-                <div class="hint warn">Debes elegir la segunda especialidad para continuar.</div>
+      <main class="builder-config cheof-card">
+        <section class="config-section config-section--intro">
+          <div>
+            <span class="config-kicker">{{ pizza.category.name }}</span>
+            <h2>{{ pizza.name }}</h2>
+            <p class="intro-text">
+              Arma tu pedido como más te guste.
+              Nosotros calculamos el precio actualizado en cada cambio.
+            </p>
+          </div>
+
+          <div class="live-price" [class.is-loading]="quoteLoading()">
+            <span>Precio por pizza</span>
+            <strong>{{ formatMoney(displayUnitPrice()) }}</strong>
+
+            @if (quoteLoading()) {
+              <small>
+                <i class="pi pi-spin pi-spinner"></i>
+                Actualizando precio
+              </small>
+            } @else {
+              <small>Total estimado: {{ formatMoney(displayTotal()) }}</small>
+            }
+          </div>
+        </section>
+
+        <section class="config-section">
+          <div class="section-heading">
+            <div>
+              <span class="step-number">1</span>
+              <h3>Elige el tamaño</h3>
+            </div>
+
+            <span class="section-helper">
+              @if (hasValidSizes()) {
+                Tamaños disponibles para esta pizza
+              } @else {
+                No hay tamaños disponibles para esta pizza
+              }
+            </span>
+          </div>
+
+          @if (!hasValidSizes()) {
+            <div class="inline-notice inline-notice--warning">
+              <i class="pi pi-info-circle"></i>
+              Esta pizza no tiene un tamaño disponible para pedido en este momento.
+            </div>
+          } @else {
+            <div class="size-grid" role="radiogroup" aria-label="Tamaño de la pizza">
+              @for (item of availableSizePrices(); track item.size.id) {
+                <button
+                  type="button"
+                  class="size-option"
+                  [class.is-selected]="selectedSizeId() === item.size.id"
+                  [attr.aria-pressed]="selectedSizeId() === item.size.id"
+                  (click)="setSize(item.size.id)"
+                >
+                  <span class="size-option__name">{{ item.size.name }}</span>
+                  <span class="size-option__portion">
+                    {{ formatPortions(item.size) }}
+                  </span>
+                  <span class="size-option__serving">
+                    {{ getServingHint(item.size.portion) }}
+                  </span>
+                  <strong>{{ formatMoney(item.price) }}</strong>
+                </button>
               }
             </div>
           }
-        </div>
+        </section>
 
-        <!-- Cantidad -->
-        <div class="block">
-          <div class="block-title">Cantidad</div>
+        <section class="config-section split-controls">
+          <div class="control-card">
+            <div class="control-card__copy">
+              <span class="step-number">2</span>
+              <div>
+                <h3>Mitad y mitad</h3>
+                <p>Combina dos sabores en una sola pizza.</p>
+              </div>
+            </div>
 
-          <p-inputNumber
-            [ngModel]="quantity()"
-            (ngModelChange)="setQty($event)"
-            [min]="minQty"
-            [max]="maxQty"
-            [showButtons]="true"
-            buttonLayout="horizontal"
-            incrementButtonIcon="pi pi-plus"
-            decrementButtonIcon="pi pi-minus">
-          </p-inputNumber>
-
-          <div class="hint">
-            Máximo: <strong>{{ maxQty }}</strong>
+            <p-toggleswitch
+              [ngModel]="isHalfAndHalf()"
+              (ngModelChange)="setHalfAndHalf($event)"
+              ariaLabel="Activar pizza mitad y mitad"
+            />
           </div>
-        </div>
 
-        <!-- Ingredientes base + Restablecer -->
-        <div class="block">
-          <div class="block-head">
-            <div class="block-title">Ingredientes base</div>
+          <div class="control-card">
+            <div class="control-card__copy">
+              <span class="step-number">3</span>
+              <div>
+                <h3>Cantidad</h3>
+                <p>¿Cuántas pizzas quieres pedir?</p>
+              </div>
+            </div>
 
-            @if (!isHalfAndHalf()) {
-              <button
-                pButton
-                type="button"
-                label="Restablecer"
-                icon="pi pi-refresh"
-                severity="secondary"
-                [text]="true"
-                class="reset-btn"
-                [disabled]="!hasIngredientChangesA()"
-                (click)="resetBaseIngredientsA()">
-              </button>
-            }
+            <p-inputnumber
+              [ngModel]="quantity()"
+              (ngModelChange)="setQuantity($event)"
+              [min]="minQuantity"
+              [max]="maxQuantity"
+              [showButtons]="true"
+              buttonLayout="horizontal"
+              decrementButtonIcon="pi pi-minus"
+              incrementButtonIcon="pi pi-plus"
+              inputStyleClass="quantity-input"
+              styleClass="quantity-control"
+            />
+          </div>
+        </section>
+
+        @if (isHalfAndHalf()) {
+          <section class="config-section half-selector">
+            <div class="section-heading">
+              <div>
+                <span class="step-number">4</span>
+                <h3>Selecciona el segundo sabor</h3>
+              </div>
+            </div>
+
+            <p-select
+              [options]="pizzaOptions()"
+              [ngModel]="secondPizzaId()"
+              (ngModelChange)="setSecondPizzaId($event)"
+              optionLabel="label"
+              optionValue="value"
+              placeholder="Elige la segunda pizza"
+              [filter]="true"
+              filterBy="label"
+              appendTo="body"
+              styleClass="second-pizza-select"
+            />
+          </section>
+        }
+
+        <section class="config-section">
+          <div class="section-heading section-heading--ingredients">
+            <div>
+              <span class="step-number">{{ isHalfAndHalf() ? 5 : 4 }}</span>
+              <h3>Ingredientes base</h3>
+            </div>
+
+            <span class="section-helper">
+              {{ baseLocksHint() }}
+            </span>
           </div>
 
           @if (!isHalfAndHalf()) {
-            @if (baseIngredientsA().length === 0) {
-              <div class="muted">Esta pizza no tiene ingredientes definidos.</div>
-            } @else {
-              <div class="chips">
-                @for (ing of baseIngredientsA(); track ing) {
+            <article class="ingredient-half">
+              <header>
+                <strong>{{ pizza.name }}</strong>
+
+                <p-button
+                  label="Restablecer"
+                  icon="pi pi-refresh"
+                  severity="secondary"
+                  [text]="true"
+                  size="small"
+                  [disabled]="!hasIngredientChangesA()"
+                  (onClick)="resetBaseIngredientsA()"
+                />
+              </header>
+
+              <div class="ingredient-chips">
+                @for (ingredient of baseIngredientsA(); track ingredient) {
                   <p-chip
-                    [label]="ing"
-                    [removable]="!isBaseIngredientLocked(ing)"
-                    [styleClass]="isBaseIngredientLocked(ing) ? 'p-chip-locked' : ''"
-                    (onRemove)="removeBaseIngredientA(ing)">
-                  </p-chip>
+                    [label]="ingredient"
+                    [removable]="!isBaseIngredientLocked(ingredient)"
+                    [styleClass]="isBaseIngredientLocked(ingredient) ? 'ingredient-chip is-locked' : 'ingredient-chip'"
+                    (onRemove)="removeBaseIngredientA(ingredient)"
+                  />
                 }
               </div>
-
-              <div class="hint">
-                {{ baseLocksHint() }}
-                <br />
-                <span class="muted">Los ingredientes bloqueados no muestran la “X” y no se pueden eliminar.</span>
-              </div>
-            }
+            </article>
           } @else {
-            <div class="halves">
-              <div class="half-box">
-                <div class="half-title-row">
-                  <div class="half-title">Mitad A — {{ pizzaA()?.name }}</div>
+            <div class="halves-grid">
+              <article class="ingredient-half">
+                <header>
+                  <div>
+                    <span>Mitad A</span>
+                    <strong>{{ pizza.name }}</strong>
+                  </div>
 
-                  <button
-                    pButton
-                    type="button"
+                  <p-button
                     icon="pi pi-refresh"
                     severity="secondary"
                     [text]="true"
-                    class="reset-btn"
+                    size="small"
+                    ariaLabel="Restablecer ingredientes de la mitad A"
                     [disabled]="!hasIngredientChangesA()"
-                    (click)="resetBaseIngredientsA()">
-                  </button>
-                </div>
+                    (onClick)="resetBaseIngredientsA()"
+                  />
+                </header>
 
-                <div class="chips">
-                  @for (ing of baseIngredientsA(); track ing) {
+                <div class="ingredient-chips">
+                  @for (ingredient of baseIngredientsA(); track ingredient) {
                     <p-chip
-                      [label]="ing"
-                      [removable]="!isBaseIngredientLocked(ing)"
-                      [styleClass]="isBaseIngredientLocked(ing) ? 'p-chip-locked' : ''"
-                      (onRemove)="removeBaseIngredientA(ing)">
-                    </p-chip>
+                      [label]="ingredient"
+                      [removable]="!isBaseIngredientLocked(ingredient)"
+                      [styleClass]="isBaseIngredientLocked(ingredient) ? 'ingredient-chip is-locked' : 'ingredient-chip'"
+                      (onRemove)="removeBaseIngredientA(ingredient)"
+                    />
                   }
                 </div>
-              </div>
+              </article>
 
-              <div class="half-box">
-                <div class="half-title-row">
-                  <div class="half-title">Mitad B — {{ pizzaB()?.name || 'Sin seleccionar' }}</div>
+              <article class="ingredient-half" [class.is-empty]="!pizzaB()">
+                <header>
+                  <div>
+                    <span>Mitad B</span>
+                    <strong>{{ pizzaB()?.name || 'Pendiente de selección' }}</strong>
+                  </div>
 
-                  <button
-                    pButton
-                    type="button"
+                  <p-button
                     icon="pi pi-refresh"
                     severity="secondary"
                     [text]="true"
-                    class="reset-btn"
+                    size="small"
+                    ariaLabel="Restablecer ingredientes de la mitad B"
                     [disabled]="!pizzaB() || !hasIngredientChangesB()"
-                    (click)="resetBaseIngredientsB()">
-                  </button>
-                </div>
+                    (onClick)="resetBaseIngredientsB()"
+                  />
+                </header>
 
-                @if (!pizzaB()) {
-                  <div class="muted">Selecciona la segunda especialidad para editar ingredientes.</div>
-                } @else {
-                  <div class="chips">
-                    @for (ing of baseIngredientsB(); track ing) {
+                @if (pizzaB()) {
+                  <div class="ingredient-chips">
+                    @for (ingredient of baseIngredientsB(); track ingredient) {
                       <p-chip
-                        [label]="ing"
-                        [removable]="!isBaseIngredientLocked(ing)"
-                        [styleClass]="isBaseIngredientLocked(ing) ? 'p-chip-locked' : ''"
-                        (onRemove)="removeBaseIngredientB(ing)">
-                      </p-chip>
+                        [label]="ingredient"
+                        [removable]="!isBaseIngredientLocked(ingredient)"
+                        [styleClass]="isBaseIngredientLocked(ingredient) ? 'ingredient-chip is-locked' : 'ingredient-chip'"
+                        (onRemove)="removeBaseIngredientB(ingredient)"
+                      />
                     }
                   </div>
+                } @else {
+                  <p>Selecciona la segunda pizza para configurar esta mitad.</p>
                 }
-              </div>
-            </div>
-
-            <div class="hint">
-              {{ baseLocksHint() }}
-              <br />
-              <span class="muted">Puedes quitar ingredientes por mitad (excepto los bloqueados).</span>
+              </article>
             </div>
           }
-        </div>
+        </section>
 
-        <!-- Extras -->
-        <div class="block">
+        <section class="config-section extras-section">
           <p-accordion
             [value]="extrasAccordionValue()"
             [multiple]="false"
             (valueChange)="onExtrasAccordionChange($event)"
-            styleClass="cheof-accordion">
-
+            styleClass="builder-accordion"
+          >
             <p-accordion-panel value="extras">
               <p-accordion-header>
-                <div class="acc-head">
-                  <span>Ingredientes extra</span>
-                  <span class="acc-meta">{{ extrasCount() }}/{{ maxExtras }}</span>
+                <div class="extras-header">
+                  <div>
+                    <span class="step-number">{{ isHalfAndHalf() ? 6 : 5 }}</span>
+                    <div>
+                      <strong>Añade extras</strong>
+                      <small>Agrega hasta {{ maxExtras }} ingredientes</small>
+                    </div>
+                  </div>
+
+                  <span class="extras-counter">{{ extrasCount() }}/{{ maxExtras }}</span>
                 </div>
               </p-accordion-header>
 
               <p-accordion-content>
-                <div class="acc-body">
-                  @if (!selectedSize()) {
-                    <div class="muted">Selecciona un tamaño para habilitar precios de extras.</div>
-                  }
-
-                  @if (extrasCatalog().length === 0) {
-                    <div class="muted">No hay extras disponibles.</div>
-                  } @else {
-                    <div class="hint">
-                      Puedes agregar hasta <strong>{{ maxExtras }}</strong> extras.
-                    </div>
-
-                    <div class="extras-grid">
-                      @for (ex of extrasCatalog(); track ex.id) {
-                        <div class="extra-item" [class.is-disabled]="isExtraDisabled(ex)">
+                @if (!selectedSize()) {
+                  <div class="inline-notice">
+                    <i class="pi pi-info-circle"></i>
+                    Selecciona primero un tamaño para ver el precio de los extras.
+                  </div>
+                } @else if (extrasCatalog().length === 0) {
+                  <div class="inline-notice">
+                    No hay ingredientes extra disponibles.
+                  </div>
+                } @else {
+                  <div class="extras-grid">
+                    @for (extra of extrasCatalog(); track extra.id) {
+                      <article
+                        class="extra-option"
+                        [class.is-selected]="selectedExtras().has(extra.id)"
+                        [class.is-disabled]="isExtraDisabled(extra)"
+                      >
+                        <div class="extra-option__main">
                           <p-checkbox
                             [binary]="true"
-                            [disabled]="isExtraDisabled(ex) || !selectedSize()"
-                            [ngModel]="selectedExtras().has(ex.id)"
-                            (onChange)="toggleExtra(ex, $event.checked)">
-                          </p-checkbox>
+                            [ngModel]="selectedExtras().has(extra.id)"
+                            [disabled]="!selectedSize() || isExtraDisabled(extra)"
+                            (onChange)="toggleExtra(extra, $event.checked)"
+                            [inputId]="'extra-' + extra.id"
+                          />
 
-                          <div class="extra-name">
-                            <div class="n">{{ ex.name }}</div>
-                            <div class="t">{{ ex.type?.name || 'Extra' }}</div>
+                          <label [for]="'extra-' + extra.id">
+                            <strong>{{ extra.name }}</strong>
+                            <span>{{ extra.type?.name || 'Ingrediente extra' }}</span>
+                          </label>
 
-                            @if (isHalfAndHalf() && selectedExtras().has(ex.id)) {
-                              <div class="applies">
-                                <p-selectButton
-                                  [options]="appliesOptions"
-                                  optionLabel="label"
-                                  optionValue="value"
-                                  [ngModel]="selectedExtras().get(ex.id)?.appliesTo ?? 'ALL'"
-                                  (onChange)="setExtraAppliesTo(ex.id, $event.value)">
-                                </p-selectButton>
-                              </div>
-                            }
-                          </div>
-
-                          <div class="extra-price">
-                            @if (!selectedSize()) {
-                              —
-                            } @else if (quoteLoading()) {
-                              …
-                            } @else {
-                              <!-- el precio exacto está en quote, aquí solo UI -->
-                              +
-                            }
-                          </div>
+                          <strong class="extra-option__price">
+                            +{{ formatMoney(extraPriceFor(extra)) }}
+                          </strong>
                         </div>
-                      }
-                    </div>
-                  }
-                </div>
+
+                        @if (isHalfAndHalf() && selectedExtras().has(extra.id)) {
+                          <div class="extra-applies">
+                            <span>Aplicar en:</span>
+
+                            <p-selectbutton
+                              [options]="appliesOptions"
+                              optionLabel="label"
+                              optionValue="value"
+                              [ngModel]="selectedExtras().get(extra.id)?.appliesTo ?? 'ALL'"
+                              (onChange)="setExtraAppliesTo(extra.id, $event.value)"
+                              size="small"
+                            />
+                          </div>
+                        }
+                      </article>
+                    }
+                  </div>
+                }
               </p-accordion-content>
             </p-accordion-panel>
-
           </p-accordion>
-        </div>
+        </section>
 
-        <!-- Acciones -->
-        <div class="actions">
-          <button
-            pButton
-            type="button"
-            label="Agregar al carrito"
-            icon="pi pi-shopping-cart"
-            class="btn-cart"
-            [disabled]="!canCheckout()"
-            (click)="addToCart()">
-          </button>
+        <section class="order-summary">
+          <div class="summary-panel">
+            <div class="summary-panel__header">
+              <div>
+                <span class="config-kicker">Tu pedido</span>
+                <h3>{{ configurationTitle() }}</h3>
+              </div>
 
-          <button
-            pButton
-            type="button"
-            label="Compra ahora"
-            icon="pi pi-bolt"
-            class="btn-buy"
-            [disabled]="!canCheckout()"
-            (click)="buyNow()">
-          </button>
-        </div>
+              <span class="summary-qty">{{ quantity() }} pizza(s)</span>
+            </div>
+
+            <div class="summary-lines">
+              <div>
+                <span>Tamaño</span>
+                <strong>{{ selectedSize()?.name || 'Por seleccionar' }}</strong>
+              </div>
+
+              <div>
+                <span>Precio base</span>
+                <strong>{{ formatMoney(basePrice() || estimatedBaseTotal()) }}</strong>
+              </div>
+
+              <div>
+                <span>Extras</span>
+                <strong>{{ formatMoney(extrasPrice()) }}</strong>
+              </div>
+
+              <div>
+                <span>Rinde para</span>
+                <strong>{{ dinersLabel() }}</strong>
+              </div>
+            </div>
+
+            @if (quoteBreakdown().length > 0) {
+              <div class="summary-breakdown">
+                <span class="summary-breakdown__title">Extras agregados</span>
+
+                @for (item of quoteBreakdown(); track item.ingredient_id + '-' + item.applies_to) {
+                  <div class="summary-breakdown__item">
+                    <span>
+                      {{ item.ingredient_name }}
+                      @if (item.applies_to !== 'ALL') {
+                        · Mitad {{ item.applies_to }}
+                      }
+                    </span>
+                    <strong>{{ formatMoney(item.line_total) }}</strong>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+
+          <div class="summary-total">
+            <div>
+              <span>Total</span>
+              <strong>{{ formatMoney(displayTotal()) }}</strong>
+            </div>
+
+            <small
+              [class.is-error]="!!quoteError()"
+              [class.is-success]="quoteIsCurrent() && !quoteLoading()"
+            >
+              @if (quoteLoading()) {
+                <i class="pi pi-spin pi-spinner"></i>
+              } @else if (quoteError()) {
+                <i class="pi pi-exclamation-circle"></i>
+              } @else if (quoteIsCurrent()) {
+                <i class="pi pi-check-circle"></i>
+              } @else {
+                <i class="pi pi-info-circle"></i>
+              }
+
+              {{ configurationHint() }}
+            </small>
+
+            <div class="summary-actions">
+              <p-button
+                label="Agregar al carrito"
+                icon="pi pi-shopping-cart"
+                severity="secondary"
+                [outlined]="true"
+                [loading]="cartSubmitting()"
+                [disabled]="!canCheckout()"
+                styleClass="summary-button"
+                (onClick)="addToCart()"
+              />
+
+              <p-button
+                label="Pedir ahora"
+                icon="pi pi-arrow-right"
+                iconPos="right"
+                severity="success"
+                [loading]="cartSubmitting()"
+                [disabled]="!canCheckout()"
+                styleClass="summary-button"
+                (onClick)="buyNow()"
+              />
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <div class="mobile-purchase-bar">
+      <div>
+        <span>Total</span>
+        <strong>{{ formatMoney(displayTotal()) }}</strong>
+
+        @if (quoteLoading()) {
+          <small>
+            <i class="pi pi-spin pi-spinner"></i>
+            Actualizando
+          </small>
+        } @else {
+          <small>{{ configurationHint() }}</small>
+        }
       </div>
+
+      <p-button
+        label="Pedir"
+        icon="pi pi-shopping-cart"
+        severity="success"
+        [loading]="cartSubmitting()"
+        [disabled]="!canCheckout()"
+        (onClick)="addToCart()"
+      />
     </div>
   }
 </section>

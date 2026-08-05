@@ -1,345 +1,822 @@
-<section class="od">
-  <header class="od__header">
-    <div class="od__titleWrap">
-      <div class="cheof-title">Detalle del pedido</div>
-      <div class="od__subtitle">Seguimiento, entrega y pago.</div>
-      <div class="cheof-accent-line od__accent"></div>
+<section class="order-detail">
+  <header class="page-header">
+    <div>
+      <span class="page-eyebrow">Mi pedido</span>
+
+      <h1>Detalle del pedido</h1>
+
+      <p>Consulta el seguimiento, la entrega y el estado del pago.</p>
     </div>
 
     <p-button
-      label="Volver"
+      label="Volver a mis pedidos"
       icon="pi pi-arrow-left"
-      styleClass="cheof-btn cheof-btn--outlined"
+      severity="secondary"
+      [outlined]="true"
       (onClick)="back()"
-    ></p-button>
+    />
   </header>
 
   @if (loading()) {
-    <p-card styleClass="odCard">
-      <div class="sk">
-        <p-skeleton width="40%" height="1.4rem"></p-skeleton>
-        <p-skeleton width="100%" height="16rem"></p-skeleton>
+    <div class="loading-grid">
+      <p-skeleton height="11rem" borderRadius="24px" />
+
+      <p-skeleton height="24rem" borderRadius="24px" />
+
+      <p-skeleton height="18rem" borderRadius="24px" />
+    </div>
+  } @else if (order(); as current) {
+    <section class="order-hero">
+      <div class="order-hero__main">
+        <div class="order-hero__identity">
+          <span class="order-hero__label"> Número de pedido </span>
+
+          <strong>
+            {{ current.order_number }}
+          </strong>
+
+          <span class="order-hero__date">
+            Realizado el
+            {{ current.ordered_at | date: 'dd/MM/yyyy' : '' : 'es-EC' }}
+            a las
+            {{ current.ordered_at | date: 'HH:mm' }}
+          </span>
+        </div>
+
+        <p-tag
+          [value]="statusLabel(current.status)"
+          [severity]="statusSeverity(current.status)"
+          styleClass="status-tag"
+        />
       </div>
-    </p-card>
-  } @else {
-    <p-card styleClass="odCard">
-      <ng-template pTemplate="header">
-        <div class="odHero">
-          <div class="odHero__left">
-            <div class="odHero__num">Pedido {{ order()!.order_number }}</div>
-            <div class="odHero__date">{{ order()!.ordered_at | date:'dd/MM/yyyy HH:mm' }}</div>
 
-            <div class="odHero__chips">
-              <span class="heroChip">
-                <i class="pi pi-shopping-bag"></i>
-                {{ totalItems() }} {{ totalItems() === 1 ? 'item' : 'items' }}
-              </span>
+      <div class="order-hero__facts">
+        <div class="hero-fact">
+          <i class="pi pi-shopping-bag"></i>
 
-              <span class="heroChip">
-                <i class="pi pi-send"></i>
-                {{ deliveryTypeLabel(order()!.delivery_type) }}
-              </span>
+          <div>
+            <span>Productos</span>
 
-              <span class="heroChip">
-                <i class="pi pi-credit-card"></i>
-                {{ paymentLabel(order()!.payment_method) }}
-              </span>
-            </div>
-          </div>
-
-          <div class="odHero__right">
-            <div class="odHero__total">
-              Total
-              <span class="odHero__money">{{ order()!.total | currency:'USD':'symbol':'1.2-2' }}</span>
-            </div>
-
-            <p-tag
-              [value]="statusLabel(order()!.status)"
-              [severity]="statusSeverity(order()!.status)"
-              styleClass="odHero__tag"
-            ></p-tag>
+            <strong>
+              {{ totalItems() }}
+              {{ totalItems() === 1 ? 'unidad' : 'unidades' }}
+            </strong>
           </div>
         </div>
-      </ng-template>
 
-      <div class="odGrid">
-        <div class="odCol">
-          <div class="odSection odSection--timeline">
-            <div class="odSection__head">
-              <div class="odSection__title">Seguimiento</div>
+        <div class="hero-fact">
+          <i class="pi pi-map-marker"></i>
 
-              @if (!isFinalStatus()) {
-                <span class="sectionBadge sectionBadge--live">En curso</span>
-              } @else {
-                <span class="sectionBadge sectionBadge--done">Finalizado</span>
-              }
+          <div>
+            <span>Modalidad</span>
+
+            <strong>
+              {{ deliveryTypeLabel(current.delivery_type) }}
+            </strong>
+          </div>
+        </div>
+
+        <div class="hero-fact">
+          <i class="pi pi-wallet"></i>
+
+          <div>
+            <span>Pago</span>
+
+            <strong>
+              {{ paymentLabel(current.payment_method) }}
+            </strong>
+          </div>
+        </div>
+
+        <div class="hero-total">
+          <span>Total del pedido</span>
+
+          <strong>
+            {{ current.total | currency: current.currency ?? 'USD' : 'symbol' : '1.2-2' }}
+          </strong>
+        </div>
+      </div>
+    </section>
+
+    <div class="content-grid">
+      <main class="main-column">
+        <section class="panel tracking-panel">
+          <header class="panel-header">
+            <div>
+              <span class="panel-kicker"> Actualización del pedido </span>
+
+              <h2>Seguimiento</h2>
             </div>
 
-            @if (timeline().length > 0) {
-              <div class="tl">
-                @for (e of timeline(); track timelineTrackBy($index, e)) {
-                  <div class="tlRow">
-                    <div class="tlRail">
-                      <span class="tlDot" [class.tlDot--final]="e.isFinal"></span>
-                      <span class="tlLine" [class.tlLine--hidden]="e.isLast"></span>
-                    </div>
+            <span class="live-pill" [class.live-pill--done]="isFinalStatus()">
+              <span class="live-pill__dot"></span>
 
-                    <div class="tlBox" [class.tlBox--current]="e.isCurrent" [class.tlBox--final]="e.isFinal">
-                      <div class="tlTop">
-                        <div class="tlTop__left">
-                          <p-tag
-                            [value]="statusLabel(e.to)"
-                            [severity]="statusSeverity(e.to)"
-                            styleClass="tlTag"
-                          ></p-tag>
+              {{ isFinalStatus() ? 'Finalizado' : 'En curso' }}
+            </span>
+          </header>
 
-                          @if (e.isCurrent) {
-                            <span class="tlState tlState--live">Estado actual</span>
-                          }
+          @if (timeline().length) {
+            <div class="timeline">
+              @for (event of timeline(); track event.id; let last = $last) {
+                <article
+                  class="timeline-event"
+                  [class.timeline-event--current]="event.isCurrent"
+                  [class.timeline-event--final]="event.isFinal"
+                >
+                  <div class="timeline-event__rail">
+                    <span class="timeline-event__icon">
+                      <i
+                        class="pi"
+                        [class.pi-check]="event.isFinal"
+                        [class.pi-clock]="!event.isFinal"
+                      ></i>
+                    </span>
 
-                          @if (e.isFinal) {
-                            <span class="tlState tlState--final">Estado final</span>
-                          }
-                        </div>
+                    @if (!last) {
+                      <span class="timeline-event__line"></span>
+                    }
+                  </div>
 
-                        <span class="tlDate">{{ e.changed_at | date:'dd/MM HH:mm' }}</span>
+                  <div class="timeline-event__content">
+                    <div class="timeline-event__top">
+                      <div class="timeline-event__title">
+                        <strong>
+                          {{ statusLabel(event.status) }}
+                        </strong>
+
+                        @if (event.isCurrent) {
+                          <span class="event-badge"> Estado actual </span>
+                        }
+
+                        @if (event.isFinal) {
+                          <span class="event-badge event-badge--success"> Estado final </span>
+                        }
                       </div>
 
-                      @if (e.durationLabel) {
-                        <div class="tlMeta">
-                          <span class="tlDur">{{ e.durationPrefix }}: {{ e.durationLabel }}</span>
-                        </div>
-                      }
+                      <time>
+                        {{ event.changedAt | date: 'dd/MM/yyyy HH:mm' }}
+                      </time>
+                    </div>
 
-                      @if (e.note) {
-                        <div class="tlNote">{{ e.note }}</div>
-                      }
+                    @if (event.durationLabel) {
+                      <p class="timeline-event__duration">
+                        {{ event.isCurrent ? 'Tiempo transcurrido' : 'Duración' }}:
+                        {{ event.durationLabel }}
+                      </p>
+                    }
+
+                    @if (event.note) {
+                      <p class="timeline-event__note">
+                        {{ event.note }}
+                      </p>
+                    }
+
+                    @if (event.updatedByBusiness) {
+                      <span class="timeline-event__author"> Actualizado por CHEO'F PIZZA </span>
+                    }
+                  </div>
+                </article>
+              }
+            </div>
+          } @else {
+            <div class="empty-state">
+              <i class="pi pi-clock"></i>
+
+              <strong> El seguimiento todavía no tiene novedades </strong>
+
+              <span> La información aparecerá aquí cuando el pedido cambie de estado. </span>
+            </div>
+          }
+        </section>
+
+        <section class="panel products-panel">
+          <header class="panel-header">
+            <div>
+              <span class="panel-kicker"> Contenido del pedido </span>
+
+              <h2>Productos</h2>
+            </div>
+
+            <span class="count-pill">
+              {{ totalItems() }}
+              {{ totalItems() === 1 ? 'unidad' : 'unidades' }}
+            </span>
+          </header>
+
+          <div class="product-list">
+            @for (item of current.items; track item.id) {
+              <article class="product-item">
+                <div class="product-item__quantity">{{ item.quantity }}×</div>
+
+                <div class="product-item__content">
+                  <div class="product-item__heading">
+                    <div>
+                      <strong>
+                        {{ itemName(item) }}
+                      </strong>
+
+                      <div class="product-item__meta">
+                        @if (item.size?.name) {
+                          <span>
+                            {{ item.size!.name }}
+                          </span>
+                        }
+
+                        @if (item.pizza?.category) {
+                          <span>
+                            {{ item.pizza!.category }}
+                          </span>
+                        }
+
+                        @if (item.is_half_and_half) {
+                          <span> Mitad y mitad </span>
+                        }
+                      </div>
+                    </div>
+
+                    <div class="product-item__price">
+                      <strong>
+                        {{
+                          item.subtotal | currency: current.currency ?? 'USD' : 'symbol' : '1.2-2'
+                        }}
+                      </strong>
+
+                      <span>
+                        {{
+                          item.unit_price | currency: current.currency ?? 'USD' : 'symbol' : '1.2-2'
+                        }}
+                        c/u
+                      </span>
                     </div>
                   </div>
-                }
-              </div>
-            } @else {
-              <p-tag severity="info" value="Aún no hay historial de estados."></p-tag>
-            }
-          </div>
 
-          <div class="odSection">
-            <div class="odSection__head">
-              <div class="odSection__title">Items</div>
-              <span class="sectionBadge">{{ totalItems() }} {{ totalItems() === 1 ? 'unidad' : 'unidades' }}</span>
-            </div>
+                  @if (selectedPizzaNames(item).length) {
+                    <div class="product-detail">
+                      <span class="product-detail__label"> Pizzas seleccionadas </span>
 
-            <p-table [value]="order()!.items" styleClass="p-datatable-sm odTable">
-              <ng-template pTemplate="header">
-                <tr>
-                  <th>Producto</th>
-                  <th>Tamaño</th>
-                  <th class="t-right">Cant</th>
-                  <th class="t-right">Precio</th>
-                  <th class="t-right">Subtotal</th>
-                </tr>
-              </ng-template>
-
-              <ng-template pTemplate="body" let-it>
-                <tr>
-                  <td class="odProd">{{ itemName(it) }}</td>
-                  <td>{{ it.size?.name ?? '—' }}</td>
-                  <td class="t-right">{{ it.quantity }}</td>
-                  <td class="t-right">{{ it.unit_price | currency:'USD':'symbol':'1.2-2' }}</td>
-                  <td class="t-right">{{ it.subtotal | currency:'USD':'symbol':'1.2-2' }}</td>
-                </tr>
-              </ng-template>
-            </p-table>
-          </div>
-        </div>
-
-        <div class="odCol odCol--side">
-          <div class="odSection odSection--compact">
-            <div class="odSection__head">
-              <div class="odSection__title">Entrega</div>
-              <span class="sectionBadge">{{ deliveryTypeLabel(order()!.delivery_type) }}</span>
-            </div>
-
-            <div class="kv">
-              <div class="kv__k">Dirección</div>
-              <div class="kv__v">{{ deliveryAddress() }}</div>
-
-              @if (deliveryReference()) {
-                <div class="kv__k">Referencia</div>
-                <div class="kv__v">{{ deliveryReference() }}</div>
-              }
-
-              @if (lastStatusChangedAt()) {
-                <div class="kv__k">Actualizado</div>
-                <div class="kv__v">{{ lastStatusChangedAt() | date:'dd/MM/yyyy HH:mm' }}</div>
-              }
-            </div>
-
-            @if (order()!.delivery_location?.maps_url) {
-              <div class="odActionRow">
-                <p-button
-                  label="Ver en Maps"
-                  icon="pi pi-map"
-                  styleClass="cheof-btn cheof-btn--outlined"
-                  (onClick)="openMaps()"
-                ></p-button>
-              </div>
-            }
-          </div>
-
-          <div class="odSection odSection--payment odSection--compact">
-            <div class="odSection__head">
-              <div class="odSection__title">{{ paymentPanelTitle() }}</div>
-            </div>
-
-            <div class="paySummary">
-              <div class="paySummary__row">
-                <span class="paySummary__label">Forma de pago</span>
-                <span class="paySummary__value">{{ paymentLabel(order()!.payment_method) }}</span>
-              </div>
-
-              <div class="paySummary__row">
-                <span class="paySummary__label">Estado del pedido</span>
-                <span class="paySummary__value">
-                  <p-tag
-                    [value]="statusLabel(order()!.status)"
-                    [severity]="statusSeverity(order()!.status)"
-                    styleClass="payStatusTag"
-                  ></p-tag>
-                </span>
-              </div>
-
-              <div class="paySummary__total">
-                <span>Total del pedido</span>
-                <strong>{{ order()!.total | currency:'USD':'symbol':'1.2-2' }}</strong>
-              </div>
-            </div>
-
-            @if (isTransfer()) {
-              <div class="payNote">
-                <i class="pi pi-info-circle"></i>
-                <span>
-                  Transferencia bancaria seleccionada. Usa los datos de abajo y envía el comprobante por WhatsApp.
-                </span>
-              </div>
-            }
-          </div>
-
-          @if (isTransfer()) {
-            <div class="odSection odSection--transfer">
-              <div class="odSection__head">
-                <div class="odSection__title">{{ transferPanelTitle() }}</div>
-
-                @if (hasQrImage()) {
-                  <span class="sectionBadge sectionBadge--qr">QR disponible</span>
-                }
-              </div>
-
-              <div class="hint hint--soft">
-                <i class="pi pi-megaphone"></i>
-                <span>{{ transferHelperText() }}</span>
-              </div>
-
-              @if (order()!.transfer_account) {
-                <div class="transferGrid">
-                  @if (hasQrImage()) {
-                    <div class="qrCard">
-                      <div class="qrCard__header">
-                        <div class="qrCard__title">Paga escaneando el QR</div>
-                        <div class="qrCard__subtitle">Más rápido para el cliente y más claro para validación.</div>
-                      </div>
-
-                      <div class="qrCard__body">
-                        <img
-                          class="qrImage"
-                          [src]="order()!.transfer_account!.qr_image_url!"
-                          alt="Código QR para transferencia"
-                          loading="lazy"
-                        />
+                      <div class="chip-list">
+                        @for (name of selectedPizzaNames(item); track name) {
+                          <span class="detail-chip">
+                            {{ name }}
+                          </span>
+                        }
                       </div>
                     </div>
                   }
 
-                  <div class="bankCard">
-                    <div class="bankFields">
-                      <div class="bankField">
-                        <span class="bankField__label">Banco</span>
-                        <span class="bankField__value">{{ order()!.transfer_account!.bank_name }}</span>
-                      </div>
+                  @if (item.personalizations?.length) {
+                    <div class="product-detail">
+                      <span class="product-detail__label"> Personalizaciones </span>
 
-                      <div class="bankField">
-                        <span class="bankField__label">Tipo de cuenta</span>
-                        <span class="bankField__value">{{ order()!.transfer_account!.account_type }}</span>
-                      </div>
+                      <ul class="personalization-list">
+                        @for (personalization of item.personalizations; track personalization.id) {
+                          <li>
+                            <span>
+                              {{ personalizationLabel(personalization) }}
 
-                      <div class="bankCopyCard">
-                        <div class="bankCopyCard__content">
-                          <span class="bankField__label">N° de cuenta</span>
-                          <span class="bankCopyCard__value mono">{{ order()!.transfer_account!.account_number }}</span>
-                        </div>
+                              @if (personalizationTarget(personalization); as target) {
+                                <small> · {{ target }} </small>
+                              }
+                            </span>
 
-                        <p-button
-                          label="Copiar"
-                          icon="pi pi-copy"
-                          styleClass="cheof-btn cheof-btn--outlined p-button-sm"
-                          (onClick)="copy(order()!.transfer_account!.account_number, 'account')"
-                        ></p-button>
-
-                        @if (copied() === 'account') {
-                          <span class="copied">Número de cuenta copiado ✅</span>
-                        }
-                      </div>
-
-                      <div class="bankCopyCard">
-                        <div class="bankCopyCard__content">
-                          <span class="bankField__label">Titular / identificación</span>
-                          <span class="bankCopyCard__value">
-                            <span class="bankHolderName">{{ order()!.transfer_account!.holder_name }}</span>
-
-                            @if (order()!.transfer_account!.holder_id) {
-                              <span class="bankHolderId mono">{{ order()!.transfer_account!.holder_id }}</span>
+                            @if ((personalization.extra_price ?? 0) > 0) {
+                              <strong>
+                                +{{
+                                  personalization.extra_price
+                                    | currency: current.currency ?? 'USD' : 'symbol' : '1.2-2'
+                                }}
+                              </strong>
                             }
+                          </li>
+                        }
+                      </ul>
+                    </div>
+                  }
+                </div>
+              </article>
+            } @empty {
+              <div class="empty-state">
+                <i class="pi pi-shopping-bag"></i>
+
+                <strong> No hay productos registrados </strong>
+              </div>
+            }
+          </div>
+        </section>
+      </main>
+
+      <aside class="side-column">
+        <section class="panel delivery-panel">
+          <header class="panel-header panel-header--compact">
+            <div>
+              <span class="panel-kicker"> Información logística </span>
+
+              <h2>Entrega</h2>
+            </div>
+
+            <i class="panel-icon pi pi-map-marker"></i>
+          </header>
+
+          <dl class="detail-list">
+            <div>
+              <dt>Modalidad</dt>
+
+              <dd>
+                {{ deliveryTypeLabel(current.delivery_type) }}
+              </dd>
+            </div>
+
+            @if (isDelivery()) {
+              <div>
+                <dt>Dirección</dt>
+
+                <dd>
+                  {{ deliveryAddress() }}
+                </dd>
+              </div>
+
+              @if (deliveryReference()) {
+                <div>
+                  <dt>Referencia</dt>
+
+                  <dd>
+                    {{ deliveryReference() }}
+                  </dd>
+                </div>
+              }
+            } @else {
+              <div>
+                <dt>Retiro</dt>
+
+                <dd>El pedido se entregará en el local.</dd>
+              </div>
+            }
+          </dl>
+
+          @if (isDelivery() && current.delivery_location?.maps_url) {
+            <p-button
+              label="Abrir ubicación en Maps"
+              icon="pi pi-external-link"
+              [outlined]="true"
+              styleClass="full-button"
+              (onClick)="openMaps()"
+            />
+          }
+        </section>
+
+        <section class="panel payment-panel">
+          <header class="panel-header panel-header--compact">
+            <div>
+              <span class="panel-kicker"> Información financiera </span>
+
+              <h2>Pago</h2>
+            </div>
+
+            <i class="panel-icon pi pi-credit-card"></i>
+          </header>
+
+          <div class="payment-status-card">
+            <div>
+              <span>Estado del pago</span>
+
+              <strong>
+                {{ paymentStatusLabel() }}
+              </strong>
+            </div>
+
+            <p-tag [value]="paymentStatusLabel()" [severity]="paymentStatusSeverity()" />
+          </div>
+
+          <dl class="detail-list payment-details">
+            <div>
+              <dt>Método</dt>
+
+              <dd>
+                {{ paymentLabel(current.payment_method) }}
+              </dd>
+            </div>
+
+            @if (paymentProviderLabel()) {
+              <div>
+                <dt>Proveedor</dt>
+
+                <dd>
+                  {{ paymentProviderLabel() }}
+                </dd>
+              </div>
+            }
+
+            @if (paymentDate()) {
+              <div>
+                <dt>Fecha de pago</dt>
+
+                <dd>
+                  {{ paymentDate() | date: 'dd/MM/yyyy HH:mm' }}
+                </dd>
+              </div>
+            }
+          </dl>
+
+          <div class="totals">
+            <div>
+              <span>Subtotal</span>
+
+              <strong>
+                {{ current.subtotal | currency: current.currency ?? 'USD' : 'symbol' : '1.2-2' }}
+              </strong>
+            </div>
+
+            <div>
+              <span>
+                {{ isDelivery() ? 'Envío' : 'Retiro en local' }}
+              </span>
+
+              <strong>
+                @if (isDelivery()) {
+                  @if (current.delivery_fee > 0) {
+                    {{
+                      current.delivery_fee
+                        | currency: current.currency ?? 'USD' : 'symbol' : '1.2-2'
+                    }}
+                  } @else {
+                    Sin costo
+                  }
+                } @else {
+                  {{ 0 | currency: current.currency ?? 'USD' : 'symbol' : '1.2-2' }}
+                }
+              </strong>
+            </div>
+
+            <div class="totals__grand">
+              <span>Total</span>
+
+              <strong>
+                {{ current.total | currency: current.currency ?? 'USD' : 'symbol' : '1.2-2' }}
+              </strong>
+            </div>
+          </div>
+
+          @if (isCard() && current.payment) {
+            <div class="secure-note">
+              <i class="pi pi-shield"></i>
+
+              <span>
+                Pago procesado de forma segura por
+                {{ paymentProviderLabel() ?? 'el proveedor de pago' }}.
+              </span>
+            </div>
+          }
+
+          @if (isTransfer()) {
+            <div class="secure-note secure-note--warning">
+              <i class="pi pi-info-circle"></i>
+
+              <span>
+                Los datos bancarios están disponibles a continuación. Adjunta el comprobante desde
+                este mismo pedido.
+              </span>
+            </div>
+          }
+        </section>
+
+        @if (isTransfer() && current.transfer_account; as account) {
+          <section class="panel transfer-panel">
+            <header class="panel-header panel-header--compact">
+              <div>
+                <span class="panel-kicker"> Transferencia bancaria </span>
+
+                <h2>Datos de la cuenta</h2>
+              </div>
+
+              <i class="panel-icon pi pi-building-columns"></i>
+            </header>
+
+            @if (account.qr_image_url) {
+              <div class="qr-wrapper">
+                <img
+                  [src]="account.qr_image_url"
+                  alt="
+                    Código QR de la cuenta
+                    bancaria
+                  "
+                  loading="lazy"
+                />
+              </div>
+            }
+
+            <dl class="detail-list">
+              <div>
+                <dt>Banco</dt>
+
+                <dd>
+                  {{ account.bank_name }}
+                </dd>
+              </div>
+
+              <div>
+                <dt>Tipo de cuenta</dt>
+
+                <dd>
+                  {{ account.account_type }}
+                </dd>
+              </div>
+
+              <div>
+                <dt>Número de cuenta</dt>
+
+                <dd class="copy-row">
+                  <span>
+                    {{ account.account_number }}
+                  </span>
+
+                  <button type="button" (click)="copy(account.account_number, 'account')">
+                    <i class="pi pi-copy"></i>
+
+                    {{ copied() === 'account' ? 'Copiado' : 'Copiar' }}
+                  </button>
+                </dd>
+              </div>
+
+              <div>
+                <dt>Titular</dt>
+
+                <dd>
+                  {{ account.holder_name }}
+                </dd>
+              </div>
+
+              @if (account.holder_id) {
+                <div>
+                  <dt>Identificación</dt>
+
+                  <dd class="copy-row">
+                    <span>
+                      {{ account.holder_id }}
+                    </span>
+
+                    <button type="button" (click)="copy(account.holder_id, 'holder')">
+                      <i class="pi pi-copy"></i>
+
+                      {{ copied() === 'holder' ? 'Copiado' : 'Copiar' }}
+                    </button>
+                  </dd>
+                </div>
+              }
+            </dl>
+
+            @if (account.instructions) {
+              <p class="transfer-instructions">
+                {{ account.instructions }}
+              </p>
+            }
+
+            <section
+              class="receipt-section"
+              aria-labelledby="
+                payment-receipt-title
+              "
+            >
+              <header class="receipt-section__header">
+                <div class="receipt-section__heading">
+                  <span class="receipt-section__icon">
+                    <i class="pi pi-file-check"></i>
+                  </span>
+
+                  <div>
+                    <h3
+                      id="
+                        payment-receipt-title
+                      "
+                    >
+                      Comprobante de pago
+                    </h3>
+
+                    <p>Adjunta una imagen o PDF para que CHEO'F PIZZA valide la transferencia.</p>
+                  </div>
+                </div>
+
+                @if (paymentReceipt()) {
+                  <p-tag [value]="receiptStatusLabel()" [severity]="receiptStatusSeverity()" />
+                }
+              </header>
+
+              @if (receiptLoading()) {
+                <div class="receipt-loading" aria-live="polite">
+                  <p-skeleton width="100%" height="5rem" borderRadius="16px" />
+
+                  <p-skeleton width="100%" height="3rem" borderRadius="14px" />
+                </div>
+              } @else {
+                @if (paymentReceipt(); as receipt) {
+                  <article
+                    class="receipt-current"
+                    [class.receipt-current--pending]="receipt.status === 'pending'"
+                    [class.receipt-current--approved]="receipt.status === 'approved'"
+                    [class.receipt-current--rejected]="receipt.status === 'rejected'"
+                  >
+                    <div class="receipt-current__icon">
+                      <i
+                        class="pi"
+                        [class.pi-clock]="receipt.status === 'pending'"
+                        [class.pi-check-circle]="receipt.status === 'approved'"
+                        [class.pi-times-circle]="receipt.status === 'rejected'"
+                      ></i>
+                    </div>
+
+                    <div class="receipt-current__content">
+                      <div class="receipt-current__top">
+                        <div>
+                          <strong>
+                            {{ receiptStatusText(receipt.status) }}
+                          </strong>
+
+                          <span>
+                            Enviado el
+                            {{ receipt.submitted_at | date: 'dd/MM/yyyy HH:mm' }}
                           </span>
                         </div>
 
-                        @if (order()!.transfer_account!.holder_id) {
+                        @if (receipt.file_available) {
                           <p-button
-                            label="Copiar ID"
-                            icon="pi pi-copy"
-                            styleClass="cheof-btn cheof-btn--outlined p-button-sm"
-                            (onClick)="copy(order()!.transfer_account!.holder_id, 'holder')"
-                          ></p-button>
-                        }
-
-                        @if (copied() === 'holder') {
-                          <span class="copied">Identificación copiada ✅</span>
+                            type="button"
+                            label="Ver archivo"
+                            icon="pi pi-external-link"
+                            severity="secondary"
+                            [outlined]="true"
+                            size="small"
+                            [loading]="receiptOpening()"
+                            [disabled]="!receiptCanOpen()"
+                            (onClick)="openReceipt()"
+                          />
                         }
                       </div>
+
+                      <div class="receipt-file-info">
+                        <span class="receipt-file-info__icon">
+                          <i
+                            class="pi"
+                            [class.pi-file-pdf]="receiptIsPdf()"
+                            [class.pi-image]="!receiptIsPdf()"
+                          ></i>
+                        </span>
+
+                        <div>
+                          <strong>
+                            {{ receipt.original_name }}
+                          </strong>
+
+                          <span>
+                            {{ receiptFileSize() }}
+                          </span>
+                        </div>
+                      </div>
+
+                      @if (receipt.status === 'pending') {
+                        <p class="receipt-current__message">
+                          El comprobante está pendiente de revisión. Te notificaremos cuando sea
+                          aprobado o rechazado.
+                        </p>
+                      }
+
+                      @if (receipt.status === 'approved') {
+                        <p class="receipt-current__message">
+                          La transferencia fue validada correctamente. No necesitas enviar otro
+                          comprobante.
+                        </p>
+                      }
+
+                      @if (receipt.status === 'rejected') {
+                        <div class="receipt-rejection" role="alert">
+                          <span> Motivo del rechazo </span>
+
+                          <strong>
+                            {{ receipt.rejection_reason || 'El comprobante no pudo ser validado.' }}
+                          </strong>
+                        </div>
+                      }
                     </div>
+                  </article>
+                }
 
-                    @if (order()!.transfer_account!.instructions) {
-                      <div class="hint">{{ order()!.transfer_account!.instructions }}</div>
+                @if (receiptCanUpload()) {
+                  <div class="receipt-upload">
+                    <input
+                      #receiptInput
+                      type="file"
+                      id="payment-receipt-file"
+                      class="receipt-file-input"
+                      accept="image/jpeg,image/png,image/webp,application/pdf"
+                      [disabled]="receiptUploading()"
+                      (change)="onReceiptSelected($event)"
+                    />
+
+                    @if (!selectedReceiptFile()) {
+                      <button
+                        type="button"
+                        class="receipt-dropzone"
+                        [disabled]="receiptUploading() || !receiptCanUpload()"
+                        [class.receipt-dropzone--disabled]="
+                          receiptUploading() || !receiptCanUpload()
+                        "
+                        (click)="openReceiptPicker()"
+                      >
+                        <span class="receipt-dropzone__icon">
+                          <i class="pi pi-cloud-upload"></i>
+                        </span>
+
+                        <strong> Seleccionar comprobante </strong>
+
+                        <span> JPG, PNG, WebP o PDF </span>
+
+                        <small> Tamaño máximo: 5 MB </small>
+                      </button>
+                    } @else {
+                      <article class="selected-receipt">
+                        <span class="selected-receipt__icon">
+                          <i
+                            class="pi"
+                            [class.pi-file-pdf]="selectedReceiptFile()?.type === 'application/pdf'"
+                            [class.pi-image]="selectedReceiptFile()?.type !== 'application/pdf'"
+                          ></i>
+                        </span>
+
+                        <div class="selected-receipt__info">
+                          <strong>
+                            {{ receiptFileName() }}
+                          </strong>
+
+                          <span>
+                            {{ receiptFileSize() }}
+                          </span>
+                        </div>
+
+                        <button
+                          type="button"
+                          class="selected-receipt__remove"
+                          aria-label="Quitar archivo seleccionado"
+                          [disabled]="receiptUploading()"
+                          (click)="removeSelectedReceipt()"
+                        >
+                          <i class="pi pi-times"></i>
+                        </button>
+                      </article>
                     }
 
-                    @if (shouldShowReceiptAction()) {
-                      <div class="odActionRow odActionRow--primary">
-                        <p-button
-                          label="Enviar comprobante por WhatsApp"
-                          icon="pi pi-whatsapp"
-                          styleClass="cheof-btn cheof-btn--primary"
-                          (onClick)="openWhatsApp()"
-                        ></p-button>
+                    @if (receiptUploading()) {
+                      <div class="receipt-progress" aria-live="polite">
+                        <div class="receipt-progress__label">
+                          <span> Enviando comprobante </span>
+
+                          <strong> Procesando… </strong>
+                        </div>
+
+                        <p-progressbar
+                          [value]="uploadProgress()"
+                          [showValue]="false"
+                          styleClass="
+                            receipt-progressbar
+                          "
+                        />
                       </div>
                     }
+
+                    @if (receiptError()) {
+                      <div class="receipt-error" role="alert">
+                        <i class="pi pi-exclamation-triangle"></i>
+
+                        <span>
+                          {{ receiptError() }}
+                        </span>
+                      </div>
+                    }
+
+                    <div class="receipt-upload__actions">
+                      <p-button
+                        type="button"
+                        [label]="
+                          paymentReceipt()?.status === 'rejected'
+                            ? 'Enviar nuevo comprobante'
+                            : 'Enviar comprobante'
+                        "
+                        icon="pi pi-send"
+                        [loading]="receiptUploading()"
+                        [disabled]="!selectedReceiptFile() || !receiptCanUpload()"
+                        (onClick)="uploadReceipt()"
+                      />
+                    </div>
                   </div>
-                </div>
-              } @else {
-                <p-tag severity="warn" value="No hay cuenta activa para transferencia."></p-tag>
+                } @else if (!paymentReceipt()) {
+                  <div class="receipt-empty">
+                    <i class="pi pi-file"></i>
+
+                    <span> No se encontró información del comprobante. </span>
+                  </div>
+                }
               }
-            </div>
-          }
-        </div>
-      </div>
-    </p-card>
+            </section>
+          </section>
+        }
+      </aside>
+    </div>
   }
 </section>

@@ -1,40 +1,221 @@
-<div class="hero-carousel">
-  <p-carousel
-    [value]="banners"
-    [numVisible]="1"
-    [numScroll]="1"
-    [circular]="true"
-    [autoplayInterval]="4500"
-    [showIndicators]="true"
-    [showNavigators]="true"
-  >
-    <ng-template pTemplate="item" let-banner>
-      <button
-        type="button"
-        class="banner-button"
-        (click)="goToPromotion(banner.promotionSlug)"
-        [attr.aria-label]="'Ir a la promoción ' + banner.title"
-      >
-        <div class="banner-wrap">
-          <img
-            [src]="banner.imageUrl"
-            [alt]="banner.alt"
-            class="banner-img"
-          />
+<section
+  class="hero-carousel"
+  aria-label="Promociones destacadas"
+  tabindex="0"
+  (pointerdown)="onPointerDown($event)"
+  (pointerup)="onPointerUp($event)"
+  (pointercancel)="onPointerCancel()"
+>
+  @if (loading()) {
+    <div class="carousel-loading">
+      <p-skeleton
+        width="100%"
+        height="100%"
+        borderRadius="24px"
+      />
+    </div>
+  } @else if (currentBanner(); as current) {
+    <div
+      class="carousel-stage"
+      role="region"
+      aria-roledescription="carrusel"
+      [attr.aria-label]="
+        'Promoción ' +
+        (activeIndex() + 1) +
+        ' de ' +
+        banners().length
+      "
+    >
+      <div class="carousel-viewport">
+        @for (
+          banner of [current];
+          track activeIndex()
+        ) {
+          <article class="promotion-slide">
+            <div class="promotion-media">
+              @if (banner.imageUrl) {
+                <img
+                  class="promotion-image"
+                  [src]="banner.imageUrl"
+                  [alt]="banner.alt"
+                  loading="eager"
+                  decoding="async"
+                />
+              } @else {
+                <div class="promotion-placeholder">
+                  <span class="placeholder-icon">
+                    <i
+                      class="pi pi-percentage"
+                      aria-hidden="true"
+                    ></i>
+                  </span>
 
-          <div class="banner-overlay">
-            <div class="banner-copy">
-              <div class="banner-title">{{ banner.title }}</div>
-              <div class="banner-subtitle">{{ banner.subtitle }}</div>
+                  <strong>
+                    Promoción especial
+                  </strong>
 
-              <span class="banner-cta">
-                Ver promoción
-                <i class="pi pi-arrow-right"></i>
-              </span>
+                  <small>
+                    Una oferta preparada para ti
+                  </small>
+                </div>
+              }
             </div>
+
+            <div
+              class="promotion-shade"
+              aria-hidden="true"
+            ></div>
+
+            <div class="promotion-content">
+              <div class="promotion-tags">
+                <span class="promotion-type">
+                  {{ banner.typeLabel }}
+                </span>
+
+                <span class="promotion-price">
+                  {{ banner.priceLabel }}
+                </span>
+              </div>
+
+              <div class="promotion-copy">
+                <h2>
+                  {{ banner.title }}
+                </h2>
+
+                <p>
+                  {{ banner.subtitle }}
+                </p>
+              </div>
+
+              <button
+                type="button"
+                class="promotion-cta"
+                (click)="
+                  goToPromotion(
+                    banner.promotionSlug
+                  )
+                "
+              >
+                <span>
+                  Ver promoción
+                </span>
+
+                <i
+                  class="pi pi-arrow-right"
+                  aria-hidden="true"
+                ></i>
+              </button>
+            </div>
+          </article>
+        }
+      </div>
+
+      @if (hasMultipleBanners()) {
+        <div
+          class="carousel-controls"
+          aria-label="Controles del carrusel"
+        >
+          <button
+            type="button"
+            class="
+              carousel-navigation
+              carousel-navigation--previous
+            "
+            aria-label="Ver promoción anterior"
+            (click)="previous()"
+          >
+            <i
+              class="pi pi-arrow-left"
+              aria-hidden="true"
+            ></i>
+          </button>
+
+          <div
+            class="carousel-indicators"
+            role="tablist"
+            aria-label="Seleccionar promoción"
+          >
+            @for (
+              banner of banners();
+              track banner.id;
+              let index = $index
+            ) {
+              <button
+                type="button"
+                class="carousel-indicator"
+                [class.carousel-indicator--active]="
+                  activeIndex() === index
+                "
+                [attr.aria-label]="
+                  'Mostrar promoción ' +
+                  (index + 1) +
+                  ': ' +
+                  banner.title
+                "
+                [attr.aria-selected]="
+                  activeIndex() === index
+                "
+                role="tab"
+                (click)="goToSlide(index)"
+              >
+                <span aria-hidden="true"></span>
+              </button>
+            }
           </div>
+
+          <button
+            type="button"
+            class="
+              carousel-navigation
+              carousel-navigation--next
+            "
+            aria-label="Ver siguiente promoción"
+            (click)="next()"
+          >
+            <i
+              class="pi pi-arrow-right"
+              aria-hidden="true"
+            ></i>
+          </button>
         </div>
-      </button>
-    </ng-template>
-  </p-carousel>
-</div>
+      }
+    </div>
+  } @else {
+    <article class="carousel-empty">
+      <span class="carousel-empty-icon">
+        <i
+          class="pi pi-percentage"
+          aria-hidden="true"
+        ></i>
+      </span>
+
+      <div class="carousel-empty-copy">
+        <h2>
+          Promociones próximamente
+        </h2>
+
+        <p>
+          En este momento no hay promociones activas.
+          Explora nuestro menú y arma tu pizza favorita.
+        </p>
+
+        @if (error()) {
+          <button
+            type="button"
+            class="retry-button"
+            (click)="retry()"
+          >
+            <i
+              class="pi pi-refresh"
+              aria-hidden="true"
+            ></i>
+
+            <span>
+              Reintentar
+            </span>
+          </button>
+        }
+      </div>
+    </article>
+  }
+</section>

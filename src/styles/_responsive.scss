@@ -1,0 +1,172 @@
+@use "./tokens" as tokens;
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media (
+  max-width:
+  tokens.$bp-lg
+) {
+  .cheof-grid-4 {
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(0, 1fr)
+      );
+  }
+
+  .cheof-grid-3 {
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(0, 1fr)
+      );
+  }
+}
+
+/* =========================================================
+   MÓVIL
+   ========================================================= */
+
+@media (
+  max-width:
+  tokens.$bp-md
+) {
+  :root {
+    --cheof-toolbar-height:
+      62px;
+
+    --cheof-page-padding:
+      0.75rem;
+  }
+
+  .cheof-page-header {
+    align-items:
+      stretch;
+
+    flex-direction:
+      column;
+  }
+
+  .cheof-page-header__actions {
+    display: grid;
+
+    grid-template-columns:
+      minmax(
+        0,
+        1fr
+      );
+
+    width: 100%;
+  }
+
+  .cheof-page-header__actions
+  .p-button {
+    width: 100%;
+
+    justify-content:
+      center;
+  }
+
+  .cheof-grid-2,
+  .cheof-grid-3,
+  .cheof-grid-4 {
+    grid-template-columns:
+      minmax(
+        0,
+        1fr
+      );
+  }
+
+  .cheof-desktop-only {
+    display:
+      none !important;
+  }
+
+  .cheof-mobile-only {
+    display:
+      block;
+  }
+
+  .p-dialog {
+    width:
+      calc(
+        100vw - 1rem
+      ) !important;
+
+    max-height:
+      calc(
+        100dvh - 1rem
+      );
+  }
+
+  .p-dialog-content {
+    overflow-y:
+      auto;
+  }
+}
+
+/* =========================================================
+   MÓVIL PEQUEÑO
+   ========================================================= */
+
+@media (
+  max-width:
+  tokens.$bp-sm
+) {
+  .p-toast {
+    right:
+      0.5rem !important;
+
+    left:
+      0.5rem !important;
+
+    width:
+      auto !important;
+  }
+
+  .p-dialog-header {
+    padding:
+      1rem
+      1rem
+      0.65rem;
+  }
+
+  .p-dialog-content {
+    padding:
+      0.75rem
+      1rem
+      1rem;
+  }
+}
+
+/* =========================================================
+   MOVIMIENTO REDUCIDO
+   ========================================================= */
+
+@media (
+  prefers-reduced-motion:
+  reduce
+) {
+  html {
+    scroll-behavior:
+      auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    scroll-behavior:
+      auto !important;
+
+    animation-duration:
+      0.01ms !important;
+
+    animation-iteration-count:
+      1 !important;
+
+    transition-duration:
+      0.01ms !important;
+  }
+}

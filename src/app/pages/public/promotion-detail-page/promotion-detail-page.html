@@ -1,390 +1,1099 @@
-<section class="promo-page">
+<section
+  class="promotion-page"
+  aria-labelledby="promotion-title"
+>
   @if (loading()) {
-    <div class="promo-loading">
-      <p-skeleton width="100%" height="380px" borderRadius="28px"></p-skeleton>
-      <p-skeleton width="100%" height="220px" borderRadius="24px"></p-skeleton>
-      <p-skeleton width="100%" height="420px" borderRadius="24px"></p-skeleton>
-      <p-skeleton width="100%" height="260px" borderRadius="24px"></p-skeleton>
-    </div>
-  } @else if (error()) {
-    <div class="promo-error">
-      <h2>No se pudo cargar la promoción</h2>
-      <p>{{ error() }}</p>
+    <div
+      class="promotion-loading"
+      aria-label="Cargando promoción"
+      aria-busy="true"
+    >
+      <p-skeleton
+        width="100%"
+        height="220px"
+        borderRadius="24px"
+      />
 
-      <p-button
-        label="Volver al inicio"
-        icon="pi pi-arrow-left"
-        (onClick)="goHome()"
-      ></p-button>
-    </div>
-  } @else {
-    <section class="hero-card">
-      <div class="hero-card__media">
-        <img
-          [src]="promotion()?.banner_image_url || ''"
-          [alt]="promotion()?.name || 'Promoción'"
-          class="hero-card__image"
-        />
-      </div>
+      <div class="promotion-loading__layout">
+        <div class="promotion-loading__content">
+          <p-skeleton
+            width="100%"
+            height="340px"
+            borderRadius="22px"
+          />
 
-      <div class="hero-card__content">
-        <p-tag value="Promoción activa" severity="success"></p-tag>
-
-        <h1>{{ promotion()?.name }}</h1>
-
-        <p class="hero-card__description">
-          {{ promotion()?.description }}
-        </p>
-
-        <div class="hero-card__price">
-          {{ promotion()?.price | currency:'USD':'symbol':'1.2-2' }}
+          <p-skeleton
+            width="100%"
+            height="440px"
+            borderRadius="22px"
+          />
         </div>
 
-        <div class="hero-card__meta">
-          <span class="soft-pill">Tamaño {{ promotionSizeName() }}</span>
-          <span class="soft-pill">Personalizable</span>
-          <span class="soft-pill">
-            {{ configuredSlotsCount() }} de {{ slots().length }} pizzas elegidas
+        <p-skeleton
+          width="100%"
+          height="420px"
+          borderRadius="22px"
+        />
+      </div>
+    </div>
+  } @else if (error()) {
+    <section
+      class="promotion-state promotion-state--error"
+      role="alert"
+    >
+      <span class="promotion-state__icon">
+        <i
+          class="pi pi-exclamation-triangle"
+          aria-hidden="true"
+        ></i>
+      </span>
+
+      <div class="promotion-state__copy">
+        <span class="promotion-state__eyebrow">
+          Promoción no disponible
+        </span>
+
+        <h1>
+          No pudimos cargar esta promoción
+        </h1>
+
+        <p>
+          {{ error() }}
+        </p>
+      </div>
+
+      <button
+        type="button"
+        class="secondary-action"
+        (click)="goHome()"
+      >
+        <i
+          class="pi pi-arrow-left"
+          aria-hidden="true"
+        ></i>
+
+        Volver al inicio
+      </button>
+    </section>
+  } @else if (
+    promotion();
+    as currentPromotion
+  ) {
+    <header class="promotion-hero">
+      <div class="promotion-hero__copy">
+        <span class="promotion-eyebrow">
+          Combo para compartir
+        </span>
+
+        <h1 id="promotion-title">
+          {{ currentPromotion.name }}
+        </h1>
+
+        <p>
+          {{
+            currentPromotion.description ||
+              'Elige tus pizzas y personaliza cada una antes de agregar la promoción al carrito.'
+          }}
+        </p>
+      </div>
+
+      <div class="promotion-hero__details">
+        <div class="hero-price">
+          <span>
+            Precio del combo
+          </span>
+
+          <strong>
+            @if (isSizeFixedPrice()) {
+              @if (
+                selectedSizePrice();
+                as selectedPrice
+              ) {
+                {{
+                  selectedPrice.price
+                    | currency:
+                        'USD':
+                        'symbol':
+                        '1.2-2'
+                }}
+              } @else {
+                {{
+                  currentPromotion.size_prices[0]
+                    ?.price || 0
+                    | currency:
+                        'USD':
+                        'symbol':
+                        '1.2-2'
+                }}
+              }
+            } @else {
+              {{
+                currentPromotion.price
+                  | currency:
+                      'USD':
+                      'symbol':
+                      '1.2-2'
+              }}
+            }
+          </strong>
+        </div>
+
+        <div class="hero-metadata">
+          @if (selectedSizeName()) {
+            <span>
+              <i
+                class="pi pi-arrows-alt"
+                aria-hidden="true"
+              ></i>
+
+              {{ selectedSizeName() }}
+            </span>
+          }
+
+          <span>
+            <i
+              class="pi pi-shopping-bag"
+              aria-hidden="true"
+            ></i>
+
+            {{ slots().length }}
+            pizzas
+          </span>
+
+          <span>
+            <i
+              class="pi pi-sliders-h"
+              aria-hidden="true"
+            ></i>
+
+            Hasta 4 extras por pizza
           </span>
         </div>
 
-        <div class="hero-card__hint">
-          {{ progressLabel() }}
-        </div>
-      </div>
-    </section>
+        <div class="hero-progress">
+          <div class="hero-progress__label">
+            <span>
+              Configuración
+            </span>
 
-    <section class="step-section">
-      <div class="section-head">
-        <div>
-          <span class="section-step">Paso 1</span>
-          <h2>Elige tus pizzas</h2>
-          <p>
-            Escoge las pizzas que quieres incluir en esta promoción.
-          </p>
-        </div>
+            <strong>
+              {{ configuredSlotsCount() }}
+              de
+              {{ slots().length }}
+            </strong>
+          </div>
 
-        <div class="qty-box">
-          <label for="promo-qty">Cantidad</label>
-          <p-inputNumber
-            [ngModel]="quantity()"
-            (ngModelChange)="setQuantity($event)"
-            [min]="1"
-            [max]="10"
-            [showButtons]="true"
-            buttonLayout="horizontal"
-            incrementButtonIcon="pi pi-plus"
-            decrementButtonIcon="pi pi-minus"
-            inputId="promo-qty"
-          ></p-inputNumber>
-        </div>
-      </div>
-
-      <div class="selection-grid">
-        @for (slot of slots(); track slot.key) {
-          <article class="pick-card">
-            <div class="pick-card__top">
-              <div class="pick-card__badge">{{ slot.index }}</div>
-
-              <div class="pick-card__title-wrap">
-                <h3>{{ slot.title }}</h3>
-                <p>{{ slot.helper }}</p>
-              </div>
-            </div>
-
-            <div class="pick-card__control">
-              <p-select
-                [options]="optionsForSlot(slot)"
-                optionLabel="label"
-                optionValue="value"
-                [ngModel]="selectedBySlot()[slot.key]"
-                (ngModelChange)="onSelectPizza(slot, $event)"
-                [placeholder]="slot.kind === 'especial' ? 'Selecciona una pizza especial' : 'Selecciona una pizza sencilla'"
-                styleClass="slot-select"
-                appendTo="body"
-              ></p-select>
-            </div>
-
-            @if (getSelectedPizza(slot); as pizza) {
-              <div class="pizza-preview">
-                <div class="pizza-preview__image-wrap">
-                  @if (pizza.image_url) {
-                    <img
-                      [src]="pizza.image_url"
-                      [alt]="pizza.name"
-                      class="pizza-preview__image"
-                    />
-                  } @else {
-                    <div class="pizza-preview__placeholder">
-                      <i class="pi pi-image"></i>
-                    </div>
-                  }
-                </div>
-
-                <div class="pizza-preview__info">
-                  <strong>{{ pizza.name }}</strong>
-                  <span>{{ pizza.description || 'Pizza seleccionada para tu promoción.' }}</span>
-                </div>
-              </div>
-            }
-          </article>
-        }
-      </div>
-    </section>
-
-    @if (getSelectedSlots().length > 0) {
-      <section class="step-section">
-        <div class="section-head section-head--stack">
-          <div>
-            <span class="section-step">Paso 2</span>
-            <h2>Personaliza tus pizzas</h2>
-            <p>
-              Quita ingredientes si no los quieres y agrega extras solo si te apetece.
-            </p>
+          <div
+            class="hero-progress__track"
+            role="progressbar"
+            [attr.aria-valuemin]="0"
+            [attr.aria-valuemax]="slots().length"
+            [attr.aria-valuenow]="configuredSlotsCount()"
+          >
+            <span
+              [style.width.%]="
+                slots().length > 0
+                  ? (
+                      configuredSlotsCount() /
+                      slots().length
+                    ) * 100
+                  : 0
+              "
+            ></span>
           </div>
         </div>
+      </div>
+    </header>
 
-        <div class="custom-tabs">
-          @for (slot of getSelectedSlots(); track slot.key) {
-            <button
-              type="button"
-              class="custom-tab"
-              [class.custom-tab--active]="isCustomizationActive(slot)"
-              (click)="activateCustomization(slot)"
-            >
-              <span class="custom-tab__title">{{ slot.shortTitle }}</span>
-              <span class="custom-tab__text">{{ slotSummary(slot) }}</span>
-            </button>
-          }
-        </div>
+    <main class="promotion-layout">
+      <div class="promotion-content">
+        @if (requiresSizeSelection()) {
+          <section
+            class="configuration-card"
+            aria-labelledby="size-section-title"
+          >
+            <header class="configuration-heading">
+              <span class="configuration-heading__number">
+                1
+              </span>
 
-        @for (slot of getSelectedSlots(); track slot.key) {
-          @if (isCustomizationActive(slot)) {
-            <article class="customization-card">
-              @if (getSelectedPizza(slot); as pizza) {
-                <div class="customization-card__hero">
-                  <div class="customization-card__hero-image-wrap">
-                    @if (pizza.image_url) {
-                      <img
-                        [src]="pizza.image_url"
-                        [alt]="pizza.name"
-                        class="customization-card__hero-image"
-                      />
-                    } @else {
-                      <div class="customization-card__hero-placeholder">
-                        <i class="pi pi-image"></i>
-                      </div>
-                    }
+              <div>
+                <span class="configuration-heading__eyebrow">
+                  Tamaño
+                </span>
+
+                <h2 id="size-section-title">
+                  Elige el tamaño
+                </h2>
+
+                <p>
+                  El tamaño define el precio promocional y el valor
+                  de los ingredientes adicionales.
+                </p>
+              </div>
+            </header>
+
+            <div class="size-configuration">
+              <label class="form-field">
+                <span class="form-field__label">
+                  Tamaño de las pizzas
+                </span>
+
+                <p-select
+                  [options]="sizePriceOptions()"
+                  optionLabel="label"
+                  optionValue="value"
+                  [ngModel]="selectedSizeId()"
+                  (ngModelChange)="onSelectSize($event)"
+                  placeholder="Selecciona un tamaño"
+                  appendTo="body"
+                  styleClass="promotion-select"
+                />
+
+                <small>
+                  Cambiar el tamaño reinicia la selección actual.
+                </small>
+              </label>
+
+              @if (
+                selectedSizePrice();
+                as selectedPrice
+              ) {
+                <div class="size-result">
+                  <div class="size-result__copy">
+                    <span>
+                      Seleccionado
+                    </span>
+
+                    <strong>
+                      {{
+                        selectedPrice.size?.name ||
+                          'Tamaño'
+                      }}
+                    </strong>
+
+                    <small>
+                      {{
+                        selectedPrice.size?.portion ||
+                          0
+                      }}
+                      porciones
+                    </small>
                   </div>
 
-                  <div class="customization-card__hero-info">
-                    <span class="mini-label">{{ slot.shortTitle }}</span>
-                    <h3>{{ pizza.name }}</h3>
-                    <p>{{ pizza.description || 'Personaliza esta pizza como prefieras.' }}</p>
+                  <strong class="size-result__price">
+                    {{
+                      selectedPrice.price
+                        | currency:
+                            'USD':
+                            'symbol':
+                            '1.2-2'
+                    }}
+                  </strong>
+                </div>
+              }
+            </div>
+          </section>
+        }
 
-                    <div class="mini-stats">
-                      <span class="mini-stat">
-                        Extras {{ extraCount(slot) }} / {{ selectionRules().max_extras_per_pizza }}
+        <section
+          class="configuration-card"
+          aria-labelledby="pizza-section-title"
+        >
+          <header class="configuration-heading configuration-heading--split">
+            <div class="configuration-heading__main">
+              <span class="configuration-heading__number">
+                {{
+                  requiresSizeSelection()
+                    ? 2
+                    : 1
+                }}
+              </span>
+
+              <div>
+                <span class="configuration-heading__eyebrow">
+                  Selección
+                </span>
+
+                <h2 id="pizza-section-title">
+                  Elige tus pizzas
+                </h2>
+
+                <p>
+                  Selecciona una receta para cada espacio incluido
+                  en la promoción.
+                </p>
+              </div>
+            </div>
+
+            <label class="quantity-field">
+              <span>
+                Cantidad de combos
+              </span>
+
+              <p-inputnumber
+                [ngModel]="quantity()"
+                (ngModelChange)="setQuantity($event)"
+                [min]="1"
+                [max]="10"
+                [showButtons]="true"
+                buttonLayout="horizontal"
+                incrementButtonIcon="pi pi-plus"
+                decrementButtonIcon="pi pi-minus"
+                inputId="promotion-quantity"
+                styleClass="promotion-quantity"
+              />
+            </label>
+          </header>
+
+          @if (
+            requiresSizeSelection() &&
+            !selectedSizeId()
+          ) {
+            <div class="locked-message">
+              <span>
+                <i
+                  class="pi pi-lock"
+                  aria-hidden="true"
+                ></i>
+              </span>
+
+              <div>
+                <h3>
+                  Selecciona primero el tamaño
+                </h3>
+
+                <p>
+                  Después podrás elegir y personalizar las pizzas
+                  incluidas.
+                </p>
+              </div>
+            </div>
+          } @else {
+            <div class="pizza-selection-grid">
+              @for (
+                slot of slots();
+                track slot.key
+              ) {
+                <article
+                  class="pizza-selection"
+                  [class.pizza-selection--completed]="
+                    selectedBySlot()[slot.key]
+                  "
+                >
+                  <header class="pizza-selection__header">
+                    <span class="pizza-selection__number">
+                      {{ slot.index }}
+                    </span>
+
+                    <div class="pizza-selection__title">
+                      <small>
+                        {{ slot.shortTitle }}
+                      </small>
+
+                      <h3>
+                        {{ slot.title }}
+                      </h3>
+                    </div>
+
+                    @if (
+                      selectedBySlot()[slot.key]
+                    ) {
+                      <span
+                        class="pizza-selection__check"
+                        aria-label="Selección completada"
+                      >
+                        <i
+                          class="pi pi-check"
+                          aria-hidden="true"
+                        ></i>
                       </span>
-                      <span class="mini-stat mini-stat--success">
-                        +{{ slotExtrasTotal(slot) | currency:'USD':'symbol':'1.2-2' }}
-                      </span>
+                    }
+                  </header>
+
+                  <p-select
+                    [options]="optionsForSlot(slot)"
+                    optionLabel="label"
+                    optionValue="value"
+                    [ngModel]="selectedBySlot()[slot.key]"
+                    (ngModelChange)="
+                      onSelectPizza(
+                        slot,
+                        $event
+                      )
+                    "
+                    [placeholder]="pizzaPlaceholder(slot)"
+                    styleClass="promotion-select"
+                    appendTo="body"
+                  />
+
+                  @if (
+                    getSelectedPizza(slot);
+                    as pizza
+                  ) {
+                    <div class="selected-pizza">
+                      <div class="selected-pizza__image">
+                        @if (pizza.image_url) {
+                          <img
+                            [src]="pizza.image_url"
+                            [alt]="'Pizza ' + pizza.name"
+                            loading="lazy"
+                            decoding="async"
+                          />
+                        } @else {
+                          <i
+                            class="pi pi-image"
+                            aria-hidden="true"
+                          ></i>
+                        }
+                      </div>
+
+                      <div class="selected-pizza__copy">
+                        <strong>
+                          {{ pizza.name }}
+                        </strong>
+
+                        <span>
+                          {{
+                            pizza.category.name ||
+                              slot.shortTitle
+                          }}
+                          @if (selectedSizeName()) {
+                            · {{ selectedSizeName() }}
+                          }
+                        </span>
+                      </div>
 
                       <button
                         type="button"
                         class="text-action"
-                        (click)="resetSlot(slot)"
+                        (click)="activateCustomization(slot)"
                       >
-                        Restablecer
+                        Personalizar
+
+                        <i
+                          class="pi pi-arrow-right"
+                          aria-hidden="true"
+                        ></i>
                       </button>
                     </div>
-                  </div>
-                </div>
-
-                <div class="customization-grid">
-                  <div class="custom-panel">
-                    <div class="custom-panel__head">
-                      <h4>Ingredientes incluidos</h4>
-                      <span>Quita solo los que no quieras</span>
-                    </div>
-
-                    @if (getVisibleBaseIngredients(slot).length === 0) {
-                      <div class="empty-note">No hay ingredientes visibles en este momento.</div>
-                    } @else {
-                      <div class="chips-wrap">
-                        @for (ingredient of getVisibleBaseIngredients(slot); track ingredient.id) {
-                          <p-chip
-                            [label]="ingredient.name"
-                            [removable]="canRemoveBaseIngredient(ingredient.name)"
-                            [styleClass]="canRemoveBaseIngredient(ingredient.name) ? '' : 'is-locked'"
-                            (onRemove)="removeBaseIngredient(slot, ingredient)"
-                          ></p-chip>
-                        }
-                      </div>
-                    }
-
-                    @if (getRemovedBaseIngredients(slot).length > 0) {
-                      <div class="sub-box">
-                        <div class="sub-box__title">Quitaste estos ingredientes</div>
-
-                        <div class="chips-wrap">
-                          @for (ingredient of getRemovedBaseIngredients(slot); track ingredient.id) {
-                            <p-chip
-                              [label]="'Sin ' + ingredient.name"
-                              removable="true"
-                              styleClass="removed-chip"
-                              (onRemove)="restoreBaseIngredient(slot, ingredient.id)"
-                            ></p-chip>
-                          }
-                        </div>
-                      </div>
-                    }
-                  </div>
-
-                  <div class="custom-panel">
-                    <div class="custom-panel__head">
-                      <h4>Extras opcionales</h4>
-                      <span>Agrega solo lo que realmente quieras</span>
-                    </div>
-
-                    @if (selectedExtraIngredients(slot).length > 0) {
-                      <div class="sub-box">
-                        <div class="sub-box__title">Extras elegidos</div>
-
-                        <div class="chips-wrap">
-                          @for (ingredient of selectedExtraIngredients(slot); track ingredient.id) {
-                            <p-chip
-                              [label]="ingredient.name + ' • ' + extraPriceLabel(ingredient.id)"
-                              removable="true"
-                              styleClass="extra-chip"
-                              (onRemove)="removeExtra(slot, ingredient.id)"
-                            ></p-chip>
-                          }
-                        </div>
-                      </div>
-                    }
-
-                    <div class="extras-grid">
-                      @for (ingredient of ingredients(); track ingredient.id) {
-                        <label
-                          class="extra-card"
-                          [class.extra-card--disabled]="isExtraDisabled(slot, ingredient)"
-                          [attr.title]="extraDisabledReason(slot, ingredient) || null"
-                        >
-                          <p-checkbox
-                            [binary]="true"
-                            [ngModel]="isExtraSelected(slot, ingredient.id)"
-                            [disabled]="isExtraDisabled(slot, ingredient)"
-                            (ngModelChange)="toggleExtra(slot, ingredient.id, !!$event)"
-                          ></p-checkbox>
-
-                          <div class="extra-card__body">
-                            <div class="extra-card__name">{{ ingredient.name }}</div>
-                            <div class="extra-card__price">{{ extraPriceLabel(ingredient.id) }}</div>
-                          </div>
-                        </label>
-                      }
-                    </div>
-                  </div>
-                </div>
+                  }
+                </article>
               }
-            </article>
-          }
-        }
-      </section>
-    }
-
-    <section class="step-section">
-      <div class="section-head section-head--stack">
-        <div>
-          <span class="section-step">Paso 3</span>
-          <h2>Revisa tu pedido</h2>
-          <p>
-            Verifica tu promoción antes de agregarla al carrito.
-          </p>
-        </div>
-      </div>
-
-      <div class="review-card">
-        <div class="review-card__summary">
-          <div class="review-row">
-            <span>Promoción base</span>
-            <strong>{{ promotion()?.price | currency:'USD':'symbol':'1.2-2' }}</strong>
-          </div>
-
-          <div class="review-row">
-            <span>Extras por unidad</span>
-            <strong>{{ extrasPerUnitTotal() | currency:'USD':'symbol':'1.2-2' }}</strong>
-          </div>
-
-          <div class="review-row">
-            <span>Precio unitario</span>
-            <strong>{{ unitPrice() | currency:'USD':'symbol':'1.2-2' }}</strong>
-          </div>
-
-          <div class="review-row">
-            <span>Cantidad</span>
-            <strong>{{ quantity() }}</strong>
-          </div>
-
-          <div class="review-row review-row--total">
-            <span>Total</span>
-            <strong>{{ total() | currency:'USD':'symbol':'1.2-2' }}</strong>
-          </div>
-        </div>
-
-        <div class="review-card__items">
-          @for (slot of slots(); track slot.key) {
-            <div class="review-item">
-              <div class="review-item__head">
-                <span>{{ slot.shortTitle }}</span>
-                <strong>{{ slotSummary(slot) }}</strong>
-              </div>
             </div>
           }
-        </div>
+        </section>
 
-        <div class="review-card__actions">
-          <p-button
-            label="Agregar al carrito"
-            icon="pi pi-shopping-cart"
-            [disabled]="!canSubmit()"
-            [loading]="submitting()"
-            (onClick)="addPromotionToCart()"
-          ></p-button>
+        @if (
+          getSelectedSlots().length > 0
+        ) {
+          <section
+            class="configuration-card customization-card"
+            aria-labelledby="customization-title"
+          >
+            <header class="configuration-heading">
+              <span class="configuration-heading__number">
+                {{
+                  requiresSizeSelection()
+                    ? 3
+                    : 2
+                }}
+              </span>
 
-          <p-button
-            label="Ir al checkout"
-            icon="pi pi-credit-card"
-            severity="secondary"
-            [outlined]="true"
-            (onClick)="goCheckout()"
-          ></p-button>
-        </div>
+              <div>
+                <span class="configuration-heading__eyebrow">
+                  Personalización
+                </span>
+
+                <h2 id="customization-title">
+                  Personaliza cada pizza
+                </h2>
+
+                <p>
+                  Puedes retirar ingredientes permitidos y agregar
+                  hasta 4 ingredientes extra en cada pizza.
+                </p>
+              </div>
+            </header>
+
+            <div
+              class="pizza-tabs"
+              role="tablist"
+              aria-label="Pizzas seleccionadas"
+            >
+              @for (
+                slot of getSelectedSlots();
+                track slot.key
+              ) {
+                <button
+                  type="button"
+                  role="tab"
+                  class="pizza-tab"
+                  [class.pizza-tab--active]="
+                    isCustomizationActive(slot)
+                  "
+                  [attr.aria-selected]="
+                    isCustomizationActive(slot)
+                  "
+                  (click)="activateCustomization(slot)"
+                >
+                  <span>
+                    {{ slot.shortTitle }}
+                  </span>
+
+                  <strong>
+                    {{ slotSummary(slot) }}
+                  </strong>
+
+                  <small>
+                    {{ extraCount(slot) }}
+                    / 4 extras
+                  </small>
+                </button>
+              }
+            </div>
+
+            @for (
+              slot of getSelectedSlots();
+              track slot.key
+            ) {
+              @if (
+                isCustomizationActive(slot)
+              ) {
+                @if (
+                  getSelectedPizza(slot);
+                  as pizza
+                ) {
+                  <article class="pizza-customizer">
+                    <header class="pizza-customizer__header">
+                      <div class="customizer-pizza">
+                        <div class="customizer-pizza__image">
+                          @if (pizza.image_url) {
+                            <img
+                              [src]="pizza.image_url"
+                              [alt]="'Pizza ' + pizza.name"
+                              loading="lazy"
+                              decoding="async"
+                            />
+                          } @else {
+                            <i
+                              class="pi pi-image"
+                              aria-hidden="true"
+                            ></i>
+                          }
+                        </div>
+
+                        <div>
+                          <span>
+                            {{ slot.shortTitle }}
+                          </span>
+
+                          <h3>
+                            {{ pizza.name }}
+                          </h3>
+
+                          <p>
+                            {{ selectedSizeName() }}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div class="customizer-status">
+                        <div>
+                          <span>
+                            Extras elegidos
+                          </span>
+
+                          <strong>
+                            {{ extraCount(slot) }}
+                            / 4
+                          </strong>
+                        </div>
+
+                        <div>
+                          <span>
+                            Costo adicional
+                          </span>
+
+                          <strong>
+                            {{
+                              slotExtrasTotal(slot)
+                                | currency:
+                                    'USD':
+                                    'symbol':
+                                    '1.2-2'
+                            }}
+                          </strong>
+                        </div>
+
+                        <button
+                          type="button"
+                          class="reset-action"
+                          (click)="resetSlot(slot)"
+                        >
+                          <i
+                            class="pi pi-refresh"
+                            aria-hidden="true"
+                          ></i>
+
+                          Restablecer
+                        </button>
+                      </div>
+                    </header>
+
+                    <section
+                      class="ingredients-section"
+                      aria-labelledby="base-ingredients-title"
+                    >
+                      <header class="ingredients-heading">
+                        <div>
+                          <span class="ingredients-heading__eyebrow">
+                            Receta
+                          </span>
+
+                          <h4 id="base-ingredients-title">
+                            Ingredientes incluidos
+                          </h4>
+
+                          <p>
+                            Retira únicamente los ingredientes que
+                            tengan el botón de eliminar.
+                          </p>
+                        </div>
+                      </header>
+
+                      @if (
+                        getVisibleBaseIngredients(slot)
+                          .length > 0
+                      ) {
+                        <div class="base-ingredients">
+                          @for (
+                            ingredient of
+                              getVisibleBaseIngredients(slot);
+                            track ingredient.id
+                          ) {
+                            <p-chip
+                              [label]="ingredient.name"
+                              [removable]="
+                                canRemoveBaseIngredient(
+                                  ingredient.name
+                                )
+                              "
+                              [styleClass]="
+                                canRemoveBaseIngredient(
+                                  ingredient.name
+                                )
+                                  ? 'base-chip'
+                                  : 'base-chip base-chip--required'
+                              "
+                              (onRemove)="
+                                removeBaseIngredient(
+                                  slot,
+                                  ingredient
+                                )
+                              "
+                            />
+                          }
+                        </div>
+                      } @else {
+                        <p class="empty-message">
+                          No quedan ingredientes visibles en esta receta.
+                        </p>
+                      }
+
+                      @if (
+                        getRemovedBaseIngredients(slot)
+                          .length > 0
+                      ) {
+                        <div class="removed-ingredients">
+                          <span>
+                            Retirados
+                          </span>
+
+                          <div>
+                            @for (
+                              ingredient of
+                                getRemovedBaseIngredients(slot);
+                              track ingredient.id
+                            ) {
+                              <p-chip
+                                [label]="'Sin ' + ingredient.name"
+                                [removable]="true"
+                                styleClass="removed-chip"
+                                (onRemove)="
+                                  restoreBaseIngredient(
+                                    slot,
+                                    ingredient.id
+                                  )
+                                "
+                              />
+                            }
+                          </div>
+                        </div>
+                      }
+                    </section>
+
+                    <section
+                      class="ingredients-section extras-section"
+                      aria-labelledby="extras-title"
+                    >
+                      <header class="ingredients-heading ingredients-heading--split">
+                        <div>
+                          <span class="ingredients-heading__eyebrow">
+                            Personalización
+                          </span>
+
+                          <h4 id="extras-title">
+                            Añade ingredientes extra
+                          </h4>
+
+                          <p>
+                            Elige hasta 4 extras para esta pizza.
+                            Los precios corresponden al tamaño
+                            {{ selectedSizeName() }}.
+                          </p>
+                        </div>
+
+                        <div
+                          class="extras-limit"
+                          [class.extras-limit--full]="
+                            extraCount(slot) >= 4
+                          "
+                        >
+                          <strong>
+                            {{ extraCount(slot) }}
+                          </strong>
+
+                          <span>
+                            / 4
+                          </span>
+                        </div>
+                      </header>
+
+                      @if (
+                        selectedExtraIngredients(slot)
+                          .length > 0
+                      ) {
+                        <div class="selected-extras">
+                          <span>
+                            Seleccionados
+                          </span>
+
+                          <div>
+                            @for (
+                              ingredient of
+                                selectedExtraIngredients(slot);
+                              track ingredient.id
+                            ) {
+                              <p-chip
+                                [label]="
+                                  ingredient.name +
+                                  ' · ' +
+                                  extraPriceLabel(
+                                    ingredient.id
+                                  )
+                                "
+                                [removable]="true"
+                                styleClass="extra-chip"
+                                (onRemove)="
+                                  removeExtra(
+                                    slot,
+                                    ingredient.id
+                                  )
+                                "
+                              />
+                            }
+                          </div>
+                        </div>
+                      }
+
+                      <div class="extras-grid">
+                        @for (
+                          ingredient of ingredients();
+                          track ingredient.id
+                        ) {
+                          <label
+                            class="extra-option"
+                            [class.extra-option--selected]="
+                              isExtraSelected(
+                                slot,
+                                ingredient.id
+                              )
+                            "
+                            [class.extra-option--disabled]="
+                              isExtraDisabled(
+                                slot,
+                                ingredient
+                              )
+                            "
+                            [attr.title]="
+                              extraDisabledReason(
+                                slot,
+                                ingredient
+                              ) || null
+                            "
+                          >
+                            <p-checkbox
+                              [binary]="true"
+                              [ngModel]="
+                                isExtraSelected(
+                                  slot,
+                                  ingredient.id
+                                )
+                              "
+                              [disabled]="
+                                isExtraDisabled(
+                                  slot,
+                                  ingredient
+                                )
+                              "
+                              (ngModelChange)="
+                                toggleExtra(
+                                  slot,
+                                  ingredient.id,
+                                  !!$event
+                                )
+                              "
+                            />
+
+                            <span class="extra-option__name">
+                              {{ ingredient.name }}
+                            </span>
+
+                            <strong>
+                              {{
+                                extraPriceLabel(
+                                  ingredient.id
+                                )
+                              }}
+                            </strong>
+                          </label>
+                        }
+                      </div>
+                    </section>
+                  </article>
+                }
+              }
+            }
+          </section>
+        }
       </div>
-    </section>
 
-    <div class="floating-buybar">
-      <div class="floating-buybar__content">
-        <div class="floating-buybar__price">
-          <span>Total</span>
-          <strong>{{ total() | currency:'USD':'symbol':'1.2-2' }}</strong>
-        </div>
+      <aside
+        class="promotion-summary"
+        aria-labelledby="summary-title"
+      >
+        <div class="promotion-summary__inner">
+          <header class="summary-header">
+            <span>
+              Tu promoción
+            </span>
 
-        <div class="floating-buybar__meta">
-          {{ configuredSlotsCount() }} / {{ slots().length }} pizzas elegidas
-        </div>
+            <h2 id="summary-title">
+              Resumen del combo
+            </h2>
 
-        <div class="floating-buybar__actions">
-          <p-button
-            label="Agregar al carrito"
-            icon="pi pi-shopping-cart"
+            <p>
+              Revisa las pizzas y extras seleccionados.
+            </p>
+          </header>
+
+          <div class="summary-selections">
+            @for (
+              slot of slots();
+              track slot.key
+            ) {
+              <div
+                class="summary-pizza"
+                [class.summary-pizza--pending]="
+                  !selectedBySlot()[slot.key]
+                "
+              >
+                <span class="summary-pizza__number">
+                  {{ slot.index }}
+                </span>
+
+                <div>
+                  <small>
+                    {{ slot.shortTitle }}
+                  </small>
+
+                  <strong>
+                    {{ slotSummary(slot) }}
+                  </strong>
+
+                  @if (
+                    selectedBySlot()[slot.key]
+                  ) {
+                    <span>
+                      {{ extraCount(slot) }}
+                      de 4 extras
+                    </span>
+                  }
+                </div>
+
+                @if (
+                  selectedBySlot()[slot.key]
+                ) {
+                  <i
+                    class="pi pi-check-circle"
+                    aria-hidden="true"
+                  ></i>
+                }
+              </div>
+            }
+          </div>
+
+          <div class="summary-costs">
+            <div>
+              <span>
+                Promoción
+              </span>
+
+              <strong>
+                {{
+                  promotionBasePrice()
+                    | currency:
+                        'USD':
+                        'symbol':
+                        '1.2-2'
+                }}
+              </strong>
+            </div>
+
+            <div>
+              <span>
+                Ingredientes extra
+              </span>
+
+              <strong>
+                {{
+                  extrasPerUnitTotal()
+                    | currency:
+                        'USD':
+                        'symbol':
+                        '1.2-2'
+                }}
+              </strong>
+            </div>
+
+            <div>
+              <span>
+                Cantidad
+              </span>
+
+              <strong>
+                {{ quantity() }}
+              </strong>
+            </div>
+
+            <div class="summary-total">
+              <span>
+                Total
+              </span>
+
+              <strong>
+                {{
+                  total()
+                    | currency:
+                        'USD':
+                        'symbol':
+                        '1.2-2'
+                }}
+              </strong>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            class="primary-action"
             [disabled]="!canSubmit()"
-            [loading]="submitting()"
-            (onClick)="addPromotionToCart()"
-          ></p-button>
+            [attr.aria-busy]="submitting()"
+            (click)="addPromotionToCart()"
+          >
+            @if (submitting()) {
+              <i
+                class="pi pi-spin pi-spinner"
+                aria-hidden="true"
+              ></i>
+
+              Agregando
+            } @else {
+              <i
+                class="pi pi-shopping-cart"
+                aria-hidden="true"
+              ></i>
+
+              Agregar al carrito
+            }
+          </button>
+
+          <button
+            type="button"
+            class="checkout-action"
+            [disabled]="cart.totalUnits() === 0"
+            (click)="goCheckout()"
+          >
+            Ir al checkout
+
+            <i
+              class="pi pi-arrow-right"
+              aria-hidden="true"
+            ></i>
+          </button>
+
+          @if (!canSubmit()) {
+            <p class="summary-message">
+              <i
+                class="pi pi-info-circle"
+                aria-hidden="true"
+              ></i>
+
+              {{ progressLabel() }}
+            </p>
+          }
         </div>
+      </aside>
+    </main>
+
+    <div class="mobile-purchase-bar">
+      <div>
+        <span>
+          Total
+        </span>
+
+        <strong>
+          {{
+            total()
+              | currency:
+                  'USD':
+                  'symbol':
+                  '1.2-2'
+          }}
+        </strong>
       </div>
+
+      <button
+        type="button"
+        class="primary-action"
+        [disabled]="!canSubmit()"
+        [attr.aria-busy]="submitting()"
+        (click)="addPromotionToCart()"
+      >
+        @if (submitting()) {
+          <i
+            class="pi pi-spin pi-spinner"
+            aria-hidden="true"
+          ></i>
+        } @else {
+          Agregar
+
+          <i
+            class="pi pi-shopping-cart"
+            aria-hidden="true"
+          ></i>
+        }
+      </button>
     </div>
   }
 </section>

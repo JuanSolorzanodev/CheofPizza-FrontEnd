@@ -1,0 +1,1210 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+
+.menu {
+  --menu-brand:
+    var(
+      --p-primary-color,
+      #159447
+    );
+
+  --menu-brand-hover:
+    color-mix(
+      in srgb,
+      var(--menu-brand) 86%,
+      #000000
+    );
+
+  --menu-surface:
+    var(
+      --cheof-card-background,
+      var(--p-content-background)
+    );
+
+  --menu-border:
+    color-mix(
+      in srgb,
+      var(--p-content-border-color) 80%,
+      transparent
+    );
+
+  --menu-soft-surface:
+    color-mix(
+      in srgb,
+      var(--p-content-hover-background) 68%,
+      var(--menu-surface)
+    );
+
+  --menu-brand-soft:
+    color-mix(
+      in srgb,
+      var(--menu-brand) 11%,
+      var(--menu-surface)
+    );
+
+  --menu-brand-border:
+    color-mix(
+      in srgb,
+      var(--menu-brand) 25%,
+      var(--menu-border)
+    );
+
+  width:
+    min(
+      1460px,
+      100%
+    );
+
+  margin-inline: auto;
+
+  padding:
+    clamp(
+      2.25rem,
+      4vw,
+      3.75rem
+    )
+    var(
+      --cheof-page-padding,
+      clamp(
+        1rem,
+        4vw,
+        3rem
+      )
+    )
+    clamp(
+      4rem,
+      7vw,
+      6rem
+    );
+
+  color:
+    var(--p-text-color);
+}
+
+/*
+|--------------------------------------------------------------------------
+| Presentación general
+|--------------------------------------------------------------------------
+*/
+
+.menu-intro {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 2rem;
+
+  margin-bottom:
+    clamp(
+      3rem,
+      5.5vw,
+      4.75rem
+    );
+
+  padding-bottom:
+    clamp(
+      1.35rem,
+      2.5vw,
+      1.9rem
+    );
+
+  border-bottom:
+    1px solid
+    var(--menu-border);
+}
+
+.menu-intro__copy {
+  max-width: 760px;
+}
+
+.menu-intro__eyebrow,
+.section-heading__eyebrow {
+  display: block;
+
+  color:
+    var(--menu-brand);
+
+  font-size: 0.69rem;
+  font-weight: 720;
+
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.menu-intro h1 {
+  max-width: 720px;
+
+  margin:
+    0.55rem
+    0
+    0;
+
+  color:
+    var(--p-text-color);
+
+  font-size:
+    clamp(
+      2.15rem,
+      4.2vw,
+      3.65rem
+    );
+
+  font-weight: 760;
+  line-height: 1.02;
+
+  letter-spacing:
+    -0.045em;
+
+  text-wrap: balance;
+}
+
+.menu-intro p {
+  max-width: 640px;
+
+  margin:
+    0.85rem
+    0
+    0;
+
+  color:
+    var(--p-text-muted-color);
+
+  font-size:
+    clamp(
+      0.92rem,
+      1.4vw,
+      1rem
+    );
+
+  line-height: 1.65;
+
+  text-wrap: pretty;
+}
+
+.menu-intro__availability {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.38rem;
+
+  flex: 0 0 auto;
+
+  padding-bottom: 0.25rem;
+
+  color:
+    var(--p-text-muted-color);
+
+  font-size: 0.77rem;
+  line-height: 1.4;
+}
+
+.menu-intro__availability strong {
+  color:
+    var(--menu-brand);
+
+  font-size: 1rem;
+  font-weight: 740;
+}
+
+/*
+|--------------------------------------------------------------------------
+| Secciones
+|--------------------------------------------------------------------------
+*/
+
+.menu-section {
+  scroll-margin-top:
+    calc(
+      var(
+        --cheof-toolbar-height,
+        84px
+      ) +
+      1.5rem
+    );
+}
+
+.menu-section +
+.menu-section {
+  margin-top:
+    clamp(
+      4.5rem,
+      8vw,
+      7rem
+    );
+}
+
+.section-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 2rem;
+
+  margin-bottom:
+    clamp(
+      1.35rem,
+      2.5vw,
+      1.9rem
+    );
+}
+
+.section-heading > div {
+  max-width: 760px;
+}
+
+.section-heading h2 {
+  margin:
+    0.4rem
+    0
+    0;
+
+  color:
+    var(--p-text-color);
+
+  font-size:
+    clamp(
+      1.75rem,
+      3vw,
+      2.4rem
+    );
+
+  font-weight: 730;
+  line-height: 1.08;
+
+  letter-spacing:
+    -0.032em;
+}
+
+.section-heading p {
+  max-width: 700px;
+
+  margin:
+    0.55rem
+    0
+    0;
+
+  color:
+    var(--p-text-muted-color);
+
+  font-size: 0.89rem;
+  line-height: 1.55;
+}
+
+.section-heading__count {
+  flex: 0 0 auto;
+
+  color:
+    var(--p-text-muted-color);
+
+  font-size: 0.74rem;
+  font-weight: 560;
+
+  white-space: nowrap;
+}
+
+/*
+|--------------------------------------------------------------------------
+| Cuadrícula
+|--------------------------------------------------------------------------
+*/
+
+.pizza-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      3,
+      minmax(0, 1fr)
+    );
+
+  gap:
+    clamp(
+      1.25rem,
+      2.2vw,
+      1.85rem
+    );
+
+  align-items: stretch;
+}
+
+/*
+|--------------------------------------------------------------------------
+| Tarjeta
+|--------------------------------------------------------------------------
+*/
+
+.pizza-card {
+  display: grid;
+
+  grid-template-rows:
+    auto
+    minmax(0, 1fr);
+
+  min-width: 0;
+  height: 100%;
+
+  overflow: hidden;
+
+  border:
+    1px solid
+    var(--menu-border);
+
+  border-radius: 20px;
+
+  background:
+    var(--menu-surface);
+
+  box-shadow:
+    0 10px 28px
+    color-mix(
+      in srgb,
+      #000000 6%,
+      transparent
+    );
+
+  transition:
+    transform 220ms ease,
+    box-shadow 220ms ease;
+}
+
+.pizza-card:hover {
+  border-color:
+    var(--menu-border);
+
+  transform:
+    translateY(-4px);
+
+  box-shadow:
+    0 20px 42px
+    color-mix(
+      in srgb,
+      #000000 11%,
+      transparent
+    );
+}
+
+.pizza-card:focus-within {
+  border-color:
+    var(--menu-border);
+}
+
+/*
+|--------------------------------------------------------------------------
+| Fotografía
+|--------------------------------------------------------------------------
+*/
+
+.pizza-card__media {
+  position: relative;
+
+  aspect-ratio:
+    16 / 10;
+
+  overflow: hidden;
+
+  background:
+    radial-gradient(
+      circle at 50% 46%,
+      rgba(247, 225, 184, 0.72) 0%,
+      rgba(242, 234, 214, 0.38) 37%,
+      transparent 68%
+    ),
+    color-mix(
+      in srgb,
+      var(--menu-brand) 3%,
+      var(--menu-soft-surface)
+    );
+
+  isolation: isolate;
+}
+
+.pizza-card__image {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+
+  padding:
+    clamp(
+      0.5rem,
+      1vw,
+      0.8rem
+    );
+
+  object-fit: contain;
+  object-position: center;
+
+  filter:
+    drop-shadow(
+      0 16px 16px
+      rgba(0, 0, 0, 0.15)
+    );
+
+  transform:
+    scale(0.95);
+
+  transition:
+    filter 360ms ease,
+    transform 360ms
+    cubic-bezier(
+      0.22,
+      1,
+      0.36,
+      1
+    );
+}
+
+.pizza-card:hover
+.pizza-card__image {
+  filter:
+    drop-shadow(
+      0 20px 20px
+      rgba(0, 0, 0, 0.19)
+    );
+
+  transform:
+    scale(1.015);
+}
+
+.pizza-card__image-shade {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+
+  pointer-events: none;
+
+  background:
+    linear-gradient(
+      180deg,
+      transparent 60%,
+      rgba(7, 18, 10, 0.08)
+    );
+}
+
+/*
+|--------------------------------------------------------------------------
+| Categorías
+|--------------------------------------------------------------------------
+*/
+
+.pizza-card__category {
+  position: absolute;
+  z-index: 2;
+  top: 0.85rem;
+  left: 0.85rem;
+
+  display: inline-flex;
+  align-items: center;
+
+  min-height: 30px;
+
+  padding:
+    0.36rem
+    0.72rem;
+
+  border:
+    1px solid
+    var(--menu-brand-border);
+
+  border-radius: 999px;
+
+  background:
+    color-mix(
+      in srgb,
+      var(--menu-brand) 14%,
+      rgba(255, 255, 255, 0.92)
+    );
+
+  color:
+    color-mix(
+      in srgb,
+      var(--menu-brand) 88%,
+      #102318
+    );
+
+  box-shadow:
+    0 5px 14px
+    color-mix(
+      in srgb,
+      #000000 8%,
+      transparent
+    );
+
+  font-size: 0.66rem;
+  font-weight: 680;
+
+  letter-spacing: 0.01em;
+
+  backdrop-filter:
+    blur(12px);
+
+  -webkit-backdrop-filter:
+    blur(12px);
+}
+
+/*
+ * Las especiales mantienen la misma identidad visual.
+ * Se diferencian mediante una intensidad ligeramente mayor,
+ * sin introducir colores ajenos a la marca.
+ */
+.pizza-card__category--special {
+  border-color:
+    color-mix(
+      in srgb,
+      var(--menu-brand) 35%,
+      var(--menu-border)
+    );
+
+  background:
+    color-mix(
+      in srgb,
+      var(--menu-brand) 21%,
+      rgba(255, 255, 255, 0.9)
+    );
+
+  color:
+    color-mix(
+      in srgb,
+      var(--menu-brand) 92%,
+      #07170d
+    );
+}
+
+/*
+|--------------------------------------------------------------------------
+| Contenido
+|--------------------------------------------------------------------------
+*/
+
+.pizza-card__body {
+  display: flex;
+  min-height: 0;
+  flex-direction: column;
+
+  padding:
+    1.05rem;
+}
+
+.pizza-card__heading {
+  display: grid;
+  gap: 0.42rem;
+}
+
+.pizza-card__title-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.pizza-card__heading h3 {
+  min-width: 0;
+
+  margin: 0;
+
+  color:
+    var(--p-text-color);
+
+  font-size:
+    clamp(
+      1.25rem,
+      1.8vw,
+      1.5rem
+    );
+
+  font-weight: 700;
+  line-height: 1.12;
+
+  letter-spacing:
+    -0.025em;
+}
+
+.pizza-card__minimum {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.3rem;
+
+  flex: 0 0 auto;
+
+  color:
+    var(--menu-brand);
+
+  font-size: 0.9rem;
+  font-weight: 700;
+
+  white-space: nowrap;
+}
+
+.pizza-card__minimum small {
+  color:
+    var(--p-text-muted-color);
+
+  font-size: 0.62rem;
+  font-weight: 500;
+
+  text-transform: lowercase;
+}
+
+.pizza-card__heading p {
+  display: -webkit-box;
+
+  min-height: 2.5rem;
+
+  margin: 0;
+
+  overflow: hidden;
+
+  color:
+    var(--p-text-muted-color);
+
+  font-size: 0.81rem;
+  line-height: 1.5;
+
+  line-clamp: 2;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+/*
+|--------------------------------------------------------------------------
+| Precios
+|--------------------------------------------------------------------------
+*/
+
+.pizza-card__prices {
+  display: grid;
+  gap: 0.28rem;
+
+  margin-top: 0.95rem;
+}
+
+.pizza-card__price-row {
+  display: grid;
+  align-items: center;
+
+  grid-template-columns:
+    auto
+    minmax(18px, 1fr)
+    auto;
+
+  gap: 0.55rem;
+
+  min-height: 28px;
+}
+
+.pizza-card__price-row
+> span:first-child {
+  color:
+    var(--p-text-muted-color);
+
+  font-size: 0.7rem;
+  font-weight: 500;
+}
+
+.pizza-card__price-divider {
+  height: 1px;
+
+  background:
+    color-mix(
+      in srgb,
+      var(--menu-border) 88%,
+      transparent
+    );
+}
+
+.pizza-card__price-row strong {
+  color:
+    var(--p-text-color);
+
+  font-size: 0.72rem;
+  font-weight: 660;
+}
+
+.pizza-card__price-row--more
+> span:first-child,
+.pizza-card__price-row--more
+strong {
+  color:
+    var(--menu-brand);
+}
+
+/*
+|--------------------------------------------------------------------------
+| Pie y acción
+|--------------------------------------------------------------------------
+*/
+
+.pizza-card__footer {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+
+  margin-top: auto;
+
+  padding-top: 1rem;
+}
+
+.pizza-card__helper {
+  max-width: 190px;
+
+  margin: 0;
+
+  color:
+    var(--p-text-muted-color);
+
+  font-size: 0.65rem;
+  line-height: 1.4;
+}
+
+.pizza-card__action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+
+  flex: 0 0 auto;
+
+  min-height: 42px;
+
+  padding:
+    0.62rem
+    0.9rem;
+
+  border:
+    1px solid
+    var(--menu-brand);
+
+  border-radius: 11px;
+
+  background:
+    var(--menu-brand);
+
+  color:
+    #ffffff;
+
+  cursor: pointer;
+
+  font: inherit;
+  font-size: 0.75rem;
+  font-weight: 660;
+
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease;
+}
+
+.pizza-card__action:hover:not(
+  :disabled
+) {
+  border-color:
+    var(--menu-brand-hover);
+
+  background:
+    var(--menu-brand-hover);
+
+  box-shadow:
+    0 10px 22px
+    color-mix(
+      in srgb,
+      var(--menu-brand) 24%,
+      transparent
+    );
+
+  transform:
+    translateY(-1px);
+}
+
+.pizza-card__action:active:not(
+  :disabled
+) {
+  box-shadow: none;
+
+  transform:
+    translateY(0);
+}
+
+.pizza-card__action:disabled {
+  cursor:
+    not-allowed;
+
+  opacity: 0.55;
+}
+
+.pizza-card__action:focus-visible,
+.menu-state__button:focus-visible {
+  outline:
+    3px solid
+    color-mix(
+      in srgb,
+      var(--menu-brand) 30%,
+      transparent
+    );
+
+  outline-offset: 3px;
+}
+
+/*
+|--------------------------------------------------------------------------
+| Estados
+|--------------------------------------------------------------------------
+*/
+
+.menu-state {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+
+  min-height: 155px;
+
+  padding:
+    1.35rem;
+
+  border:
+    1px dashed
+    var(--menu-border);
+
+  border-radius: 18px;
+
+  background:
+    var(--menu-surface);
+}
+
+.menu-state__icon {
+  display: grid;
+
+  width: 50px;
+  min-width: 50px;
+  height: 50px;
+
+  place-items: center;
+
+  border-radius: 14px;
+
+  background:
+    var(--menu-brand-soft);
+
+  color:
+    var(--menu-brand);
+
+  font-size: 1.1rem;
+}
+
+.menu-state--error
+.menu-state__icon {
+  background:
+    color-mix(
+      in srgb,
+      var(--p-red-500) 9%,
+      transparent
+    );
+
+  color:
+    var(--p-red-500);
+}
+
+.menu-state__copy {
+  flex: 1;
+}
+
+.menu-state h3 {
+  margin: 0;
+
+  color:
+    var(--p-text-color);
+
+  font-size: 0.98rem;
+  font-weight: 650;
+}
+
+.menu-state p {
+  margin:
+    0.32rem
+    0
+    0;
+
+  color:
+    var(--p-text-muted-color);
+
+  font-size: 0.81rem;
+  line-height: 1.5;
+}
+
+.menu-state__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+
+  min-height: 39px;
+
+  padding:
+    0.55rem
+    0.76rem;
+
+  border:
+    1px solid
+    var(--menu-border);
+
+  border-radius: 9px;
+
+  background:
+    var(--menu-surface);
+
+  color:
+    var(--menu-brand);
+
+  cursor: pointer;
+
+  font: inherit;
+  font-size: 0.72rem;
+  font-weight: 640;
+}
+
+/*
+|--------------------------------------------------------------------------
+| Skeleton
+|--------------------------------------------------------------------------
+*/
+
+.pizza-card--loading {
+  pointer-events: none;
+}
+
+.pizza-card__loading-description {
+  display: grid;
+  gap: 0.42rem;
+
+  margin-top: 0.65rem;
+}
+
+.pizza-card__loading-prices {
+  display: grid;
+  gap: 0.35rem;
+
+  margin:
+    1rem
+    0;
+}
+
+/*
+|--------------------------------------------------------------------------
+| Escritorio mediano
+|--------------------------------------------------------------------------
+*/
+
+@media (
+  max-width: 1180px
+) {
+  .pizza-grid {
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(0, 1fr)
+      );
+  }
+}
+
+/*
+|--------------------------------------------------------------------------
+| Tableta
+|--------------------------------------------------------------------------
+*/
+
+@media (
+  max-width: 800px
+) {
+  .menu-intro {
+    align-items: flex-start;
+    flex-direction: column;
+
+    gap: 1rem;
+  }
+
+  .menu-intro__availability {
+    padding-bottom: 0;
+  }
+
+  .section-heading {
+    align-items: flex-start;
+    flex-direction: column;
+
+    gap: 0.75rem;
+  }
+}
+
+/*
+|--------------------------------------------------------------------------
+| Móvil
+|--------------------------------------------------------------------------
+*/
+
+@media (
+  max-width: 700px
+) {
+  .menu {
+    padding-inline:
+      0.8rem;
+  }
+
+  .pizza-grid {
+    grid-template-columns:
+      minmax(0, 1fr);
+  }
+
+  .pizza-card {
+    grid-template-columns:
+      minmax(135px, 38%)
+      minmax(0, 1fr);
+
+    grid-template-rows:
+      minmax(0, 1fr);
+
+    min-height: 250px;
+  }
+
+  .pizza-card__media {
+    height: 100%;
+    min-height: 250px;
+
+    aspect-ratio: auto;
+  }
+
+  .pizza-card__image {
+    padding: 0.3rem;
+
+    transform:
+      scale(1.03);
+  }
+
+  .pizza-card:hover
+  .pizza-card__image {
+    transform:
+      scale(1.055);
+  }
+
+  .pizza-card__category {
+    top: 0.7rem;
+    left: 0.7rem;
+  }
+
+  .pizza-card__body {
+    padding:
+      0.88rem;
+  }
+
+  .pizza-card__title-row {
+    align-items: flex-start;
+    flex-direction: column;
+
+    gap: 0.2rem;
+  }
+
+  .pizza-card__heading p {
+    min-height: auto;
+  }
+
+  .pizza-card__footer {
+    align-items: stretch;
+    flex-direction: column;
+
+    gap: 0.65rem;
+  }
+
+  .pizza-card__helper {
+    max-width: none;
+  }
+
+  .pizza-card__action {
+    width: 100%;
+  }
+}
+
+/*
+|--------------------------------------------------------------------------
+| Móvil compacto
+|--------------------------------------------------------------------------
+*/
+
+@media (
+  max-width: 480px
+) {
+  .menu-intro h1 {
+    font-size:
+      clamp(
+        1.85rem,
+        9vw,
+        2.45rem
+      );
+  }
+
+  .pizza-card {
+    grid-template-columns:
+      minmax(112px, 34%)
+      minmax(0, 1fr);
+
+    min-height: 235px;
+
+    border-radius: 16px;
+  }
+
+  .pizza-card__media {
+    min-height: 235px;
+  }
+
+  .pizza-card__body {
+    padding:
+      0.76rem;
+  }
+
+  .pizza-card__heading h3 {
+    font-size: 1.1rem;
+  }
+
+  .pizza-card__heading p {
+    font-size: 0.74rem;
+  }
+
+  .pizza-card__price-row {
+    min-height: 23px;
+  }
+
+  .pizza-card__price-row
+  > span:first-child,
+  .pizza-card__price-row strong {
+    font-size: 0.62rem;
+  }
+
+  .pizza-card__helper {
+    display: none;
+  }
+}
+
+/*
+|--------------------------------------------------------------------------
+| Movimiento reducido
+|--------------------------------------------------------------------------
+*/
+
+@media (
+  prefers-reduced-motion:
+  reduce
+) {
+  .pizza-card,
+  .pizza-card__image,
+  .pizza-card__action,
+  .menu-state__button {
+    transition: none;
+  }
+
+  .pizza-card:hover {
+    transform: none;
+  }
+
+  .pizza-card:hover
+  .pizza-card__image {
+    transform:
+      scale(0.95);
+  }
+}

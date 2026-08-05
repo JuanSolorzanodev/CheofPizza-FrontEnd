@@ -1,22 +1,53 @@
-import { Injectable } from '@angular/core';
-import { SafeStorageService } from '../../state/safe-storage.service';
+import {
+  Injectable,
+  inject,
+} from '@angular/core';
 
-@Injectable({ providedIn: 'root' })
+import {
+  SafeStorageService,
+} from '../../state/safe-storage.service';
+
+@Injectable({
+  providedIn: 'root',
+})
 export class CartSessionService {
-  private readonly key = 'cheof_cart_session';
+  private readonly storage =
+    inject(SafeStorageService);
 
-  constructor(private readonly storage: SafeStorageService) {}
+  private readonly storageKey =
+    'cheof_cart_session';
 
   get(): string | null {
-    return this.storage.getItem(this.key);
+    const value =
+      this.storage.getItem(
+        this.storageKey,
+      );
+
+    const normalized =
+      value?.trim() ?? '';
+
+    return normalized !== ''
+      ? normalized
+      : null;
   }
 
-  set(id: string): void {
-    if (!id) return;
-    this.storage.setItem(this.key, id);
+  set(sessionId: string): void {
+    const normalized =
+      sessionId.trim();
+
+    if (normalized === '') {
+      return;
+    }
+
+    this.storage.setItem(
+      this.storageKey,
+      normalized,
+    );
   }
 
   clear(): void {
-    this.storage.removeItem(this.key);
+    this.storage.removeItem(
+      this.storageKey,
+    );
   }
 }

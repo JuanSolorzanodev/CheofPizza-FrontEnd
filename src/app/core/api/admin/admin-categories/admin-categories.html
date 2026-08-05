@@ -1,0 +1,668 @@
+<section class="catalog-page">
+  <header class="catalog-hero">
+    <div>
+      <span class="eyebrow">
+        Catálogo
+      </span>
+
+      <h2>
+        Categorías y tamaños
+      </h2>
+
+      <p>
+        Administra la estructura principal del menú,
+        sus categorías y los tamaños disponibles.
+      </p>
+    </div>
+
+    <div class="hero-actions">
+      <p-button
+        label="Actualizar"
+        icon="pi pi-refresh"
+        severity="secondary"
+        [outlined]="true"
+        [loading]="refreshing()"
+        (onClick)="refresh()"
+      />
+
+      <p-button
+        label="Nueva categoría"
+        icon="pi pi-plus"
+        (onClick)="openNewCategory()"
+      />
+    </div>
+  </header>
+
+  <section
+    class="summary-grid"
+    aria-label="Resumen del catálogo"
+  >
+    <article class="summary-card">
+      <span class="summary-icon is-primary">
+        <i class="pi pi-tags"></i>
+      </span>
+
+      <div>
+        <span>Categorías</span>
+
+        @if (loading()) {
+          <p-skeleton
+            width="48px"
+            height="28px"
+          />
+        } @else {
+          <strong>
+            {{ categoriesCount() }}
+          </strong>
+        }
+
+        <small>
+          Líneas activas del menú
+        </small>
+      </div>
+    </article>
+
+    <article class="summary-card">
+      <span class="summary-icon is-info">
+        <i class="pi pi-clone"></i>
+      </span>
+
+      <div>
+        <span>Tamaños</span>
+
+        @if (loading()) {
+          <p-skeleton
+            width="48px"
+            height="28px"
+          />
+        } @else {
+          <strong>
+            {{ sizesCount() }}
+          </strong>
+        }
+
+        <small>
+          Presentaciones disponibles
+        </small>
+      </div>
+    </article>
+
+    <article class="summary-card">
+      <span class="summary-icon is-success">
+        <i class="pi pi-dollar"></i>
+      </span>
+
+      <div>
+        <span>Precios activos</span>
+
+        @if (loading()) {
+          <p-skeleton
+            width="48px"
+            height="28px"
+          />
+        } @else {
+          <strong>
+            {{ activePricesCount() }}
+          </strong>
+        }
+
+        <small>
+          Combinaciones configuradas
+        </small>
+      </div>
+    </article>
+
+    <article class="summary-card">
+      <span class="summary-icon is-warning">
+        <i class="pi pi-chart-bar"></i>
+      </span>
+
+      <div>
+        <span>Pizzas</span>
+
+        @if (loading()) {
+          <p-skeleton
+            width="48px"
+            height="28px"
+          />
+        } @else {
+          <strong>
+            {{ pizzasCount() }}
+          </strong>
+        }
+
+        <small>
+          Productos clasificados
+        </small>
+      </div>
+    </article>
+  </section>
+
+  <section class="panel categories-panel">
+    <header class="panel-header">
+      <div>
+        <span class="eyebrow">
+          Organización
+        </span>
+
+        <h3>
+          Categorías del menú
+        </h3>
+
+        <p>
+          Consulta cuántas pizzas y tamaños
+          tiene configurada cada categoría.
+        </p>
+      </div>
+
+      <label class="search-box">
+        <i class="pi pi-search"></i>
+
+        <input
+          pInputText
+          type="search"
+          placeholder="Buscar categoría..."
+          [value]="search()"
+          (input)="
+            onSearch(
+              $any($event.target).value
+            )
+          "
+        />
+      </label>
+    </header>
+
+    @if (loading()) {
+      <div class="skeleton-list">
+        @for (
+          item of [1, 2, 3];
+          track item
+        ) {
+          <p-skeleton
+            height="92px"
+            borderRadius="14px"
+          />
+        }
+      </div>
+    } @else if (
+      filteredCategories().length === 0
+    ) {
+      <div class="empty-state">
+        <span>
+          <i class="pi pi-tags"></i>
+        </span>
+
+        <h3>
+          No encontramos categorías
+        </h3>
+
+        <p>
+          {{
+            search()
+              ? 'No hay coincidencias para la búsqueda actual.'
+              : 'Crea la primera categoría del menú.'
+          }}
+        </p>
+
+        @if (!search()) {
+          <p-button
+            label="Crear categoría"
+            icon="pi pi-plus"
+            (onClick)="openNewCategory()"
+          />
+        }
+      </div>
+    } @else {
+      <div class="category-list">
+        @for (
+          category of filteredCategories();
+          track category.id
+        ) {
+          <article class="category-card">
+            <div class="category-main">
+              <span class="category-avatar">
+                {{
+                  category.name
+                    .slice(0, 1)
+                    .toUpperCase()
+                }}
+              </span>
+
+              <div>
+                <div class="category-title-row">
+                  <h4>
+                    {{ category.name }}
+                  </h4>
+
+                  <p-tag
+                    [value]="
+                      category.pizzas_count +
+                      ' pizzas'
+                    "
+                    severity="secondary"
+                    [rounded]="true"
+                  />
+                </div>
+
+                <p>
+                  {{
+                    category.description ||
+                    'Sin descripción registrada.'
+                  }}
+                </p>
+
+                <small>
+                  {{
+                    categoryPriceLabel(
+                      category
+                    )
+                  }}
+                </small>
+              </div>
+            </div>
+
+            <div class="category-stats">
+              <div>
+                <span>Tamaños</span>
+
+                <strong>
+                  {{ category.prices_count }}
+                </strong>
+              </div>
+
+              <div>
+                <span>Pizzas</span>
+
+                <strong>
+                  {{ category.pizzas_count }}
+                </strong>
+              </div>
+            </div>
+
+            <div class="row-actions">
+              <p-button
+                icon="pi pi-pencil"
+                severity="secondary"
+                [outlined]="true"
+                [rounded]="true"
+                pTooltip="Editar categoría"
+                tooltipPosition="top"
+                (onClick)="
+                  openEditCategory(
+                    category
+                  )
+                "
+              />
+
+              <p-button
+                icon="pi pi-trash"
+                severity="danger"
+                [text]="true"
+                [rounded]="true"
+                pTooltip="Eliminar categoría"
+                tooltipPosition="top"
+                (onClick)="
+                  confirmDeleteCategory(
+                    category
+                  )
+                "
+              />
+            </div>
+          </article>
+        }
+      </div>
+    }
+  </section>
+
+  <section class="panel sizes-panel">
+    <header class="panel-header sizes-header">
+      <div>
+        <span class="eyebrow">
+          Presentaciones
+        </span>
+
+        <h3>
+          Tamaños disponibles
+        </h3>
+
+        <p>
+          Define el nombre y la cantidad de
+          porciones de cada presentación.
+        </p>
+      </div>
+
+      <p-button
+        label="Nuevo tamaño"
+        icon="pi pi-plus"
+        severity="secondary"
+        [outlined]="true"
+        (onClick)="openNewSize()"
+      />
+    </header>
+
+    @if (loading()) {
+      <div class="size-grid">
+        @for (
+          item of [1, 2, 3, 4, 5];
+          track item
+        ) {
+          <p-skeleton
+            height="145px"
+            borderRadius="16px"
+          />
+        }
+      </div>
+    } @else if (
+      sizes().length === 0
+    ) {
+      <div class="empty-state compact">
+        <span>
+          <i class="pi pi-clone"></i>
+        </span>
+
+        <h3>
+          No hay tamaños registrados
+        </h3>
+
+        <p>
+          Crea una presentación para comenzar
+          a configurar precios.
+        </p>
+      </div>
+    } @else {
+      <div class="size-grid">
+        @for (
+          size of sizes();
+          track size.id
+        ) {
+          <article class="size-card">
+            <header>
+              <span class="size-icon">
+                <i class="pi pi-arrows-alt"></i>
+              </span>
+
+              <div class="row-actions">
+                <button
+                  type="button"
+                  class="icon-button"
+                  aria-label="Editar tamaño"
+                  (click)="openEditSize(size)"
+                >
+                  <i class="pi pi-pencil"></i>
+                </button>
+
+                <button
+                  type="button"
+                  class="icon-button danger"
+                  aria-label="Eliminar tamaño"
+                  (click)="
+                    confirmDeleteSize(size)
+                  "
+                >
+                  <i class="pi pi-trash"></i>
+                </button>
+              </div>
+            </header>
+
+            <h4>
+              {{ size.name }}
+            </h4>
+
+            <p>
+              <strong>
+                {{ size.portion }}
+              </strong>
+
+              porciones
+            </p>
+
+            <footer>
+              <span>
+                {{
+                  size.category_prices_count
+                }}
+                precios de categoría
+              </span>
+
+              @if (
+                size.order_items_count > 0
+              ) {
+                <small>
+                  En uso en pedidos
+                </small>
+              } @else {
+                <small>
+                  Sin pedidos asociados
+                </small>
+              }
+            </footer>
+          </article>
+        }
+      </div>
+    }
+  </section>
+</section>
+
+<p-dialog
+  [visible]="categoryDialogVisible()"
+  (visibleChange)="
+    categoryDialogVisible.set($event)
+  "
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [closable]="!savingCategory()"
+  [closeOnEscape]="!savingCategory()"
+  [style]="{
+    width: 'min(94vw, 560px)'
+  }"
+  appendTo="body"
+  styleClass="admin-form-dialog"
+>
+  <ng-template pTemplate="header">
+    <div class="dialog-title">
+      <span>
+        <i class="pi pi-tags"></i>
+      </span>
+
+      <div>
+        <small>
+          Catálogo
+        </small>
+
+        <strong>
+          {{
+            editingCategory()
+              ? 'Editar categoría'
+              : 'Nueva categoría'
+          }}
+        </strong>
+      </div>
+    </div>
+  </ng-template>
+
+  <form
+    class="dialog-form"
+    [formGroup]="categoryForm"
+    (ngSubmit)="saveCategory()"
+  >
+    <label class="field">
+      <span>
+        Nombre <em>*</em>
+      </span>
+
+      <input
+        pInputText
+        formControlName="name"
+        maxlength="120"
+        placeholder="Ej. Especiales"
+      />
+
+      @if (
+        categoryForm.controls.name.touched &&
+        categoryForm.controls.name.invalid
+      ) {
+        <small class="field-error">
+          Ingresa un nombre de al menos
+          2 caracteres.
+        </small>
+      }
+    </label>
+
+    <label class="field">
+      <span>
+        Descripción
+      </span>
+
+      <textarea
+        pTextarea
+        formControlName="description"
+        rows="5"
+        maxlength="2000"
+        placeholder="Describe brevemente esta categoría..."
+      ></textarea>
+
+      <small class="field-help">
+        {{
+          categoryForm.controls
+            .description.value.length
+        }}/2000 caracteres
+      </small>
+    </label>
+  </form>
+
+  <ng-template pTemplate="footer">
+    <p-button
+      label="Cancelar"
+      severity="secondary"
+      [text]="true"
+      [disabled]="savingCategory()"
+      (onClick)="
+        closeCategoryDialog()
+      "
+    />
+
+    <p-button
+      label="Guardar categoría"
+      icon="pi pi-check"
+      [loading]="savingCategory()"
+      (onClick)="saveCategory()"
+    />
+  </ng-template>
+</p-dialog>
+
+<p-dialog
+  [visible]="sizeDialogVisible()"
+  (visibleChange)="
+    sizeDialogVisible.set($event)
+  "
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [closable]="!savingSize()"
+  [closeOnEscape]="!savingSize()"
+  [style]="{
+    width: 'min(94vw, 500px)'
+  }"
+  appendTo="body"
+  styleClass="admin-form-dialog"
+>
+  <ng-template pTemplate="header">
+    <div class="dialog-title">
+      <span>
+        <i class="pi pi-clone"></i>
+      </span>
+
+      <div>
+        <small>
+          Presentación
+        </small>
+
+        <strong>
+          {{
+            editingSize()
+              ? 'Editar tamaño'
+              : 'Nuevo tamaño'
+          }}
+        </strong>
+      </div>
+    </div>
+  </ng-template>
+
+  <form
+    class="dialog-form"
+    [formGroup]="sizeForm"
+    (ngSubmit)="saveSize()"
+  >
+    <label class="field">
+      <span>
+        Nombre <em>*</em>
+      </span>
+
+      <input
+        pInputText
+        formControlName="name"
+        maxlength="60"
+        placeholder="Ej. Familiar"
+      />
+
+      @if (
+        sizeForm.controls.name.touched &&
+        sizeForm.controls.name.invalid
+      ) {
+        <small class="field-error">
+          Ingresa un nombre de al menos
+          2 caracteres.
+        </small>
+      }
+    </label>
+
+    <label class="field">
+      <span>
+        Número de porciones <em>*</em>
+      </span>
+
+      <p-inputnumber
+        formControlName="portion"
+        [min]="1"
+        [max]="100"
+        [useGrouping]="false"
+        [showButtons]="true"
+        buttonLayout="horizontal"
+        incrementButtonIcon="pi pi-plus"
+        decrementButtonIcon="pi pi-minus"
+      />
+
+      @if (
+        sizeForm.controls.portion.touched &&
+        sizeForm.controls.portion.invalid
+      ) {
+        <small class="field-error">
+          Las porciones deben estar entre
+          1 y 100.
+        </small>
+      }
+    </label>
+  </form>
+
+  <ng-template pTemplate="footer">
+    <p-button
+      label="Cancelar"
+      severity="secondary"
+      [text]="true"
+      [disabled]="savingSize()"
+      (onClick)="closeSizeDialog()"
+    />
+
+    <p-button
+      label="Guardar tamaño"
+      icon="pi pi-check"
+      [loading]="savingSize()"
+      (onClick)="saveSize()"
+    />
+  </ng-template>
+</p-dialog>
+
+<p-confirmdialog
+  appendTo="body"
+/>

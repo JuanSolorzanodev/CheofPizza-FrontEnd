@@ -1,47 +1,86 @@
+import { PaymentReceiptDto } from '../payments/payment-receipts/payment-receipt.models';
+
 export type DeliveryType = 'delivery' | 'pickup' | string;
-export type PaymentMethod = 'cash' | 'transfer' | 'card' | string;
+
+export type PaymentMethod = 'cash' | 'transfer' | 'card' | 'paypal' | string;
+
+export type OrderStatusName =
+  | 'pending'
+  | 'confirmed'
+  | 'preparing'
+  | 'ready'
+  | 'on_the_way'
+  | 'delivered'
+  | 'cancelled';
 
 export interface ApiResource<T> {
   data: T;
 }
 
-export interface ApiPaginated<T> {
-  data: T[];
-  meta?: { total?: number; per_page?: number; current_page?: number };
-  links?: any;
+export interface ApiPaginationMeta {
+  total?: number;
+  per_page?: number;
+  current_page?: number;
+  last_page?: number;
+  from?: number | null;
+  to?: number | null;
+  path?: string;
 }
 
-// -------------------------
-// LIST (liviano + summary)
-// -------------------------
+export interface ApiPaginationLinks {
+  first?: string | null;
+  last?: string | null;
+  prev?: string | null;
+  next?: string | null;
+}
+
+export interface ApiPaginated<T> {
+  data: T[];
+  meta?: ApiPaginationMeta;
+  links?: ApiPaginationLinks | unknown;
+}
+
+export interface OperatorOrdersFilters {
+  page?: number;
+  per_page?: number;
+  q?: string;
+  status?: string;
+  delivery_type?: string;
+  payment_method?: string;
+  date_from?: string;
+  date_to?: string;
+}
+
+export interface OperatorOrderCustomerSummary {
+  name: string;
+  phone: string;
+}
+
 export interface OperatorOrderListDto {
   id: number;
   order_number: string;
   ordered_at: string | null;
   total: number;
 
-  status: string;
+  status: OrderStatusName | string;
   delivery_type: DeliveryType;
   payment_method: PaymentMethod;
 
-  customer: {
-    name: string;
-    phone: string;
-  } | null;
+  customer: OperatorOrderCustomerSummary | null;
 
   kitchen_summary: string;
 }
 
-// -------------------------
-// DETAIL (Kitchen ticket)
-// -------------------------
 export interface OperatorOrderDetailDto {
   id: number;
   order_number: string;
   ordered_at: string | null;
   total: number;
 
-  status: string;
+  status: OrderStatusName | string;
+
+  allowed_transitions: Array<OrderStatusName | string>;
+
   delivery_type: DeliveryType;
   payment_method: PaymentMethod;
 
@@ -60,7 +99,24 @@ export interface OperatorOrderDetailDto {
     reference?: string | null;
   } | null;
 
+  /**
+   * WhatsApp dirigido al cliente para confirmar el pedido.
+   *
+   * El backend lo devuelve únicamente mientras el pedido
+   * se encuentra pendiente y el teléfono es válido.
+   */
+  customer_confirmation_whatsapp_url?: string | null;
+
+  /**
+   * WhatsApp sin destinatario fijo utilizado para solicitar
+   * el servicio de delivery a un repartidor.
+   */
   delivery_whatsapp_url?: string | null;
+
+  /**
+   * Último comprobante asociado al pedido.
+   */
+  payment_receipt: PaymentReceiptDto | null;
 
   kitchen: {
     items: KitchenItemDto[];
@@ -75,12 +131,14 @@ export interface OperatorStatusChangeDto {
   changed_at: string | null;
   note: string | null;
   by?: string | null;
-  changed_by?: { id: number; name: string; email: string } | null;
+
+  changed_by?: {
+    id: number;
+    name: string;
+    email: string;
+  } | null;
 }
 
-// -------------------------
-// Kitchen Ticket models
-// -------------------------
 export type KitchenItemType = 'pizza' | 'half_and_half' | 'promotion';
 
 export interface KitchenItemDto {
@@ -97,14 +155,28 @@ export interface KitchenItemDto {
   };
 
   half?: {
-    A: { pizza_id: number; pizza_name: string; ingredients: string[] };
-    B: { pizza_id: number; pizza_name: string; ingredients: string[] };
+    A: {
+      pizza_id: number;
+      pizza_name: string;
+      ingredients: string[];
+    };
+
+    B: {
+      pizza_id: number;
+      pizza_name: string;
+      ingredients: string[];
+    };
   };
 
   promotion?: {
     id: number;
     name: string;
-    pizzas: { pizza_id: number; pizza_name: string; ingredients: string[] }[];
+
+    pizzas: Array<{
+      pizza_id: number;
+      pizza_name: string;
+      ingredients: string[];
+    }>;
   };
 
   personalizations?: KitchenPersonalizationDto[];
@@ -120,4 +192,12 @@ export interface KitchenPersonalizationDto {
 
 export interface QueueCountsDto {
   [statusName: string]: number;
+}
+
+export interface OperatorQueueResponse {
+  data: QueueCountsDto;
+}
+
+export interface OperatorStatusesResponse {
+  data: string[];
 }

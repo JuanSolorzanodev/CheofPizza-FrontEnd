@@ -1,3 +1,27 @@
+:host {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+}
+
 .app-shell {
-  padding: 16px;
+  position: relative;
+  z-index: var(--cheof-z-content);
+
+  display: block;
+  min-width: 0;
+  min-height:
+    calc(
+      100vh -
+      var(--cheof-toolbar-height)
+    );
+
+  flex: 1;
+
+  background:
+    var(--cheof-page-background);
+}
+
+.app-shell--admin {
+  min-height: 100vh;
 }

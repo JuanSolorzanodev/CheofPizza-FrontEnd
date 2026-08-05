@@ -1,0 +1,106 @@
+/* =========================================================
+   VISIBILIDAD
+   ========================================================= */
+
+.cheof-desktop-only {
+  display: block;
+}
+
+.cheof-mobile-only {
+  display: none;
+}
+
+/* =========================================================
+   TAMAÑOS
+   ========================================================= */
+
+.cheof-w-full {
+  width: 100%;
+}
+
+.cheof-min-w-0 {
+  min-width: 0;
+}
+
+/* =========================================================
+   TEXTO
+   ========================================================= */
+
+.cheof-text-muted {
+  color:
+    var(--p-text-muted-color);
+}
+
+.cheof-text-center {
+  text-align: center;
+}
+
+.cheof-text-right {
+  text-align: right;
+}
+
+.cheof-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* =========================================================
+   FLEX
+   ========================================================= */
+
+.cheof-flex {
+  display: flex;
+}
+
+.cheof-items-center {
+  align-items: center;
+}
+
+.cheof-justify-between {
+  justify-content: space-between;
+}
+
+.cheof-gap-2 {
+  gap:
+    var(--cheof-space-2);
+}
+
+.cheof-gap-3 {
+  gap:
+    var(--cheof-space-3);
+}
+
+.cheof-gap-4 {
+  gap:
+    var(--cheof-space-4);
+}
+
+/* =========================================================
+   ACCESIBILIDAD
+   ========================================================= */
+
+.cheof-sr-only {
+  position: absolute;
+
+  width: 1px;
+  height: 1px;
+
+  padding: 0;
+  margin: -1px;
+
+  overflow: hidden;
+
+  clip:
+    rect(
+      0,
+      0,
+      0,
+      0
+    );
+
+  white-space:
+    nowrap;
+
+  border: 0;
+}

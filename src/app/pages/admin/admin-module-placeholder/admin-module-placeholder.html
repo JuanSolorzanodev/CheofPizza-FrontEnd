@@ -1,0 +1,43 @@
+<section class="module-page">
+  <header class="module-header">
+    <div>
+      <span class="module-eyebrow">
+        {{ section() }}
+      </span>
+
+      <h2>{{ pageTitle() }}</h2>
+
+      <p>{{ pageDescription() }}</p>
+    </div>
+
+    <a
+      class="module-back"
+      routerLink="/admin/dashboard"
+    >
+      <i class="pi pi-arrow-left"></i>
+      Volver al resumen
+    </a>
+  </header>
+
+  <article class="module-placeholder">
+    <span class="module-placeholder__icon">
+      <i [class]="pageIcon()"></i>
+    </span>
+
+    <div>
+      <span class="module-placeholder__status">
+        Próxima implementación
+      </span>
+
+      <h3>
+        La estructura del módulo está preparada
+      </h3>
+
+      <p>
+        Esta ruta ya está integrada dentro del panel.
+        El siguiente paso es conectar su API, tabla,
+        formularios, validaciones y acciones administrativas.
+      </p>
+    </div>
+  </article>
+</section>

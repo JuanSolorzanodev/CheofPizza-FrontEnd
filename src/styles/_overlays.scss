@@ -1,0 +1,318 @@
+/* =========================================================
+   MÁSCARAS
+   ========================================================= */
+
+/*
+ * PrimeNG administra los z-index desde app.config.ts.
+ * Aquí únicamente se define la apariencia visual.
+ */
+
+.p-dialog-mask {
+  background: rgb(2 6 23 / 56%);
+
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+}
+
+.p-drawer-mask {
+  background: rgb(2 6 23 / 42%);
+
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+/* =========================================================
+   DIÁLOGOS
+   ========================================================= */
+
+.p-dialog {
+  overflow: hidden;
+
+  border:
+    1px solid
+    var(--cheof-card-border);
+
+  border-radius:
+    var(--cheof-radius-xl);
+
+  background:
+    var(--cheof-card-background);
+
+  color:
+    var(--p-text-color);
+
+  box-shadow:
+    var(--cheof-shadow-lg);
+}
+
+.p-dialog-header,
+.p-dialog-content,
+.p-dialog-footer {
+  background:
+    var(--cheof-card-background);
+
+  color:
+    var(--p-text-color);
+}
+
+.p-dialog-header {
+  padding:
+    var(--cheof-space-5)
+    var(--cheof-space-5)
+    var(--cheof-space-3);
+}
+
+.p-dialog-content {
+  padding:
+    var(--cheof-space-4)
+    var(--cheof-space-5)
+    var(--cheof-space-5);
+}
+
+.p-dialog-footer {
+  padding:
+    0
+    var(--cheof-space-5)
+    var(--cheof-space-5);
+}
+
+.p-dialog-title {
+  color:
+    var(--p-text-color);
+
+  font-weight: 750;
+}
+
+.p-dialog-header-actions {
+  display: flex;
+  align-items: center;
+  gap:
+    var(--cheof-space-2);
+}
+
+.p-dialog-header-close {
+  border-radius:
+    var(--cheof-radius-sm);
+}
+
+/* =========================================================
+   DRAWER
+   ========================================================= */
+
+.p-drawer {
+  border-color:
+    var(--cheof-card-border);
+
+  background:
+    var(--cheof-card-background);
+
+  color:
+    var(--p-text-color);
+
+  box-shadow:
+    var(--cheof-shadow-lg);
+}
+
+.p-drawer-header,
+.p-drawer-content,
+.p-drawer-footer {
+  background:
+    var(--cheof-card-background);
+
+  color:
+    var(--p-text-color);
+}
+
+.p-drawer-header {
+  padding:
+    var(--cheof-space-5);
+}
+
+.p-drawer-content {
+  padding:
+    0
+    var(--cheof-space-5)
+    var(--cheof-space-5);
+
+  overflow-y: auto;
+}
+
+.p-drawer-footer {
+  padding:
+    var(--cheof-space-4)
+    var(--cheof-space-5)
+    var(--cheof-space-5);
+}
+
+.p-drawer-title {
+  color:
+    var(--p-text-color);
+
+  font-weight: 750;
+}
+
+.p-drawer-close-button {
+  border-radius:
+    var(--cheof-radius-sm);
+}
+
+/* =========================================================
+   POPOVER Y MENÚS
+   ========================================================= */
+
+.p-popover,
+.p-menu,
+.p-tieredmenu,
+.p-contextmenu,
+.p-select-overlay,
+.p-multiselect-overlay,
+.p-datepicker-panel {
+  border:
+    1px solid
+    var(--cheof-card-border);
+
+  border-radius:
+    var(--cheof-radius-md);
+
+  background:
+    var(--cheof-card-background);
+
+  color:
+    var(--p-text-color);
+
+  box-shadow:
+    var(--cheof-shadow-md);
+}
+
+.p-popover-content,
+.p-menu-list,
+.p-tieredmenu-root-list,
+.p-contextmenu-root-list,
+.p-select-list,
+.p-multiselect-list {
+  background:
+    var(--cheof-card-background);
+
+  color:
+    var(--p-text-color);
+}
+
+.p-menu-item-content,
+.p-tieredmenu-item-content,
+.p-contextmenu-item-content,
+.p-select-option,
+.p-multiselect-option {
+  border-radius:
+    var(--cheof-radius-sm);
+}
+
+.p-menu-item-content:hover,
+.p-tieredmenu-item-content:hover,
+.p-contextmenu-item-content:hover,
+.p-select-option:not(.p-select-option-selected):not(.p-disabled):hover,
+.p-multiselect-option:not(.p-multiselect-option-selected):not(.p-disabled):hover {
+  background:
+    var(--p-content-hover-background);
+
+  color:
+    var(--p-text-color);
+}
+
+/* =========================================================
+   TOOLTIP
+   ========================================================= */
+
+.p-tooltip .p-tooltip-text {
+  border-radius:
+    var(--cheof-radius-sm);
+
+  background:
+    var(--p-surface-900);
+
+  color:
+    var(--p-surface-0);
+
+  box-shadow:
+    var(--cheof-shadow-sm);
+}
+
+/* =========================================================
+   BLOQUEO DE SCROLL
+   ========================================================= */
+
+body.p-overflow-hidden {
+  overflow: hidden;
+
+  overscroll-behavior: contain;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 768px) {
+  .p-dialog {
+    max-width:
+      calc(
+        100vw - 1rem
+      );
+
+    max-height:
+      calc(
+        100dvh - 1rem
+      );
+
+    border-radius:
+      var(--cheof-radius-lg);
+  }
+
+  .p-dialog-header {
+    padding:
+      var(--cheof-space-4)
+      var(--cheof-space-4)
+      var(--cheof-space-2);
+  }
+
+  .p-dialog-content {
+    padding:
+      var(--cheof-space-3)
+      var(--cheof-space-4)
+      var(--cheof-space-4);
+
+    overflow-y: auto;
+  }
+
+  .p-dialog-footer {
+    padding:
+      0
+      var(--cheof-space-4)
+      var(--cheof-space-4);
+  }
+
+  .p-drawer-header {
+    padding:
+      var(--cheof-space-4);
+  }
+
+  .p-drawer-content {
+    padding:
+      0
+      var(--cheof-space-4)
+      var(--cheof-space-4);
+  }
+
+  .p-drawer-footer {
+    padding:
+      var(--cheof-space-3)
+      var(--cheof-space-4)
+      var(--cheof-space-4);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .p-dialog-mask,
+  .p-drawer-mask {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}

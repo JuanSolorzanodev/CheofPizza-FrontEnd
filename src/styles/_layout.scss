@@ -1,0 +1,141 @@
+/* =========================================================
+   CONTENEDORES
+   ========================================================= */
+
+.cheof-page {
+  width:
+    min(
+      var(--cheof-page-max-width),
+      100%
+    );
+
+  margin-inline: auto;
+
+  padding:
+    var(--cheof-page-padding);
+}
+
+.cheof-content {
+  width:
+    min(
+      var(--cheof-content-max-width),
+      100%
+    );
+
+  margin-inline: auto;
+}
+
+.cheof-section {
+  padding-block:
+    var(--cheof-space-8);
+}
+
+.cheof-section-sm {
+  padding-block:
+    var(--cheof-space-5);
+}
+
+/* =========================================================
+   ENCABEZADOS
+   ========================================================= */
+
+.cheof-page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap:
+    var(--cheof-space-6);
+
+  margin-bottom:
+    var(--cheof-space-6);
+}
+
+.cheof-page-header__copy {
+  min-width: 0;
+}
+
+.cheof-page-header__eyebrow {
+  display: block;
+
+  margin-bottom:
+    var(--cheof-space-2);
+
+  color:
+    var(--p-primary-color);
+
+  font-size: 0.75rem;
+  font-weight: 800;
+
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.cheof-page-header__title {
+  margin: 0;
+
+  font-size:
+    clamp(
+      1.8rem,
+      4vw,
+      3rem
+    );
+
+  line-height: 1.08;
+}
+
+.cheof-page-header__description {
+  max-width: 72ch;
+
+  margin:
+    var(--cheof-space-3)
+    0
+    0;
+
+  color:
+    var(--p-text-muted-color);
+
+  line-height: 1.65;
+}
+
+.cheof-page-header__actions {
+  display: flex;
+  align-items: center;
+  gap:
+    var(--cheof-space-3);
+
+  flex-shrink: 0;
+}
+
+/* =========================================================
+   GRIDS
+   ========================================================= */
+
+.cheof-grid {
+  display: grid;
+  gap:
+    var(--cheof-space-4);
+}
+
+.cheof-grid-2 {
+  grid-template-columns:
+    repeat(
+      2,
+      minmax(0, 1fr)
+    );
+}
+
+.cheof-grid-3 {
+  grid-template-columns:
+    repeat(
+      3,
+      minmax(0, 1fr)
+    );
+}
+
+.cheof-grid-4 {
+  grid-template-columns:
+    repeat(
+      4,
+      minmax(0, 1fr)
+    );
+}

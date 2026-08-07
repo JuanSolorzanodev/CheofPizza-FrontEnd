@@ -12,7 +12,13 @@
         icon="pi pi-refresh"
         severity="secondary"
         [outlined]="true"
-        [loading]="activeSection() === 'forecast' ? loading() : trainingLoading()"
+        [loading]="
+          activeSection() === 'forecast'
+            ? loading()
+            : activeSection() === 'training'
+              ? trainingLoading()
+              : false
+        "
         (onClick)="refreshActiveSection()"
       />
 
@@ -37,6 +43,17 @@
       <i class="pi pi-chart-line"></i>
 
       <span> Pronóstico de demanda </span>
+    </button>
+
+    <button
+      type="button"
+      class="analytics-tab"
+      [class.analytics-tab-active]="activeSection() === 'comparison'"
+      (click)="selectSection('comparison')"
+    >
+      <i class="pi pi-chart-bar"></i>
+
+      <span> Predicción vs. ventas reales </span>
     </button>
 
     <button
@@ -538,6 +555,8 @@
         }
       </article>
     }
+  } @else if (activeSection() === 'comparison') {
+    <app-machine-learning-comparison />
   } @else {
     @if (trainingLoading()) {
       <section class="training-loading">

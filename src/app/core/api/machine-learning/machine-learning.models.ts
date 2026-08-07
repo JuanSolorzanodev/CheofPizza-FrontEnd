@@ -440,3 +440,77 @@ export interface RollbackTrainingModelResult {
   registry: ModelRollbackRegistry;
   training_run: MachineLearningTrainingRun | null;
 }
+
+/*
+|--------------------------------------------------------------------------
+| Comparación entre pronóstico y ventas reales
+|--------------------------------------------------------------------------
+*/
+
+export type MachineLearningComparisonStatus =
+  | 'completed'
+  | 'in_progress'
+  | 'pending';
+
+export interface MachineLearningComparisonPeriod {
+  date_from: string;
+  date_to: string;
+  timezone: string;
+  days: number;
+}
+
+export interface MachineLearningComparisonModel {
+  uuid: string;
+  algorithm: string;
+  version: string;
+  generated_at: string | null;
+  forecast_from: string | null;
+  forecast_until: string | null;
+}
+
+export interface MachineLearningComparisonSummary {
+  days_with_prediction: number;
+  days_compared: number;
+  days_in_progress: number;
+  days_pending: number;
+
+  predicted_total: number;
+  actual_total: number;
+  difference: number;
+
+  absolute_error_total: number;
+  mae: number;
+  average_accuracy_percentage: number;
+}
+
+export interface MachineLearningComparisonDay {
+  date: string;
+  day_of_week: string;
+
+  status: MachineLearningComparisonStatus;
+
+  predicted_total: number;
+  actual_total: number | null;
+
+  difference: number | null;
+  absolute_error: number | null;
+  accuracy_percentage: number | null;
+
+  predicted_sizes: ForecastSizes;
+  actual_sizes: ForecastSizes | null;
+
+  actual_net_sales: number | null;
+  delivered_orders: number | null;
+}
+
+export interface MachineLearningComparison {
+  period: MachineLearningComparisonPeriod;
+  model: MachineLearningComparisonModel | null;
+  summary: MachineLearningComparisonSummary;
+  days: MachineLearningComparisonDay[];
+}
+
+export interface MachineLearningComparisonParams {
+  date_from: string;
+  date_to: string;
+}

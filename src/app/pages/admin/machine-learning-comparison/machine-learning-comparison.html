@@ -1,0 +1,1193 @@
+<section class="comparison-page">
+  <!--
+  |--------------------------------------------------------------------------
+  | Encabezado y filtros
+  |--------------------------------------------------------------------------
+  -->
+
+  <article class="comparison-hero surface-card">
+    <div class="comparison-hero-copy">
+      <span class="comparison-eyebrow">
+        <i
+          class="pi pi-chart-line"
+          aria-hidden="true"
+        ></i>
+
+        Validación del modelo
+      </span>
+
+      <h2>
+        Predicción frente a ventas reales
+      </h2>
+
+      <p>
+        Compara la demanda estimada por el modelo con las pizzas
+        realmente vendidas. Consulta la precisión diaria, el error
+        promedio y el comportamiento por tamaño de pizza.
+      </p>
+    </div>
+
+    <form
+      class="comparison-filter"
+      [formGroup]="filterForm"
+      (ngSubmit)="loadComparison()"
+    >
+      <div class="filter-field">
+        <label for="comparison-date-from">
+          Desde
+        </label>
+
+        <p-datepicker
+          inputId="comparison-date-from"
+          formControlName="dateFrom"
+          dateFormat="dd/mm/yy"
+          placeholder="Fecha inicial"
+          appendTo="body"
+          [showIcon]="true"
+          [showButtonBar]="true"
+          [maxDate]="filterForm.controls.dateTo.value"
+          [readonlyInput]="true"
+        />
+
+        @if (
+          filterForm.controls.dateFrom.invalid &&
+          filterForm.controls.dateFrom.touched
+        ) {
+          <small class="field-error">
+            Selecciona la fecha inicial.
+          </small>
+        }
+      </div>
+
+      <div class="filter-field">
+        <label for="comparison-date-to">
+          Hasta
+        </label>
+
+        <p-datepicker
+          inputId="comparison-date-to"
+          formControlName="dateTo"
+          dateFormat="dd/mm/yy"
+          placeholder="Fecha final"
+          appendTo="body"
+          [showIcon]="true"
+          [showButtonBar]="true"
+          [minDate]="filterForm.controls.dateFrom.value"
+          [maxDate]="todayDate"
+          [readonlyInput]="true"
+        />
+
+        @if (
+          filterForm.controls.dateTo.invalid &&
+          filterForm.controls.dateTo.touched
+        ) {
+          <small class="field-error">
+            Selecciona la fecha final.
+          </small>
+        }
+      </div>
+
+      <div class="filter-actions">
+        <p-button
+          type="button"
+          label="Restablecer"
+          icon="pi pi-undo"
+          severity="secondary"
+          [outlined]="true"
+          [disabled]="loading()"
+          (onClick)="resetRange()"
+        />
+
+        <p-button
+          type="submit"
+          label="Comparar"
+          icon="pi pi-search"
+          severity="success"
+          [loading]="loading()"
+          [disabled]="filterForm.invalid"
+        />
+      </div>
+    </form>
+  </article>
+
+  <!--
+  |--------------------------------------------------------------------------
+  | Estado de carga
+  |--------------------------------------------------------------------------
+  -->
+
+  @if (loading()) {
+    <section
+      class="comparison-loading"
+      aria-live="polite"
+      aria-label="Cargando comparación"
+    >
+      <div class="model-strip surface-card">
+        <p-skeleton
+          width="100%"
+          height="64px"
+          borderRadius="14px"
+        />
+      </div>
+
+      <div class="summary-grid">
+        @for (
+          item of [1, 2, 3, 4, 5];
+          track item
+        ) {
+          <p-skeleton
+            height="158px"
+            borderRadius="20px"
+          />
+        }
+      </div>
+
+      <p-skeleton
+        height="430px"
+        borderRadius="20px"
+      />
+
+      <p-skeleton
+        height="390px"
+        borderRadius="20px"
+      />
+    </section>
+  } @else if (!comparison()?.model) {
+    <!--
+    |--------------------------------------------------------------------------
+    | Sin modelo activo
+    |--------------------------------------------------------------------------
+    -->
+
+    <article class="empty-state surface-card">
+      <span class="empty-state-icon">
+        <i
+          class="pi pi-sparkles"
+          aria-hidden="true"
+        ></i>
+      </span>
+
+      <h2>
+        No existe un modelo activo
+      </h2>
+
+      <p>
+        Para mostrar la comparación primero debe existir un
+        pronóstico generado y un modelo activo dentro del módulo
+        de análisis predictivo.
+      </p>
+    </article>
+  } @else if (
+    comparison();
+    as result
+  ) {
+    <!--
+    |--------------------------------------------------------------------------
+    | Información del modelo
+    |--------------------------------------------------------------------------
+    -->
+
+    <article class="model-strip surface-card">
+      <div class="model-status">
+        <span
+          class="status-dot"
+          aria-hidden="true"
+        ></span>
+
+        <div>
+          <span>
+            Modelo utilizado
+          </span>
+
+          <strong>
+            {{ result.model?.algorithm }}
+            · versión
+            {{ result.model?.version }}
+          </strong>
+        </div>
+      </div>
+
+      <div class="model-period">
+        <span>
+          Periodo consultado
+        </span>
+
+        <strong>
+          {{ formatDate(result.period.date_from) }}
+          —
+          {{ formatDate(result.period.date_to) }}
+        </strong>
+      </div>
+
+      <div class="model-period">
+        <span>
+          Días con pronóstico
+        </span>
+
+        <strong>
+          {{ result.summary.days_with_prediction }}
+        </strong>
+      </div>
+    </article>
+
+    <!--
+    |--------------------------------------------------------------------------
+    | Resumen general
+    |--------------------------------------------------------------------------
+    -->
+
+    <section
+      class="summary-grid"
+      aria-label="Resumen de comparación"
+    >
+      <article class="summary-card surface-card">
+        <div class="summary-card-top">
+          <span class="summary-icon predicted">
+            <i
+              class="pi pi-sparkles"
+              aria-hidden="true"
+            ></i>
+          </span>
+
+          <span class="summary-label">
+            Pronosticadas
+          </span>
+        </div>
+
+        <strong class="summary-value">
+          {{
+            formatNumber(
+              result.summary.predicted_total
+            )
+          }}
+        </strong>
+
+        <small>
+          pizzas previstas en los días completamente finalizados
+        </small>
+      </article>
+
+      <article class="summary-card surface-card">
+        <div class="summary-card-top">
+          <span class="summary-icon actual">
+            <i
+              class="pi pi-shopping-bag"
+              aria-hidden="true"
+            ></i>
+          </span>
+
+          <span class="summary-label">
+            Vendidas
+          </span>
+        </div>
+
+        <strong class="summary-value">
+          {{
+            formatNumber(
+              result.summary.actual_total
+            )
+          }}
+        </strong>
+
+        <small>
+          pizzas registradas realmente en pedidos entregados
+        </small>
+      </article>
+
+      <article class="summary-card surface-card">
+        <div class="summary-card-top">
+          <span class="summary-icon difference">
+            <i
+              class="pi pi-arrows-h"
+              aria-hidden="true"
+            ></i>
+          </span>
+
+          <span class="summary-label">
+            Diferencia
+          </span>
+        </div>
+
+        <strong
+          class="summary-value"
+          [class]="differenceClass(
+            result.summary.difference
+          )"
+        >
+          {{
+            formatSignedNumber(
+              result.summary.difference
+            )
+          }}
+        </strong>
+
+        <small>
+          resultado real menos cantidad pronosticada
+        </small>
+      </article>
+
+      <article class="summary-card surface-card">
+        <div class="summary-card-top">
+          <span class="summary-icon error">
+            <i
+              class="pi pi-wave-pulse"
+              aria-hidden="true"
+            ></i>
+          </span>
+
+          <span class="summary-label">
+            Error medio
+          </span>
+        </div>
+
+        <strong class="summary-value">
+          {{
+            formatNumber(
+              result.summary.mae,
+              2
+            )
+          }}
+        </strong>
+
+        <small>
+          MAE expresado en cantidad promedio de pizzas
+        </small>
+      </article>
+
+      <article class="summary-card surface-card">
+        <div class="summary-card-top">
+          <span class="summary-icon accuracy">
+            <i
+              class="pi pi-percentage"
+              aria-hidden="true"
+            ></i>
+          </span>
+
+          <span class="summary-label">
+            Precisión promedio
+          </span>
+        </div>
+
+        <strong
+          class="summary-value"
+          [class]="accuracyClass(
+            result.summary
+              .average_accuracy_percentage
+          )"
+        >
+          {{
+            formatPercentage(
+              result.summary
+                .average_accuracy_percentage
+            )
+          }}
+        </strong>
+
+        <small>
+          calculada con
+          {{ result.summary.days_compared }}
+          días finalizados
+        </small>
+      </article>
+    </section>
+
+    <!--
+    |--------------------------------------------------------------------------
+    | Indicadores adicionales
+    |--------------------------------------------------------------------------
+    -->
+
+    <section class="insights-grid">
+      @if (
+        bestDay();
+        as best
+      ) {
+        <article class="insight-card surface-card insight-positive">
+          <span class="insight-icon">
+            <i
+              class="pi pi-bolt"
+              aria-hidden="true"
+            ></i>
+          </span>
+
+          <div>
+            <span>
+              Mejor coincidencia
+            </span>
+
+            <strong>
+              {{ best.day_of_week }},
+              {{ formatDate(best.date) }}
+            </strong>
+
+            <small>
+              {{
+                formatPercentage(
+                  best.accuracy_percentage
+                )
+              }}
+              de precisión
+            </small>
+          </div>
+        </article>
+      }
+
+      @if (
+        worstDay();
+        as worst
+      ) {
+        <article class="insight-card surface-card insight-warning">
+          <span class="insight-icon">
+            <i
+              class="pi pi-exclamation-triangle"
+              aria-hidden="true"
+            ></i>
+          </span>
+
+          <div>
+            <span>
+              Mayor desviación
+            </span>
+
+            <strong>
+              {{ worst.day_of_week }},
+              {{ formatDate(worst.date) }}
+            </strong>
+
+            <small>
+              {{
+                formatPercentage(
+                  worst.accuracy_percentage
+                )
+              }}
+              de precisión
+            </small>
+          </div>
+        </article>
+      }
+
+      <article class="insight-card surface-card insight-neutral">
+        <span class="insight-icon">
+          <i
+            class="pi pi-receipt"
+            aria-hidden="true"
+          ></i>
+        </span>
+
+        <div>
+          <span>
+            Pedidos entregados
+          </span>
+
+          <strong>
+            {{
+              formatNumber(
+                totalDeliveredOrders()
+              )
+            }}
+          </strong>
+
+          <small>
+            pedidos considerados en el periodo
+          </small>
+        </div>
+      </article>
+
+      <article class="insight-card surface-card insight-sales">
+        <span class="insight-icon">
+          <i
+            class="pi pi-dollar"
+            aria-hidden="true"
+          ></i>
+        </span>
+
+        <div>
+          <span>
+            Venta neta acumulada
+          </span>
+
+          <strong>
+            {{
+              formatCurrency(
+                totalNetSales()
+              )
+            }}
+          </strong>
+
+          <small>
+            ingresos reales del periodo consultado
+          </small>
+        </div>
+      </article>
+    </section>
+
+    <!--
+    |--------------------------------------------------------------------------
+    | Gráfica comparativa
+    |--------------------------------------------------------------------------
+    -->
+
+    <article class="chart-card surface-card">
+      <header class="panel-header">
+        <div>
+          <span class="panel-eyebrow">
+            Tendencia diaria
+          </span>
+
+          <h2>
+            Demanda estimada frente a ventas reales
+          </h2>
+
+          <p>
+            La fecha actual se presenta como un resultado parcial.
+            Las fechas futuras permanecen pendientes hasta que
+            finalice el correspondiente día comercial.
+          </p>
+        </div>
+
+        <div
+          class="chart-status"
+          aria-label="Estado de fechas"
+        >
+          <span class="status-chip completed">
+            <i
+              class="pi pi-check-circle"
+              aria-hidden="true"
+            ></i>
+
+            {{ result.summary.days_compared }}
+            finalizados
+          </span>
+
+          <span class="status-chip progress">
+            <i
+              class="pi pi-clock"
+              aria-hidden="true"
+            ></i>
+
+            {{ result.summary.days_in_progress }}
+            en curso
+          </span>
+
+          <span class="status-chip pending">
+            <i
+              class="pi pi-hourglass"
+              aria-hidden="true"
+            ></i>
+
+            {{ result.summary.days_pending }}
+            pendientes
+          </span>
+        </div>
+      </header>
+
+      @if (hasResults()) {
+        <div class="chart-container">
+          <p-chart
+            type="line"
+            [data]="chartData()"
+            [options]="chartOptions()"
+            aria-label="Gráfica de predicción y ventas reales"
+          />
+        </div>
+      } @else {
+        <div class="chart-empty">
+          <i
+            class="pi pi-chart-line"
+            aria-hidden="true"
+          ></i>
+
+          <strong>
+            No hay pronósticos dentro del periodo
+          </strong>
+
+          <span>
+            Selecciona fechas que coincidan con el rango generado
+            por el modelo predictivo activo.
+          </span>
+        </div>
+      }
+    </article>
+
+    <!--
+    |--------------------------------------------------------------------------
+    | Detalle diario
+    |--------------------------------------------------------------------------
+    -->
+
+    <article class="detail-card surface-card">
+      <header class="panel-header detail-header">
+        <div>
+          <span class="panel-eyebrow">
+            Resultados diarios
+          </span>
+
+          <h2>
+            Detalle por fecha
+          </h2>
+
+          <p>
+            Abre una fila para consultar la comparación de pizzas
+            mini, pequeñas, medianas, familiares y gigantes.
+          </p>
+        </div>
+
+        <span class="detail-hint">
+          <i
+            class="pi pi-info-circle"
+            aria-hidden="true"
+          ></i>
+
+          Venta real considera pedidos entregados
+        </span>
+      </header>
+
+      <!--
+      |--------------------------------------------------------------------------
+      | Tabla de escritorio
+      |--------------------------------------------------------------------------
+      -->
+
+      <div class="desktop-table">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">
+                Fecha
+              </th>
+
+              <th scope="col">
+                Estado
+              </th>
+
+              <th
+                scope="col"
+                class="text-right"
+              >
+                Predicción
+              </th>
+
+              <th
+                scope="col"
+                class="text-right"
+              >
+                Venta real
+              </th>
+
+              <th scope="col">
+                Diferencia
+              </th>
+
+              <th
+                scope="col"
+                class="text-right"
+              >
+                Error
+              </th>
+
+              <th scope="col">
+                Precisión
+              </th>
+
+              <th
+                scope="col"
+                class="text-right"
+              >
+                Pedidos
+              </th>
+
+              <th
+                scope="col"
+                class="text-right"
+              >
+                Venta neta
+              </th>
+
+              <th
+                scope="col"
+                aria-label="Acciones"
+              ></th>
+            </tr>
+          </thead>
+
+          <tbody>
+            @for (
+              day of result.days;
+              track day.date
+            ) {
+              <tr
+                class="result-row"
+                tabindex="0"
+                role="button"
+                [attr.aria-expanded]="isExpanded(day.date)"
+                (click)="toggleDay(day.date)"
+                (keydown.enter)="toggleDay(day.date)"
+                (keydown.space)="
+                  $event.preventDefault();
+                  toggleDay(day.date)
+                "
+              >
+                <td>
+                  <div class="date-cell">
+                    <strong>
+                      {{ day.day_of_week }}
+                    </strong>
+
+                    <span>
+                      {{ formatDate(day.date) }}
+                    </span>
+                  </div>
+                </td>
+
+                <td>
+                  <p-tag
+                    [value]="statusLabel(day.status)"
+                    [severity]="statusSeverity(day.status)"
+                    [icon]="statusIcon(day.status)"
+                  />
+                </td>
+
+                <td class="numeric-cell">
+                  {{ formatNumber(day.predicted_total) }}
+                </td>
+
+                <td class="numeric-cell">
+                  {{ formatNumber(day.actual_total) }}
+                </td>
+
+                <td>
+                  <div
+                    class="difference-cell"
+                    [class]="differenceClass(
+                      day.difference
+                    )"
+                  >
+                    <strong>
+                      {{
+                        formatSignedNumber(
+                          day.difference
+                        )
+                      }}
+                    </strong>
+
+                    <small>
+                      {{
+                        differenceLabel(
+                          day.difference
+                        )
+                      }}
+                    </small>
+                  </div>
+                </td>
+
+                <td class="numeric-cell">
+                  {{
+                    formatNumber(
+                      day.absolute_error
+                    )
+                  }}
+                </td>
+
+                <td>
+                  <div
+                    class="accuracy-cell"
+                    [class]="accuracyClass(
+                      day.accuracy_percentage
+                    )"
+                  >
+                    <strong>
+                      {{
+                        formatPercentage(
+                          day.accuracy_percentage
+                        )
+                      }}
+                    </strong>
+
+                    <small>
+                      {{
+                        accuracyDescription(
+                          day.accuracy_percentage
+                        )
+                      }}
+                    </small>
+                  </div>
+                </td>
+
+                <td class="numeric-cell">
+                  {{
+                    formatNumber(
+                      day.delivered_orders
+                    )
+                  }}
+                </td>
+
+                <td class="numeric-cell">
+                  {{
+                    formatCurrency(
+                      day.actual_net_sales
+                    )
+                  }}
+                </td>
+
+                <td>
+                  <button
+                    type="button"
+                    class="expand-button"
+                    [attr.aria-expanded]="isExpanded(day.date)"
+                    [attr.aria-label]="
+                      isExpanded(day.date)
+                        ? 'Ocultar desglose por tamaños'
+                        : 'Mostrar desglose por tamaños'
+                    "
+                    (click)="
+                      $event.stopPropagation();
+                      toggleDay(day.date)
+                    "
+                  >
+                    <i
+                      class="pi"
+                      [class.pi-chevron-up]="isExpanded(day.date)"
+                      [class.pi-chevron-down]="!isExpanded(day.date)"
+                      aria-hidden="true"
+                    ></i>
+                  </button>
+                </td>
+              </tr>
+
+              @if (isExpanded(day.date)) {
+                <tr class="expanded-row">
+                  <td colspan="10">
+                    <div class="size-comparison">
+                      <header class="size-comparison-header">
+                        <div>
+                          <strong>
+                            Comparación por tamaño
+                          </strong>
+
+                          <span>
+                            Cantidad prevista frente a cantidad
+                            realmente vendida
+                          </span>
+                        </div>
+
+                        <div class="size-legend">
+                          <span>
+                            <i class="legend-dot predicted"></i>
+                            Predicción
+                          </span>
+
+                          <span>
+                            <i class="legend-dot actual"></i>
+                            Venta real
+                          </span>
+                        </div>
+                      </header>
+
+                      <div class="size-grid">
+                        @for (
+                          size of sizeComparison(day);
+                          track size.key
+                        ) {
+                          <article class="size-item">
+                            <div class="size-item-header">
+                              <span class="size-name">
+                                {{ size.label }}
+                              </span>
+
+                              <strong
+                                class="size-difference"
+                                [class]="differenceClass(
+                                  size.difference
+                                )"
+                              >
+                                {{
+                                  formatSignedNumber(
+                                    size.difference
+                                  )
+                                }}
+                              </strong>
+                            </div>
+
+                            <div class="size-values">
+                              <div>
+                                <span>
+                                  Predicción
+                                </span>
+
+                                <strong>
+                                  {{
+                                    formatNumber(
+                                      size.predicted
+                                    )
+                                  }}
+                                </strong>
+                              </div>
+
+                              <div>
+                                <span>
+                                  Venta real
+                                </span>
+
+                                <strong>
+                                  {{
+                                    formatNumber(
+                                      size.actual
+                                    )
+                                  }}
+                                </strong>
+                              </div>
+                            </div>
+                          </article>
+                        }
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              }
+            } @empty {
+              <tr>
+                <td
+                  colspan="10"
+                  class="empty-row"
+                >
+                  No existen predicciones dentro del rango
+                  seleccionado.
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <!--
+      |--------------------------------------------------------------------------
+      | Lista móvil
+      |--------------------------------------------------------------------------
+      -->
+
+      <div class="mobile-list">
+        @for (
+          day of result.days;
+          track day.date
+        ) {
+          <article class="mobile-result-card">
+            <header class="mobile-result-header">
+              <div class="mobile-date">
+                <strong>
+                  {{ day.day_of_week }}
+                </strong>
+
+                <span>
+                  {{ formatDate(day.date) }}
+                </span>
+              </div>
+
+              <p-tag
+                [value]="statusLabel(day.status)"
+                [severity]="statusSeverity(day.status)"
+                [icon]="statusIcon(day.status)"
+              />
+            </header>
+
+            <div class="mobile-metrics">
+              <div>
+                <span>
+                  Predicción
+                </span>
+
+                <strong>
+                  {{
+                    formatNumber(
+                      day.predicted_total
+                    )
+                  }}
+                </strong>
+              </div>
+
+              <div>
+                <span>
+                  Venta real
+                </span>
+
+                <strong>
+                  {{
+                    formatNumber(
+                      day.actual_total
+                    )
+                  }}
+                </strong>
+              </div>
+
+              <div>
+                <span>
+                  Diferencia
+                </span>
+
+                <strong
+                  [class]="differenceClass(
+                    day.difference
+                  )"
+                >
+                  {{
+                    formatSignedNumber(
+                      day.difference
+                    )
+                  }}
+                </strong>
+              </div>
+
+              <div>
+                <span>
+                  Precisión
+                </span>
+
+                <strong
+                  [class]="accuracyClass(
+                    day.accuracy_percentage
+                  )"
+                >
+                  {{
+                    formatPercentage(
+                      day.accuracy_percentage
+                    )
+                  }}
+                </strong>
+              </div>
+
+              <div>
+                <span>
+                  Pedidos
+                </span>
+
+                <strong>
+                  {{
+                    formatNumber(
+                      day.delivered_orders
+                    )
+                  }}
+                </strong>
+              </div>
+
+              <div>
+                <span>
+                  Venta neta
+                </span>
+
+                <strong>
+                  {{
+                    formatCurrency(
+                      day.actual_net_sales
+                    )
+                  }}
+                </strong>
+              </div>
+            </div>
+
+            <div class="mobile-result-note">
+              <span>
+                {{
+                  differenceLabel(
+                    day.difference
+                  )
+                }}
+              </span>
+
+              <span>
+                {{
+                  accuracyDescription(
+                    day.accuracy_percentage
+                  )
+                }}
+              </span>
+            </div>
+
+            <button
+              type="button"
+              class="mobile-expand-button"
+              [attr.aria-expanded]="isExpanded(day.date)"
+              (click)="toggleDay(day.date)"
+            >
+              <span>
+                {{
+                  isExpanded(day.date)
+                    ? 'Ocultar comparación por tamaños'
+                    : 'Ver comparación por tamaños'
+                }}
+              </span>
+
+              <i
+                class="pi"
+                [class.pi-chevron-up]="isExpanded(day.date)"
+                [class.pi-chevron-down]="!isExpanded(day.date)"
+                aria-hidden="true"
+              ></i>
+            </button>
+
+            @if (isExpanded(day.date)) {
+              <div class="mobile-size-list">
+                @for (
+                  size of sizeComparison(day);
+                  track size.key
+                ) {
+                  <div class="mobile-size-item">
+                    <div>
+                      <span>
+                        {{ size.label }}
+                      </span>
+
+                      <small>
+                        previsto / real
+                      </small>
+                    </div>
+
+                    <strong>
+                      {{
+                        formatNumber(
+                          size.predicted
+                        )
+                      }}
+                      /
+                      {{
+                        formatNumber(
+                          size.actual
+                        )
+                      }}
+                    </strong>
+
+                    <em
+                      [class]="differenceClass(
+                        size.difference
+                      )"
+                    >
+                      {{
+                        formatSignedNumber(
+                          size.difference
+                        )
+                      }}
+                    </em>
+                  </div>
+                }
+              </div>
+            }
+          </article>
+        } @empty {
+          <div class="mobile-empty">
+            <i
+              class="pi pi-inbox"
+              aria-hidden="true"
+            ></i>
+
+            <strong>
+              No existen resultados
+            </strong>
+
+            <span>
+              Selecciona otro periodo para consultar la
+              comparación.
+            </span>
+          </div>
+        }
+      </div>
+    </article>
+  }
+</section>

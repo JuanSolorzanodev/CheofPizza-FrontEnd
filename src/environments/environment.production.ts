@@ -4,7 +4,7 @@ export const environment: AppEnvironment = {
   production: true,
 
   apiUrl:
-    'https://api-cheofpizza-production-ae09.up.railway.app/api/',
+    'https://api.cheofpizza.com/api/',
 
   firebase: {
     apiKey:
@@ -38,7 +38,7 @@ export const environment: AppEnvironment = {
       'a4m2jgmhok4yorhsjrpg',
 
     host:
-      'cheofpizza-reverb-production.up.railway.app',
+      'ws.cheofpizza.com',
 
     port:
       443,
@@ -47,6 +47,6 @@ export const environment: AppEnvironment = {
       'https',
 
     authEndpoint:
-      'https://api-cheofpizza-production-ae09.up.railway.app/api/broadcasting/auth',
+      'https://api.cheofpizza.com/api/broadcasting/auth',
   },
 };

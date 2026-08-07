@@ -9,6 +9,7 @@ import {
   computed,
   inject,
   signal,
+  ViewChild,
 } from '@angular/core';
 import {
   takeUntilDestroyed,
@@ -90,9 +91,13 @@ import {
 import {
   ThemeService,
 } from '../../../core/state/theme.service';
+import {
+  MachineLearningComparisonComponent,
+} from '../machine-learning-comparison/machine-learning-comparison';
 
 type DashboardSection =
   | 'forecast'
+  | 'comparison'
   | 'training';
 
 interface ForecastSizeTotal {
@@ -121,6 +126,7 @@ interface ForecastSizeTotal {
     SkeletonModule,
     TagModule,
     TooltipModule,
+    MachineLearningComparisonComponent,
   ],
   providers: [
     ConfirmationService,
@@ -133,6 +139,12 @@ interface ForecastSizeTotal {
 export class MachineLearningDashboard
   implements OnInit
 {
+  @ViewChild(
+    MachineLearningComparisonComponent,
+  )
+  private comparisonComponent?:
+    MachineLearningComparisonComponent;
+
   private readonly api =
     inject(MachineLearningApiService);
 
@@ -854,6 +866,15 @@ export class MachineLearningDashboard
       'forecast'
     ) {
       this.loadDashboard();
+      return;
+    }
+
+    if (
+      this.activeSection() ===
+      'comparison'
+    ) {
+      this.comparisonComponent
+        ?.loadComparison();
       return;
     }
 

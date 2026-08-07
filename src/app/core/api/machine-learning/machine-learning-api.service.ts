@@ -16,6 +16,8 @@ import {
   ApiPaginatedResponse,
   ApiResponse,
   GenerateForecastPayload,
+  MachineLearningComparison,
+  MachineLearningComparisonParams,
   MachineLearningRemoteModel,
   MachineLearningRun,
   MachineLearningTrainingRun,
@@ -50,6 +52,9 @@ export class MachineLearningApiService {
   |--------------------------------------------------------------------------
   */
 
+  /**
+   * Obtiene el último pronóstico activo importado en Laravel.
+   */
   latest() {
     return this.http.get<
       ApiResponse<MachineLearningRun | null>
@@ -58,6 +63,37 @@ export class MachineLearningApiService {
     );
   }
 
+  /**
+   * Compara las predicciones del modelo activo con las ventas
+   * reales consolidadas dentro del periodo seleccionado.
+   */
+  comparison(
+    payload: MachineLearningComparisonParams,
+  ) {
+    const params =
+      new HttpParams()
+        .set(
+          'date_from',
+          payload.date_from,
+        )
+        .set(
+          'date_to',
+          payload.date_to,
+        );
+
+    return this.http.get<
+      ApiResponse<MachineLearningComparison>
+    >(
+      `${this.base}/comparison`,
+      {
+        params,
+      },
+    );
+  }
+
+  /**
+   * Obtiene el historial paginado de pronósticos.
+   */
   history(
     page = 1,
     perPage = 15,
@@ -83,6 +119,9 @@ export class MachineLearningApiService {
     );
   }
 
+  /**
+   * Obtiene una ejecución específica por UUID.
+   */
   show(
     uuid: string,
   ) {
@@ -95,6 +134,10 @@ export class MachineLearningApiService {
     );
   }
 
+  /**
+   * Consulta la información del modelo activo directamente
+   * desde el microservicio de Machine Learning.
+   */
   remoteModel() {
     return this.http.get<
       ApiResponse<MachineLearningRemoteModel>
@@ -103,6 +146,9 @@ export class MachineLearningApiService {
     );
   }
 
+  /**
+   * Solicita una vista previa de pronóstico sin persistirla.
+   */
   preview(
     payload: GenerateForecastPayload,
   ) {
@@ -114,6 +160,9 @@ export class MachineLearningApiService {
     );
   }
 
+  /**
+   * Genera, importa y persiste un nuevo pronóstico.
+   */
   generate(
     payload: GenerateForecastPayload,
   ) {
@@ -131,6 +180,10 @@ export class MachineLearningApiService {
   |--------------------------------------------------------------------------
   */
 
+  /**
+   * Obtiene el registro del modelo activo y el historial
+   * disponible para rollback.
+   */
   trainingRegistry() {
     return this.http.get<
       ApiResponse<ModelRegistry>
@@ -145,6 +198,10 @@ export class MachineLearningApiService {
   |--------------------------------------------------------------------------
   */
 
+  /**
+   * Analiza el dataset disponible y devuelve una vista previa
+   * del proceso de entrenamiento sin crear un artefacto.
+   */
   previewTraining(
     payload: TrainingDatasetOptions = {},
   ) {
@@ -158,6 +215,10 @@ export class MachineLearningApiService {
     );
   }
 
+  /**
+   * Construye y persiste un modelo candidato utilizando
+   * el dataset consolidado por Laravel.
+   */
   buildTrainingCandidate(
     payload: TrainingDatasetOptions = {},
   ) {
@@ -177,6 +238,9 @@ export class MachineLearningApiService {
   |--------------------------------------------------------------------------
   */
 
+  /**
+   * Obtiene el historial paginado de entrenamientos.
+   */
   trainingRuns(
     page = 1,
     perPage = 15,
@@ -202,6 +266,9 @@ export class MachineLearningApiService {
     );
   }
 
+  /**
+   * Obtiene una ejecución de entrenamiento por UUID.
+   */
   trainingRun(
     uuid: string,
   ) {
@@ -220,6 +287,9 @@ export class MachineLearningApiService {
   |--------------------------------------------------------------------------
   */
 
+  /**
+   * Activa un modelo candidato construido previamente.
+   */
   activateTrainingRun(
     uuid: string,
   ) {
@@ -235,6 +305,10 @@ export class MachineLearningApiService {
     );
   }
 
+  /**
+   * Revierte el modelo activo al artefacto anterior disponible
+   * en el registro.
+   */
   rollbackTrainingModel() {
     return this.http.post<
       ApiResponse<RollbackTrainingModelResult>
@@ -250,6 +324,10 @@ export class MachineLearningApiService {
   |--------------------------------------------------------------------------
   */
 
+  /**
+   * Normaliza las opciones enviadas al backend para evitar
+   * valores vacíos, límites inválidos o fechas con espacios.
+   */
   private normalizeTrainingOptions(
     payload: TrainingDatasetOptions,
   ): TrainingDatasetOptions {
@@ -274,12 +352,16 @@ export class MachineLearningApiService {
         payload.date_to,
       );
 
-    if (dateFrom !== null) {
+    if (
+      dateFrom !== null
+    ) {
       normalized.date_from =
         dateFrom;
     }
 
-    if (dateTo !== null) {
+    if (
+      dateTo !== null
+    ) {
       normalized.date_to =
         dateTo;
     }
@@ -287,12 +369,18 @@ export class MachineLearningApiService {
     return normalized;
   }
 
+  /**
+   * Mantiene el límite del dataset dentro del rango permitido
+   * por el backend.
+   */
   private normalizeLimit(
     value: number | undefined,
   ): number {
     if (
       value === undefined ||
-      !Number.isFinite(value)
+      !Number.isFinite(
+        value,
+      )
     ) {
       return 365;
     }
@@ -301,16 +389,23 @@ export class MachineLearningApiService {
       1000,
       Math.max(
         1,
-        Math.trunc(value),
+        Math.trunc(
+          value,
+        ),
       ),
     );
   }
 
+  /**
+   * Convierte textos vacíos en null y elimina espacios
+   * innecesarios.
+   */
   private normalizeOptionalText(
     value: string | null | undefined,
   ): string | null {
     if (
-      typeof value !== 'string'
+      typeof value !==
+      'string'
     ) {
       return null;
     }

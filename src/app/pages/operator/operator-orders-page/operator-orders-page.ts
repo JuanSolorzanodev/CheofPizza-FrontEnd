@@ -24,6 +24,7 @@ import {
   OperatorOrderCreatedRealtimeEvent,
   OperatorOrderStatusChangedRealtimeEvent,
 } from '../../../core/realtime/realtime.models';
+import { OperatorStatusBoard } from '../components/operator-status-board/operator-status-board';
 
 import {
   formatOperatorDate,
@@ -47,15 +48,6 @@ interface SelectOption {
   value: string;
 }
 
-interface StatusFilterItem {
-  key: OrderStatusName;
-  label: string;
-  icon: string;
-  count: number;
-  active: boolean;
-  historical: boolean;
-}
-
 interface OperatorPaginatorEvent {
   first?: number;
   rows?: number;
@@ -75,6 +67,7 @@ interface OperatorPaginatorEvent {
     PaginatorModule,
     SkeletonModule,
     SelectModule,
+    OperatorStatusBoard,
   ],
   templateUrl: './operator-orders-page.html',
   styleUrl: './operator-orders-page.scss',
@@ -162,37 +155,6 @@ export class OperatorOrdersPage implements OnDestroy {
     'ready',
     'on_the_way',
   ];
-
-  private readonly statusOrder: readonly OrderStatusName[] = [
-    'pending',
-    'confirmed',
-    'preparing',
-    'ready',
-    'on_the_way',
-    'delivered',
-    'cancelled',
-  ];
-
-  readonly statusItems = computed<StatusFilterItem[]>(() => {
-    const counts = this.queue();
-
-    return this.statusOrder.map((statusName) => ({
-      key: statusName,
-      label: this.statusNavigationLabel(statusName),
-      icon: this.statusIcon(statusName),
-      count: Number(counts[statusName] ?? 0),
-      active: this.status() === statusName,
-      historical: statusName === 'delivered' || statusName === 'cancelled',
-    }));
-  });
-
-  readonly activeStatusItems = computed(() =>
-    this.statusItems().filter((item) => !item.historical),
-  );
-
-  readonly historicalStatusItems = computed(() =>
-    this.statusItems().filter((item) => item.historical),
-  );
 
   readonly activeOrdersTotal = computed(() => {
     const counts = this.queue();
@@ -497,17 +459,6 @@ export class OperatorOrdersPage implements OnDestroy {
     return labels[statusName] ?? this.prettyStatus(statusName);
   }
 
-  statusItemClass(item: StatusFilterItem): string {
-    return [
-      'status-filter',
-      `status-filter--${item.key}`,
-      item.active ? 'status-filter--active' : '',
-      item.historical ? 'status-filter--historical' : '',
-    ]
-      .filter(Boolean)
-      .join(' ');
-  }
-
   rowClass(order: OperatorOrderListDto): string {
     return [
       'order-row',
@@ -626,22 +577,6 @@ export class OperatorOrdersPage implements OnDestroy {
       [toStatus]: Number(current[toStatus] ?? 0) + 1,
     }));
   }
-
-
-  private statusNavigationLabel(statusName: OrderStatusName): string {
-    const labels: Record<OrderStatusName, string> = {
-      pending: 'Pendientes',
-      confirmed: 'Confirmados',
-      preparing: 'En cocina',
-      ready: 'Listos',
-      on_the_way: 'En camino',
-      delivered: 'Entregados',
-      cancelled: 'Cancelados',
-    };
-
-    return labels[statusName];
-  }
-
   private resolveErrorMessage(error: unknown, fallback: string): string {
     const response = error as {
       error?: {
@@ -654,5 +589,16 @@ export class OperatorOrdersPage implements OnDestroy {
 
   ngOnDestroy(): void {
     this.realtime.stopOperatorOrders();
+  }
+
+  clearStatus(): void {
+    if (this.status() === null) {
+      return;
+    }
+
+    this.status.set(null);
+    this.page.set(1);
+
+    this.load();
   }
 }

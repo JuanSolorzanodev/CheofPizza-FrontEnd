@@ -28,7 +28,9 @@ import {
 } from '../../../core/api/payments/payment-receipts/payment-receipt.models';
 import { OperatorRealtimeService } from '../../../core/realtime/operator-realtime.service';
 import { OperatorOrderRealtimeEvent } from '../../../core/realtime/realtime.models';
-
+import {
+  OperatorOrderHistory,
+} from '../components/operator-order-history/operator-order-history';
 import {
   formatOperatorDate,
   prettyDeliveryType,
@@ -70,6 +72,7 @@ type ButtonSeverity =
     SkeletonModule,
     MessageModule,
     DialogModule,
+    OperatorOrderHistory,
   ],
   templateUrl: './operator-order-detail-page.html',
   styleUrl: './operator-order-detail-page.scss',

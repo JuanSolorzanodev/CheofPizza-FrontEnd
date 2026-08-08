@@ -32,7 +32,6 @@
             "styles": [
               "node_modules/leaflet/dist/leaflet.css",
               "node_modules/primeicons/primeicons.css",
-              "node_modules/primeflex/primeflex.css",
               "src/styles.scss"
             ],
             "allowedCommonJsDependencies": ["pusher-js", "leaflet"]

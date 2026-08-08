@@ -1,0 +1,159 @@
+:host {
+  display: block;
+}
+
+.history-list {
+  display: grid;
+}
+
+.history-item {
+  position: relative;
+
+  display: grid;
+  grid-template-columns:
+    auto
+    minmax(0, 1fr);
+
+  gap: 0.7rem;
+
+  padding-bottom: 1rem;
+}
+
+.history-item::before {
+  position: absolute;
+  top: 1.8rem;
+  bottom: 0;
+  left: 0.85rem;
+
+  width: 1px;
+
+  background:
+    var(--p-surface-300);
+
+  content: '';
+}
+
+.history-item.is-last {
+  padding-bottom: 0;
+}
+
+.history-item.is-last::before {
+  display: none;
+}
+
+.history-marker {
+  position: relative;
+  z-index: 1;
+
+  display: grid;
+
+  width: 1.7rem;
+  height: 1.7rem;
+
+  place-items: center;
+
+  border-radius: 999px;
+
+  background:
+    var(--p-primary-color);
+
+  color:
+    var(
+      --p-primary-contrast-color,
+      white
+    );
+}
+
+.history-marker i {
+  font-size: 0.55rem;
+}
+
+.history-content {
+  min-width: 0;
+
+  padding:
+    0.05rem
+    0
+    0.8rem;
+
+  border-bottom:
+    1px solid
+    var(--p-surface-200);
+}
+
+.history-item.is-last
+  .history-content {
+  padding-bottom: 0;
+
+  border-bottom: 0;
+}
+
+.history-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content:
+    space-between;
+
+  gap: 1rem;
+}
+
+.history-heading > div {
+  display: grid;
+  gap: 0.1rem;
+}
+
+.history-heading strong {
+  color:
+    var(--p-text-color);
+
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.history-heading span,
+.history-heading time,
+.history-content small {
+  color:
+    var(
+      --p-text-muted-color,
+      var(
+        --p-text-color-secondary
+      )
+    );
+}
+
+.history-heading span {
+  font-size: 0.6rem;
+}
+
+.history-heading time {
+  flex-shrink: 0;
+
+  font-size: 0.6rem;
+}
+
+.history-content p {
+  margin:
+    0.45rem 0 0;
+
+  color:
+    var(--p-text-color);
+
+  font-size: 0.66rem;
+  line-height: 1.45;
+}
+
+.history-content small {
+  display: block;
+
+  margin-top: 0.35rem;
+
+  font-size: 0.58rem;
+}
+
+@media (max-width: 30rem) {
+  .history-heading {
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+}

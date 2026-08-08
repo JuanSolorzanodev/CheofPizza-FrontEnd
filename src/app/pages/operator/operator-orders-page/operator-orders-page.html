@@ -14,8 +14,7 @@
             <h1>Pedidos</h1>
 
             <p>
-              Consulta la operación, identifica prioridades y abre cada
-              pedido para gestionarlo.
+              Consulta la operación, identifica prioridades y abre cada pedido para gestionarlo.
             </p>
           </div>
 
@@ -30,15 +29,8 @@
         </div>
       </div>
 
-      <div
-        class="live-status"
-        role="status"
-        aria-label="Operación actualizada automáticamente"
-      >
-        <span
-          class="live-status__indicator"
-          aria-hidden="true"
-        ></span>
+      <div class="live-status" role="status" aria-label="Operación actualizada automáticamente">
+        <span class="live-status__indicator" aria-hidden="true"></span>
 
         <div>
           <strong>Operación en vivo</strong>
@@ -47,143 +39,19 @@
       </div>
     </header>
 
-    <!-- NAVEGACIÓN POR ESTADOS -->
-
-    <section
-      class="status-board"
-      aria-labelledby="status-board-title"
-    >
-      <header class="status-board__header">
-        <div>
-          <h2 id="status-board-title">Estado de la operación</h2>
-
-          <p>
-            Selecciona una etapa para mostrar únicamente esos pedidos.
-          </p>
-        </div>
-
-        @if (status()) {
-          <button
-            type="button"
-            class="show-all-button"
-            (click)="
-              status.set(null);
-              onFilterChange()
-            "
-          >
-            <i class="pi pi-list" aria-hidden="true"></i>
-            Ver todos
-          </button>
-        }
-      </header>
-
-      @if (queueError()) {
-        <div class="queue-error" role="alert">
-          <i
-            class="pi pi-exclamation-circle"
-            aria-hidden="true"
-          ></i>
-
-          <span>{{ queueError() }}</span>
-
-          <button type="button" (click)="loadQueue()">
-            Reintentar
-          </button>
-        </div>
-      }
-
-      <div class="status-board__content">
-        <div class="status-group status-group--active">
-          <span class="status-group__label">
-            Operación activa
-          </span>
-
-          <div class="status-group__items">
-            @if (loadingQueue()) {
-              @for (_ of skeletonRows.slice(0, 5); track $index) {
-                <div class="status-filter status-filter--skeleton">
-                  <p-skeleton shape="circle" size="2rem" />
-                  <p-skeleton width="5rem" height=".75rem" />
-                  <p-skeleton width="1.6rem" height="1.4rem" />
-                </div>
-              }
-            } @else {
-              @for (item of activeStatusItems(); track item.key) {
-                <button
-                  type="button"
-                  [class]="statusItemClass(item)"
-                  [attr.aria-pressed]="item.active"
-                  (click)="selectStatus(item.key)"
-                >
-                  <span class="status-filter__icon">
-                    <i [class]="item.icon" aria-hidden="true"></i>
-                  </span>
-
-                  <span class="status-filter__label">
-                    {{ item.label }}
-                  </span>
-
-                  <span class="status-filter__count">
-                    {{ item.count }}
-                  </span>
-                </button>
-              }
-            }
-          </div>
-        </div>
-
-        <div class="status-divider" aria-hidden="true"></div>
-
-        <div class="status-group status-group--history">
-          <span class="status-group__label">
-            Historial
-          </span>
-
-          <div class="status-group__items">
-            @if (loadingQueue()) {
-              @for (_ of skeletonRows.slice(0, 2); track $index) {
-                <div class="status-filter status-filter--skeleton">
-                  <p-skeleton shape="circle" size="2rem" />
-                  <p-skeleton width="5rem" height=".75rem" />
-                  <p-skeleton width="1.6rem" height="1.4rem" />
-                </div>
-              }
-            } @else {
-              @for (
-                item of historicalStatusItems();
-                track item.key
-              ) {
-                <button
-                  type="button"
-                  [class]="statusItemClass(item)"
-                  [attr.aria-pressed]="item.active"
-                  (click)="selectStatus(item.key)"
-                >
-                  <span class="status-filter__icon">
-                    <i [class]="item.icon" aria-hidden="true"></i>
-                  </span>
-
-                  <span class="status-filter__label">
-                    {{ item.label }}
-                  </span>
-
-                  <span class="status-filter__count">
-                    {{ item.count }}
-                  </span>
-                </button>
-              }
-            }
-          </div>
-        </div>
-      </div>
-    </section>
+    <app-operator-status-board
+      [queue]="queue()"
+      [selectedStatus]="status()"
+      [loading]="loadingQueue()"
+      [error]="queueError()"
+      (statusSelected)="selectStatus($event)"
+      (clearRequested)="clearStatus()"
+      (retryRequested)="loadQueue()"
+    />
 
     <!-- FILTROS -->
 
-    <section
-      class="orders-toolbar"
-      aria-label="Filtros de pedidos"
-    >
+    <section class="orders-toolbar" aria-label="Filtros de pedidos">
       <div class="orders-search">
         <i class="pi pi-search" aria-hidden="true"></i>
 
@@ -197,11 +65,7 @@
         />
 
         @if (q().length > 0) {
-          <button
-            type="button"
-            aria-label="Limpiar búsqueda"
-            (click)="clearSearch()"
-          >
+          <button type="button" aria-label="Limpiar búsqueda" (click)="clearSearch()">
             <i class="pi pi-times" aria-hidden="true"></i>
           </button>
         }
@@ -215,10 +79,7 @@
         [showClear]="true"
         [ngModel]="deliveryType() ?? ''"
         class="orders-filter"
-        (ngModelChange)="
-          deliveryType.set($event || null);
-          onFilterChange()
-        "
+        (ngModelChange)="deliveryType.set($event || null); onFilterChange()"
       />
 
       <p-select
@@ -229,18 +90,11 @@
         [showClear]="true"
         [ngModel]="paymentMethod() ?? ''"
         class="orders-filter"
-        (ngModelChange)="
-          paymentMethod.set($event || null);
-          onFilterChange()
-        "
+        (ngModelChange)="paymentMethod.set($event || null); onFilterChange()"
       />
 
       @if (hasFilters()) {
-        <button
-          type="button"
-          class="clear-filters"
-          (click)="clearFilters()"
-        >
+        <button type="button" class="clear-filters" (click)="clearFilters()">
           <i class="pi pi-filter-slash" aria-hidden="true"></i>
           Limpiar
         </button>
@@ -249,10 +103,7 @@
 
     <!-- MESA OPERATIVA -->
 
-    <section
-      class="orders-panel"
-      aria-labelledby="orders-panel-title"
-    >
+    <section class="orders-panel" aria-labelledby="orders-panel-title">
       <header class="orders-panel__header">
         <div>
           <span class="orders-panel__icon">
@@ -281,9 +132,7 @@
         </div>
 
         @if (!loading() && total() > 0) {
-          <span class="orders-panel__page">
-            Página {{ page() }} de {{ lastPage() }}
-          </span>
+          <span class="orders-panel__page"> Página {{ page() }} de {{ lastPage() }} </span>
         }
       </header>
 
@@ -324,16 +173,11 @@
             <i class="pi pi-inbox" aria-hidden="true"></i>
           </span>
 
-          <span class="empty-orders__eyebrow">
-            Sin pedidos
-          </span>
+          <span class="empty-orders__eyebrow"> Sin pedidos </span>
 
           <h3>No encontramos resultados</h3>
 
-          <p>
-            No existen pedidos que coincidan con los filtros
-            seleccionados.
-          </p>
+          <p>No existen pedidos que coincidan con los filtros seleccionados.</p>
 
           @if (hasFilters()) {
             <p-button
@@ -353,10 +197,7 @@
         >
           @if (pageLoading()) {
             <div class="page-loader" role="status">
-              <i
-                class="pi pi-spin pi-spinner"
-                aria-hidden="true"
-              ></i>
+              <i class="pi pi-spin pi-spinner" aria-hidden="true"></i>
 
               Actualizando pedidos...
             </div>
@@ -372,9 +213,7 @@
                   <th scope="col">Pedido y cliente</th>
                   <th scope="col">Preparación</th>
                   <th scope="col">Logística y pago</th>
-                  <th scope="col" class="orders-table__action">
-                    Acción
-                  </th>
+                  <th scope="col" class="orders-table__action">Acción</th>
                 </tr>
               </thead>
 
@@ -383,14 +222,8 @@
                   <tr [class]="rowClass(order)">
                     <td>
                       <div class="priority-cell">
-                        <span
-                          class="priority-cell__icon"
-                          [attr.data-status]="order.status"
-                        >
-                          <i
-                            [class]="statusIcon(order.status)"
-                            aria-hidden="true"
-                          ></i>
+                        <span class="priority-cell__icon" [attr.data-status]="order.status">
+                          <i [class]="statusIcon(order.status)" aria-hidden="true"></i>
                         </span>
 
                         <div>
@@ -411,9 +244,7 @@
                     <td>
                       <div class="identity-cell">
                         <div class="identity-cell__order">
-                          <strong>
-                            #{{ order.order_number }}
-                          </strong>
+                          <strong> #{{ order.order_number }} </strong>
 
                           <span>
                             {{ formatDate(order.ordered_at) }}
@@ -422,10 +253,7 @@
 
                         <div class="identity-cell__customer">
                           <span class="customer-avatar">
-                            <i
-                              class="pi pi-user"
-                              aria-hidden="true"
-                            ></i>
+                            <i class="pi pi-user" aria-hidden="true"></i>
                           </span>
 
                           <div>
@@ -434,10 +262,7 @@
                             </strong>
 
                             <span>
-                              <i
-                                class="pi pi-phone"
-                                aria-hidden="true"
-                              ></i>
+                              <i class="pi pi-phone" aria-hidden="true"></i>
 
                               {{ customerPhone(order) }}
                             </span>
@@ -449,19 +274,13 @@
                     <td>
                       <div class="preparation-cell">
                         <span>
-                          <i
-                            class="pi pi-list-check"
-                            aria-hidden="true"
-                          ></i>
+                          <i class="pi pi-list-check" aria-hidden="true"></i>
 
                           Preparación
                         </span>
 
                         <p>
-                          {{
-                            order.kitchen_summary ||
-                              'Sin resumen disponible'
-                          }}
+                          {{ order.kitchen_summary || 'Sin resumen disponible' }}
                         </p>
                       </div>
                     </td>
@@ -470,60 +289,37 @@
                       <div class="logistics-cell">
                         <div class="logistics-cell__row">
                           <span class="logistics-cell__icon">
-                            <i
-                              [class]="deliveryIcon(order)"
-                              aria-hidden="true"
-                            ></i>
+                            <i [class]="deliveryIcon(order)" aria-hidden="true"></i>
                           </span>
 
                           <div>
                             <span>Entrega</span>
 
                             <strong>
-                              {{
-                                prettyDeliveryType(
-                                  order.delivery_type
-                                )
-                              }}
+                              {{ prettyDeliveryType(order.delivery_type) }}
                             </strong>
                           </div>
                         </div>
 
                         <div class="logistics-cell__row">
                           <span class="logistics-cell__icon">
-                            <i
-                              [class]="paymentIcon(order)"
-                              aria-hidden="true"
-                            ></i>
+                            <i [class]="paymentIcon(order)" aria-hidden="true"></i>
                           </span>
 
                           <div>
                             <span>Pago</span>
 
                             <strong>
-                              {{
-                                prettyPaymentMethod(
-                                  order.payment_method
-                                )
-                              }}
+                              {{ prettyPaymentMethod(order.payment_method) }}
                               ·
-                              {{
-                                order.total
-                                  | currency:
-                                      'USD':
-                                      'symbol':
-                                      '1.2-2'
-                              }}
+                              {{ order.total | currency: 'USD' : 'symbol' : '1.2-2' }}
                             </strong>
                           </div>
                         </div>
 
                         @if (isTransfer(order)) {
                           <span class="transfer-badge">
-                            <i
-                              class="pi pi-receipt"
-                              aria-hidden="true"
-                            ></i>
+                            <i class="pi pi-receipt" aria-hidden="true"></i>
 
                             Revisar comprobante en el detalle
                           </span>
@@ -534,23 +330,12 @@
                     <td class="orders-table__action">
                       <a
                         class="open-order"
-                        [routerLink]="[
-                          '/operator/orders',
-                          order.id
-                        ]"
-                        [attr.aria-label]="
-                          'Abrir pedido ' +
-                          order.order_number
-                        "
+                        [routerLink]="['/operator/orders', order.id]"
+                        [attr.aria-label]="'Abrir pedido ' + order.order_number"
                       >
-                        <span>
-                          Abrir pedido
-                        </span>
+                        <span> Abrir pedido </span>
 
-                        <i
-                          class="pi pi-arrow-right"
-                          aria-hidden="true"
-                        ></i>
+                        <i class="pi pi-arrow-right" aria-hidden="true"></i>
                       </a>
                     </td>
                   </tr>
@@ -566,14 +351,8 @@
               <article [class]="mobileCardClass(order)">
                 <header class="mobile-order__header">
                   <div class="mobile-order__status">
-                    <span
-                      class="mobile-order__status-icon"
-                      [attr.data-status]="order.status"
-                    >
-                      <i
-                        [class]="statusIcon(order.status)"
-                        aria-hidden="true"
-                      ></i>
+                    <span class="mobile-order__status-icon" [attr.data-status]="order.status">
+                      <i [class]="statusIcon(order.status)" aria-hidden="true"></i>
                     </span>
 
                     <div>
@@ -611,61 +390,35 @@
 
                 <div class="mobile-order__preparation">
                   <span>
-                    <i
-                      class="pi pi-list-check"
-                      aria-hidden="true"
-                    ></i>
+                    <i class="pi pi-list-check" aria-hidden="true"></i>
 
                     Preparación
                   </span>
 
                   <p>
-                    {{
-                      order.kitchen_summary ||
-                        'Sin resumen disponible'
-                    }}
+                    {{ order.kitchen_summary || 'Sin resumen disponible' }}
                   </p>
                 </div>
 
                 <div class="mobile-order__logistics">
                   <div>
-                    <i
-                      [class]="deliveryIcon(order)"
-                      aria-hidden="true"
-                    ></i>
+                    <i [class]="deliveryIcon(order)" aria-hidden="true"></i>
 
                     <span>
-                      {{
-                        prettyDeliveryType(
-                          order.delivery_type
-                        )
-                      }}
+                      {{ prettyDeliveryType(order.delivery_type) }}
                     </span>
                   </div>
 
                   <div>
-                    <i
-                      [class]="paymentIcon(order)"
-                      aria-hidden="true"
-                    ></i>
+                    <i [class]="paymentIcon(order)" aria-hidden="true"></i>
 
                     <span>
-                      {{
-                        prettyPaymentMethod(
-                          order.payment_method
-                        )
-                      }}
+                      {{ prettyPaymentMethod(order.payment_method) }}
                     </span>
                   </div>
 
                   <strong>
-                    {{
-                      order.total
-                        | currency:
-                            'USD':
-                            'symbol':
-                            '1.2-2'
-                    }}
+                    {{ order.total | currency: 'USD' : 'symbol' : '1.2-2' }}
                   </strong>
                 </div>
 
@@ -676,19 +429,10 @@
                   </div>
                 }
 
-                <a
-                  class="mobile-open-order"
-                  [routerLink]="[
-                    '/operator/orders',
-                    order.id
-                  ]"
-                >
+                <a class="mobile-open-order" [routerLink]="['/operator/orders', order.id]">
                   <span>Abrir pedido</span>
 
-                  <i
-                    class="pi pi-arrow-right"
-                    aria-hidden="true"
-                  ></i>
+                  <i class="pi pi-arrow-right" aria-hidden="true"></i>
                 </a>
               </article>
             }
@@ -700,15 +444,8 @@
             <p-paginator
               [rows]="perPage()"
               [totalRecords]="total()"
-              [first]="
-                (page() - 1) * perPage()
-              "
-              [rowsPerPageOptions]="[
-                10,
-                15,
-                25,
-                50
-              ]"
+              [first]="(page() - 1) * perPage()"
+              [rowsPerPageOptions]="[10, 15, 25, 50]"
               [showFirstLastIcon]="true"
               [showPageLinks]="true"
               [showCurrentPageReport]="false"
@@ -716,9 +453,7 @@
               (onPageChange)="onPageChange($event)"
             />
 
-            <span>
-              Página {{ page() }} de {{ lastPage() }}
-            </span>
+            <span> Página {{ page() }} de {{ lastPage() }} </span>
           </div>
         }
       }

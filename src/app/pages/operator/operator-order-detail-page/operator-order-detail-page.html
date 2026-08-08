@@ -789,49 +789,7 @@
           </div>
         </ng-template>
 
-        <div class="history-list">
-          @for (
-            change of currentOrder.status_changes;
-            track change.changed_at + '-' + change.to;
-            let last = $last
-          ) {
-            <article class="history-item" [class.is-last]="last">
-              <span class="history-marker">
-                <i class="pi pi-check" aria-hidden="true"></i>
-              </span>
-
-              <div class="history-content">
-                <div class="history-heading">
-                  <div>
-                    <strong>
-                      {{ prettyStatus(change.to || '') }}
-                    </strong>
-
-                    @if (change.from) {
-                      <span>
-                        Desde
-                        {{ prettyStatus(change.from) }}
-                      </span>
-                    }
-                  </div>
-
-                  <time>
-                    {{ formatDate(change.changed_at) }}
-                  </time>
-                </div>
-
-                @if (change.note) {
-                  <p>{{ change.note }}</p>
-                }
-
-                <small>
-                  Actualizado por
-                  {{ change.changed_by?.name || change.by || 'Sistema' }}
-                </small>
-              </div>
-            </article>
-          }
-        </div>
+        <app-operator-order-history [changes]="currentOrder.status_changes" />
       </p-card>
     }
 

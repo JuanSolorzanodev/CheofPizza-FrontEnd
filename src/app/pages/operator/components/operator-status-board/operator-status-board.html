@@ -1,0 +1,211 @@
+<section
+  class="status-board"
+  aria-labelledby="status-board-title"
+>
+  <header class="status-board__header">
+    <div>
+      <h2 id="status-board-title">
+        Estado de la operación
+      </h2>
+
+      <p>
+        Selecciona una etapa para mostrar
+        únicamente esos pedidos.
+      </p>
+    </div>
+
+    @if (selectedStatus()) {
+      <button
+        type="button"
+        class="show-all-button"
+        (click)="clear()"
+      >
+        <i
+          class="pi pi-list"
+          aria-hidden="true"
+        ></i>
+
+        Ver todos
+      </button>
+    }
+  </header>
+
+  @if (error()) {
+    <div
+      class="queue-error"
+      role="alert"
+    >
+      <i
+        class="pi pi-exclamation-circle"
+        aria-hidden="true"
+      ></i>
+
+      <span>
+        {{ error() }}
+      </span>
+
+      <button
+        type="button"
+        (click)="retry()"
+      >
+        Reintentar
+      </button>
+    </div>
+  }
+
+  <div class="status-board__content">
+    <section
+      class="status-group status-group--active"
+      aria-label="Operación activa"
+    >
+      <span class="status-group__label">
+        Operación activa
+      </span>
+
+      <div class="status-group__items">
+        @if (loading()) {
+          @for (
+            _ of skeletonRows;
+            track $index
+          ) {
+            <div
+              class="status-filter status-filter--skeleton"
+              aria-hidden="true"
+            >
+              <p-skeleton
+                shape="circle"
+                size="2rem"
+              />
+
+              <p-skeleton
+                width="5rem"
+                height=".75rem"
+              />
+
+              <p-skeleton
+                width="1.6rem"
+                height="1.4rem"
+              />
+            </div>
+          }
+        } @else {
+          @for (
+            item of activeItems();
+            track item.key
+          ) {
+            <button
+              type="button"
+              [class]="itemClass(item)"
+              [attr.aria-pressed]="
+                item.active
+              "
+              (click)="select(item.key)"
+            >
+              <span
+                class="status-filter__icon"
+              >
+                <i
+                  [class]="item.icon"
+                  aria-hidden="true"
+                ></i>
+              </span>
+
+              <span
+                class="status-filter__label"
+              >
+                {{ item.label }}
+              </span>
+
+              <span
+                class="status-filter__count"
+              >
+                {{ item.count }}
+              </span>
+            </button>
+          }
+        }
+      </div>
+    </section>
+
+    <div
+      class="status-divider"
+      aria-hidden="true"
+    ></div>
+
+    <section
+      class="status-group status-group--history"
+      aria-label="Historial"
+    >
+      <span class="status-group__label">
+        Historial
+      </span>
+
+      <div class="status-group__items">
+        @if (loading()) {
+          @for (
+            _ of skeletonRows.slice(
+              0,
+              2
+            );
+            track $index
+          ) {
+            <div
+              class="status-filter status-filter--skeleton"
+              aria-hidden="true"
+            >
+              <p-skeleton
+                shape="circle"
+                size="2rem"
+              />
+
+              <p-skeleton
+                width="5rem"
+                height=".75rem"
+              />
+
+              <p-skeleton
+                width="1.6rem"
+                height="1.4rem"
+              />
+            </div>
+          }
+        } @else {
+          @for (
+            item of historicalItems();
+            track item.key
+          ) {
+            <button
+              type="button"
+              [class]="itemClass(item)"
+              [attr.aria-pressed]="
+                item.active
+              "
+              (click)="select(item.key)"
+            >
+              <span
+                class="status-filter__icon"
+              >
+                <i
+                  [class]="item.icon"
+                  aria-hidden="true"
+                ></i>
+              </span>
+
+              <span
+                class="status-filter__label"
+              >
+                {{ item.label }}
+              </span>
+
+              <span
+                class="status-filter__count"
+              >
+                {{ item.count }}
+              </span>
+            </button>
+          }
+        }
+      </div>
+    </section>
+  </div>
+</section>

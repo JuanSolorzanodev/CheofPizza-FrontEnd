@@ -811,3 +811,17 @@
     backdrop-filter: blur(10px);
   }
 }
+/* =========================================================
+   CARGA DIFERIDA
+   ========================================================= */
+
+.checkout-deferred-placeholder {
+  width: 100%;
+  overflow: hidden;
+
+  border-radius: 0.85rem;
+}
+
+.checkout-deferred-placeholder--paypal {
+  min-height: 3.5rem;
+}

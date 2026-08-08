@@ -162,7 +162,20 @@
                       <p-tag value="Obligatorio" severity="warn" [rounded]="true" />
                     </div>
 
-                    <app-location-picker formControlName="delivery_location" />
+                    @defer (when isDelivery()) {
+                      <app-location-picker formControlName="delivery_location" />
+                    } @placeholder {
+                      <div class="checkout-deferred-placeholder" aria-hidden="true">
+                        <p-skeleton width="100%" height="18rem" borderRadius="0.85rem" />
+                      </div>
+                    } @loading {
+                      <div
+                        class="checkout-deferred-placeholder"
+                        aria-label="Cargando mapa de entrega"
+                      >
+                        <p-skeleton width="100%" height="18rem" borderRadius="0.85rem" />
+                      </div>
+                    }
 
                     @if (!isLocationOk() && form.controls.delivery_location.touched) {
                       <small class="field-error">Selecciona una ubicación válida en el mapa.</small>
@@ -454,13 +467,29 @@
                         (onClick)="openLogin()"
                       />
                     } @else if (paypalConfig(); as paypal) {
-                      <app-paypal-button
-                        [config]="paypal"
-                        [payload]="paypalPayload()"
-                        [cartFingerprint]="paypalCartFingerprint()"
-                        [disabled]="!canProceed()"
-                        (paymentCompleted)="handlePayPalCompleted($event)"
-                      />
+                      @defer (when isCard()) {
+                        <app-paypal-button
+                          [config]="paypal"
+                          [payload]="paypalPayload()"
+                          [cartFingerprint]="paypalCartFingerprint()"
+                          [disabled]="!canProceed()"
+                          (paymentCompleted)="handlePayPalCompleted($event)"
+                        />
+                      } @placeholder {
+                        <div
+                          class="checkout-deferred-placeholder checkout-deferred-placeholder--paypal"
+                          aria-hidden="true"
+                        >
+                          <p-skeleton width="100%" height="3.5rem" borderRadius="0.75rem" />
+                        </div>
+                      } @loading {
+                        <div
+                          class="checkout-deferred-placeholder checkout-deferred-placeholder--paypal"
+                          aria-label="Cargando PayPal"
+                        >
+                          <p-skeleton width="100%" height="3.5rem" borderRadius="0.75rem" />
+                        </div>
+                      }
                     }
                   </div>
                 }

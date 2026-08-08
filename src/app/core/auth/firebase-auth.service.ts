@@ -1,7 +1,10 @@
-import { Injectable } from '@angular/core';
-import { initializeApp, getApps, FirebaseApp } from 'firebase/app';
-import { getAuth, GoogleAuthProvider, signInWithPopup, Auth, User } from 'firebase/auth';
-import { environment } from '../../../environments/environment';
+import {
+  Injectable,
+} from '@angular/core';
+
+import {
+  environment,
+} from '../../../environments/environment';
 
 export interface GoogleFirebaseProfile {
   idToken: string;
@@ -10,28 +13,62 @@ export interface GoogleFirebaseProfile {
   email: string | null;
 }
 
-@Injectable({ providedIn: 'root' })
+@Injectable({
+  providedIn: 'root',
+})
 export class FirebaseAuthService {
-  private readonly app: FirebaseApp;
-  private readonly auth: Auth;
-
-  constructor() {
-    this.app = getApps().length ? getApps()[0] : initializeApp(environment.firebase);
-    this.auth = getAuth(this.app);
-  }
-
   async signInWithGoogle(): Promise<GoogleFirebaseProfile> {
-    const provider = new GoogleAuthProvider();
-    provider.setCustomParameters({ prompt: 'select_account' });
+    const [
+      firebaseApp,
+      firebaseAuth,
+    ] = await Promise.all([
+      import('firebase/app'),
+      import('firebase/auth'),
+    ]);
 
-    const cred = await signInWithPopup(this.auth, provider);
-    const user: User = cred.user;
+    const app =
+      firebaseApp.getApps().length
+        ? firebaseApp.getApps()[0]
+        : firebaseApp.initializeApp(
+            environment.firebase,
+          );
+
+    const auth =
+      firebaseAuth.getAuth(
+        app,
+      );
+
+    const provider =
+      new firebaseAuth.GoogleAuthProvider();
+
+    provider.setCustomParameters({
+      prompt: 'select_account',
+    });
+
+    const credential =
+      await firebaseAuth.signInWithPopup(
+        auth,
+        provider,
+      );
+
+    const user =
+      credential.user;
 
     return {
-      idToken: await user.getIdToken(),
-      displayName: user.displayName ?? null,
-      photoURL: user.photoURL ?? null,
-      email: user.email ?? null,
+      idToken:
+        await user.getIdToken(),
+
+      displayName:
+        user.displayName ??
+        null,
+
+      photoURL:
+        user.photoURL ??
+        null,
+
+      email:
+        user.email ??
+        null,
     };
   }
 }

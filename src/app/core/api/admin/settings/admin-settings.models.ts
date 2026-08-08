@@ -27,7 +27,6 @@ export interface AdminBusinessSettings {
   whatsapp: {
     active: boolean;
     phone: string | null;
-    receipt_template: string | null;
   };
   updated_at: string | null;
 }
@@ -60,7 +59,6 @@ export interface AdminBusinessSettingsPayload {
   whatsapp: {
     active: boolean;
     phone: string | null;
-    receipt_template: string | null;
   };
 }
 

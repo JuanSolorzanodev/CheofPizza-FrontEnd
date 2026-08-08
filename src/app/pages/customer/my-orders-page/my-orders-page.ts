@@ -1,13 +1,5 @@
 import { CurrencyPipe, DecimalPipe } from '@angular/common';
-import {
-  Component,
-  DestroyRef,
-  OnDestroy,
-  OnInit,
-  computed,
-  inject,
-  signal,
-} from '@angular/core';
+import { Component, DestroyRef, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { finalize } from 'rxjs';
@@ -21,20 +13,12 @@ import {
   MyOrdersApiService,
   MyOrdersPaginationMeta,
 } from '../../../core/api/orders/my-orders-api.service';
-import {
-  OrderDto,
-  OrderStatusCode,
-} from '../../../core/api/orders/checkout.models';
+import { OrderDto, OrderStatusCode } from '../../../core/api/orders/checkout.models';
+import { CustomerOrderUpdatedRealtimeEvent } from '../../../core/realtime/realtime.models';
 import { AuthStore } from '../../../core/auth/auth.store';
 import { CustomerRealtimeService } from '../../../core/realtime/customer-realtime.service';
 
-type StepKey =
-  | 'pending'
-  | 'confirmed'
-  | 'preparing'
-  | 'ready'
-  | 'on_the_way'
-  | 'delivered';
+type StepKey = 'pending' | 'confirmed' | 'preparing' | 'ready' | 'on_the_way' | 'delivered';
 
 interface OrderStep {
   key: StepKey;
@@ -42,22 +26,10 @@ interface OrderStep {
   shortLabel: string;
 }
 
-interface CustomerOrderUpdatedPayload {
-  action?: string;
-  order_id?: number;
-  order?: OrderDto;
-}
-
 @Component({
   selector: 'app-my-orders-page',
   standalone: true,
-  imports: [
-    ButtonModule,
-    CurrencyPipe,
-    DecimalPipe,
-    PaginatorModule,
-    SkeletonModule,
-  ],
+  imports: [ButtonModule, CurrencyPipe, DecimalPipe, PaginatorModule, SkeletonModule],
   templateUrl: './my-orders-page.html',
   styleUrls: ['./my-orders-page.scss'],
 })
@@ -160,13 +132,9 @@ export class MyOrdersPage implements OnInit, OnDestroy {
   /**
    * PrimeNG utiliza un índice inicial basado en cero.
    */
-  readonly paginatorFirst = computed(
-    () => (this.pagination().current_page - 1) * this.perPage,
-  );
+  readonly paginatorFirst = computed(() => (this.pagination().current_page - 1) * this.perPage);
 
-  readonly hasPagination = computed(
-    () => this.pagination().last_page > 1,
-  );
+  readonly hasPagination = computed(() => this.pagination().last_page > 1);
 
   ngOnInit(): void {
     this.loadPage(1, false);
@@ -184,10 +152,7 @@ export class MyOrdersPage implements OnInit, OnDestroy {
   onPageChange(event: PaginatorState): void {
     const requestedPage = (event.page ?? 0) + 1;
 
-    if (
-      requestedPage === this.pagination().current_page ||
-      this.pageLoading()
-    ) {
+    if (requestedPage === this.pagination().current_page || this.pageLoading()) {
       return;
     }
 
@@ -207,9 +172,7 @@ export class MyOrdersPage implements OnInit, OnDestroy {
   }
 
   stepsFor(order: OrderDto): readonly OrderStep[] {
-    return this.isPickup(order)
-      ? this.pickupSteps
-      : this.deliverySteps;
+    return this.isPickup(order) ? this.pickupSteps : this.deliverySteps;
   }
 
   isPickup(order: OrderDto): boolean {
@@ -269,8 +232,7 @@ export class MyOrdersPage implements OnInit, OnDestroy {
       return this.isCancelledOrder(order) ? 0 : 100;
     }
 
-    const progress =
-      (this.currentStepIndex(order) / (totalSteps - 1)) * 100;
+    const progress = (this.currentStepIndex(order) / (totalSteps - 1)) * 100;
 
     return Math.max(0, Math.min(100, progress));
   }
@@ -282,13 +244,9 @@ export class MyOrdersPage implements OnInit, OnDestroy {
       pending: 'Pedido recibido',
       confirmed: 'Pedido confirmado',
       preparing: 'En preparación',
-      ready: this.isPickup(order)
-        ? 'Listo para retirar'
-        : 'Listo para entregar',
+      ready: this.isPickup(order) ? 'Listo para retirar' : 'Listo para entregar',
       on_the_way: 'En camino',
-      delivered: this.isPickup(order)
-        ? 'Pedido retirado'
-        : 'Pedido entregado',
+      delivered: this.isPickup(order) ? 'Pedido retirado' : 'Pedido entregado',
       cancelled: 'Pedido cancelado',
       canceled: 'Pedido cancelado',
     };
@@ -303,49 +261,29 @@ export class MyOrdersPage implements OnInit, OnDestroy {
       const descriptions: Record<string, string> = {
         pending:
           'Recibimos tu pedido. En breve confirmaremos que toda la información esté correcta.',
-        confirmed:
-          'Tu pedido fue confirmado y pronto comenzaremos a prepararlo.',
-        preparing:
-          'Estamos preparando tu pedido con ingredientes frescos.',
-        ready:
-          'Tu pedido está listo. Puedes acercarte al local para retirarlo.',
-        delivered:
-          'El pedido fue retirado correctamente. ¡Buen provecho!',
-        cancelled:
-          'Este pedido fue cancelado y ya no continuará procesándose.',
-        canceled:
-          'Este pedido fue cancelado y ya no continuará procesándose.',
+        confirmed: 'Tu pedido fue confirmado y pronto comenzaremos a prepararlo.',
+        preparing: 'Estamos preparando tu pedido con ingredientes frescos.',
+        ready: 'Tu pedido está listo. Puedes acercarte al local para retirarlo.',
+        delivered: 'El pedido fue retirado correctamente. ¡Buen provecho!',
+        cancelled: 'Este pedido fue cancelado y ya no continuará procesándose.',
+        canceled: 'Este pedido fue cancelado y ya no continuará procesándose.',
       };
 
-      return (
-        descriptions[status] ??
-        'Consulta el detalle para obtener más información.'
-      );
+      return descriptions[status] ?? 'Consulta el detalle para obtener más información.';
     }
 
     const descriptions: Record<string, string> = {
-      pending:
-        'Recibimos tu pedido. En breve confirmaremos que toda la información esté correcta.',
-      confirmed:
-        'Tu pedido fue confirmado y pronto comenzaremos a prepararlo.',
-      preparing:
-        'Estamos preparando tu pedido con ingredientes frescos.',
-      ready:
-        'Tu pedido está listo y será asignado para la entrega.',
-      on_the_way:
-        'Tu pedido salió del local y se encuentra en camino.',
-      delivered:
-        'El pedido fue entregado correctamente. ¡Buen provecho!',
-      cancelled:
-        'Este pedido fue cancelado y ya no continuará procesándose.',
-      canceled:
-        'Este pedido fue cancelado y ya no continuará procesándose.',
+      pending: 'Recibimos tu pedido. En breve confirmaremos que toda la información esté correcta.',
+      confirmed: 'Tu pedido fue confirmado y pronto comenzaremos a prepararlo.',
+      preparing: 'Estamos preparando tu pedido con ingredientes frescos.',
+      ready: 'Tu pedido está listo y será asignado para la entrega.',
+      on_the_way: 'Tu pedido salió del local y se encuentra en camino.',
+      delivered: 'El pedido fue entregado correctamente. ¡Buen provecho!',
+      cancelled: 'Este pedido fue cancelado y ya no continuará procesándose.',
+      canceled: 'Este pedido fue cancelado y ya no continuará procesándose.',
     };
 
-    return (
-      descriptions[status] ??
-      'Consulta el detalle para obtener más información.'
-    );
+    return descriptions[status] ?? 'Consulta el detalle para obtener más información.';
   }
 
   nextStepLabel(order: OrderDto): string | null {
@@ -360,15 +298,11 @@ export class MyOrdersPage implements OnInit, OnDestroy {
   }
 
   deliveryLabel(deliveryType: string): string {
-    return this.normalize(deliveryType) === 'pickup'
-      ? 'Retiro en el local'
-      : 'Entrega a domicilio';
+    return this.normalize(deliveryType) === 'pickup' ? 'Retiro en el local' : 'Entrega a domicilio';
   }
 
   deliveryIcon(deliveryType: string): string {
-    return this.normalize(deliveryType) === 'pickup'
-      ? 'pi pi-shop'
-      : 'pi pi-truck';
+    return this.normalize(deliveryType) === 'pickup' ? 'pi pi-shop' : 'pi pi-truck';
   }
 
   paymentLabel(paymentMethod: string): string {
@@ -406,9 +340,7 @@ export class MyOrdersPage implements OnInit, OnDestroy {
   }
 
   statusClass(order: OrderDto): string {
-    return `order-status order-status--${this.normalizeStatus(
-      order.status,
-    )}`;
+    return `order-status order-status--${this.normalizeStatus(order.status)}`;
   }
 
   historyCardClass(order: OrderDto): string {
@@ -426,21 +358,11 @@ export class MyOrdersPage implements OnInit, OnDestroy {
 
     const now = new Date();
 
-    const today = new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      now.getDate(),
-    );
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
-    const orderDay = new Date(
-      date.getFullYear(),
-      date.getMonth(),
-      date.getDate(),
-    );
+    const orderDay = new Date(date.getFullYear(), date.getMonth(), date.getDate());
 
-    const differenceInDays = Math.round(
-      (today.getTime() - orderDay.getTime()) / 86_400_000,
-    );
+    const differenceInDays = Math.round((today.getTime() - orderDay.getTime()) / 86_400_000);
 
     const time = new Intl.DateTimeFormat('es-EC', {
       hour: '2-digit',
@@ -459,10 +381,7 @@ export class MyOrdersPage implements OnInit, OnDestroy {
     const formattedDate = new Intl.DateTimeFormat('es-EC', {
       day: 'numeric',
       month: 'short',
-      year:
-        date.getFullYear() === now.getFullYear()
-          ? undefined
-          : 'numeric',
+      year: date.getFullYear() === now.getFullYear() ? undefined : 'numeric',
     })
       .format(date)
       .replace('.', '');
@@ -521,18 +440,14 @@ export class MyOrdersPage implements OnInit, OnDestroy {
 
     this.realtime.orderUpdated$
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((payload: unknown) => {
-        const event = this.parseRealtimePayload(payload);
-
-        if (!event?.order) {
-          return;
-        }
-
+      .subscribe((event: CustomerOrderUpdatedRealtimeEvent) => {
         if (event.action === 'created') {
           /*
-           * El nuevo pedido debe ocupar su posición real según la
-           * ordenación del backend. Por eso se recarga silenciosamente
-           * la primera página, en lugar de insertarlo manualmente.
+           * El nuevo pedido debe ocupar su posición real
+           * según la ordenación del backend.
+           *
+           * Por eso recargamos silenciosamente la primera
+           * página en lugar de insertarlo manualmente.
            */
           if (this.pagination().current_page === 1) {
             this.loadPage(1, false);
@@ -541,9 +456,9 @@ export class MyOrdersPage implements OnInit, OnDestroy {
           return;
         }
 
-        const existsOnCurrentPage = this.orders().some(
-          (order) => order.id === event.order?.id,
-        );
+        const incomingOrder = event.order;
+
+        const existsOnCurrentPage = this.orders().some((order) => order.id === incomingOrder.id);
 
         if (!existsOnCurrentPage) {
           return;
@@ -551,10 +466,10 @@ export class MyOrdersPage implements OnInit, OnDestroy {
 
         this.orders.update((orders) =>
           orders.map((order) =>
-            order.id === event.order?.id
+            order.id === incomingOrder.id
               ? {
                   ...order,
-                  ...event.order,
+                  ...incomingOrder,
                 }
               : order,
           ),
@@ -562,56 +477,15 @@ export class MyOrdersPage implements OnInit, OnDestroy {
       });
   }
 
-  private parseRealtimePayload(
-    payload: unknown,
-  ): CustomerOrderUpdatedPayload | null {
-    if (
-      typeof payload !== 'object' ||
-      payload === null ||
-      Array.isArray(payload)
-    ) {
-      return null;
-    }
-
-    const record = payload as Record<string, unknown>;
-    const orderCandidate = record['order'];
-
-    if (
-      typeof orderCandidate !== 'object' ||
-      orderCandidate === null ||
-      Array.isArray(orderCandidate)
-    ) {
-      return null;
-    }
-
-    return {
-      action:
-        typeof record['action'] === 'string'
-          ? record['action']
-          : undefined,
-
-      order_id:
-        typeof record['order_id'] === 'number'
-          ? record['order_id']
-          : undefined,
-
-      order: orderCandidate as OrderDto,
-    };
-  }
-
   private currentStepIndex(order: OrderDto): number {
     const status = this.normalizeStatus(order.status);
 
-    const index = this.stepsFor(order).findIndex(
-      (step) => step.key === status,
-    );
+    const index = this.stepsFor(order).findIndex((step) => step.key === status);
 
     return index >= 0 ? index : 0;
   }
 
-  private normalizeStatus(
-    status: OrderStatusCode | string | null | undefined,
-  ): string {
+  private normalizeStatus(status: OrderStatusCode | string | null | undefined): string {
     return this.normalize(status);
   }
 

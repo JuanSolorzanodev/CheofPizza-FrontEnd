@@ -4,8 +4,8 @@
       <span class="page-header__eyebrow">Administración</span>
       <h1>Configuración del negocio</h1>
       <p>
-        Controla la operación de la tienda, modalidades de entrega,
-        métodos de pago y canales de contacto desde un solo lugar.
+        Controla la operación de la tienda, modalidades de entrega, métodos de pago y canales de
+        contacto desde un solo lugar.
       </p>
     </div>
 
@@ -45,7 +45,10 @@
     </section>
   } @else {
     <section class="summary-grid">
-      <article class="summary-card" [class.summary-card--danger]="!form.controls.accepts_orders.value">
+      <article
+        class="summary-card"
+        [class.summary-card--danger]="!form.controls.accepts_orders.value"
+      >
         <span class="summary-card__icon"><i class="pi pi-shop"></i></span>
         <div class="summary-card__content">
           <span>Estado de la tienda</span>
@@ -72,12 +75,15 @@
         </div>
       </article>
 
-      <article class="summary-card" [class.summary-card--muted]="!form.controls.whatsapp_active.value">
+      <article
+        class="summary-card"
+        [class.summary-card--muted]="!form.controls.whatsapp_active.value"
+      >
         <span class="summary-card__icon"><i class="pi pi-whatsapp"></i></span>
         <div class="summary-card__content">
           <span>WhatsApp</span>
           <strong>{{ whatsappStatusLabel() }}</strong>
-          <small>Recepción de comprobantes</small>
+          <small>Comunicación con clientes</small>
         </div>
       </article>
     </section>
@@ -89,33 +95,61 @@
             <span class="settings-card__icon"><i class="pi pi-building"></i></span>
             <div>
               <h2>Información del negocio</h2>
-              <p>Datos visibles para clientes y comprobantes.</p>
+              <p>Información comercial visible para los clientes.</p>
             </div>
           </header>
 
           <div class="form-grid">
             <label class="form-field form-field--full">
               <span>Nombre comercial</span>
-              <input pInputText type="text" formControlName="business_name" placeholder="CHEO' PIZZA" />
-              @if (fieldError('business_name'); as error) { <small class="field-error">{{ error }}</small> }
+              <input
+                pInputText
+                type="text"
+                formControlName="business_name"
+                placeholder="CHEO' PIZZA"
+              />
+              @if (fieldError('business_name'); as error) {
+                <small class="field-error">{{ error }}</small>
+              }
             </label>
 
             <label class="form-field">
               <span>Teléfono</span>
-              <input pInputText type="text" formControlName="business_phone" placeholder="0999999999" />
-              @if (fieldError('business_phone'); as error) { <small class="field-error">{{ error }}</small> }
+              <input
+                pInputText
+                type="text"
+                formControlName="business_phone"
+                placeholder="0999999999"
+              />
+              @if (fieldError('business_phone'); as error) {
+                <small class="field-error">{{ error }}</small>
+              }
             </label>
 
             <label class="form-field">
               <span>Correo electrónico</span>
-              <input pInputText type="email" formControlName="business_email" placeholder="contacto@cheofpizza.com" />
-              @if (fieldError('business_email'); as error) { <small class="field-error">{{ error }}</small> }
+              <input
+                pInputText
+                type="email"
+                formControlName="business_email"
+                placeholder="contacto@cheofpizza.com"
+              />
+              @if (fieldError('business_email'); as error) {
+                <small class="field-error">{{ error }}</small>
+              }
             </label>
 
             <label class="form-field form-field--full">
               <span>Dirección</span>
-              <textarea pTextarea rows="3" formControlName="business_address" placeholder="Dirección comercial"></textarea>
-              @if (fieldError('business_address'); as error) { <small class="field-error">{{ error }}</small> }
+              <textarea
+                pTextarea
+                rows="3"
+                formControlName="business_address"
+                placeholder="Dirección comercial"
+              ></textarea>
+              @if (fieldError('business_address'); as error) {
+                <small class="field-error">{{ error }}</small>
+              }
             </label>
           </div>
         </article>
@@ -140,14 +174,29 @@
           <div class="form-grid">
             <label class="form-field form-field--full">
               <span>Mensaje de tienda cerrada</span>
-              <textarea pTextarea rows="3" formControlName="closed_message" placeholder="Mensaje que verá el cliente"></textarea>
-              @if (fieldError('closed_message'); as error) { <small class="field-error">{{ error }}</small> }
+              <textarea
+                pTextarea
+                rows="3"
+                formControlName="closed_message"
+                placeholder="Mensaje que verá el cliente"
+              ></textarea>
+              @if (fieldError('closed_message'); as error) {
+                <small class="field-error">{{ error }}</small>
+              }
             </label>
 
             <label class="form-field">
               <span>Tiempo estimado</span>
-              <p-inputnumber formControlName="estimated_minutes" suffix=" min" [min]="5" [max]="240" [useGrouping]="false" />
-              @if (fieldError('estimated_minutes'); as error) { <small class="field-error">{{ error }}</small> }
+              <p-inputnumber
+                formControlName="estimated_minutes"
+                suffix=" min"
+                [min]="5"
+                [max]="240"
+                [useGrouping]="false"
+              />
+              @if (fieldError('estimated_minutes'); as error) {
+                <small class="field-error">{{ error }}</small>
+              }
             </label>
 
             <label class="form-field">
@@ -158,7 +207,9 @@
             <label class="form-field form-field--full">
               <span>Zona horaria</span>
               <input pInputText type="text" formControlName="timezone" readonly />
-              <small class="field-help">La operación utiliza la zona horaria de Ecuador continental.</small>
+              <small class="field-help"
+                >La operación utiliza la zona horaria de Ecuador continental.</small
+              >
             </label>
           </div>
         </article>
@@ -174,11 +225,16 @@
 
           <div class="toggle-stack">
             <div class="toggle-row">
-              <div><strong>Retiro en el local</strong><span>El cliente recoge su pedido.</span></div>
+              <div>
+                <strong>Retiro en el local</strong><span>El cliente recoge su pedido.</span>
+              </div>
               <p-toggleswitch formControlName="pickup_enabled" />
             </div>
             <div class="toggle-row">
-              <div><strong>Entrega a domicilio</strong><span>Habilita ubicación y dirección de entrega.</span></div>
+              <div>
+                <strong>Entrega a domicilio</strong
+                ><span>Habilita ubicación y dirección de entrega.</span>
+              </div>
               <p-toggleswitch formControlName="delivery_enabled" />
             </div>
           </div>
@@ -190,14 +246,32 @@
           <div class="form-grid">
             <label class="form-field">
               <span>Costo de delivery</span>
-              <p-inputnumber formControlName="delivery_fee" mode="currency" currency="USD" locale="en-US" [min]="0" [maxFractionDigits]="2" />
-              @if (fieldError('delivery_fee'); as error) { <small class="field-error">{{ error }}</small> }
+              <p-inputnumber
+                formControlName="delivery_fee"
+                mode="currency"
+                currency="USD"
+                locale="en-US"
+                [min]="0"
+                [maxFractionDigits]="2"
+              />
+              @if (fieldError('delivery_fee'); as error) {
+                <small class="field-error">{{ error }}</small>
+              }
             </label>
 
             <label class="form-field">
               <span>Pedido mínimo</span>
-              <p-inputnumber formControlName="minimum_order" mode="currency" currency="USD" locale="en-US" [min]="0" [maxFractionDigits]="2" />
-              @if (fieldError('minimum_order'); as error) { <small class="field-error">{{ error }}</small> }
+              <p-inputnumber
+                formControlName="minimum_order"
+                mode="currency"
+                currency="USD"
+                locale="en-US"
+                [min]="0"
+                [maxFractionDigits]="2"
+              />
+              @if (fieldError('minimum_order'); as error) {
+                <small class="field-error">{{ error }}</small>
+              }
             </label>
           </div>
         </article>
@@ -216,7 +290,11 @@
               <div>
                 <div class="toggle-title">
                   <strong>PayPal</strong>
-                  <p-tag [value]="paypalConfigured() ? 'Configurado' : 'Sin credenciales'" [severity]="paypalConfigured() ? 'success' : 'danger'" [rounded]="true" />
+                  <p-tag
+                    [value]="paypalConfigured() ? 'Configurado' : 'Sin credenciales'"
+                    [severity]="paypalConfigured() ? 'success' : 'danger'"
+                    [rounded]="true"
+                  />
                 </div>
                 <span>Pago con tarjeta procesado por PayPal.</span>
               </div>
@@ -224,7 +302,10 @@
             </div>
 
             <div class="toggle-row">
-              <div><strong>Transferencia bancaria</strong><span>El cliente envía su comprobante.</span></div>
+              <div>
+                <strong>Transferencia bancaria</strong>
+                <span>El cliente carga su comprobante desde el sistema.</span>
+              </div>
               <p-toggleswitch formControlName="transfer_enabled" />
             </div>
 
@@ -241,30 +322,50 @@
 
         <article class="settings-card settings-card--wide">
           <header class="settings-card__header">
-            <span class="settings-card__icon settings-card__icon--whatsapp"><i class="pi pi-whatsapp"></i></span>
+            <span class="settings-card__icon settings-card__icon--whatsapp">
+              <i class="pi pi-whatsapp"></i>
+            </span>
+
             <div>
               <h2>WhatsApp</h2>
-              <p>Configura el canal para recepción de comprobantes de transferencia.</p>
+
+              <p>
+                Configura el canal de contacto utilizado por la operación para comunicarse con los
+                clientes.
+              </p>
             </div>
           </header>
 
           <div class="whatsapp-layout">
             <div class="toggle-row toggle-row--featured">
-              <div><strong>Activar WhatsApp</strong><span>Muestra el enlace de comprobante en pedidos por transferencia.</span></div>
+              <div>
+                <strong>Activar WhatsApp</strong>
+
+                <span>
+                  Permite al personal operativo contactar al cliente durante la gestión del pedido.
+                </span>
+              </div>
+
               <p-toggleswitch formControlName="whatsapp_active" />
             </div>
 
             <label class="form-field">
-              <span>Número de WhatsApp</span>
-              <input pInputText type="text" formControlName="whatsapp_phone" placeholder="593999999999" />
-              <small class="field-help">Incluye código de país, sin espacios ni símbolo +.</small>
-              @if (fieldError('whatsapp_phone'); as error) { <small class="field-error">{{ error }}</small> }
-            </label>
+              <span>Número de WhatsApp del negocio</span>
 
-            <label class="form-field form-field--full">
-              <span>Plantilla del mensaje</span>
-              <textarea pTextarea rows="4" formControlName="receipt_template" placeholder="Hola, adjunto el comprobante de mi pedido."></textarea>
-              @if (fieldError('receipt_template'); as error) { <small class="field-error">{{ error }}</small> }
+              <input
+                pInputText
+                type="text"
+                formControlName="whatsapp_phone"
+                placeholder="593999999999"
+              />
+
+              <small class="field-help"> Incluye código de país, sin espacios ni símbolo +. </small>
+
+              @if (fieldError('whatsapp_phone'); as error) {
+                <small class="field-error">
+                  {{ error }}
+                </small>
+              }
             </label>
           </div>
         </article>
@@ -282,8 +383,22 @@
         </div>
 
         <div class="form-actions__buttons">
-          <p-button type="button" label="Descartar" icon="pi pi-undo" severity="secondary" [outlined]="true" [disabled]="!dirty() || saving()" (onClick)="discardChanges()" />
-          <p-button type="submit" label="Guardar cambios" icon="pi pi-save" [loading]="saving()" [disabled]="!dirty()" />
+          <p-button
+            type="button"
+            label="Descartar"
+            icon="pi pi-undo"
+            severity="secondary"
+            [outlined]="true"
+            [disabled]="!dirty() || saving()"
+            (onClick)="discardChanges()"
+          />
+          <p-button
+            type="submit"
+            label="Guardar cambios"
+            icon="pi pi-save"
+            [loading]="saving()"
+            [disabled]="!dirty()"
+          />
         </div>
       </footer>
     </form>

@@ -3,19 +3,34 @@ import {
   NgZone,
   inject,
 } from '@angular/core';
-import Echo from 'laravel-echo';
-import Pusher from 'pusher-js';
-import { Subject } from 'rxjs';
 
-import { environment } from '../../../environments/environment';
-import { AuthStore } from '../auth/auth.store';
+import Echo from 'laravel-echo';
+
+import {
+  Subject,
+} from 'rxjs';
+
+import {
+  ReverbConnectionService,
+} from './reverb-connection.service';
+
+import {
+  OperatorOrderCreatedRealtimeEvent,
+  OperatorOrderRealtimeEvent,
+  OperatorOrderStatusChangedRealtimeEvent,
+} from './realtime.models';
+
+import {
+  parseOperatorOrderCreatedEvent,
+  parseOperatorOrderStatusChangedEvent,
+} from './realtime-payload.parser';
 
 @Injectable({
   providedIn: 'root',
 })
 export class OperatorRealtimeService {
-  private readonly authStore =
-    inject(AuthStore);
+  private readonly connection =
+    inject(ReverbConnectionService);
 
   private readonly zone =
     inject(NgZone);
@@ -34,95 +49,32 @@ export class OperatorRealtimeService {
     | null = null;
 
   readonly orderCreated$ =
-    new Subject<unknown>();
+    new Subject<OperatorOrderCreatedRealtimeEvent>();
 
   readonly orderStatusChanged$ =
-    new Subject<unknown>();
-
-  constructor() {
-    if (typeof window !== 'undefined') {
-      (
-        window as typeof window & {
-          Pusher?: typeof Pusher;
-        }
-      ).Pusher = Pusher;
-    }
-  }
-
-  private getToken(): string | null {
-    return this.authStore.token();
-  }
+    new Subject<OperatorOrderStatusChangedRealtimeEvent>();
 
   connect(): void {
-    if (
-      this.echo ||
-      typeof window === 'undefined'
-    ) {
+    if (this.echo) {
       return;
     }
 
-    const token = this.getToken();
+    this.echo =
+      this.connection.create();
 
-    if (!token) {
+    if (!this.echo) {
       console.warn(
-        '[realtime] no token available yet',
+        '[operator-realtime] connection unavailable',
       );
-
-      return;
     }
-
-    this.echo = new Echo({
-      broadcaster: 'reverb',
-
-      key:
-        environment.reverb.appKey,
-
-      wsHost:
-        environment.reverb.host,
-
-      wsPort:
-        environment.reverb.port,
-
-      wssPort:
-        environment.reverb.port,
-
-      forceTLS:
-        environment.reverb.scheme
-        === 'https',
-
-      enabledTransports: [
-        'ws',
-        'wss',
-      ],
-
-      authEndpoint:
-        environment.reverb.authEndpoint,
-
-      auth: {
-        headers: {
-          Authorization:
-            `Bearer ${token}`,
-
-          Accept:
-            'application/json',
-        },
-      },
-    });
-
-    console.log(
-      '[realtime] echo initialized',
-    );
   }
 
   ensureOperatorOrdersSubscription(): void {
     const subscribe = (): void => {
-      const token = this.getToken();
-
-      if (!token) {
-        console.warn(
-          '[realtime] waiting for token...',
-        );
-
+      if (
+        !this.connection
+          .hasAuthenticationToken()
+      ) {
         this.scheduleReconnect(
           subscribe,
           500,
@@ -141,10 +93,6 @@ export class OperatorRealtimeService {
     this.connect();
 
     if (!this.echo) {
-      console.warn(
-        '[realtime] echo not ready',
-      );
-
       return;
     }
 
@@ -155,51 +103,42 @@ export class OperatorRealtimeService {
     const channelName =
       'operator.orders';
 
-    console.log(
-      `[realtime] subscribing to private ${channelName}`,
-    );
-
     this.echo
       .private(channelName)
-      .subscribed(() => {
-        console.log(
-          `[realtime] subscribed to private ${channelName}`,
-        );
-      })
       .error((error: unknown) => {
         console.error(
-          `[realtime] ${channelName} subscription error`,
+          `[operator-realtime] ${channelName}`,
           error,
         );
       })
       .listen(
         '.operator.order.created',
+
         (payload: unknown) => {
-          this.zone.run(() => {
-            this.orderCreated$.next(
-              payload,
-            );
-          });
+          this.handleOrderCreated(
+            payload,
+          );
         },
       )
       .listen(
         '.operator.order.status-changed',
+
         (payload: unknown) => {
-          this.zone.run(() => {
-            this.orderStatusChanged$.next(
-              payload,
-            );
-          });
+          this.handleOrderStatusChanged(
+            payload,
+          );
         },
       );
 
-    this.operatorOrdersBound = true;
+    this.operatorOrdersBound =
+      true;
   }
 
   listenOrder(
     orderId: number,
+
     handler: (
-      payload: unknown,
+      event: OperatorOrderRealtimeEvent,
     ) => void,
   ): void {
     if (
@@ -212,10 +151,6 @@ export class OperatorRealtimeService {
     this.connect();
 
     if (!this.echo) {
-      console.warn(
-        '[realtime] echo not ready for order channel',
-      );
-
       return;
     }
 
@@ -223,8 +158,8 @@ export class OperatorRealtimeService {
       `operator.orders.${orderId}`;
 
     if (
-      this.currentOrderChannel
-      === channelName
+      this.currentOrderChannel ===
+      channelName
     ) {
       return;
     }
@@ -235,36 +170,57 @@ export class OperatorRealtimeService {
       );
     }
 
-    console.log(
-      `[realtime] subscribing to private ${channelName}`,
-    );
-
     this.echo
       .private(channelName)
-      .subscribed(() => {
-        console.log(
-          `[realtime] subscribed to private ${channelName}`,
-        );
-      })
       .error((error: unknown) => {
         console.error(
-          `[realtime] ${channelName} subscription error`,
+          `[operator-realtime] ${channelName}`,
           error,
         );
       })
       .listen(
         '.operator.order.created',
+
         (payload: unknown) => {
+          const event =
+            parseOperatorOrderCreatedEvent(
+              payload,
+            );
+
+          if (!event) {
+            console.warn(
+              '[operator-realtime] invalid operator.order.created payload',
+              payload,
+            );
+
+            return;
+          }
+
           this.zone.run(() => {
-            handler(payload);
+            handler(event);
           });
         },
       )
       .listen(
         '.operator.order.status-changed',
+
         (payload: unknown) => {
+          const event =
+            parseOperatorOrderStatusChangedEvent(
+              payload,
+            );
+
+          if (!event) {
+            console.warn(
+              '[operator-realtime] invalid operator.order.status-changed payload',
+              payload,
+            );
+
+            return;
+          }
+
           this.zone.run(() => {
-            handler(payload);
+            handler(event);
           });
         },
       );
@@ -282,7 +238,8 @@ export class OperatorRealtimeService {
       'operator.orders',
     );
 
-    this.operatorOrdersBound = false;
+    this.operatorOrdersBound =
+      false;
   }
 
   stopOrder(
@@ -300,8 +257,8 @@ export class OperatorRealtimeService {
     );
 
     if (
-      this.currentOrderChannel
-      === channelName
+      this.currentOrderChannel ===
+      channelName
     ) {
       this.currentOrderChannel =
         null;
@@ -314,7 +271,8 @@ export class OperatorRealtimeService {
         this.reconnectTimer,
       );
 
-      this.reconnectTimer = null;
+      this.reconnectTimer =
+        null;
     }
 
     if (
@@ -338,11 +296,60 @@ export class OperatorRealtimeService {
     this.echo?.disconnect();
 
     this.echo = null;
+
     this.operatorOrdersBound =
       false;
 
     this.currentOrderChannel =
       null;
+  }
+
+  private handleOrderCreated(
+    payload: unknown,
+  ): void {
+    const event =
+      parseOperatorOrderCreatedEvent(
+        payload,
+      );
+
+    if (!event) {
+      console.warn(
+        '[operator-realtime] invalid operator.order.created payload',
+        payload,
+      );
+
+      return;
+    }
+
+    this.zone.run(() => {
+      this.orderCreated$.next(
+        event,
+      );
+    });
+  }
+
+  private handleOrderStatusChanged(
+    payload: unknown,
+  ): void {
+    const event =
+      parseOperatorOrderStatusChangedEvent(
+        payload,
+      );
+
+    if (!event) {
+      console.warn(
+        '[operator-realtime] invalid operator.order.status-changed payload',
+        payload,
+      );
+
+      return;
+    }
+
+    this.zone.run(() => {
+      this.orderStatusChanged$.next(
+        event,
+      );
+    });
   }
 
   private scheduleReconnect(

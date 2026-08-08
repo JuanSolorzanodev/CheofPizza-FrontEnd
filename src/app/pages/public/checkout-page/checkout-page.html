@@ -22,7 +22,12 @@
         <span class="state-card__icon"><i class="pi pi-shopping-cart"></i></span>
         <h1>Tu carrito está vacío</h1>
         <p>Agrega pizzas o promociones antes de iniciar el checkout.</p>
-        <p-button label="Explorar el menú" icon="pi pi-arrow-right" iconPos="right" routerLink="/" />
+        <p-button
+          label="Explorar el menú"
+          icon="pi pi-arrow-right"
+          iconPos="right"
+          routerLink="/"
+        />
       </article>
     } @else if (!storeAcceptsOrders()) {
       <article class="state-card state-card--closed">
@@ -168,8 +173,16 @@
                       class="manual-address-toggle"
                       (click)="toggleManualAddress()"
                     >
-                      <i class="pi" [class.pi-plus]="!showManualAddress()" [class.pi-minus]="showManualAddress()"></i>
-                      {{ showManualAddress() ? 'Ocultar dirección adicional' : 'Agregar dirección escrita' }}
+                      <i
+                        class="pi"
+                        [class.pi-plus]="!showManualAddress()"
+                        [class.pi-minus]="showManualAddress()"
+                      ></i>
+                      {{
+                        showManualAddress()
+                          ? 'Ocultar dirección adicional'
+                          : 'Agregar dirección escrita'
+                      }}
                     </button>
 
                     @if (showManualAddress()) {
@@ -183,7 +196,9 @@
                         ></textarea>
                         <small>Entre 10 y 500 caracteres cuando se completa.</small>
                         @if (!isOptionalAddressOk()) {
-                          <em class="field-error">La dirección debe tener entre 10 y 500 caracteres.</em>
+                          <em class="field-error"
+                            >La dirección debe tener entre 10 y 500 caracteres.</em
+                          >
                         }
                       </label>
                     }
@@ -211,7 +226,9 @@
                   @if (isDelivery()) {
                     <div>
                       <span>Referencia</span>
-                      <strong>{{ deliveryLocation()?.reference || 'Sin referencia adicional' }}</strong>
+                      <strong>{{
+                        deliveryLocation()?.reference || 'Sin referencia adicional'
+                      }}</strong>
                     </div>
                   }
                 </div>
@@ -237,7 +254,9 @@
                             <strong>{{ itemTitle(item) }}</strong>
                             <span>{{ item.size?.name || 'Tamaño incluido' }}</span>
                           </div>
-                          <strong>{{ item.subtotal | currency: 'USD' : 'symbol' : '1.2-2' }}</strong>
+                          <strong>{{
+                            item.subtotal | currency: 'USD' : 'symbol' : '1.2-2'
+                          }}</strong>
                         </div>
 
                         @if (item.selected_pizzas?.length) {
@@ -303,7 +322,12 @@
                         para continuar.
                       </span>
                     </div>
-                    <p-button label="Agregar productos" severity="secondary" [outlined]="true" routerLink="/" />
+                    <p-button
+                      label="Agregar productos"
+                      severity="secondary"
+                      [outlined]="true"
+                      routerLink="/"
+                    />
                   </div>
                 }
               </section>
@@ -331,7 +355,12 @@
                   >
                     <span class="payment-card__icon"><i class="pi pi-money-bill"></i></span>
                     <span><strong>Efectivo</strong><small>Paga al recibir o retirar.</small></span>
-                    <p-radioButton name="paymentMethod" value="cash" formControlName="payment_method" [disabled]="!cashEnabled()" />
+                    <p-radioButton
+                      name="paymentMethod"
+                      value="cash"
+                      formControlName="payment_method"
+                      [disabled]="!cashEnabled()"
+                    />
                   </button>
 
                   <button
@@ -343,8 +372,16 @@
                     (click)="selectPayment('transfer')"
                   >
                     <span class="payment-card__icon"><i class="pi pi-building-columns"></i></span>
-                    <span><strong>Transferencia</strong><small>Recibirás los datos bancarios.</small></span>
-                    <p-radioButton name="paymentMethod" value="transfer" formControlName="payment_method" [disabled]="!transferEnabled()" />
+                    <span
+                      ><strong>Transferencia</strong
+                      ><small>Recibirás los datos bancarios.</small></span
+                    >
+                    <p-radioButton
+                      name="paymentMethod"
+                      value="transfer"
+                      formControlName="payment_method"
+                      [disabled]="!transferEnabled()"
+                    />
                   </button>
 
                   <button
@@ -356,8 +393,16 @@
                     (click)="selectPayment('card')"
                   >
                     <span class="payment-card__icon"><i class="pi pi-credit-card"></i></span>
-                    <span><strong>Tarjeta o PayPal</strong><small>Pago cifrado procesado por PayPal.</small></span>
-                    <p-radioButton name="paymentMethod" value="card" formControlName="payment_method" [disabled]="!paypalEnabled()" />
+                    <span
+                      ><strong>Tarjeta o PayPal</strong
+                      ><small>Pago cifrado procesado por PayPal.</small></span
+                    >
+                    <p-radioButton
+                      name="paymentMethod"
+                      value="card"
+                      formControlName="payment_method"
+                      [disabled]="!paypalEnabled()"
+                    />
                   </button>
                 </div>
 
@@ -367,7 +412,9 @@
                     <div>
                       <strong>Transferencia bancaria</strong>
                       <p>
-                        Al confirmar verás los datos de {{ transfer.bank_name }} y podrás enviar el comprobante por WhatsApp.
+                        Al confirmar verás los datos de {{ transfer.bank_name }}. Después de
+                        realizar la transferencia podrás cargar el comprobante directamente desde el
+                        detalle de tu pedido.
                       </p>
                     </div>
                   </div>
@@ -389,13 +436,23 @@
                     <div class="paypal-final-step__heading">
                       <i class="pi pi-shield"></i>
                       <div>
-                        <strong>Pago seguro por {{ total() | currency: 'USD' : 'symbol' : '1.2-2' }}</strong>
-                        <span>PayPal permite pagar con una cuenta o con una tarjeta compatible.</span>
+                        <strong
+                          >Pago seguro por
+                          {{ total() | currency: 'USD' : 'symbol' : '1.2-2' }}</strong
+                        >
+                        <span
+                          >PayPal permite pagar con una cuenta o con una tarjeta compatible.</span
+                        >
                       </div>
                     </div>
 
                     @if (!auth.isAuthenticated()) {
-                      <p-button label="Iniciar sesión para pagar" icon="pi pi-user" class="paypal-login-button" (onClick)="openLogin()" />
+                      <p-button
+                        label="Iniciar sesión para pagar"
+                        icon="pi pi-user"
+                        class="paypal-login-button"
+                        (onClick)="openLogin()"
+                      />
                     } @else if (paypalConfig(); as paypal) {
                       <app-paypal-button
                         [config]="paypal"
@@ -447,7 +504,11 @@
               <span>Resumen</span>
               <h2>Tu pedido</h2>
             </div>
-            <p-tag [value]="cart.totalUnits() + ' productos'" severity="secondary" [rounded]="true" />
+            <p-tag
+              [value]="cart.totalUnits() + ' productos'"
+              severity="secondary"
+              [rounded]="true"
+            />
           </div>
 
           <div class="checkout-summary__products">
@@ -472,14 +533,26 @@
           </div>
 
           <div class="checkout-summary__totals">
-            <div><span>Subtotal</span><strong>{{ subtotal() | currency: 'USD' : 'symbol' : '1.2-2' }}</strong></div>
-            <div><span>Envío</span><strong>{{ deliveryFee() | currency: 'USD' : 'symbol' : '1.2-2' }}</strong></div>
-            <div class="checkout-summary__total"><span>Total</span><strong>{{ total() | currency: 'USD' : 'symbol' : '1.2-2' }}</strong></div>
+            <div>
+              <span>Subtotal</span
+              ><strong>{{ subtotal() | currency: 'USD' : 'symbol' : '1.2-2' }}</strong>
+            </div>
+            <div>
+              <span>Envío</span
+              ><strong>{{ deliveryFee() | currency: 'USD' : 'symbol' : '1.2-2' }}</strong>
+            </div>
+            <div class="checkout-summary__total">
+              <span>Total</span
+              ><strong>{{ total() | currency: 'USD' : 'symbol' : '1.2-2' }}</strong>
+            </div>
           </div>
 
           <div class="checkout-summary__facts">
             <span><i class="pi pi-clock"></i> {{ store()?.estimated_minutes }} min aprox.</span>
-            <span><i class="pi pi-wallet"></i> Pedido mínimo {{ minimumOrder() | currency: 'USD' : 'symbol' : '1.2-2' }}</span>
+            <span
+              ><i class="pi pi-wallet"></i> Pedido mínimo
+              {{ minimumOrder() | currency: 'USD' : 'symbol' : '1.2-2' }}</span
+            >
             <span><i class="pi pi-shield"></i> Total validado por el servidor</span>
           </div>
 

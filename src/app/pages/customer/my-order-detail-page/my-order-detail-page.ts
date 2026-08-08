@@ -36,6 +36,7 @@ import { TagModule } from 'primeng/tag';
 import { CheckoutConfigApiService } from '../../../core/api/orders/checkout-config-api.service';
 
 import { MyOrdersApiService } from '../../../core/api/orders/my-orders-api.service';
+import { CustomerOrderUpdatedRealtimeEvent } from '../../../core/realtime/realtime.models';
 
 import {
   OrderDto,
@@ -791,10 +792,10 @@ export class MyOrderDetailPage implements OnInit, OnDestroy {
 
     this.realtime.orderUpdated$
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((payload: unknown) => {
-        const incoming = this.extractRealtimeOrder(payload);
+      .subscribe((event: CustomerOrderUpdatedRealtimeEvent) => {
+        const incoming = event.order;
 
-        if (incoming?.id !== orderId) {
+        if (incoming.id !== orderId) {
           return;
         }
 
@@ -818,27 +819,6 @@ export class MyOrderDetailPage implements OnInit, OnDestroy {
           this.loadLatestReceipt(orderId);
         }
       });
-  }
-
-  private extractRealtimeOrder(payload: unknown): OrderDto | null {
-    if (typeof payload !== 'object' || payload === null) {
-      return null;
-    }
-
-    const source = payload as {
-      order?: unknown;
-      data?: unknown;
-    };
-
-    const candidate = source.order ?? source.data;
-
-    if (typeof candidate !== 'object' || candidate === null) {
-      return null;
-    }
-
-    const order = candidate as Partial<OrderDto>;
-
-    return typeof order.id === 'number' ? (order as OrderDto) : null;
   }
 
   private eventStatus(event: OrderStatusChangeDto): string {

@@ -137,7 +137,6 @@ export interface OrderDto {
   payment?: OrderPaymentDto | null;
   status: OrderStatusCode | string;
   customer?: OrderCustomerDto | null;
-  whatsapp_receipt_url?: string | null;
   items: OrderItemDto[];
   items_count?: number | null;
   transfer_account?: TransferAccountDto | null;

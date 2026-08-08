@@ -1,21 +1,9 @@
 import { CommonModule } from '@angular/common';
-import {
-  Component,
-  DestroyRef,
-  OnDestroy,
-  computed,
-  inject,
-  signal,
-} from '@angular/core';
+import { Component, DestroyRef, OnDestroy, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import {
-  Subject,
-  auditTime,
-  debounceTime,
-  finalize,
-} from 'rxjs';
+import { Subject, auditTime, debounceTime, finalize } from 'rxjs';
 
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
@@ -32,6 +20,10 @@ import {
   QueueCountsDto,
 } from '../../../core/api/operator/operator-orders.models';
 import { OperatorRealtimeService } from '../../../core/realtime/operator-realtime.service';
+import {
+  OperatorOrderCreatedRealtimeEvent,
+  OperatorOrderStatusChangedRealtimeEvent,
+} from '../../../core/realtime/realtime.models';
 
 import {
   formatOperatorDate,
@@ -68,19 +60,6 @@ interface OperatorPaginatorEvent {
   first?: number;
   rows?: number;
   page?: number;
-}
-
-interface OperatorRealtimeCreatedPayload {
-  status?: unknown;
-  summary?: unknown;
-  order?: unknown;
-}
-
-interface OperatorRealtimeStatusPayload {
-  from_status?: unknown;
-  to_status?: unknown;
-  fromStatus?: unknown;
-  toStatus?: unknown;
 }
 
 @Component({
@@ -203,9 +182,7 @@ export class OperatorOrdersPage implements OnDestroy {
       icon: this.statusIcon(statusName),
       count: Number(counts[statusName] ?? 0),
       active: this.status() === statusName,
-      historical:
-        statusName === 'delivered' ||
-        statusName === 'cancelled',
+      historical: statusName === 'delivered' || statusName === 'cancelled',
     }));
   });
 
@@ -221,8 +198,7 @@ export class OperatorOrdersPage implements OnDestroy {
     const counts = this.queue();
 
     return this.activeStatuses.reduce(
-      (total, statusName) =>
-        total + Number(counts[statusName] ?? 0),
+      (total, statusName) => total + Number(counts[statusName] ?? 0),
       0,
     );
   });
@@ -230,9 +206,7 @@ export class OperatorOrdersPage implements OnDestroy {
   readonly currentStatusLabel = computed(() => {
     const selectedStatus = this.status();
 
-    return selectedStatus
-      ? this.prettyStatus(selectedStatus)
-      : 'Todos los pedidos';
+    return selectedStatus ? this.prettyStatus(selectedStatus) : 'Todos los pedidos';
   });
 
   readonly hasFilters = computed(() => {
@@ -257,17 +231,11 @@ export class OperatorOrdersPage implements OnDestroy {
       return 0;
     }
 
-    return Math.min(
-      this.paginationFrom() + this.orders().length - 1,
-      this.total(),
-    );
+    return Math.min(this.paginationFrom() + this.orders().length - 1, this.total());
   });
 
   readonly lastPage = computed(() => {
-    return Math.max(
-      1,
-      Math.ceil(this.total() / this.perPage()),
-    );
+    return Math.max(1, Math.ceil(this.total() / this.perPage()));
   });
 
   constructor() {
@@ -290,11 +258,7 @@ export class OperatorOrdersPage implements OnDestroy {
   }
 
   selectStatus(statusName: OrderStatusName): void {
-    this.status.set(
-      this.status() === statusName
-        ? null
-        : statusName,
-    );
+    this.status.set(this.status() === statusName ? null : statusName);
 
     this.page.set(1);
     this.load();
@@ -321,24 +285,15 @@ export class OperatorOrdersPage implements OnDestroy {
   }
 
   onPageChange(event: OperatorPaginatorEvent): void {
-    const rows = Number(
-      event.rows ?? this.perPage(),
-    );
+    const rows = Number(event.rows ?? this.perPage());
 
     const first = Number(event.first ?? 0);
 
-    const nextPerPage =
-      Number.isFinite(rows) && rows > 0
-        ? rows
-        : this.perPage();
+    const nextPerPage = Number.isFinite(rows) && rows > 0 ? rows : this.perPage();
 
-    const nextPage =
-      Math.floor(first / nextPerPage) + 1;
+    const nextPage = Math.floor(first / nextPerPage) + 1;
 
-    if (
-      nextPage === this.page() &&
-      nextPerPage === this.perPage()
-    ) {
+    if (nextPage === this.page() && nextPerPage === this.perPage()) {
       return;
     }
 
@@ -351,10 +306,7 @@ export class OperatorOrdersPage implements OnDestroy {
   load(changingPage = false): void {
     this.errorMessage.set(null);
 
-    if (
-      changingPage ||
-      this.orders().length > 0
-    ) {
+    if (changingPage || this.orders().length > 0) {
       this.pageLoading.set(true);
     } else {
       this.loading.set(true);
@@ -365,10 +317,8 @@ export class OperatorOrdersPage implements OnDestroy {
       per_page: this.perPage(),
       q: this.q().trim() || undefined,
       status: this.status() || undefined,
-      delivery_type:
-        this.deliveryType() || undefined,
-      payment_method:
-        this.paymentMethod() || undefined,
+      delivery_type: this.deliveryType() || undefined,
+      payment_method: this.paymentMethod() || undefined,
     };
 
     this.api
@@ -382,43 +332,23 @@ export class OperatorOrdersPage implements OnDestroy {
       )
       .subscribe({
         next: (response) => {
-          const rows = Array.isArray(response.data)
-            ? response.data
-            : [];
+          const rows = Array.isArray(response.data) ? response.data : [];
 
-          const responseTotal = Number(
-            response.meta?.total ?? rows.length,
-          );
+          const responseTotal = Number(response.meta?.total ?? rows.length);
 
-          const responsePage = Number(
-            response.meta?.current_page ??
-              this.page(),
-          );
+          const responsePage = Number(response.meta?.current_page ?? this.page());
 
-          const responsePerPage = Number(
-            response.meta?.per_page ??
-              this.perPage(),
-          );
+          const responsePerPage = Number(response.meta?.per_page ?? this.perPage());
 
           this.orders.set(rows);
 
-          this.total.set(
-            Number.isFinite(responseTotal)
-              ? responseTotal
-              : rows.length,
-          );
+          this.total.set(Number.isFinite(responseTotal) ? responseTotal : rows.length);
 
-          if (
-            Number.isFinite(responsePage) &&
-            responsePage > 0
-          ) {
+          if (Number.isFinite(responsePage) && responsePage > 0) {
             this.page.set(responsePage);
           }
 
-          if (
-            Number.isFinite(responsePerPage) &&
-            responsePerPage > 0
-          ) {
+          if (Number.isFinite(responsePerPage) && responsePerPage > 0) {
             this.perPage.set(responsePerPage);
           }
         },
@@ -428,10 +358,7 @@ export class OperatorOrdersPage implements OnDestroy {
           this.total.set(0);
 
           this.errorMessage.set(
-            this.resolveErrorMessage(
-              error,
-              'No fue posible cargar los pedidos.',
-            ),
+            this.resolveErrorMessage(error, 'No fue posible cargar los pedidos.'),
           );
         },
       });
@@ -461,10 +388,7 @@ export class OperatorOrdersPage implements OnDestroy {
           this.queue.set({});
 
           this.queueError.set(
-            this.resolveErrorMessage(
-              error,
-              'No fue posible cargar los estados operativos.',
-            ),
+            this.resolveErrorMessage(error, 'No fue posible cargar los estados operativos.'),
           );
         },
       });
@@ -473,14 +397,10 @@ export class OperatorOrdersPage implements OnDestroy {
   loadStatuses(): void {
     this.api
       .statuses()
-      .pipe(
-        takeUntilDestroyed(this.destroyRef),
-      )
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (response) => {
-          const statuses = Array.isArray(response.data)
-            ? response.data
-            : [];
+          const statuses = Array.isArray(response.data) ? response.data : [];
 
           this.statusOptions.set([
             {
@@ -563,9 +483,7 @@ export class OperatorOrdersPage implements OnDestroy {
     return icons[statusName] ?? 'pi pi-circle';
   }
 
-  statusOperationalLabel(
-    statusName: string,
-  ): string {
+  statusOperationalLabel(statusName: string): string {
     const labels: Record<string, string> = {
       pending: 'Nueva orden',
       confirmed: 'Confirmada',
@@ -576,22 +494,15 @@ export class OperatorOrdersPage implements OnDestroy {
       cancelled: 'Cancelada',
     };
 
-    return labels[statusName] ??
-      this.prettyStatus(statusName);
+    return labels[statusName] ?? this.prettyStatus(statusName);
   }
 
-  statusItemClass(
-    item: StatusFilterItem,
-  ): string {
+  statusItemClass(item: StatusFilterItem): string {
     return [
       'status-filter',
       `status-filter--${item.key}`,
-      item.active
-        ? 'status-filter--active'
-        : '',
-      item.historical
-        ? 'status-filter--historical'
-        : '',
+      item.active ? 'status-filter--active' : '',
+      item.historical ? 'status-filter--historical' : '',
     ]
       .filter(Boolean)
       .join(' ');
@@ -601,78 +512,47 @@ export class OperatorOrdersPage implements OnDestroy {
     return [
       'order-row',
       `order-row--${order.status}`,
-      this.isHistoricalOrder(order)
-        ? 'order-row--historical'
-        : '',
+      this.isHistoricalOrder(order) ? 'order-row--historical' : '',
     ]
       .filter(Boolean)
       .join(' ');
   }
 
-  mobileCardClass(
-    order: OperatorOrderListDto,
-  ): string {
+  mobileCardClass(order: OperatorOrderListDto): string {
     return [
       'mobile-order',
       `mobile-order--${order.status}`,
-      this.isHistoricalOrder(order)
-        ? 'mobile-order--historical'
-        : '',
+      this.isHistoricalOrder(order) ? 'mobile-order--historical' : '',
     ]
       .filter(Boolean)
       .join(' ');
   }
 
-  customerName(
-    order: OperatorOrderListDto,
-  ): string {
-    return (
-      order.customer?.name?.trim() ||
-      'Cliente no identificado'
-    );
+  customerName(order: OperatorOrderListDto): string {
+    return order.customer?.name?.trim() || 'Cliente no identificado';
   }
 
-  customerPhone(
-    order: OperatorOrderListDto,
-  ): string {
-    return (
-      order.customer?.phone?.trim() ||
-      'Sin teléfono'
-    );
+  customerPhone(order: OperatorOrderListDto): string {
+    return order.customer?.phone?.trim() || 'Sin teléfono';
   }
 
-  isTransfer(
-    order: OperatorOrderListDto,
-  ): boolean {
+  isTransfer(order: OperatorOrderListDto): boolean {
     return order.payment_method === 'transfer';
   }
 
-  isDelivery(
-    order: OperatorOrderListDto,
-  ): boolean {
+  isDelivery(order: OperatorOrderListDto): boolean {
     return order.delivery_type === 'delivery';
   }
 
-  isHistoricalOrder(
-    order: OperatorOrderListDto,
-  ): boolean {
-    return (
-      order.status === 'delivered' ||
-      order.status === 'cancelled'
-    );
+  isHistoricalOrder(order: OperatorOrderListDto): boolean {
+    return order.status === 'delivered' || order.status === 'cancelled';
   }
 
-  deliveryIcon(
-    order: OperatorOrderListDto,
-  ): string {
-    return this.isDelivery(order)
-      ? 'pi pi-truck'
-      : 'pi pi-shop';
+  deliveryIcon(order: OperatorOrderListDto): string {
+    return this.isDelivery(order) ? 'pi pi-truck' : 'pi pi-shop';
   }
 
-  paymentIcon(
-    order: OperatorOrderListDto,
-  ): string {
+  paymentIcon(order: OperatorOrderListDto): string {
     switch (order.payment_method) {
       case 'transfer':
         return 'pi pi-building-columns';
@@ -690,10 +570,7 @@ export class OperatorOrdersPage implements OnDestroy {
 
   private configureSearch(): void {
     this.searchInput$
-      .pipe(
-        debounceTime(300),
-        takeUntilDestroyed(this.destroyRef),
-      )
+      .pipe(debounceTime(300), takeUntilDestroyed(this.destroyRef))
       .subscribe((term) => {
         this.q.set(term);
         this.page.set(1);
@@ -703,10 +580,7 @@ export class OperatorOrdersPage implements OnDestroy {
 
   private configureRealtimeRefresh(): void {
     this.realtimeRefresh$
-      .pipe(
-        auditTime(300),
-        takeUntilDestroyed(this.destroyRef),
-      )
+      .pipe(auditTime(300), takeUntilDestroyed(this.destroyRef))
       .subscribe(() => {
         this.load(false);
       });
@@ -716,33 +590,17 @@ export class OperatorOrdersPage implements OnDestroy {
     this.realtime.ensureOperatorOrdersSubscription();
 
     this.realtime.orderCreated$
-      .pipe(
-        takeUntilDestroyed(this.destroyRef),
-      )
-      .subscribe((payload: unknown) => {
-        const createdStatus =
-          this.extractCreatedStatus(payload);
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((event: OperatorOrderCreatedRealtimeEvent) => {
+        this.incrementQueue(event.summary.status);
 
-        this.incrementQueue(createdStatus);
         this.requestRealtimeRefresh();
       });
 
     this.realtime.orderStatusChanged$
-      .pipe(
-        takeUntilDestroyed(this.destroyRef),
-      )
-      .subscribe((payload: unknown) => {
-        const transition =
-          this.extractStatusTransition(payload);
-
-        if (transition) {
-          this.moveQueue(
-            transition.from,
-            transition.to,
-          );
-        } else {
-          this.loadQueue(false);
-        }
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((event: OperatorOrderStatusChangedRealtimeEvent) => {
+        this.moveQueue(event.from_status, event.to_status);
 
         this.requestRealtimeRefresh();
       });
@@ -752,115 +610,25 @@ export class OperatorOrdersPage implements OnDestroy {
     this.realtimeRefresh$.next();
   }
 
-  private incrementQueue(
-    statusName: string,
-  ): void {
+  private incrementQueue(statusName: string): void {
     this.queue.update((current) => ({
       ...current,
-      [statusName]:
-        Number(current[statusName] ?? 0) + 1,
+      [statusName]: Number(current[statusName] ?? 0) + 1,
     }));
   }
 
-  private moveQueue(
-    fromStatus: string,
-    toStatus: string,
-  ): void {
+  private moveQueue(fromStatus: string, toStatus: string): void {
     this.queue.update((current) => ({
       ...current,
 
-      [fromStatus]: Math.max(
-        Number(current[fromStatus] ?? 0) - 1,
-        0,
-      ),
+      [fromStatus]: Math.max(Number(current[fromStatus] ?? 0) - 1, 0),
 
-      [toStatus]:
-        Number(current[toStatus] ?? 0) + 1,
+      [toStatus]: Number(current[toStatus] ?? 0) + 1,
     }));
   }
 
-  private extractCreatedStatus(
-    payload: unknown,
-  ): string {
-    if (
-      typeof payload !== 'object' ||
-      payload === null
-    ) {
-      return 'pending';
-    }
 
-    const event =
-      payload as OperatorRealtimeCreatedPayload;
-
-    if (typeof event.status === 'string') {
-      return event.status;
-    }
-
-    const candidate =
-      event.summary ??
-      event.order ??
-      null;
-
-    if (
-      typeof candidate !== 'object' ||
-      candidate === null
-    ) {
-      return 'pending';
-    }
-
-    const statusName = (
-      candidate as {
-        status?: unknown;
-      }
-    ).status;
-
-    return typeof statusName === 'string'
-      ? statusName
-      : 'pending';
-  }
-
-  private extractStatusTransition(
-    payload: unknown,
-  ): {
-    from: string;
-    to: string;
-  } | null {
-    if (
-      typeof payload !== 'object' ||
-      payload === null
-    ) {
-      return null;
-    }
-
-    const event =
-      payload as OperatorRealtimeStatusPayload;
-
-    const fromStatus =
-      event.from_status ??
-      event.fromStatus;
-
-    const toStatus =
-      event.to_status ??
-      event.toStatus;
-
-    if (
-      typeof fromStatus !== 'string' ||
-      typeof toStatus !== 'string' ||
-      fromStatus.trim() === '' ||
-      toStatus.trim() === ''
-    ) {
-      return null;
-    }
-
-    return {
-      from: fromStatus.trim(),
-      to: toStatus.trim(),
-    };
-  }
-
-  private statusNavigationLabel(
-    statusName: OrderStatusName,
-  ): string {
+  private statusNavigationLabel(statusName: OrderStatusName): string {
     const labels: Record<OrderStatusName, string> = {
       pending: 'Pendientes',
       confirmed: 'Confirmados',
@@ -874,10 +642,7 @@ export class OperatorOrdersPage implements OnDestroy {
     return labels[statusName];
   }
 
-  private resolveErrorMessage(
-    error: unknown,
-    fallback: string,
-  ): string {
+  private resolveErrorMessage(error: unknown, fallback: string): string {
     const response = error as {
       error?: {
         message?: string;

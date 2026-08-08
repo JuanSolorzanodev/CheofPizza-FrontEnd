@@ -3,19 +3,31 @@ import {
   NgZone,
   inject,
 } from '@angular/core';
-import Echo from 'laravel-echo';
-import Pusher from 'pusher-js';
-import { Subject } from 'rxjs';
 
-import { environment } from '../../../environments/environment';
-import { AuthStore } from '../auth/auth.store';
+import Echo from 'laravel-echo';
+
+import {
+  Subject,
+} from 'rxjs';
+
+import {
+  ReverbConnectionService,
+} from './reverb-connection.service';
+
+import {
+  CustomerOrderUpdatedRealtimeEvent,
+} from './realtime.models';
+
+import {
+  parseCustomerOrderUpdatedEvent,
+} from './realtime-payload.parser';
 
 @Injectable({
   providedIn: 'root',
 })
 export class CustomerRealtimeService {
-  private readonly authStore =
-    inject(AuthStore);
+  private readonly connection =
+    inject(ReverbConnectionService);
 
   private readonly zone =
     inject(NgZone);
@@ -32,77 +44,21 @@ export class CustomerRealtimeService {
     | null = null;
 
   readonly orderUpdated$ =
-    new Subject<unknown>();
-
-  constructor() {
-    if (typeof window !== 'undefined') {
-      (
-        window as typeof window & {
-          Pusher?: typeof Pusher;
-        }
-      ).Pusher = Pusher;
-    }
-  }
-
-  private getToken(): string | null {
-    return this.authStore.token();
-  }
+    new Subject<CustomerOrderUpdatedRealtimeEvent>();
 
   private connect(): void {
-    if (
-      this.echo ||
-      typeof window === 'undefined'
-    ) {
+    if (this.echo) {
       return;
     }
 
-    const token = this.getToken();
+    this.echo =
+      this.connection.create();
 
-    if (!token) {
+    if (!this.echo) {
       console.warn(
-        '[customer-realtime] no token available',
+        '[customer-realtime] connection unavailable',
       );
-
-      return;
     }
-
-    this.echo = new Echo({
-      broadcaster: 'reverb',
-
-      key:
-        environment.reverb.appKey,
-
-      wsHost:
-        environment.reverb.host,
-
-      wsPort:
-        environment.reverb.port,
-
-      wssPort:
-        environment.reverb.port,
-
-      forceTLS:
-        environment.reverb.scheme
-        === 'https',
-
-      enabledTransports: [
-        'ws',
-        'wss',
-      ],
-
-      authEndpoint:
-        environment.reverb.authEndpoint,
-
-      auth: {
-        headers: {
-          Authorization:
-            `Bearer ${token}`,
-
-          Accept:
-            'application/json',
-        },
-      },
-    });
   }
 
   listenOrders(
@@ -125,8 +81,8 @@ export class CustomerRealtimeService {
       `customer.orders.${userId}`;
 
     if (
-      this.currentOrdersChannel
-      === channelName
+      this.currentOrdersChannel ===
+      channelName
     ) {
       return;
     }
@@ -139,11 +95,6 @@ export class CustomerRealtimeService {
 
     this.echo
       .private(channelName)
-      .subscribed(() => {
-        console.log(
-          `[customer-realtime] subscribed to private ${channelName}`,
-        );
-      })
       .error((error: unknown) => {
         console.error(
           `[customer-realtime] ${channelName}`,
@@ -152,12 +103,11 @@ export class CustomerRealtimeService {
       })
       .listen(
         '.customer.order.updated',
+
         (payload: unknown) => {
-          this.zone.run(() => {
-            this.orderUpdated$.next(
-              payload,
-            );
-          });
+          this.handleOrderUpdated(
+            payload,
+          );
         },
       );
 
@@ -185,8 +135,8 @@ export class CustomerRealtimeService {
       `customer.order.${orderId}`;
 
     if (
-      this.currentOrderChannel
-      === channelName
+      this.currentOrderChannel ===
+      channelName
     ) {
       return;
     }
@@ -199,11 +149,6 @@ export class CustomerRealtimeService {
 
     this.echo
       .private(channelName)
-      .subscribed(() => {
-        console.log(
-          `[customer-realtime] subscribed to private ${channelName}`,
-        );
-      })
       .error((error: unknown) => {
         console.error(
           `[customer-realtime] ${channelName}`,
@@ -212,12 +157,11 @@ export class CustomerRealtimeService {
       })
       .listen(
         '.customer.order.updated',
+
         (payload: unknown) => {
-          this.zone.run(() => {
-            this.orderUpdated$.next(
-              payload,
-            );
-          });
+          this.handleOrderUpdated(
+            payload,
+          );
         },
       );
 
@@ -240,8 +184,8 @@ export class CustomerRealtimeService {
     );
 
     if (
-      this.currentOrdersChannel
-      === channelName
+      this.currentOrdersChannel ===
+      channelName
     ) {
       this.currentOrdersChannel =
         null;
@@ -263,8 +207,8 @@ export class CustomerRealtimeService {
     );
 
     if (
-      this.currentOrderChannel
-      === channelName
+      this.currentOrderChannel ===
+      channelName
     ) {
       this.currentOrderChannel =
         null;
@@ -299,5 +243,29 @@ export class CustomerRealtimeService {
 
     this.currentOrderChannel =
       null;
+  }
+
+  private handleOrderUpdated(
+    payload: unknown,
+  ): void {
+    const event =
+      parseCustomerOrderUpdatedEvent(
+        payload,
+      );
+
+    if (!event) {
+      console.warn(
+        '[customer-realtime] invalid customer.order.updated payload',
+        payload,
+      );
+
+      return;
+    }
+
+    this.zone.run(() => {
+      this.orderUpdated$.next(
+        event,
+      );
+    });
   }
 }

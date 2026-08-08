@@ -57,7 +57,6 @@ interface SettingsFormValue {
   cash_enabled: boolean;
   whatsapp_active: boolean;
   whatsapp_phone: string;
-  receipt_template: string;
 }
 
 type SettingsFormGroup = FormGroup<{
@@ -79,7 +78,6 @@ type SettingsFormGroup = FormGroup<{
   cash_enabled: FormControl<boolean>;
   whatsapp_active: FormControl<boolean>;
   whatsapp_phone: FormControl<string>;
-  receipt_template: FormControl<string>;
 }>;
 
 @Component({
@@ -134,7 +132,6 @@ export class AdminSettings {
     cash_enabled: [true],
     whatsapp_active: [false],
     whatsapp_phone: ['', [Validators.maxLength(30), Validators.pattern(/^[0-9+()\-\s]*$/)]],
-    receipt_template: ['', [Validators.maxLength(1000)]],
   });
 
   private initialSnapshot = JSON.stringify(this.form.getRawValue());
@@ -142,31 +139,29 @@ export class AdminSettings {
   readonly dirty = signal(false);
 
   storeStatusLabel(): string {
-    return this.form.controls.accepts_orders.value
-      ? 'Recibiendo pedidos'
-      : 'Tienda cerrada';
+    return this.form.controls.accepts_orders.value ? 'Recibiendo pedidos' : 'Tienda cerrada';
   }
 
   deliveryMethodsCount(): number {
-    return Number(this.form.controls.pickup_enabled.value)
-      + Number(this.form.controls.delivery_enabled.value);
+    return (
+      Number(this.form.controls.pickup_enabled.value) +
+      Number(this.form.controls.delivery_enabled.value)
+    );
   }
 
   paymentMethodsCount(): number {
-    return Number(this.form.controls.paypal_enabled.value)
-      + Number(this.form.controls.transfer_enabled.value)
-      + Number(this.form.controls.cash_enabled.value);
+    return (
+      Number(this.form.controls.paypal_enabled.value) +
+      Number(this.form.controls.transfer_enabled.value) +
+      Number(this.form.controls.cash_enabled.value)
+    );
   }
 
   whatsappStatusLabel(): string {
-    return this.form.controls.whatsapp_active.value
-      ? 'Activo'
-      : 'Inactivo';
+    return this.form.controls.whatsapp_active.value ? 'Activo' : 'Inactivo';
   }
 
-  readonly paypalConfigured = computed(() =>
-    this.settings()?.payments.paypal_configured ?? false,
-  );
+  readonly paypalConfigured = computed(() => this.settings()?.payments.paypal_configured ?? false);
 
   constructor() {
     this.listenFormChanges();
@@ -197,14 +192,14 @@ export class AdminSettings {
     this.form.markAllAsTouched();
 
     if (!this.hasDeliveryMethod()) {
-      this.serverErrors.update(errors => ({
+      this.serverErrors.update((errors) => ({
         ...errors,
         delivery: ['Debes habilitar retiro o entrega a domicilio.'],
       }));
     }
 
     if (!this.hasPaymentMethod()) {
-      this.serverErrors.update(errors => ({
+      this.serverErrors.update((errors) => ({
         ...errors,
         payments: ['Debes habilitar al menos un método de pago.'],
       }));
@@ -229,7 +224,7 @@ export class AdminSettings {
         finalize(() => this.saving.set(false)),
       )
       .subscribe({
-        next: response => {
+        next: (response) => {
           this.settings.set(response.data);
           this.patchForm(response.data);
           this.submitted.set(false);
@@ -316,7 +311,7 @@ export class AdminSettings {
         }),
       )
       .subscribe({
-        next: response => {
+        next: (response) => {
           this.settings.set(response.data);
           this.patchForm(response.data);
           this.serverErrors.set({});
@@ -352,7 +347,6 @@ export class AdminSettings {
         cash_enabled: settings.payments.cash_enabled,
         whatsapp_active: settings.whatsapp.active,
         whatsapp_phone: settings.whatsapp.phone ?? '',
-        receipt_template: settings.whatsapp.receipt_template ?? '',
       },
       { emitEvent: false },
     );
@@ -395,18 +389,15 @@ export class AdminSettings {
       whatsapp: {
         active: value.whatsapp_active,
         phone: this.nullable(value.whatsapp_phone),
-        receipt_template: this.nullable(value.receipt_template),
       },
     };
   }
 
   private listenFormChanges(): void {
-    this.form.valueChanges
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => {
-        this.applyConditionalValidators();
-        this.dirty.set(JSON.stringify(this.form.getRawValue()) !== this.initialSnapshot);
-      });
+    this.form.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+      this.applyConditionalValidators();
+      this.dirty.set(JSON.stringify(this.form.getRawValue()) !== this.initialSnapshot);
+    });
   }
 
   private applyConditionalValidators(): void {
@@ -421,10 +412,7 @@ export class AdminSettings {
     );
   }
 
-  private updateRequiredValidator(
-    control: AbstractControl,
-    required: boolean,
-  ): void {
+  private updateRequiredValidator(control: AbstractControl, required: boolean): void {
     if (required) {
       control.addValidators(Validators.required);
     } else {
@@ -435,14 +423,15 @@ export class AdminSettings {
   }
 
   private hasDeliveryMethod(): boolean {
-    return this.form.controls.pickup_enabled.value
-      || this.form.controls.delivery_enabled.value;
+    return this.form.controls.pickup_enabled.value || this.form.controls.delivery_enabled.value;
   }
 
   private hasPaymentMethod(): boolean {
-    return this.form.controls.paypal_enabled.value
-      || this.form.controls.transfer_enabled.value
-      || this.form.controls.cash_enabled.value;
+    return (
+      this.form.controls.paypal_enabled.value ||
+      this.form.controls.transfer_enabled.value ||
+      this.form.controls.cash_enabled.value
+    );
   }
 
   private handleSaveError(error: HttpErrorResponse): void {
@@ -500,7 +489,6 @@ export class AdminSettings {
       cash_enabled: 'payments.cash_enabled',
       whatsapp_active: 'whatsapp.active',
       whatsapp_phone: 'whatsapp.phone',
-      receipt_template: 'whatsapp.receipt_template',
     };
 
     return fields[controlName];

@@ -133,6 +133,36 @@ export interface ForecastPrediction {
   metadata: Record<string, unknown>;
 }
 
+
+export interface ForecastOperationalFlavor {
+  name: string;
+  expected_units: number;
+}
+
+export interface ForecastOperationalHour {
+  hour: number;
+  expected_units: number;
+}
+
+export interface ForecastOperationalIngredient {
+  name: string;
+  expected_units: number;
+}
+
+export interface ForecastOperationalDay {
+  date: string;
+  flavors: ForecastOperationalFlavor[];
+  hours: ForecastOperationalHour[];
+  ingredients: ForecastOperationalIngredient[];
+}
+
+export interface ForecastOperational {
+  available: boolean;
+  ingredient_measurement: string;
+  weight_prediction_available: boolean;
+  days: ForecastOperationalDay[];
+}
+
 export interface ForecastCreator {
   id: number;
   name: string;
@@ -162,6 +192,8 @@ export interface MachineLearningRun {
   summary: ForecastSummary;
   recommendations: string[];
   limitations: ForecastLimitations;
+
+  operational: ForecastOperational | null;
 
   predictions?: ForecastPrediction[];
 
@@ -260,9 +292,58 @@ export interface TrainingDatasetMaturity {
 
   minimum_training_days: number;
   recommended_training_days: number;
+  operational_training_days: number;
 
   can_train_experimental: boolean;
   can_train_operational: boolean;
+}
+
+
+export type TrainingDatasetFreshnessStatus =
+  | 'never_trained'
+  | 'up_to_date'
+  | 'collecting'
+  | 'reevaluate'
+  | string;
+
+export interface TrainingDatasetLastTraining {
+  uuid: string;
+  status: string;
+  algorithm: string | null;
+  algorithm_label: string | null;
+  built_at: string | null;
+  trained_until: string | null;
+  records: number;
+  active_days: number;
+  pizzas: number;
+}
+
+export interface TrainingDatasetNewData {
+  records_after_training: number;
+  active_days_after_training: number;
+  pizzas_after_training: number;
+  delivered_orders_after_training: number;
+  net_sales_after_training: number;
+}
+
+export interface TrainingDatasetChanges {
+  records: number;
+  active_days: number;
+  pizzas: number;
+  delivered_orders: number;
+  cancelled_orders: number;
+  net_sales: number;
+}
+
+export interface TrainingDatasetFreshness {
+  status: TrainingDatasetFreshnessStatus;
+  label: string;
+  message: string;
+  recommend_evaluation: boolean;
+  last_training: TrainingDatasetLastTraining | null;
+  new_data: TrainingDatasetNewData;
+  changes: TrainingDatasetChanges;
+  current_last_date: string | null;
 }
 
 export interface TrainingDatasetSummary {
@@ -282,6 +363,7 @@ export interface TrainingDatasetOverview {
   timezone: string;
   maturity: TrainingDatasetMaturity;
   summary: TrainingDatasetSummary;
+  freshness: TrainingDatasetFreshness;
 }
 
 /*
@@ -404,6 +486,23 @@ export interface TrainingRunCreator {
   email: string;
 }
 
+export interface TrainingOperationalSummary {
+  available: boolean;
+  schema_version: string;
+
+  trained_from: string | null;
+  trained_until: string | null;
+
+  products_trained: number;
+  ingredients_trained: number;
+  hours_trained: number;
+
+  ingredient_measurement: string;
+  weight_prediction_available: boolean;
+
+  warnings: string[];
+}
+
 export interface MachineLearningTrainingRun {
   id: number;
   uuid: string;
@@ -417,6 +516,8 @@ export interface MachineLearningTrainingRun {
 
   dataset_summary: TrainingDatasetSummary | null;
   request_options: TrainingDatasetOptions | null;
+
+  operational: TrainingOperationalSummary | null;
 
   warnings: string[] | null;
   error: TrainingRunError | null;

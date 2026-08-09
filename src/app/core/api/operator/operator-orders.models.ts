@@ -99,23 +99,10 @@ export interface OperatorOrderDetailDto {
     reference?: string | null;
   } | null;
 
-  /**
-   * WhatsApp dirigido al cliente para confirmar el pedido.
-   *
-   * El backend lo devuelve únicamente mientras el pedido
-   * se encuentra pendiente y el teléfono es válido.
-   */
   customer_confirmation_whatsapp_url?: string | null;
 
-  /**
-   * WhatsApp sin destinatario fijo utilizado para solicitar
-   * el servicio de delivery a un repartidor.
-   */
   delivery_whatsapp_url?: string | null;
 
-  /**
-   * Último comprobante asociado al pedido.
-   */
   payment_receipt: PaymentReceiptDto | null;
 
   kitchen: {
@@ -140,6 +127,43 @@ export interface OperatorStatusChangeDto {
 }
 
 export type KitchenItemType = 'pizza' | 'half_and_half' | 'promotion';
+
+export interface KitchenPromotionPizzaDto {
+  /**
+   * ID real de order_promotion_items.
+   *
+   * El backend puede devolverlo como "id".
+   */
+  id: number;
+
+  pizza_id: number;
+  pizza_name: string;
+  ingredients: string[];
+}
+
+export interface KitchenPersonalizationDto {
+  id: number;
+
+  /**
+   * Si pertenece a una pizza específica de una promoción,
+   * contiene el ID de order_promotion_items.
+   *
+   * Para pizzas normales será null.
+   */
+  order_promotion_item_id: number | null;
+
+  ingredient_id: number;
+  ingredient_name: string;
+  action: string;
+
+  applies_to:
+    | 'ALL'
+    | 'A'
+    | 'B'
+    | string;
+
+  extra_price: number;
+}
 
 export interface KitchenItemDto {
   id: number;
@@ -172,22 +196,10 @@ export interface KitchenItemDto {
     id: number;
     name: string;
 
-    pizzas: Array<{
-      pizza_id: number;
-      pizza_name: string;
-      ingredients: string[];
-    }>;
+    pizzas: KitchenPromotionPizzaDto[];
   };
 
   personalizations?: KitchenPersonalizationDto[];
-}
-
-export interface KitchenPersonalizationDto {
-  ingredient_id: number;
-  ingredient_name: string;
-  action: string;
-  applies_to: 'ALL' | 'A' | 'B' | string;
-  extra_price: number;
 }
 
 export interface QueueCountsDto {

@@ -1,0 +1,125 @@
+<p-dialog
+  header="Comprobante de transferencia"
+  [visible]="previewVisible"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [dismissableMask]="true"
+  [style]="{ width: 'min(94vw, 900px)' }"
+  styleClass="receipt-preview-dialog"
+  (onHide)="previewClosed.emit()"
+>
+  @if (previewUrl; as url) {
+    <div class="receipt-preview-dialog__content">
+      @if (previewIsImage) {
+        <img
+          [src]="url"
+          alt="Comprobante de transferencia enviado por el cliente"
+          class="receipt-preview-image"
+        />
+      } @else if (previewIsPdf) {
+        <div class="receipt-file-preview">
+          <span class="receipt-file-preview__icon receipt-file-preview__icon--pdf">
+            <i class="pi pi-file-pdf" aria-hidden="true"></i>
+          </span>
+
+          <strong>Documento PDF cargado</strong>
+
+          <p>
+            El comprobante se descargó correctamente. Puedes abrirlo en una pestaña nueva para
+            revisarlo con mayor detalle.
+          </p>
+
+          <a [href]="url" target="_blank" rel="noopener noreferrer" class="receipt-open-file-link">
+            <i class="pi pi-external-link" aria-hidden="true"></i>
+            Abrir PDF
+          </a>
+        </div>
+      } @else {
+        <div class="receipt-file-preview">
+          <span class="receipt-file-preview__icon">
+            <i class="pi pi-file" aria-hidden="true"></i>
+          </span>
+
+          <strong>Archivo cargado</strong>
+
+          <p>Este tipo de archivo no permite una vista previa directa.</p>
+
+          <a [href]="url" target="_blank" rel="noopener noreferrer" class="receipt-open-file-link">
+            <i class="pi pi-external-link" aria-hidden="true"></i>
+            Abrir archivo
+          </a>
+        </div>
+      }
+    </div>
+  }
+</p-dialog>
+
+<p-dialog
+  header="Rechazar comprobante"
+  [visible]="rejectionVisible"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [closable]="!reviewing"
+  [dismissableMask]="!reviewing"
+  [style]="{ width: 'min(92vw, 520px)' }"
+  styleClass="receipt-rejection-dialog"
+  (onHide)="closeRejection()"
+>
+  <div class="rejection-dialog-content">
+    <div class="rejection-dialog-warning">
+      <i class="pi pi-exclamation-triangle" aria-hidden="true"></i>
+
+      <p>
+        El cliente podrá ver este motivo. Describe claramente qué debe corregir antes de enviar otro
+        comprobante.
+      </p>
+    </div>
+
+    <div class="rejection-field">
+      <label for="rejection-reason">Motivo del rechazo</label>
+
+      <textarea
+        id="rejection-reason"
+        pTextarea
+        rows="6"
+        minlength="5"
+        maxlength="500"
+        placeholder="Ejemplo: La imagen está borrosa y no permite verificar el valor transferido."
+        [(ngModel)]="rejectionReason"
+        [disabled]="reviewing"
+      ></textarea>
+
+      <div class="rejection-field__footer">
+        <small>Mínimo 5 caracteres.</small>
+        <small>{{ rejectionReason.length }}/500</small>
+      </div>
+    </div>
+
+    @if (rejectionError) {
+      <p-message severity="error" [text]="rejectionError" styleClass="receipt-dialog-message" />
+    }
+  </div>
+
+  <ng-template pTemplate="footer">
+    <div class="rejection-dialog-actions">
+      <p-button
+        label="Cancelar"
+        severity="secondary"
+        [text]="true"
+        [disabled]="reviewing"
+        (onClick)="closeRejection()"
+      />
+
+      <p-button
+        label="Confirmar rechazo"
+        icon="pi pi-times"
+        severity="danger"
+        [loading]="reviewing"
+        [disabled]="reviewing || rejectionReason.trim().length < 5"
+        (onClick)="confirmRejection()"
+      />
+    </div>
+  </ng-template>
+</p-dialog>

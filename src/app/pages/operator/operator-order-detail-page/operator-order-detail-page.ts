@@ -8,7 +8,6 @@ import { finalize } from 'rxjs';
 
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
-import { DialogModule } from 'primeng/dialog';
 import { MessageModule } from 'primeng/message';
 import { SkeletonModule } from 'primeng/skeleton';
 import { TagModule } from 'primeng/tag';
@@ -18,6 +17,8 @@ import { OperatorOrdersApiService } from '../../../core/api/operator/operator-or
 import { OperatorPaymentReceiptsApiService } from '../../../core/api/operator/operator-payment-receipts-api.service';
 import {
   KitchenItemDto,
+  KitchenPersonalizationDto,
+  KitchenPromotionPizzaDto,
   OperatorOrderDetailDto,
 } from '../../../core/api/operator/operator-orders.models';
 import {
@@ -28,9 +29,8 @@ import {
 } from '../../../core/api/payments/payment-receipts/payment-receipt.models';
 import { OperatorRealtimeService } from '../../../core/realtime/operator-realtime.service';
 import { OperatorOrderRealtimeEvent } from '../../../core/realtime/realtime.models';
-import {
-  OperatorOrderHistory,
-} from '../components/operator-order-history/operator-order-history';
+import { OperatorOrderHistory } from '../components/operator-order-history/operator-order-history';
+import { OperatorPaymentReceiptDialogs } from '../components/operator-payment-receipt-dialogs/operator-payment-receipt-dialogs';
 import {
   formatOperatorDate,
   prettyDeliveryType,
@@ -71,8 +71,8 @@ type ButtonSeverity =
     TagModule,
     SkeletonModule,
     MessageModule,
-    DialogModule,
     OperatorOrderHistory,
+    OperatorPaymentReceiptDialogs,
   ],
   templateUrl: './operator-order-detail-page.html',
   styleUrl: './operator-order-detail-page.scss',
@@ -141,14 +141,7 @@ export class OperatorOrderDetailPage implements OnDestroy {
       this.paymentReceipt()?.status === 'pending' && this.paymentReceipt()?.file_available === true,
   );
 
-  readonly previewIsPdf = computed(() => this.receiptPreviewMime() === 'application/pdf');
-
-  readonly previewIsImage = computed(
-    () => this.receiptPreviewMime()?.startsWith('image/') === true,
-  );
-
   note = '';
-  rejectionReason = '';
 
   constructor() {
     this.load();
@@ -368,7 +361,6 @@ export class OperatorOrderDetailPage implements OnDestroy {
       return;
     }
 
-    this.rejectionReason = '';
     this.receiptError.set(null);
     this.receiptSuccess.set(null);
 
@@ -382,13 +374,12 @@ export class OperatorOrderDetailPage implements OnDestroy {
 
     this.rejectionDialogVisible.set(false);
 
-    this.rejectionReason = '';
   }
 
-  rejectReceipt(): void {
+  rejectReceipt(reason: string): void {
     const receipt = this.paymentReceipt();
 
-    const reason = this.rejectionReason.trim();
+    reason = reason.trim();
 
     if (receipt === null || receipt.status !== 'pending' || this.receiptReviewing()) {
       return;
@@ -423,8 +414,6 @@ export class OperatorOrderDetailPage implements OnDestroy {
           this.replacePaymentReceipt(response.data);
 
           this.rejectionDialogVisible.set(false);
-
-          this.rejectionReason = '';
 
           this.receiptSuccess.set('El comprobante fue rechazado y el motivo quedó registrado.');
         },
@@ -656,6 +645,33 @@ export class OperatorOrderDetailPage implements OnDestroy {
     return '—';
   }
 
+  promotionPizzaPersonalizations(
+    item: KitchenItemDto,
+    pizza: KitchenPromotionPizzaDto,
+  ): KitchenPersonalizationDto[] {
+    return (item.personalizations ?? []).filter(
+      (personalization) => Number(personalization.order_promotion_item_id) === Number(pizza.id),
+    );
+  }
+
+  unassignedPromotionPersonalizations(item: KitchenItemDto): KitchenPersonalizationDto[] {
+    if (item.type !== 'promotion' || !item.promotion) {
+      return [];
+    }
+
+    const promotionItemIds = new Set(item.promotion.pizzas.map((pizza) => Number(pizza.id)));
+
+    return (item.personalizations ?? []).filter((personalization) => {
+      const promotionItemId = personalization.order_promotion_item_id;
+
+      if (promotionItemId === null || promotionItemId === undefined) {
+        return true;
+      }
+
+      return !promotionItemIds.has(Number(promotionItemId));
+    });
+  }
+
   personalizationText(personalization: {
     applies_to?: string;
     extra_price?: number;
@@ -705,7 +721,6 @@ export class OperatorOrderDetailPage implements OnDestroy {
     this.receiptPreviewUrl.set(null);
     this.receiptPreviewMime.set(null);
   }
-
 
   private resolveReceiptErrorMessage(error: unknown, fallback: string): string {
     const response = error as {

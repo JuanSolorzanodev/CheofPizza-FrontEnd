@@ -1212,31 +1212,31 @@
 .promo-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.65rem;
+  gap: 0.85rem;
 
-  padding: 0.85rem;
+  padding: 0.95rem;
 }
 
 .split-card,
 .promo-card {
   min-width: 0;
-  padding: 0.75rem;
+  padding: 0.9rem;
 
   border: 1px solid var(--cheof-card-border);
-  border-radius: 0.7rem;
+  border-radius: 0.8rem;
 
   background: var(--cheof-card-background-muted);
 }
 
 .split-title {
   display: block;
-  margin-bottom: 0.2rem;
+  margin-bottom: 0.3rem;
 
   color: var(--p-primary-color);
 
-  font-size: 0.56rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
+  font-size: 0.72rem;
+  font-weight: 750;
+  letter-spacing: 0.055em;
   text-transform: uppercase;
 }
 
@@ -1246,18 +1246,168 @@
 
   color: var(--cheof-text);
 
-  font-size: 0.72rem;
-  font-weight: 700;
+  font-size: 1rem;
+  font-weight: 750;
+  line-height: 1.3;
 }
 
 .split-card p,
 .promo-card p {
-  margin: 0.3rem 0 0;
+  margin: 0.35rem 0 0;
 
   color: var(--cheof-text-secondary);
 
-  font-size: 0.63rem;
+  font-size: 0.86rem;
+  line-height: 1.5;
+}
+
+/* =========================================================
+   PROMOCIONES - AGRUPACIÓN POR PIZZA PARA COCINA
+   ========================================================= */
+
+.promotion-section--grouped {
+  padding-bottom: 0.95rem;
+}
+
+.promo-card--kitchen {
+  display: grid;
+  align-content: start;
+  gap: 0.9rem;
+
+  background: var(--cheof-card-background-muted);
+}
+
+.promo-card__header {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.promo-card__number {
+  color: var(--p-primary-color);
+
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.055em;
+  text-transform: uppercase;
+}
+
+.promo-card__recipe {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.promo-card__label {
+  color: var(--cheof-text-secondary);
+
+  font-size: 0.72rem;
+  font-weight: 750;
+  letter-spacing: 0.045em;
+  text-transform: uppercase;
+}
+
+.promo-card__recipe p {
+  margin: 0;
+
+  color: var(--cheof-text-secondary);
+
+  font-size: 0.86rem;
+  line-height: 1.5;
+}
+
+.promo-card__personalizations {
+  display: grid;
+  gap: 0.65rem;
+
+  padding-top: 0.8rem;
+
+  border-top: 1px solid var(--cheof-card-border);
+}
+
+.promo-card__label--extras {
+  color: var(--cheof-text);
+}
+
+.promo-personalization-list {
+  display: grid;
+  gap: 0.55rem;
+
+  margin: 0;
+  padding: 0;
+
+  list-style: none;
+}
+
+.promo-personalization-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+
+  color: var(--cheof-text);
+
+  font-size: 0.86rem;
   line-height: 1.45;
+}
+
+.promo-personalization-item i {
+  flex: 0 0 auto;
+  margin-top: 0.16rem;
+
+  color: var(--p-primary-color);
+
+  font-size: 0.82rem;
+}
+
+.promo-personalization-item span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.promo-card__no-extras {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+
+  padding-top: 0.8rem;
+
+  border-top: 1px solid var(--cheof-card-border);
+
+  color: var(--cheof-text-secondary);
+
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.promo-card__no-extras i {
+  color: var(--p-primary-color);
+  font-size: 0.8rem;
+}
+
+.promo-unassigned {
+  display: grid;
+  gap: 0.7rem;
+
+  margin: 0 0.95rem 0.95rem;
+  padding: 0.85rem;
+
+  border: 1px solid var(--cheof-card-border);
+  border-radius: 0.8rem;
+
+  background: var(--cheof-card-background-muted);
+}
+
+.promo-unassigned__title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  color: var(--cheof-text);
+
+  font-size: 0.82rem;
+  font-weight: 750;
+}
+
+.promo-unassigned__title i {
+  color: var(--cheof-warning-strong);
 }
 
 .personalizations {
@@ -1266,7 +1416,7 @@
 
 .personalization-list {
   display: grid;
-  gap: 0.4rem;
+  gap: 0.5rem;
 
   margin: 0;
   padding: 0;
@@ -1277,12 +1427,12 @@
 .personalization-list li {
   display: flex;
   align-items: flex-start;
-  gap: 0.45rem;
+  gap: 0.5rem;
 
   color: var(--cheof-text);
 
-  font-size: 0.65rem;
-  line-height: 1.4;
+  font-size: 0.82rem;
+  line-height: 1.45;
 }
 
 .personalization-list i {
@@ -1290,26 +1440,26 @@
 
   color: var(--p-primary-color);
 
-  font-size: 0.65rem;
+  font-size: 0.78rem;
 }
 
 .no-personalizations {
   display: flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: 0.45rem;
 
-  padding: 0.75rem 0.85rem;
+  padding: 0.8rem 0.9rem;
 
   border-top: 1px solid var(--cheof-card-border);
 
   color: var(--cheof-text-secondary);
 
-  font-size: 0.63rem;
+  font-size: 0.8rem;
 }
 
 .no-personalizations i {
   color: var(--p-primary-color);
-  font-size: 0.62rem;
+  font-size: 0.78rem;
 }
 
 .empty-kitchen {
@@ -1322,227 +1472,6 @@
   color: var(--cheof-text-secondary);
 
   font-size: 0.72rem;
-}
-
-/* =========================================================
-   DIÁLOGO DE VISTA PREVIA
-   ========================================================= */
-
-:host ::ng-deep .receipt-preview-dialog.p-dialog,
-:host ::ng-deep .receipt-rejection-dialog.p-dialog {
-  overflow: hidden;
-
-  border: 1px solid var(--cheof-card-border);
-  border-radius: 1rem;
-
-  background: var(--cheof-card-background);
-
-  box-shadow:
-    0 1rem 3rem rgba(15, 23, 42, 0.16);
-}
-
-:host ::ng-deep .receipt-preview-dialog .p-dialog-header,
-:host ::ng-deep .receipt-rejection-dialog .p-dialog-header {
-  padding: 1rem 1.1rem;
-
-  border-bottom: 1px solid var(--cheof-card-border);
-
-  background: var(--cheof-card-background);
-}
-
-:host ::ng-deep .receipt-preview-dialog .p-dialog-title,
-:host ::ng-deep .receipt-rejection-dialog .p-dialog-title {
-  color: var(--cheof-text);
-
-  font-size: 0.85rem;
-  font-weight: 700;
-}
-
-:host ::ng-deep .receipt-preview-dialog .p-dialog-content {
-  padding: 1rem;
-
-  background: var(--cheof-card-background-muted);
-}
-
-.receipt-preview-dialog__content {
-  display: grid;
-  min-height: 22rem;
-  place-items: center;
-}
-
-.receipt-preview-image {
-  display: block;
-  max-width: 100%;
-  max-height: 70vh;
-
-  border: 1px solid var(--cheof-card-border);
-  border-radius: 0.75rem;
-
-  background: var(--cheof-card-background);
-
-  object-fit: contain;
-}
-
-.receipt-pdf-preview {
-  display: grid;
-  max-width: 28rem;
-  justify-items: center;
-  gap: 0.6rem;
-
-  padding: 2rem;
-
-  text-align: center;
-}
-
-.receipt-pdf-preview__icon {
-  display: grid;
-  width: 4rem;
-  height: 4rem;
-  place-items: center;
-
-  border-radius: 1rem;
-
-  background: color-mix(
-    in srgb,
-    var(--cheof-danger) 8%,
-    var(--cheof-card-background)
-  );
-
-  color: var(--cheof-danger);
-}
-
-.receipt-pdf-preview__icon i {
-  font-size: 1.5rem;
-}
-
-.receipt-pdf-preview strong {
-  color: var(--cheof-text);
-
-  font-size: 0.9rem;
-  font-weight: 700;
-}
-
-.receipt-pdf-preview p {
-  margin: 0;
-
-  color: var(--cheof-text-secondary);
-
-  font-size: 0.72rem;
-  line-height: 1.5;
-}
-
-.receipt-open-file-link {
-  display: inline-flex;
-  min-height: 2.5rem;
-  align-items: center;
-  gap: 0.45rem;
-
-  padding: 0.55rem 0.8rem;
-
-  border: 1px solid var(--p-primary-color);
-  border-radius: 0.7rem;
-
-  background: var(--p-primary-color);
-
-  color: var(--p-primary-contrast-color, white);
-
-  text-decoration: none;
-
-  font-size: 0.7rem;
-  font-weight: 650;
-}
-
-.receipt-open-file-link i {
-  font-size: 0.68rem;
-}
-
-/* =========================================================
-   DIÁLOGO DE RECHAZO
-   ========================================================= */
-
-:host ::ng-deep .receipt-rejection-dialog .p-dialog-content {
-  padding: 1rem 1.1rem;
-
-  background: var(--cheof-card-background);
-}
-
-:host ::ng-deep .receipt-rejection-dialog .p-dialog-footer {
-  padding: 0.9rem 1.1rem;
-
-  border-top: 1px solid var(--cheof-card-border);
-
-  background: var(--cheof-card-background);
-}
-
-.rejection-dialog-content {
-  display: grid;
-  gap: 1rem;
-}
-
-.rejection-dialog-warning {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  align-items: flex-start;
-  gap: 0.6rem;
-
-  padding: 0.75rem;
-
-  border: 1px solid
-    color-mix(
-      in srgb,
-      var(--cheof-warning) 22%,
-      var(--cheof-card-border)
-    );
-
-  border-radius: 0.7rem;
-
-  background: color-mix(
-    in srgb,
-    var(--cheof-warning) 5%,
-    var(--cheof-card-background)
-  );
-}
-
-.rejection-dialog-warning i {
-  margin-top: 0.1rem;
-
-  color: var(--cheof-warning-strong);
-
-  font-size: 0.75rem;
-}
-
-.rejection-dialog-warning p {
-  margin: 0;
-
-  color: var(--cheof-text);
-
-  font-size: 0.67rem;
-  line-height: 1.45;
-}
-
-.rejection-field__footer {
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-
-  margin-top: 0.35rem;
-}
-
-.rejection-field__footer small {
-  color: var(--cheof-text-secondary);
-
-  font-size: 0.58rem;
-}
-
-:host ::ng-deep .receipt-dialog-message.p-message {
-  width: 100%;
-  border-radius: 0.7rem;
-}
-
-.rejection-dialog-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 0.6rem;
 }
 
 /* =========================================================
@@ -1672,8 +1601,7 @@
    ACCESIBILIDAD
    ========================================================= */
 
-.back-link:focus-visible,
-.receipt-open-file-link:focus-visible {
+.back-link:focus-visible {
   outline: 0.16rem solid
     color-mix(
       in srgb,

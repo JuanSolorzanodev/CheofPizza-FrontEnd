@@ -85,6 +85,7 @@ import {
   ModelRegistry,
   ModelRegistryReference,
   TrainingCandidateMetric,
+  TrainingDatasetFreshness,
   TrainingDatasetMaturity,
   TrainingPreviewResult,
 } from '../../../core/api/machine-learning/machine-learning.models';
@@ -94,6 +95,9 @@ import {
 import {
   MachineLearningComparisonComponent,
 } from '../machine-learning-comparison/machine-learning-comparison';
+import {
+  OperationalTomorrowForecastComponent,
+} from './components/operational-tomorrow-forecast/operational-tomorrow-forecast';
 
 type DashboardSection =
   | 'forecast'
@@ -127,6 +131,7 @@ interface ForecastSizeTotal {
     TagModule,
     TooltipModule,
     MachineLearningComparisonComponent,
+    OperationalTomorrowForecastComponent,
   ],
   providers: [
     ConfirmationService,
@@ -422,6 +427,7 @@ export class MachineLearningDashboard
         0,
     );
 
+
   /*
   |--------------------------------------------------------------------------
   | Cálculos del entrenamiento
@@ -446,6 +452,15 @@ export class MachineLearningDashboard
         null,
     );
 
+  readonly datasetFreshness =
+    computed<TrainingDatasetFreshness | null>(
+      () =>
+        this.trainingPreview()
+          ?.dataset
+          .freshness ??
+        null,
+    );
+
   readonly activeRegistryModel =
     computed<ModelRegistryReference | null>(
       () =>
@@ -466,7 +481,7 @@ export class MachineLearningDashboard
         Math.max(
           1,
           maturity
-            .recommended_training_days,
+            .operational_training_days,
         );
 
       return Math.min(
@@ -1591,6 +1606,40 @@ export class MachineLearningDashboard
     return maturity
       ? 'secondary'
       : 'info';
+  }
+
+  freshnessSeverity():
+    | 'success'
+    | 'warn'
+    | 'info'
+    | 'secondary' {
+    const status =
+      this.datasetFreshness()
+        ?.status;
+
+    switch (status) {
+      case 'up_to_date':
+        return 'success';
+
+      case 'reevaluate':
+        return 'warn';
+
+      case 'collecting':
+        return 'info';
+
+      default:
+        return 'secondary';
+    }
+  }
+
+  signedNumber(
+    value: number,
+  ): string {
+    if (value > 0) {
+      return `+${value}`;
+    }
+
+    return String(value);
   }
 
   trainingStatusLabel(

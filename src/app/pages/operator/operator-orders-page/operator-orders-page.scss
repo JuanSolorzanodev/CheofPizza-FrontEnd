@@ -1738,3 +1738,173 @@
     transition: none;
   }
 }
+
+
+/* =========================================================
+   LEGIBILIDAD OPERATIVA
+   Ajuste visual para lectura rápida en escritorio y tablet.
+   No modifica estructura, columnas ni comportamiento.
+   ========================================================= */
+
+@media (min-width: 62.01rem) {
+  .workspace-header__eyebrow {
+    font-size: 0.84rem;
+  }
+
+  .workspace-header__eyebrow i {
+    font-size: 0.88rem;
+  }
+
+  .workspace-header p {
+    font-size: 1rem;
+  }
+
+  .active-orders-counter {
+    font-size: 0.84rem;
+  }
+
+  .active-orders-counter strong {
+    font-size: 1rem;
+  }
+
+  .live-status strong {
+    font-size: 0.84rem;
+  }
+
+  .live-status span {
+    font-size: 0.76rem;
+  }
+
+  .orders-search > i {
+    font-size: 0.86rem;
+  }
+
+  .orders-search input,
+  :host ::ng-deep p-select.orders-filter .p-select,
+  :host ::ng-deep p-select.orders-filter .p-select-label {
+    font-size: 0.88rem;
+  }
+
+  .clear-filters {
+    font-size: 0.84rem;
+  }
+
+  .orders-panel h2 {
+    font-size: 1.08rem;
+  }
+
+  .orders-panel__header p {
+    font-size: 0.8rem;
+  }
+
+  .orders-panel__page {
+    font-size: 0.76rem;
+  }
+
+  .orders-table th {
+    padding-block: 0.82rem;
+    font-size: 0.74rem;
+  }
+
+  .orders-table td {
+    padding-block: 1.12rem;
+  }
+
+  .priority-cell strong {
+    font-size: 0.88rem;
+  }
+
+  :host ::ng-deep p-tag.priority-tag .p-tag {
+    min-height: 1.8rem;
+    padding-inline: 0.58rem;
+    font-size: 0.68rem;
+  }
+
+  .identity-cell__order strong {
+    font-size: 0.92rem;
+  }
+
+  .identity-cell__order span {
+    font-size: 0.75rem;
+  }
+
+  .identity-cell__customer strong {
+    font-size: 0.82rem;
+  }
+
+  .identity-cell__customer span {
+    font-size: 0.73rem;
+  }
+
+  .preparation-cell > span {
+    font-size: 0.76rem;
+  }
+
+  .preparation-cell > span i {
+    font-size: 0.8rem;
+  }
+
+  .preparation-cell p {
+    font-size: 0.82rem;
+    line-height: 1.55;
+  }
+
+  .logistics-cell__row span {
+    font-size: 0.7rem;
+  }
+
+  .logistics-cell__row strong {
+    font-size: 0.8rem;
+  }
+
+  .transfer-badge {
+    font-size: 0.69rem;
+  }
+
+  .open-order {
+    min-height: 2.9rem;
+    padding: 0.62rem 0.9rem;
+    font-size: 0.82rem;
+  }
+
+  .open-order i {
+    font-size: 0.78rem;
+  }
+
+  .page-loader,
+  .orders-error p,
+  .orders-pagination > span {
+    font-size: 0.78rem;
+  }
+
+  .orders-error strong,
+  .empty-orders p {
+    font-size: 0.86rem;
+  }
+
+  .empty-orders__eyebrow {
+    font-size: 0.76rem;
+  }
+
+  .empty-orders h3 {
+    font-size: 1.12rem;
+  }
+
+  :host ::ng-deep
+    p-paginator.operator-paginator
+    .p-paginator-first,
+  :host ::ng-deep
+    p-paginator.operator-paginator
+    .p-paginator-prev,
+  :host ::ng-deep
+    p-paginator.operator-paginator
+    .p-paginator-next,
+  :host ::ng-deep
+    p-paginator.operator-paginator
+    .p-paginator-last,
+  :host ::ng-deep
+    p-paginator.operator-paginator
+    .p-paginator-page {
+    font-size: 0.82rem;
+  }
+}

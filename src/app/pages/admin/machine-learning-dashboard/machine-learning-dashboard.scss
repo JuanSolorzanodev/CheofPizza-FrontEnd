@@ -1378,3 +1378,434 @@
     transition: none;
   }
 }
+
+/*
+|--------------------------------------------------------------------------
+| Seguimiento del aprendizaje continuo
+|--------------------------------------------------------------------------
+*/
+
+.maturity-progress-copy {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+
+  margin-bottom: 0.55rem;
+
+  color: var(--cheof-text-secondary);
+  font-size: 0.78rem;
+}
+
+.maturity-progress-copy strong {
+  color: var(--cheof-text);
+  font-size: 0.8rem;
+}
+
+.learning-freshness-card {
+  margin-bottom: 1rem;
+}
+
+.freshness-training-strip {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.75rem;
+
+  margin-bottom: 0.85rem;
+  padding: 0.9rem;
+
+  border: 1px solid var(--cheof-card-border);
+  border-radius: 14px;
+
+  background: color-mix(
+    in srgb,
+    var(--p-primary-color) 4%,
+    transparent
+  );
+}
+
+.freshness-training-strip > div {
+  display: grid;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.freshness-training-strip span,
+.freshness-stat span,
+.freshness-stat small {
+  color: var(--cheof-text-secondary);
+}
+
+.freshness-training-strip span {
+  font-size: 0.72rem;
+}
+
+.freshness-training-strip strong {
+  overflow-wrap: anywhere;
+  font-size: 0.88rem;
+}
+
+.freshness-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.freshness-stat {
+  display: grid;
+  gap: 0.25rem;
+
+  min-width: 0;
+  padding: 0.9rem;
+
+  border-radius: 14px;
+
+  background: color-mix(
+    in srgb,
+    var(--cheof-card-background) 96%,
+    var(--cheof-text)
+  );
+}
+
+.freshness-stat span {
+  font-size: 0.75rem;
+}
+
+.freshness-stat strong {
+  font-size: 1.25rem;
+  font-weight: 850;
+}
+
+.freshness-stat small {
+  font-size: 0.7rem;
+  line-height: 1.35;
+}
+
+.freshness-empty,
+.freshness-recommendation {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+
+  padding: 0.95rem;
+
+  border-radius: 14px;
+}
+
+.freshness-empty {
+  border: 1px solid var(--cheof-card-border);
+
+  background: color-mix(
+    in srgb,
+    var(--cheof-info) 7%,
+    transparent
+  );
+}
+
+.freshness-empty > i,
+.freshness-recommendation > i {
+  margin-top: 0.15rem;
+  font-size: 1rem;
+}
+
+.freshness-empty > div,
+.freshness-recommendation > div {
+  display: grid;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.freshness-empty span,
+.freshness-recommendation span {
+  color: var(--cheof-text-secondary);
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
+.freshness-recommendation {
+  align-items: center;
+
+  margin-top: 0.85rem;
+
+  border: 1px solid color-mix(
+    in srgb,
+    var(--cheof-info) 22%,
+    var(--cheof-card-border)
+  );
+
+  background: color-mix(
+    in srgb,
+    var(--cheof-info) 7%,
+    transparent
+  );
+}
+
+.freshness-recommendation > i {
+  color: var(--cheof-info);
+}
+
+.freshness-recommendation > div {
+  flex: 1;
+}
+
+.freshness-recommendation-action {
+  border-color: color-mix(
+    in srgb,
+    var(--cheof-warning) 32%,
+    var(--cheof-card-border)
+  );
+
+  background: color-mix(
+    in srgb,
+    var(--cheof-warning) 9%,
+    transparent
+  );
+}
+
+.freshness-recommendation-action > i {
+  color: var(--cheof-warning);
+}
+
+@media (max-width: 1100px) {
+  .freshness-training-strip,
+  .freshness-stat-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .freshness-training-strip,
+  .freshness-stat-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .freshness-recommendation {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+
+/* =========================================================
+   DETALLE OPERACIONAL DEL CANDIDATO
+   ========================================================= */
+
+.operational-candidate-card {
+  display: grid;
+  gap: 1rem;
+
+  margin-top: 1rem;
+  padding: 1rem;
+
+  border: 1px solid var(--cheof-card-border);
+  border-radius: 16px;
+
+  background: color-mix(
+    in srgb,
+    var(--p-primary-color) 3%,
+    var(--cheof-card-background)
+  );
+}
+
+.operational-candidate-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.operational-candidate-header > div {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.operational-candidate-eyebrow {
+  color: var(--p-primary-color);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.operational-candidate-header h3 {
+  margin: 0;
+  color: var(--cheof-text);
+  font-size: 1rem;
+  font-weight: 850;
+}
+
+.operational-capability-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.operational-capability-grid article {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+
+  min-width: 0;
+  padding: 0.85rem;
+
+  border: 1px solid var(--cheof-card-border);
+  border-radius: 14px;
+
+  background: var(--cheof-card-background);
+}
+
+.operational-capability-icon {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+
+  width: 2.25rem;
+  height: 2.25rem;
+
+  border-radius: 11px;
+
+  color: var(--p-primary-color);
+  background: color-mix(
+    in srgb,
+    var(--p-primary-color) 10%,
+    transparent
+  );
+}
+
+.operational-capability-grid article > div {
+  display: grid;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.operational-capability-grid article span:not(.operational-capability-icon) {
+  color: var(--cheof-text-secondary);
+  font-size: 0.74rem;
+}
+
+.operational-capability-grid article strong {
+  color: var(--cheof-text);
+  font-size: 1.15rem;
+  font-weight: 850;
+}
+
+.operational-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.operational-meta-grid > div {
+  display: grid;
+  gap: 0.3rem;
+  min-width: 0;
+}
+
+.operational-meta-grid span {
+  color: var(--cheof-text-secondary);
+  font-size: 0.72rem;
+}
+
+.operational-meta-grid strong {
+  overflow-wrap: anywhere;
+  color: var(--cheof-text);
+  font-size: 0.82rem;
+  line-height: 1.4;
+}
+
+.operational-info-box,
+.operational-warning-list > div {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+
+  padding: 0.85rem;
+  border-radius: 13px;
+}
+
+.operational-info-box {
+  border: 1px solid color-mix(
+    in srgb,
+    var(--cheof-info) 24%,
+    var(--cheof-card-border)
+  );
+
+  background: color-mix(
+    in srgb,
+    var(--cheof-info) 7%,
+    transparent
+  );
+}
+
+.operational-info-box-neutral {
+  border-color: var(--cheof-card-border);
+  background: var(--cheof-card-background);
+}
+
+.operational-info-box > i {
+  margin-top: 0.1rem;
+  color: var(--cheof-info);
+}
+
+.operational-info-box-neutral > i {
+  color: var(--cheof-text-secondary);
+}
+
+.operational-info-box > div {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.operational-info-box strong {
+  color: var(--cheof-text);
+  font-size: 0.82rem;
+}
+
+.operational-info-box span,
+.operational-warning-list span {
+  color: var(--cheof-text-secondary);
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
+.operational-warning-list {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.operational-warning-list > div {
+  border: 1px solid color-mix(
+    in srgb,
+    var(--cheof-warning) 28%,
+    var(--cheof-card-border)
+  );
+
+  background: color-mix(
+    in srgb,
+    var(--cheof-warning) 8%,
+    transparent
+  );
+}
+
+.operational-warning-list i {
+  margin-top: 0.1rem;
+  color: var(--cheof-warning);
+}
+
+@media (max-width: 760px) {
+  .operational-candidate-header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .operational-capability-grid,
+  .operational-meta-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/*
+|--------------------------------------------------------------------------
+| Pronóstico operativo de mañana
+|--------------------------------------------------------------------------
+*/

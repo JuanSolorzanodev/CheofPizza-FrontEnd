@@ -618,3 +618,56 @@
       none;
   }
 }
+
+
+/* =========================================================
+   LEGIBILIDAD OPERATIVA
+   Ajuste tipográfico sin alterar la distribución del tablero.
+   ========================================================= */
+
+@media (min-width: 62.01rem) {
+  .status-board__header h2 {
+    font-size: 1.08rem;
+  }
+
+  .status-board__header p {
+    font-size: 0.82rem;
+  }
+
+  .show-all-button {
+    min-height: 2.3rem;
+    font-size: 0.8rem;
+  }
+
+  .status-group__label {
+    font-size: 0.74rem;
+  }
+
+  .status-filter {
+    min-height: 3.8rem;
+    padding: 0.7rem 0.78rem;
+  }
+
+  .status-filter__icon {
+    width: 2.35rem;
+    height: 2.35rem;
+  }
+
+  .status-filter__icon i {
+    font-size: 0.9rem;
+  }
+
+  .status-filter__label {
+    font-size: 0.84rem;
+  }
+
+  .status-filter__count {
+    min-width: 1.82rem;
+    height: 1.82rem;
+    font-size: 0.8rem;
+  }
+
+  .queue-error {
+    font-size: 0.78rem;
+  }
+}

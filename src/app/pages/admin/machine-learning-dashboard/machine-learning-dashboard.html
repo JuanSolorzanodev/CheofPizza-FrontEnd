@@ -202,6 +202,11 @@
         </article>
       </section>
 
+      <app-operational-tomorrow-forecast
+        [run]="run"
+        (generateRequested)="openGenerateDialog()"
+      />
+
       <section class="chart-grid">
         <article class="panel-card surface-card">
           <header class="panel-header">
@@ -662,10 +667,16 @@
               </strong>
 
               <span>
-                de
-                {{ maturity.recommended_training_days }}
-                días activos recomendados
+                días activos disponibles
               </span>
+            </div>
+
+            <div class="maturity-progress-copy">
+              <span>Madurez hacia nivel operativo</span>
+
+              <strong>
+                {{ maturity.operational_training_days }} días
+              </strong>
             </div>
 
             <p-progressbar [value]="maturityProgress()" [showValue]="false" />
@@ -686,6 +697,27 @@
                 </div>
               </div>
 
+              <div class="milestone" [class.milestone-reached]="maturity.active_days >= maturity.recommended_training_days">
+                <span class="milestone-icon">
+                  <i
+                    [class]="
+                      maturity.active_days >= maturity.recommended_training_days
+                        ? 'pi pi-check'
+                        : 'pi pi-lock'
+                    "
+                  ></i>
+                </span>
+
+                <div>
+                  <strong> Base recomendada </strong>
+
+                  <span>
+                    {{ maturity.recommended_training_days }}
+                    días activos
+                  </span>
+                </div>
+              </div>
+
               <div class="milestone" [class.milestone-reached]="maturity.can_train_operational">
                 <span class="milestone-icon">
                   <i [class]="maturity.can_train_operational ? 'pi pi-check' : 'pi pi-lock'"></i>
@@ -695,7 +727,7 @@
                   <strong> Nivel operativo </strong>
 
                   <span>
-                    {{ maturity.recommended_training_days }}
+                    {{ maturity.operational_training_days }}
                     días activos
                   </span>
                 </div>
@@ -725,8 +757,8 @@
                 <i class="pi pi-check-circle"></i>
 
                 <span>
-                  El dataset alcanzó el nivel operativo recomendado para comparar y construir nuevos
-                  modelos.
+                  El dataset ya tiene suficiente historia para operar. Esta madurez no se reinicia:
+                  los nuevos datos se miden por separado desde el último entrenamiento.
                 </span>
               </div>
             }
@@ -815,6 +847,155 @@
           }
         </article>
       </section>
+
+      @if (datasetFreshness(); as freshness) {
+        <article class="panel-card surface-card learning-freshness-card">
+          <header class="panel-header">
+            <div>
+              <h2>Evolución desde el último entrenamiento</h2>
+
+              <p>
+                Aquí ves lo que el sistema ha aprendido o corregido después de construir el último
+                candidato.
+              </p>
+            </div>
+
+            <p-tag
+              [value]="freshness.label"
+              [severity]="freshnessSeverity()"
+            />
+          </header>
+
+          @if (freshness.last_training; as lastTraining) {
+            <div class="freshness-training-strip">
+              <div>
+                <span>Último entrenamiento</span>
+
+                <strong>
+                  {{ formatDateTime(lastTraining.built_at) }}
+                </strong>
+              </div>
+
+              <div>
+                <span>Algoritmo construido</span>
+
+                <strong>
+                  {{ lastTraining.algorithm_label || algorithmLabel(lastTraining.algorithm) }}
+                </strong>
+              </div>
+
+              <div>
+                <span>Dataset entrenado hasta</span>
+
+                <strong>
+                  {{ formatDate(lastTraining.trained_until) }}
+                </strong>
+              </div>
+
+              <div>
+                <span>Último dato consolidado</span>
+
+                <strong>
+                  {{ formatDate(freshness.current_last_date) }}
+                </strong>
+              </div>
+            </div>
+
+            <div class="freshness-stat-grid">
+              <div class="freshness-stat">
+                <span>Nuevos días</span>
+
+                <strong>
+                  {{ freshness.new_data.records_after_training }}
+                </strong>
+
+                <small>posteriores al dataset entrenado</small>
+              </div>
+
+              <div class="freshness-stat">
+                <span>Nuevos días activos</span>
+
+                <strong>
+                  {{ freshness.new_data.active_days_after_training }}
+                </strong>
+
+                <small>con demanda real</small>
+              </div>
+
+              <div class="freshness-stat">
+                <span>Pizzas posteriores</span>
+
+                <strong>
+                  {{ freshness.new_data.pizzas_after_training }}
+                </strong>
+
+                <small>registradas después del corte</small>
+              </div>
+
+              <div class="freshness-stat">
+                <span>Cambio total del dataset</span>
+
+                <strong>
+                  {{ signedNumber(freshness.changes.pizzas) }} pizzas
+                </strong>
+
+                <small>incluye nuevas filas y reconsolidaciones</small>
+              </div>
+            </div>
+          } @else {
+            <div class="freshness-empty">
+              <i class="pi pi-info-circle"></i>
+
+              <div>
+                <strong>Todavía no existe un entrenamiento de referencia</strong>
+
+                <span>
+                  Construye el primer candidato para que el sistema pueda medir cuánto dato nuevo se
+                  acumula desde ese momento.
+                </span>
+              </div>
+            </div>
+          }
+
+          <div
+            class="freshness-recommendation"
+            [class.freshness-recommendation-action]="freshness.recommend_evaluation"
+          >
+            <i
+              [class]="
+                freshness.recommend_evaluation
+                  ? 'pi pi-chart-bar'
+                  : 'pi pi-database'
+              "
+            ></i>
+
+            <div>
+              <strong>
+                {{
+                  freshness.recommend_evaluation
+                    ? 'Reevaluación recomendada'
+                    : 'Seguimiento automático activo'
+                }}
+              </strong>
+
+              <span>
+                {{ freshness.message }}
+              </span>
+            </div>
+
+            @if (freshness.recommend_evaluation) {
+              <p-button
+                label="Evaluar ahora"
+                icon="pi pi-chart-bar"
+                severity="success"
+                [loading]="previewingTraining()"
+                [disabled]="trainingBusy()"
+                (onClick)="runTrainingPreview()"
+              />
+            }
+          </div>
+        </article>
+      }
 
       <article class="panel-card surface-card evaluation-panel">
         <header class="panel-header">
@@ -1369,6 +1550,126 @@
         </strong>
       </div>
     </div>
+
+    <section class="operational-candidate-card" aria-labelledby="operational-candidate-title">
+      <header class="operational-candidate-header">
+        <div>
+          <span class="operational-candidate-eyebrow">Capacidades operacionales</span>
+          <h3 id="operational-candidate-title">Sabores, horarios e ingredientes</h3>
+        </div>
+
+        @if (detail.operational; as operational) {
+          <p-tag
+            [value]="operational.available ? 'Operacional disponible' : 'En recopilación'"
+            [severity]="operational.available ? 'success' : 'warn'"
+          />
+        } @else {
+          <p-tag value="Candidato anterior" severity="secondary" />
+        }
+      </header>
+
+      @if (detail.operational; as operational) {
+        <div class="operational-capability-grid">
+          <article>
+            <span class="operational-capability-icon">
+              <i class="pi pi-tags"></i>
+            </span>
+            <div>
+              <span>Sabores entrenados</span>
+              <strong>{{ operational.products_trained }}</strong>
+            </div>
+          </article>
+
+          <article>
+            <span class="operational-capability-icon">
+              <i class="pi pi-clock"></i>
+            </span>
+            <div>
+              <span>Horas entrenadas</span>
+              <strong>{{ operational.hours_trained }}</strong>
+            </div>
+          </article>
+
+          <article>
+            <span class="operational-capability-icon">
+              <i class="pi pi-list"></i>
+            </span>
+            <div>
+              <span>Ingredientes entrenados</span>
+              <strong>{{ operational.ingredients_trained }}</strong>
+            </div>
+          </article>
+        </div>
+
+        <div class="operational-meta-grid">
+          <div>
+            <span>Periodo operacional</span>
+            <strong>
+              @if (operational.trained_from && operational.trained_until) {
+                {{ formatDate(operational.trained_from) }}
+                —
+                {{ formatDate(operational.trained_until) }}
+              } @else {
+                Aún sin periodo entrenable
+              }
+            </strong>
+          </div>
+
+          <div>
+            <span>Medición de ingredientes</span>
+            <strong>
+              {{
+                operational.ingredient_measurement === 'recipe_equivalent_units'
+                  ? 'Unidades equivalentes de receta'
+                  : operational.ingredient_measurement
+              }}
+            </strong>
+          </div>
+
+          <div>
+            <span>Predicción en peso</span>
+            <strong>
+              {{ operational.weight_prediction_available ? 'Disponible' : 'Pendiente de gramajes de receta' }}
+            </strong>
+          </div>
+        </div>
+
+        @if (!operational.available) {
+          <div class="operational-info-box">
+            <i class="pi pi-info-circle"></i>
+
+            <div>
+              <strong>El modelo principal está listo; el operacional sigue aprendiendo</strong>
+              <span>
+                El candidato conserva el pronóstico de demanda y tamaños. Sabores, horas e ingredientes se habilitan solo cuando cada serie alcanza suficiente actividad histórica.
+              </span>
+            </div>
+          </div>
+        }
+
+        @if (operational.warnings.length > 0) {
+          <div class="operational-warning-list">
+            @for (warning of operational.warnings; track warning) {
+              <div>
+                <i class="pi pi-exclamation-triangle"></i>
+                <span>{{ warning }}</span>
+              </div>
+            }
+          </div>
+        }
+      } @else {
+        <div class="operational-info-box operational-info-box-neutral">
+          <i class="pi pi-history"></i>
+
+          <div>
+            <strong>Este candidato no expone metadata operacional</strong>
+            <span>
+              Fue construido antes de incorporar el resumen de sabores, horarios e ingredientes. Construye un candidato nuevo después de desplegar esta mejora para inspeccionar esas capacidades antes de activarlo.
+            </span>
+          </div>
+        </div>
+      }
+    </section>
 
     @if (detail.error) {
       <div class="training-error-box">

@@ -701,59 +701,147 @@
               }
 
               @if (item.type === 'promotion' && item.promotion) {
-                <div class="promotion-section">
+                <div class="promotion-section promotion-section--grouped">
                   <span class="block-label"> Pizzas incluidas </span>
 
                   <div class="promo-grid">
-                    @for (pizza of item.promotion.pizzas; track pizza.pizza_id) {
-                      <section class="promo-card">
-                        <h5>
-                          {{ pizza.pizza_name }}
-                        </h5>
+                    @for (
+                      pizza of item.promotion.pizzas;
+                      track pizza.id;
+                      let pizzaIndex = $index
+                    ) {
+                      <section class="promo-card promo-card--kitchen">
+                        <div class="promo-card__header">
+                          <span class="promo-card__number">
+                            Pizza {{ pizzaIndex + 1 }}
+                          </span>
 
-                        <p>
-                          {{ ingredientsLabel(pizza.ingredients) }}
-                        </p>
+                          <h5>
+                            {{ pizza.pizza_name }}
+                          </h5>
+                        </div>
+
+                        <div class="promo-card__recipe">
+                          <span class="promo-card__label"> Ingredientes </span>
+
+                          <p>
+                            {{ ingredientsLabel(pizza.ingredients) }}
+                          </p>
+                        </div>
+
+                        @if (
+                          promotionPizzaPersonalizations(item, pizza);
+                          as pizzaPersonalizations
+                        ) {
+                          @if (pizzaPersonalizations.length > 0) {
+                            <div class="promo-card__personalizations">
+                              <span class="promo-card__label promo-card__label--extras">
+                                Extras y cambios para esta pizza
+                              </span>
+
+                              <ul class="promo-personalization-list">
+                                @for (
+                                  personalization of pizzaPersonalizations;
+                                  track personalization.id
+                                ) {
+                                  <li class="promo-personalization-item">
+                                    <i
+                                      [class]="
+                                        personalization.action === 'remove'
+                                          ? 'pi pi-minus-circle'
+                                          : 'pi pi-plus-circle'
+                                      "
+                                      aria-hidden="true"
+                                    ></i>
+
+                                    <span>
+                                      {{ personalizationText(personalization) }}
+                                    </span>
+                                  </li>
+                                }
+                              </ul>
+                            </div>
+                          } @else {
+                            <div class="promo-card__no-extras">
+                              <i class="pi pi-check-circle" aria-hidden="true"></i>
+
+                              <span>Sin extras ni cambios para esta pizza</span>
+                            </div>
+                          }
+                        }
                       </section>
                     }
                   </div>
-                </div>
-              }
 
-              @if (item.personalizations && item.personalizations.length > 0) {
-                <div class="personalizations">
-                  <span class="block-label"> Personalizaciones </span>
+                  @if (
+                    unassignedPromotionPersonalizations(item);
+                    as unassignedPersonalizations
+                  ) {
+                    @if (unassignedPersonalizations.length > 0) {
+                      <div class="promo-unassigned">
+                        <div class="promo-unassigned__title">
+                          <i class="pi pi-exclamation-triangle" aria-hidden="true"></i>
 
-                  <ul class="personalization-list">
-                    @for (
-                      personalization of item.personalizations;
-                      track personalization.ingredient_id +
-                        '-' +
-                        personalization.action +
-                        '-' +
-                        personalization.applies_to
-                    ) {
-                      <li>
-                        <i
-                          [class]="
-                            personalization.action === 'remove'
-                              ? 'pi pi-minus-circle'
-                              : 'pi pi-plus-circle'
-                          "
-                          aria-hidden="true"
-                        ></i>
+                          <span>Personalizaciones sin pizza asociada</span>
+                        </div>
 
-                        {{ personalizationText(personalization) }}
-                      </li>
+                        <ul class="promo-personalization-list">
+                          @for (
+                            personalization of unassignedPersonalizations;
+                            track personalization.id
+                          ) {
+                            <li class="promo-personalization-item">
+                              <i
+                                [class]="
+                                  personalization.action === 'remove'
+                                    ? 'pi pi-minus-circle'
+                                    : 'pi pi-plus-circle'
+                                "
+                                aria-hidden="true"
+                              ></i>
+
+                              <span>
+                                {{ personalizationText(personalization) }}
+                              </span>
+                            </li>
+                          }
+                        </ul>
+                      </div>
                     }
-                  </ul>
+                  }
                 </div>
               } @else {
-                <div class="no-personalizations">
-                  <i class="pi pi-check" aria-hidden="true"></i>
+                @if (item.personalizations && item.personalizations.length > 0) {
+                  <div class="personalizations">
+                    <span class="block-label"> Personalizaciones </span>
 
-                  Sin modificaciones adicionales
-                </div>
+                    <ul class="personalization-list">
+                      @for (
+                        personalization of item.personalizations;
+                        track personalization.id
+                      ) {
+                        <li>
+                          <i
+                            [class]="
+                              personalization.action === 'remove'
+                                ? 'pi pi-minus-circle'
+                                : 'pi pi-plus-circle'
+                            "
+                            aria-hidden="true"
+                          ></i>
+
+                          {{ personalizationText(personalization) }}
+                        </li>
+                      }
+                    </ul>
+                  </div>
+                } @else {
+                  <div class="no-personalizations">
+                    <i class="pi pi-check" aria-hidden="true"></i>
+
+                    Sin modificaciones adicionales
+                  </div>
+                }
               }
             </article>
           }
@@ -793,159 +881,16 @@
       </p-card>
     }
 
-    <!-- =====================================================
-         DIÁLOGO DE VISTA PREVIA
-         ===================================================== -->
-
-    <p-dialog
-      header="Comprobante de transferencia"
-      [visible]="receiptPreviewVisible()"
-      [modal]="true"
-      [draggable]="false"
-      [resizable]="false"
-      [dismissableMask]="true"
-      [style]="{
-        width: 'min(94vw, 900px)',
-      }"
-      styleClass="receipt-preview-dialog"
-      (onHide)="closeReceiptPreview()"
-    >
-      @if (receiptPreviewUrl(); as previewUrl) {
-        <div class="receipt-preview-dialog__content">
-          @if (previewIsImage()) {
-            <img
-              [src]="previewUrl"
-              alt="Comprobante de transferencia enviado por el cliente"
-              class="receipt-preview-image"
-            />
-          } @else if (previewIsPdf()) {
-            <div class="receipt-pdf-preview">
-              <span class="receipt-pdf-preview__icon">
-                <i class="pi pi-file-pdf" aria-hidden="true"></i>
-              </span>
-
-              <strong> Documento PDF cargado </strong>
-
-              <p>
-                El comprobante se descargó correctamente. Puedes abrirlo en una pestaña nueva para
-                revisarlo con mayor detalle.
-              </p>
-
-              <a
-                [href]="previewUrl"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="receipt-open-file-link"
-              >
-                <i class="pi pi-external-link" aria-hidden="true"></i>
-
-                Abrir PDF
-              </a>
-            </div>
-          } @else {
-            <div class="receipt-pdf-preview">
-              <span class="receipt-pdf-preview__icon">
-                <i class="pi pi-file" aria-hidden="true"></i>
-              </span>
-
-              <strong> Archivo cargado </strong>
-
-              <p>Este tipo de archivo no permite una vista previa directa.</p>
-
-              <a
-                [href]="previewUrl"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="receipt-open-file-link"
-              >
-                <i class="pi pi-external-link" aria-hidden="true"></i>
-
-                Abrir archivo
-              </a>
-            </div>
-          }
-        </div>
-      }
-    </p-dialog>
-
-    <!-- =====================================================
-         DIÁLOGO DE RECHAZO
-         ===================================================== -->
-
-    <p-dialog
-      header="Rechazar comprobante"
-      [visible]="rejectionDialogVisible()"
-      [modal]="true"
-      [draggable]="false"
-      [resizable]="false"
-      [closable]="!receiptReviewing()"
-      [dismissableMask]="!receiptReviewing()"
-      [style]="{
-        width: 'min(92vw, 520px)',
-      }"
-      styleClass="receipt-rejection-dialog"
-      (onHide)="closeRejectReceiptDialog()"
-    >
-      <div class="rejection-dialog-content">
-        <div class="rejection-dialog-warning">
-          <i class="pi pi-exclamation-triangle" aria-hidden="true"></i>
-
-          <p>
-            El cliente podrá ver este motivo. Describe claramente qué debe corregir antes de enviar
-            otro comprobante.
-          </p>
-        </div>
-
-        <div class="rejection-field">
-          <label for="rejection-reason"> Motivo del rechazo </label>
-
-          <textarea
-            id="rejection-reason"
-            pTextarea
-            rows="6"
-            minlength="5"
-            maxlength="500"
-            placeholder="Ejemplo: La imagen está borrosa y no permite verificar el valor transferido."
-            [(ngModel)]="rejectionReason"
-            [disabled]="receiptReviewing()"
-          ></textarea>
-
-          <div class="rejection-field__footer">
-            <small> Mínimo 5 caracteres. </small>
-
-            <small> {{ rejectionReason.length }}/500 </small>
-          </div>
-        </div>
-
-        @if (receiptError()) {
-          <p-message
-            severity="error"
-            [text]="receiptError()!"
-            styleClass="receipt-dialog-message"
-          />
-        }
-      </div>
-
-      <ng-template pTemplate="footer">
-        <div class="rejection-dialog-actions">
-          <p-button
-            label="Cancelar"
-            severity="secondary"
-            [text]="true"
-            [disabled]="receiptReviewing()"
-            (onClick)="closeRejectReceiptDialog()"
-          />
-
-          <p-button
-            label="Confirmar rechazo"
-            icon="pi pi-times"
-            severity="danger"
-            [loading]="receiptReviewing()"
-            [disabled]="receiptReviewing() || rejectionReason.trim().length < 5"
-            (onClick)="rejectReceipt()"
-          />
-        </div>
-      </ng-template>
-    </p-dialog>
+    <app-operator-payment-receipt-dialogs
+      [previewVisible]="receiptPreviewVisible()"
+      [previewUrl]="receiptPreviewUrl()"
+      [previewMime]="receiptPreviewMime()"
+      [rejectionVisible]="rejectionDialogVisible()"
+      [reviewing]="receiptReviewing()"
+      [rejectionError]="receiptError()"
+      (previewClosed)="closeReceiptPreview()"
+      (rejectionClosed)="closeRejectReceiptDialog()"
+      (rejectionConfirmed)="rejectReceipt($event)"
+    />
   }
 </section>

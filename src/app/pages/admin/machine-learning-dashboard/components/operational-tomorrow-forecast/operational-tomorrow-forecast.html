@@ -1,0 +1,211 @@
+<section class="operational-forecast-card surface-card" aria-labelledby="tomorrow-operational-title">
+  <header class="operational-forecast-header">
+    <div>
+      <span class="operational-forecast-eyebrow">
+        Pronóstico operativo de mañana
+      </span>
+
+      <h2 id="tomorrow-operational-title">
+        Qué conviene preparar
+      </h2>
+
+      <p>
+        Sabores, horarios e ingredientes estimados por el modelo operacional activo.
+      </p>
+    </div>
+
+    @if (tomorrowOperational(); as tomorrow) {
+      <div class="operational-forecast-date">
+        <span>Mañana</span>
+        <strong>{{ formatDate(tomorrow.date) }}</strong>
+      </div>
+    } @else if (operationalForecastAvailable()) {
+      <p-tag value="Fuera del periodo actual" severity="warn" />
+    } @else {
+      <p-tag value="En recopilación" severity="warn" />
+    }
+  </header>
+
+  @if (tomorrowOperational(); as tomorrow) {
+    <div class="operational-forecast-grid">
+      <article class="operational-forecast-column">
+        <div class="operational-forecast-column-title">
+          <span class="operational-forecast-column-icon">
+            <i class="pi pi-tags"></i>
+          </span>
+
+          <div>
+            <span>Sabores</span>
+            <strong>Mayor demanda esperada</strong>
+          </div>
+        </div>
+
+        @if (topTomorrowFlavors().length > 0) {
+          <ol class="operational-ranking-list">
+            @for (flavor of topTomorrowFlavors(); track flavor.name; let position = $index) {
+              <li>
+                <span class="operational-ranking-position">
+                  {{ position + 1 }}
+                </span>
+
+                <span class="operational-ranking-copy">
+                  <strong>{{ flavor.name }}</strong>
+                  <small>unidades equivalentes previstas</small>
+                </span>
+
+                <strong class="operational-ranking-value">
+                  {{ formatMetric(flavor.expected_units, 1) }}
+                </strong>
+              </li>
+            }
+          </ol>
+        } @else {
+          <p class="operational-empty-copy">
+            No hay una distribución por sabor disponible para esta fecha.
+          </p>
+        }
+      </article>
+
+      <article class="operational-forecast-column">
+        <div class="operational-forecast-column-title">
+          <span class="operational-forecast-column-icon">
+            <i class="pi pi-clock"></i>
+          </span>
+
+          <div>
+            <span>Horas</span>
+            <strong>Franja de mayor presión</strong>
+          </div>
+        </div>
+
+        @if (peakTomorrowHours().length > 0) {
+          <ol class="operational-ranking-list">
+            @for (hour of peakTomorrowHours(); track hour.hour; let position = $index) {
+              <li>
+                <span class="operational-ranking-position">
+                  {{ position + 1 }}
+                </span>
+
+                <span class="operational-ranking-copy">
+                  <strong>{{ formatHour(hour.hour) }}</strong>
+                  <small>demanda estimada en esa hora</small>
+                </span>
+
+                <strong class="operational-ranking-value">
+                  {{ formatMetric(hour.expected_units, 1) }}
+                </strong>
+              </li>
+            }
+          </ol>
+        } @else {
+          <p class="operational-empty-copy">
+            No hay una distribución horaria disponible para esta fecha.
+          </p>
+        }
+      </article>
+
+      <article class="operational-forecast-column">
+        <div class="operational-forecast-column-title">
+          <span class="operational-forecast-column-icon">
+            <i class="pi pi-list"></i>
+          </span>
+
+          <div>
+            <span>Ingredientes</span>
+            <strong>Preparación sugerida</strong>
+          </div>
+        </div>
+
+        @if (topTomorrowIngredients().length > 0) {
+          <ol class="operational-ranking-list">
+            @for (ingredient of topTomorrowIngredients(); track ingredient.name; let position = $index) {
+              <li>
+                <span class="operational-ranking-position">
+                  {{ position + 1 }}
+                </span>
+
+                <span class="operational-ranking-copy">
+                  <strong>{{ ingredient.name }}</strong>
+                  <small>{{ operationalIngredientUnitLabel() }}</small>
+                </span>
+
+                <strong class="operational-ranking-value">
+                  {{ formatMetric(ingredient.expected_units, 1) }}
+                </strong>
+              </li>
+            }
+          </ol>
+        } @else {
+          <p class="operational-empty-copy">
+            Todavía no hay demanda de ingredientes disponible para esta fecha.
+          </p>
+        }
+      </article>
+    </div>
+
+    @if (tomorrowOperationalInsight(); as insight) {
+      <div class="operational-forecast-insight">
+        <span class="operational-forecast-insight-icon">
+          <i class="pi pi-sparkles"></i>
+        </span>
+
+        <div>
+          <strong>Lectura operativa</strong>
+          <p>{{ insight }}</p>
+        </div>
+      </div>
+    }
+
+    @if (!run().operational?.weight_prediction_available) {
+      <div class="operational-weight-note">
+        <i class="pi pi-info-circle"></i>
+
+        <span>
+          Las cantidades de ingredientes se expresan en unidades equivalentes de receta.
+          Para recomendar kilogramos exactos todavía debemos registrar gramajes por pizza y tamaño.
+        </span>
+      </div>
+    }
+  } @else if (operationalForecastAvailable()) {
+    <div class="operational-forecast-state">
+      <span class="operational-forecast-state-icon">
+        <i class="pi pi-calendar-clock"></i>
+      </span>
+
+      <div>
+        <strong>El modelo operacional está activo, pero este pronóstico no incluye mañana.</strong>
+        <p>
+          Genera un pronóstico con fecha inicial de mañana para ver aquí sabores, horas e ingredientes.
+        </p>
+      </div>
+
+      <p-button
+        label="Generar desde mañana"
+        icon="pi pi-sparkles"
+        severity="success"
+        [outlined]="true"
+        (onClick)="requestGeneration()"
+      />
+    </div>
+  } @else {
+    <div class="operational-forecast-state operational-forecast-state-collecting">
+      <span class="operational-forecast-state-icon">
+        <i class="pi pi-database"></i>
+      </span>
+
+      <div>
+        <strong>El pronóstico principal está listo; el detalle operativo sigue recopilando historia.</strong>
+
+        <p>
+          El sistema continúa guardando automáticamente cada nueva venta, sabor, hora e ingrediente.
+          Cuando las series alcancen suficiente actividad, un nuevo entrenamiento habilitará aquí las
+          recomendaciones de preparación para mañana.
+        </p>
+
+        <small>
+          {{ run().limitations.message }}
+        </small>
+      </div>
+    </div>
+  }
+</section>

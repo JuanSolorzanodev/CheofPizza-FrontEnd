@@ -1,0 +1,191 @@
+:host {
+  display: contents;
+}
+
+:host ::ng-deep .receipt-preview-dialog.p-dialog,
+:host ::ng-deep .receipt-rejection-dialog.p-dialog {
+  overflow: hidden;
+  border: 1px solid var(--cheof-card-border);
+  border-radius: 1rem;
+  background: var(--cheof-card-background);
+  box-shadow: 0 1rem 3rem rgba(15, 23, 42, 0.16);
+}
+
+:host ::ng-deep .receipt-preview-dialog .p-dialog-header,
+:host ::ng-deep .receipt-rejection-dialog .p-dialog-header {
+  padding: 1rem 1.1rem;
+  border-bottom: 1px solid var(--cheof-card-border);
+  background: var(--cheof-card-background);
+}
+
+:host ::ng-deep .receipt-preview-dialog .p-dialog-title,
+:host ::ng-deep .receipt-rejection-dialog .p-dialog-title {
+  color: var(--cheof-text);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+:host ::ng-deep .receipt-preview-dialog .p-dialog-content {
+  padding: 1rem;
+  background: var(--cheof-card-background-muted);
+}
+
+.receipt-preview-dialog__content {
+  display: grid;
+  min-height: 22rem;
+  place-items: center;
+}
+
+.receipt-preview-image {
+  display: block;
+  max-width: 100%;
+  max-height: 70vh;
+  border: 1px solid var(--cheof-card-border);
+  border-radius: 0.75rem;
+  background: var(--cheof-card-background);
+  object-fit: contain;
+}
+
+.receipt-file-preview {
+  display: grid;
+  max-width: 28rem;
+  justify-items: center;
+  gap: 0.6rem;
+  padding: 2rem;
+  text-align: center;
+}
+
+.receipt-file-preview__icon {
+  display: grid;
+  width: 4rem;
+  height: 4rem;
+  place-items: center;
+  border-radius: 1rem;
+  background: var(--cheof-card-background);
+  color: var(--cheof-text-secondary);
+}
+
+.receipt-file-preview__icon--pdf {
+  background: color-mix(in srgb, var(--cheof-danger) 8%, var(--cheof-card-background));
+  color: var(--cheof-danger);
+}
+
+.receipt-file-preview__icon i {
+  font-size: 1.5rem;
+}
+
+.receipt-file-preview strong {
+  color: var(--cheof-text);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.receipt-file-preview p {
+  margin: 0;
+  color: var(--cheof-text-secondary);
+  font-size: 0.72rem;
+  line-height: 1.5;
+}
+
+.receipt-open-file-link {
+  display: inline-flex;
+  min-height: 2.5rem;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.55rem 0.8rem;
+  border: 1px solid var(--p-primary-color);
+  border-radius: 0.7rem;
+  background: var(--p-primary-color);
+  color: var(--p-primary-contrast-color, white);
+  text-decoration: none;
+  font-size: 0.7rem;
+  font-weight: 650;
+}
+
+.receipt-open-file-link i {
+  font-size: 0.68rem;
+}
+
+.receipt-open-file-link:focus-visible {
+  outline: 0.16rem solid color-mix(in srgb, var(--p-primary-color) 35%, transparent);
+  outline-offset: 0.14rem;
+}
+
+:host ::ng-deep .receipt-rejection-dialog .p-dialog-content {
+  padding: 1rem 1.1rem;
+  background: var(--cheof-card-background);
+}
+
+:host ::ng-deep .receipt-rejection-dialog .p-dialog-footer {
+  padding: 0.9rem 1.1rem;
+  border-top: 1px solid var(--cheof-card-border);
+  background: var(--cheof-card-background);
+}
+
+.rejection-dialog-content {
+  display: grid;
+  gap: 1rem;
+}
+
+.rejection-dialog-warning {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: flex-start;
+  gap: 0.6rem;
+  padding: 0.75rem;
+  border: 1px solid color-mix(in srgb, var(--cheof-warning) 22%, var(--cheof-card-border));
+  border-radius: 0.7rem;
+  background: color-mix(in srgb, var(--cheof-warning) 5%, var(--cheof-card-background));
+}
+
+.rejection-dialog-warning i {
+  margin-top: 0.1rem;
+  color: var(--cheof-warning-strong);
+  font-size: 0.75rem;
+}
+
+.rejection-dialog-warning p {
+  margin: 0;
+  color: var(--cheof-text);
+  font-size: 0.67rem;
+  line-height: 1.45;
+}
+
+.rejection-field label {
+  display: block;
+  margin-bottom: 0.4rem;
+  color: var(--cheof-text);
+  font-size: 0.68rem;
+  font-weight: 650;
+}
+
+.rejection-field textarea {
+  width: 100%;
+  resize: vertical;
+  border-radius: 0.7rem;
+  font-size: 0.75rem;
+  line-height: 1.5;
+}
+
+.rejection-field__footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 0.35rem;
+}
+
+.rejection-field__footer small {
+  color: var(--cheof-text-secondary);
+  font-size: 0.58rem;
+}
+
+:host ::ng-deep .receipt-dialog-message.p-message {
+  width: 100%;
+  border-radius: 0.7rem;
+}
+
+.rejection-dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.6rem;
+}

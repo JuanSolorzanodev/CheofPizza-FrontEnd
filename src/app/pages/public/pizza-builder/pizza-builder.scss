@@ -4,7 +4,7 @@
 }
 
 .builder-page {
-  padding-bottom: 7rem;
+  padding-bottom: clamp(5rem, 8vw, 7rem);
 }
 
 .builder-skeleton {
@@ -34,7 +34,7 @@
   border: 1px solid var(--cheof-card-border);
   border-radius: var(--cheof-radius-sm);
   background: var(--cheof-card-background);
-  color: var(--p-text-color);
+  color: var(--cheof-text);
   cursor: pointer;
   box-shadow: var(--cheof-shadow-xs);
   transition:
@@ -69,7 +69,7 @@
 .builder-header p {
   max-width: 720px;
   margin: 0.6rem 0 0;
-  color: var(--p-text-muted-color);
+  color: var(--cheof-text-secondary);
   line-height: 1.65;
 }
 
@@ -139,7 +139,7 @@
 
 .preview-copy p {
   margin: 0.7rem 0 0;
-  color: var(--p-text-muted-color);
+  color: var(--cheof-text-secondary);
   line-height: 1.7;
 }
 
@@ -160,7 +160,7 @@
 }
 
 .preview-note span {
-  color: var(--p-text-muted-color);
+  color: var(--cheof-text-secondary);
   font-size: 0.75rem;
 }
 
@@ -192,7 +192,7 @@
 }
 
 .preview-summary span {
-  color: var(--p-text-muted-color);
+  color: var(--cheof-text-secondary);
   font-size: 0.72rem;
   text-transform: uppercase;
 }
@@ -233,7 +233,7 @@
 
 .intro-text {
   margin: 0.6rem 0 0;
-  color: var(--p-text-muted-color);
+  color: var(--cheof-text-secondary);
   line-height: 1.65;
 }
 
@@ -245,7 +245,7 @@
 
 .live-price span,
 .live-price small {
-  color: var(--p-text-muted-color);
+  color: var(--cheof-text-secondary);
   font-size: 0.78rem;
 }
 
@@ -284,7 +284,7 @@
 
 .section-helper,
 .control-card p {
-  color: var(--p-text-muted-color);
+  color: var(--cheof-text-secondary);
   font-size: 0.82rem;
 }
 
@@ -315,7 +315,7 @@
   border: 1px solid var(--cheof-card-border);
   border-radius: var(--cheof-radius-md);
   background: var(--cheof-card-background);
-  color: var(--p-text-color);
+  color: var(--cheof-text);
   cursor: pointer;
   text-align: left;
   transition:
@@ -343,12 +343,12 @@
 }
 
 .size-option__portion {
-  color: var(--p-text-muted-color);
+  color: var(--cheof-text-secondary);
   font-size: 0.8rem;
 }
 
 .size-option__serving {
-  color: var(--p-text-color);
+  color: var(--cheof-text);
   font-size: 0.78rem;
   line-height: 1.45;
 }
@@ -433,7 +433,7 @@
 }
 
 .ingredient-half header span {
-  color: var(--p-text-muted-color);
+  color: var(--cheof-text-secondary);
   font-size: 0.72rem;
   text-transform: uppercase;
 }
@@ -463,7 +463,7 @@
 :host ::ng-deep .ingredient-chip.is-locked.p-chip::before {
   content: '\e950';
   margin-right: 0.35rem;
-  color: var(--p-text-muted-color);
+  color: var(--cheof-text-secondary);
   font-family: 'primeicons';
   font-size: 0.72rem;
 }
@@ -500,7 +500,7 @@
 
 .extras-header small {
   margin-top: 0.1rem;
-  color: var(--p-text-muted-color);
+  color: var(--cheof-text-secondary);
   font-weight: 400;
 }
 
@@ -520,14 +520,14 @@
   padding: 0.9rem;
   border-radius: var(--cheof-radius-sm);
   background: var(--cheof-muted-background);
-  color: var(--p-text-muted-color);
+  color: var(--cheof-text-secondary);
   font-size: 0.86rem;
 }
 
 .inline-notice--warning {
-  border: 1px solid color-mix(in srgb, var(--p-orange-500) 30%, var(--cheof-card-border));
-  background: color-mix(in srgb, var(--p-orange-500) 8%, var(--cheof-card-background));
-  color: var(--p-orange-700);
+  border: 1px solid color-mix(in srgb, var(--cheof-warning) 30%, var(--cheof-card-border));
+  background: color-mix(in srgb, var(--cheof-warning) 8%, var(--cheof-card-background));
+  color: var(--cheof-warning-strong);
 }
 
 .extras-grid {
@@ -569,7 +569,7 @@
 }
 
 .extra-option label span {
-  color: var(--p-text-muted-color);
+  color: var(--cheof-text-secondary);
   font-size: 0.75rem;
 }
 
@@ -587,7 +587,7 @@
 }
 
 .extra-applies > span {
-  color: var(--p-text-muted-color);
+  color: var(--cheof-text-secondary);
   font-size: 0.75rem;
 }
 
@@ -636,7 +636,7 @@
   padding: 0.45rem 0.75rem;
   border-radius: var(--cheof-radius-pill);
   background: var(--cheof-muted-background);
-  color: var(--p-text-color);
+  color: var(--cheof-text);
   font-size: 0.78rem;
   font-weight: 700;
   white-space: nowrap;
@@ -659,7 +659,7 @@
 .summary-lines span,
 .summary-total span,
 .summary-breakdown__title {
-  color: var(--p-text-muted-color);
+  color: var(--cheof-text-secondary);
 }
 
 .summary-breakdown {
@@ -702,16 +702,16 @@
   display: flex;
   align-items: flex-start;
   gap: 0.45rem;
-  color: var(--p-text-muted-color);
+  color: var(--cheof-text-secondary);
   line-height: 1.55;
 }
 
 .summary-total small.is-error {
-  color: var(--p-red-500);
+  color: var(--cheof-danger);
 }
 
 .summary-total small.is-success {
-  color: var(--p-green-500);
+  color: var(--cheof-success);
 }
 
 .summary-actions {
@@ -743,8 +743,8 @@
   height: 68px;
   place-items: center;
   border-radius: var(--cheof-radius-xl);
-  background: color-mix(in srgb, var(--p-red-500) 12%, var(--cheof-card-background));
-  color: var(--p-red-500);
+  background: color-mix(in srgb, var(--cheof-danger) 12%, var(--cheof-card-background));
+  color: var(--cheof-danger);
   font-size: 1.6rem;
 }
 
@@ -760,6 +760,31 @@
   display: flex;
   gap: 0.75rem;
 }
+
+/* =========================================================
+   ACCESIBILIDAD
+   ========================================================= */
+
+.builder-page :is(
+  a,
+  button,
+  input,
+  select,
+  textarea,
+  [tabindex]:not([tabindex="-1"])
+):focus-visible {
+  outline: 0.16rem solid
+    color-mix(
+      in srgb,
+      var(--p-primary-color) 38%,
+      transparent
+    );
+  outline-offset: 0.14rem;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
 
 @media (max-width: 1180px) {
   .builder-layout,
@@ -894,7 +919,7 @@
 
   .mobile-purchase-bar span,
   .mobile-purchase-bar small {
-    color: var(--p-text-muted-color);
+    color: var(--cheof-text-secondary);
     font-size: 0.72rem;
   }
 
@@ -962,5 +987,20 @@
   :host ::ng-deep .builder-error__actions .p-button {
     width: 100%;
     justify-content: center;
+  }
+}
+
+
+/* =========================================================
+   REDUCCIÓN DE MOVIMIENTO
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .builder-back,
+  .builder-card,
+  .ingredient-option,
+  .size-option {
+    transition: none;
+    animation: none;
   }
 }

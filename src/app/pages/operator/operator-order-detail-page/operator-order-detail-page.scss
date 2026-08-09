@@ -4,7 +4,7 @@
 }
 
 .page {
-  min-height: calc(100vh - 5rem);
+  min-height: calc(100vh - var(--cheof-toolbar-height));
   padding:
     clamp(1rem, 2.5vw, 2rem)
     clamp(0.75rem, 2vw, 1.25rem)
@@ -20,7 +20,7 @@
       ),
       transparent 28rem
     ),
-    var(--p-surface-50);
+    var(--cheof-card-background-muted);
 }
 
 /* =========================================================
@@ -37,10 +37,10 @@
   margin: 0 auto 1.25rem;
   padding: 1.25rem;
 
-  border: 1px solid var(--p-surface-200);
+  border: 1px solid var(--cheof-card-border);
   border-radius: 1rem;
 
-  background: var(--p-surface-0);
+  background: var(--cheof-card-background);
 
   box-shadow:
     0 0.25rem 0.8rem rgba(15, 23, 42, 0.025),
@@ -59,11 +59,11 @@
   min-height: 2.15rem;
   padding: 0.4rem 0.65rem;
 
-  border: 1px solid var(--p-surface-300);
+  border: 1px solid var(--cheof-card-border);
   border-radius: 0.65rem;
 
-  background: var(--p-surface-0);
-  color: var(--p-text-color);
+  background: var(--cheof-card-background);
+  color: var(--cheof-text);
 
   text-decoration: none;
 
@@ -82,7 +82,7 @@
   background: color-mix(
     in srgb,
     var(--p-primary-color) 4%,
-    var(--p-surface-0)
+    var(--cheof-card-background)
   );
 
   color: var(--p-primary-color);
@@ -111,7 +111,7 @@
 .order-code {
   margin: 0;
 
-  color: var(--p-text-color);
+  color: var(--cheof-text);
 
   font-size: clamp(1.7rem, 3vw, 2.4rem);
   font-weight: 850;
@@ -125,10 +125,7 @@
   max-width: 46rem;
   margin: 0.55rem 0 0;
 
-  color: var(
-    --p-text-muted-color,
-    var(--p-text-color-secondary)
-  );
+  color: var(--cheof-text-secondary);
 
   font-size: 0.84rem;
   line-height: 1.5;
@@ -152,15 +149,12 @@
 
   padding: 0.35rem 0.6rem;
 
-  border: 1px solid var(--p-surface-200);
+  border: 1px solid var(--cheof-card-border);
   border-radius: 999px;
 
-  background: var(--p-surface-50);
+  background: var(--cheof-card-background-muted);
 
-  color: var(
-    --p-text-muted-color,
-    var(--p-text-color-secondary)
-  );
+  color: var(--cheof-text-secondary);
 
   font-size: 0.67rem;
   font-weight: 550;
@@ -175,13 +169,13 @@
   border-color: color-mix(
     in srgb,
     var(--p-primary-color) 20%,
-    var(--p-surface-200)
+    var(--cheof-card-border)
   );
 
   background: color-mix(
     in srgb,
     var(--p-primary-color) 6%,
-    var(--p-surface-0)
+    var(--cheof-card-background)
   );
 
   color: var(--p-primary-color);
@@ -240,10 +234,10 @@
 :host ::ng-deep .card.p-card {
   overflow: hidden;
 
-  border: 1px solid var(--p-surface-200);
+  border: 1px solid var(--cheof-card-border);
   border-radius: 1rem;
 
-  background: var(--p-surface-0);
+  background: var(--cheof-card-background);
 
   box-shadow:
     0 0.25rem 0.8rem rgba(15, 23, 42, 0.025),
@@ -259,7 +253,7 @@
 }
 
 :host ::ng-deep .card .p-card-header {
-  border-bottom: 1px solid var(--p-surface-200);
+  border-bottom: 1px solid var(--cheof-card-border);
 }
 
 .card-header {
@@ -270,7 +264,7 @@
 
   padding: 0.95rem 1.1rem;
 
-  background: var(--p-surface-0);
+  background: var(--cheof-card-background);
 }
 
 .card-header--kitchen {
@@ -293,12 +287,9 @@
 
   border-radius: 0.65rem;
 
-  background: var(--p-surface-100);
+  background: var(--cheof-muted-background);
 
-  color: var(
-    --p-text-muted-color,
-    var(--p-text-color-secondary)
-  );
+  color: var(--cheof-text-secondary);
 }
 
 .card-icon i {
@@ -313,7 +304,7 @@
   background: color-mix(
     in srgb,
     var(--p-primary-color) 8%,
-    var(--p-surface-0)
+    var(--cheof-card-background)
   );
 
   color: var(--p-primary-color);
@@ -326,10 +317,7 @@
 }
 
 .card-kicker {
-  color: var(
-    --p-text-muted-color,
-    var(--p-text-color-secondary)
-  );
+  color: var(--cheof-text-secondary);
 
   font-size: 0.58rem;
   font-weight: 650;
@@ -338,7 +326,7 @@
 }
 
 .card-title strong {
-  color: var(--p-text-color);
+  color: var(--cheof-text);
 
   font-size: 0.85rem;
   font-weight: 700;
@@ -360,7 +348,7 @@
 
   padding: 0.75rem 0;
 
-  border-bottom: 1px solid var(--p-surface-200);
+  border-bottom: 1px solid var(--cheof-card-border);
 }
 
 .info-item:first-child {
@@ -373,10 +361,7 @@
 }
 
 .info-label {
-  color: var(
-    --p-text-muted-color,
-    var(--p-text-color-secondary)
-  );
+  color: var(--cheof-text-secondary);
 
   font-size: 0.67rem;
   font-weight: 500;
@@ -385,7 +370,7 @@
 .info-value {
   min-width: 0;
 
-  color: var(--p-text-color);
+  color: var(--cheof-text);
 
   font-size: 0.72rem;
   font-weight: 650;
@@ -409,7 +394,7 @@
   padding-top: 1rem;
 
   border-top: 1px solid
-    var(--p-surface-200);
+    var(--cheof-card-border);
 }
 
 .contact-actions--single {
@@ -460,10 +445,10 @@
 
   padding: 0.8rem;
 
-  border: 1px solid var(--p-surface-200);
+  border: 1px solid var(--cheof-card-border);
   border-radius: 0.75rem;
 
-  background: var(--p-surface-50);
+  background: var(--cheof-card-background-muted);
 }
 
 .status-current > div {
@@ -472,17 +457,14 @@
 }
 
 .status-label {
-  color: var(
-    --p-text-muted-color,
-    var(--p-text-color-secondary)
-  );
+  color: var(--cheof-text-secondary);
 
   font-size: 0.62rem;
   font-weight: 500;
 }
 
 .status-value {
-  color: var(--p-text-color);
+  color: var(--cheof-text);
 
   font-size: 0.8rem;
   font-weight: 700;
@@ -500,7 +482,7 @@
   display: block;
   margin-bottom: 0.4rem;
 
-  color: var(--p-text-color);
+  color: var(--cheof-text);
 
   font-size: 0.68rem;
   font-weight: 650;
@@ -521,10 +503,7 @@
   display: block;
   margin-top: 0.35rem;
 
-  color: var(
-    --p-text-muted-color,
-    var(--p-text-color-secondary)
-  );
+  color: var(--cheof-text-secondary);
 
   font-size: 0.6rem;
   line-height: 1.4;
@@ -557,10 +536,10 @@
   margin-top: 1rem;
   padding: 0.85rem;
 
-  border: 1px solid var(--p-surface-200);
+  border: 1px solid var(--cheof-card-border);
   border-radius: 0.75rem;
 
-  background: var(--p-surface-50);
+  background: var(--cheof-card-background-muted);
 }
 
 .terminal-status__icon {
@@ -574,7 +553,7 @@
   background: color-mix(
     in srgb,
     var(--p-primary-color) 8%,
-    var(--p-surface-0)
+    var(--cheof-card-background)
   );
 
   color: var(--p-primary-color);
@@ -585,7 +564,7 @@
 }
 
 .terminal-status strong {
-  color: var(--p-text-color);
+  color: var(--cheof-text);
 
   font-size: 0.75rem;
   font-weight: 700;
@@ -594,10 +573,7 @@
 .terminal-status p {
   margin: 0.2rem 0 0;
 
-  color: var(
-    --p-text-muted-color,
-    var(--p-text-color-secondary)
-  );
+  color: var(--cheof-text-secondary);
 
   font-size: 0.65rem;
   line-height: 1.4;
@@ -629,10 +605,10 @@
 
   padding: 0.9rem;
 
-  border: 1px solid var(--p-surface-200);
+  border: 1px solid var(--cheof-card-border);
   border-radius: 0.85rem;
 
-  background: var(--p-surface-50);
+  background: var(--cheof-card-background-muted);
 }
 
 .receipt-file__preview {
@@ -644,20 +620,17 @@
 
   padding: 1rem;
 
-  border: 1px dashed var(--p-surface-300);
+  border: 1px dashed var(--cheof-card-border);
   border-radius: 0.75rem;
 
-  background: var(--p-surface-0);
+  background: var(--cheof-card-background);
 
   text-align: center;
 }
 
 .receipt-file__preview > i {
   font-size: 2rem;
-  color: var(
-    --p-text-muted-color,
-    var(--p-text-color-secondary)
-  );
+  color: var(--cheof-text-secondary);
 }
 
 .receipt-file__preview--image > i {
@@ -665,11 +638,11 @@
 }
 
 .receipt-file__preview--pdf > i {
-  color: #dc2626;
+  color: var(--cheof-danger);
 }
 
 .receipt-file__preview strong {
-  color: var(--p-text-color);
+  color: var(--cheof-text);
 
   font-size: 0.72rem;
   font-weight: 700;
@@ -678,10 +651,7 @@
 .receipt-file__preview span {
   max-width: 14rem;
 
-  color: var(
-    --p-text-muted-color,
-    var(--p-text-color-secondary)
-  );
+  color: var(--cheof-text-secondary);
 
   font-size: 0.62rem;
   line-height: 1.45;
@@ -699,17 +669,14 @@
 }
 
 .receipt-file__name span {
-  color: var(
-    --p-text-muted-color,
-    var(--p-text-color-secondary)
-  );
+  color: var(--cheof-text-secondary);
 
   font-size: 0.6rem;
   font-weight: 500;
 }
 
 .receipt-file__name strong {
-  color: var(--p-text-color);
+  color: var(--cheof-text);
 
   font-size: 0.76rem;
   font-weight: 650;
@@ -724,10 +691,10 @@
 
   padding: 0.75rem;
 
-  border: 1px solid var(--p-surface-200);
+  border: 1px solid var(--cheof-card-border);
   border-radius: 0.7rem;
 
-  background: var(--p-surface-0);
+  background: var(--cheof-card-background);
 }
 
 .receipt-file__metadata span {
@@ -735,10 +702,7 @@
   align-items: center;
   gap: 0.45rem;
 
-  color: var(
-    --p-text-muted-color,
-    var(--p-text-color-secondary)
-  );
+  color: var(--cheof-text-secondary);
 
   font-size: 0.63rem;
   line-height: 1.4;
@@ -777,10 +741,10 @@
 
   padding: 0.9rem;
 
-  border: 1px solid var(--p-surface-200);
+  border: 1px solid var(--cheof-card-border);
   border-radius: 0.85rem;
 
-  background: var(--p-surface-50);
+  background: var(--cheof-card-background-muted);
 }
 
 .receipt-review__status {
@@ -791,7 +755,7 @@
 
   padding-bottom: 0.7rem;
 
-  border-bottom: 1px solid var(--p-surface-200);
+  border-bottom: 1px solid var(--cheof-card-border);
 }
 
 .receipt-review__status-icon {
@@ -802,42 +766,39 @@
 
   border-radius: 999px;
 
-  background: var(--p-surface-100);
+  background: var(--cheof-muted-background);
 
-  color: var(
-    --p-text-muted-color,
-    var(--p-text-color-secondary)
-  );
+  color: var(--cheof-text-secondary);
 }
 
 .receipt-review__status-icon.is-pending {
   background: color-mix(
     in srgb,
-    #f59e0b 10%,
-    var(--p-surface-0)
+    var(--cheof-warning) 10%,
+    var(--cheof-card-background)
   );
 
-  color: #b45309;
+  color: var(--cheof-warning-strong);
 }
 
 .receipt-review__status-icon.is-approved {
   background: color-mix(
     in srgb,
-    #16a34a 10%,
-    var(--p-surface-0)
+    var(--cheof-success) 10%,
+    var(--cheof-card-background)
   );
 
-  color: #15803d;
+  color: var(--cheof-success-strong);
 }
 
 .receipt-review__status-icon.is-rejected {
   background: color-mix(
     in srgb,
-    #dc2626 9%,
-    var(--p-surface-0)
+    var(--cheof-danger) 9%,
+    var(--cheof-card-background)
   );
 
-  color: #b91c1c;
+  color: var(--cheof-danger-strong);
 }
 
 .receipt-review__status-icon i {
@@ -852,10 +813,7 @@
 .receipt-review__status span,
 .receipt-review__detail span,
 .receipt-rejection-reason > span {
-  color: var(
-    --p-text-muted-color,
-    var(--p-text-color-secondary)
-  );
+  color: var(--cheof-text-secondary);
 
   font-size: 0.58rem;
   font-weight: 500;
@@ -863,7 +821,7 @@
 
 .receipt-review__status strong,
 .receipt-review__detail strong {
-  color: var(--p-text-color);
+  color: var(--cheof-text);
 
   font-size: 0.72rem;
   font-weight: 650;
@@ -877,7 +835,7 @@
 
   padding-bottom: 0.55rem;
 
-  border-bottom: 1px dashed var(--p-surface-200);
+  border-bottom: 1px dashed var(--cheof-card-border);
 }
 
 .receipt-review__detail:last-child {
@@ -895,23 +853,23 @@
   border: 1px solid
     color-mix(
       in srgb,
-      #dc2626 18%,
-      var(--p-surface-200)
+      var(--cheof-danger) 18%,
+      var(--cheof-card-border)
     );
 
   border-radius: 0.65rem;
 
   background: color-mix(
     in srgb,
-    #dc2626 4%,
-    var(--p-surface-0)
+    var(--cheof-danger) 4%,
+    var(--cheof-card-background)
   );
 }
 
 .receipt-rejection-reason p {
   margin: 0.3rem 0 0;
 
-  color: var(--p-text-color);
+  color: var(--cheof-text);
 
   font-size: 0.67rem;
   line-height: 1.5;
@@ -929,7 +887,7 @@
     color-mix(
       in srgb,
       var(--p-primary-color) 18%,
-      var(--p-surface-200)
+      var(--cheof-card-border)
     );
 
   border-radius: 0.7rem;
@@ -937,7 +895,7 @@
   background: color-mix(
     in srgb,
     var(--p-primary-color) 4%,
-    var(--p-surface-0)
+    var(--cheof-card-background)
   );
 }
 
@@ -952,10 +910,7 @@
 .receipt-review__notice p {
   margin: 0;
 
-  color: var(
-    --p-text-muted-color,
-    var(--p-text-color-secondary)
-  );
+  color: var(--cheof-text-secondary);
 
   font-size: 0.65rem;
   line-height: 1.45;
@@ -987,10 +942,10 @@
 
   padding: 0.85rem;
 
-  border: 1px solid var(--p-surface-200);
+  border: 1px solid var(--cheof-card-border);
   border-radius: 0.75rem;
 
-  background: var(--p-surface-50);
+  background: var(--cheof-card-background-muted);
 }
 
 .receipt-result > i {
@@ -1000,48 +955,45 @@
 .receipt-result--approved {
   border-color: color-mix(
     in srgb,
-    #16a34a 18%,
-    var(--p-surface-200)
+    var(--cheof-success) 18%,
+    var(--cheof-card-border)
   );
 
   background: color-mix(
     in srgb,
-    #16a34a 4%,
-    var(--p-surface-0)
+    var(--cheof-success) 4%,
+    var(--cheof-card-background)
   );
 }
 
 .receipt-result--approved > i {
-  color: #15803d;
+  color: var(--cheof-success-strong);
 }
 
 .receipt-result--rejected {
   border-color: color-mix(
     in srgb,
-    #dc2626 18%,
-    var(--p-surface-200)
+    var(--cheof-danger) 18%,
+    var(--cheof-card-border)
   );
 
   background: color-mix(
     in srgb,
-    #dc2626 4%,
-    var(--p-surface-0)
+    var(--cheof-danger) 4%,
+    var(--cheof-card-background)
   );
 }
 
 .receipt-result--rejected > i {
-  color: #b91c1c;
+  color: var(--cheof-danger-strong);
 }
 
 .receipt-result--unavailable > i {
-  color: var(
-    --p-text-muted-color,
-    var(--p-text-color-secondary)
-  );
+  color: var(--cheof-text-secondary);
 }
 
 .receipt-result strong {
-  color: var(--p-text-color);
+  color: var(--cheof-text);
 
   font-size: 0.72rem;
   font-weight: 700;
@@ -1050,10 +1002,7 @@
 .receipt-result p {
   margin: 0.15rem 0 0;
 
-  color: var(
-    --p-text-muted-color,
-    var(--p-text-color-secondary)
-  );
+  color: var(--cheof-text-secondary);
 
   font-size: 0.63rem;
   line-height: 1.45;
@@ -1067,10 +1016,10 @@
 
   padding: 1rem;
 
-  border: 1px dashed var(--p-surface-300);
+  border: 1px dashed var(--cheof-card-border);
   border-radius: 0.8rem;
 
-  background: var(--p-surface-50);
+  background: var(--cheof-card-background-muted);
 }
 
 .receipt-empty__icon {
@@ -1081,12 +1030,9 @@
 
   border-radius: 0.75rem;
 
-  background: var(--p-surface-100);
+  background: var(--cheof-muted-background);
 
-  color: var(
-    --p-text-muted-color,
-    var(--p-text-color-secondary)
-  );
+  color: var(--cheof-text-secondary);
 }
 
 .receipt-empty__icon i {
@@ -1094,7 +1040,7 @@
 }
 
 .receipt-empty strong {
-  color: var(--p-text-color);
+  color: var(--cheof-text);
 
   font-size: 0.74rem;
   font-weight: 700;
@@ -1103,10 +1049,7 @@
 .receipt-empty p {
   margin: 0.2rem 0 0;
 
-  color: var(
-    --p-text-muted-color,
-    var(--p-text-color-secondary)
-  );
+  color: var(--cheof-text-secondary);
 
   font-size: 0.65rem;
   line-height: 1.45;
@@ -1129,15 +1072,12 @@
 
   padding: 0.3rem 0.55rem;
 
-  border: 1px solid var(--p-surface-200);
+  border: 1px solid var(--cheof-card-border);
   border-radius: 999px;
 
-  background: var(--p-surface-50);
+  background: var(--cheof-card-background-muted);
 
-  color: var(
-    --p-text-muted-color,
-    var(--p-text-color-secondary)
-  );
+  color: var(--cheof-text-secondary);
 
   font-size: 0.63rem;
   font-weight: 650;
@@ -1151,10 +1091,10 @@
 .kitchen-item {
   overflow: hidden;
 
-  border: 1px solid var(--p-surface-200);
+  border: 1px solid var(--cheof-card-border);
   border-radius: 0.85rem;
 
-  background: var(--p-surface-0);
+  background: var(--cheof-card-background);
 }
 
 .kitchen-head {
@@ -1165,9 +1105,9 @@
 
   padding: 0.85rem;
 
-  border-bottom: 1px solid var(--p-surface-200);
+  border-bottom: 1px solid var(--cheof-card-border);
 
-  background: var(--p-surface-50);
+  background: var(--cheof-card-background-muted);
 }
 
 .kitchen-main {
@@ -1202,10 +1142,7 @@
   display: block;
   margin-bottom: 0.15rem;
 
-  color: var(
-    --p-text-muted-color,
-    var(--p-text-color-secondary)
-  );
+  color: var(--cheof-text-secondary);
 
   font-size: 0.56rem;
   font-weight: 650;
@@ -1216,7 +1153,7 @@
 .item-heading h4 {
   margin: 0;
 
-  color: var(--p-text-color);
+  color: var(--cheof-text);
 
   font-size: 0.8rem;
   font-weight: 700;
@@ -1233,15 +1170,12 @@
   min-height: 1.8rem;
   padding: 0.3rem 0.55rem;
 
-  border: 1px solid var(--p-surface-200);
+  border: 1px solid var(--cheof-card-border);
   border-radius: 999px;
 
-  background: var(--p-surface-0);
+  background: var(--cheof-card-background);
 
-  color: var(
-    --p-text-muted-color,
-    var(--p-text-color-secondary)
-  );
+  color: var(--cheof-text-secondary);
 
   font-size: 0.6rem;
   font-weight: 600;
@@ -1257,10 +1191,7 @@
   display: block;
   margin-bottom: 0.35rem;
 
-  color: var(
-    --p-text-muted-color,
-    var(--p-text-color-secondary)
-  );
+  color: var(--cheof-text-secondary);
 
   font-size: 0.57rem;
   font-weight: 700;
@@ -1271,7 +1202,7 @@
 .block-text {
   margin: 0;
 
-  color: var(--p-text-color);
+  color: var(--cheof-text);
 
   font-size: 0.7rem;
   line-height: 1.5;
@@ -1291,10 +1222,10 @@
   min-width: 0;
   padding: 0.75rem;
 
-  border: 1px solid var(--p-surface-200);
+  border: 1px solid var(--cheof-card-border);
   border-radius: 0.7rem;
 
-  background: var(--p-surface-50);
+  background: var(--cheof-card-background-muted);
 }
 
 .split-title {
@@ -1313,7 +1244,7 @@
 .promo-card h5 {
   margin: 0;
 
-  color: var(--p-text-color);
+  color: var(--cheof-text);
 
   font-size: 0.72rem;
   font-weight: 700;
@@ -1323,17 +1254,14 @@
 .promo-card p {
   margin: 0.3rem 0 0;
 
-  color: var(
-    --p-text-muted-color,
-    var(--p-text-color-secondary)
-  );
+  color: var(--cheof-text-secondary);
 
   font-size: 0.63rem;
   line-height: 1.45;
 }
 
 .personalizations {
-  border-top: 1px solid var(--p-surface-200);
+  border-top: 1px solid var(--cheof-card-border);
 }
 
 .personalization-list {
@@ -1351,7 +1279,7 @@
   align-items: flex-start;
   gap: 0.45rem;
 
-  color: var(--p-text-color);
+  color: var(--cheof-text);
 
   font-size: 0.65rem;
   line-height: 1.4;
@@ -1372,12 +1300,9 @@
 
   padding: 0.75rem 0.85rem;
 
-  border-top: 1px solid var(--p-surface-200);
+  border-top: 1px solid var(--cheof-card-border);
 
-  color: var(
-    --p-text-muted-color,
-    var(--p-text-color-secondary)
-  );
+  color: var(--cheof-text-secondary);
 
   font-size: 0.63rem;
 }
@@ -1394,10 +1319,7 @@
   justify-content: center;
   gap: 0.55rem;
 
-  color: var(
-    --p-text-muted-color,
-    var(--p-text-color-secondary)
-  );
+  color: var(--cheof-text-secondary);
 
   font-size: 0.72rem;
 }
@@ -1410,10 +1332,10 @@
 :host ::ng-deep .receipt-rejection-dialog.p-dialog {
   overflow: hidden;
 
-  border: 1px solid var(--p-surface-200);
+  border: 1px solid var(--cheof-card-border);
   border-radius: 1rem;
 
-  background: var(--p-surface-0);
+  background: var(--cheof-card-background);
 
   box-shadow:
     0 1rem 3rem rgba(15, 23, 42, 0.16);
@@ -1423,14 +1345,14 @@
 :host ::ng-deep .receipt-rejection-dialog .p-dialog-header {
   padding: 1rem 1.1rem;
 
-  border-bottom: 1px solid var(--p-surface-200);
+  border-bottom: 1px solid var(--cheof-card-border);
 
-  background: var(--p-surface-0);
+  background: var(--cheof-card-background);
 }
 
 :host ::ng-deep .receipt-preview-dialog .p-dialog-title,
 :host ::ng-deep .receipt-rejection-dialog .p-dialog-title {
-  color: var(--p-text-color);
+  color: var(--cheof-text);
 
   font-size: 0.85rem;
   font-weight: 700;
@@ -1439,7 +1361,7 @@
 :host ::ng-deep .receipt-preview-dialog .p-dialog-content {
   padding: 1rem;
 
-  background: var(--p-surface-50);
+  background: var(--cheof-card-background-muted);
 }
 
 .receipt-preview-dialog__content {
@@ -1453,10 +1375,10 @@
   max-width: 100%;
   max-height: 70vh;
 
-  border: 1px solid var(--p-surface-200);
+  border: 1px solid var(--cheof-card-border);
   border-radius: 0.75rem;
 
-  background: var(--p-surface-0);
+  background: var(--cheof-card-background);
 
   object-fit: contain;
 }
@@ -1482,11 +1404,11 @@
 
   background: color-mix(
     in srgb,
-    #dc2626 8%,
-    var(--p-surface-0)
+    var(--cheof-danger) 8%,
+    var(--cheof-card-background)
   );
 
-  color: #dc2626;
+  color: var(--cheof-danger);
 }
 
 .receipt-pdf-preview__icon i {
@@ -1494,7 +1416,7 @@
 }
 
 .receipt-pdf-preview strong {
-  color: var(--p-text-color);
+  color: var(--cheof-text);
 
   font-size: 0.9rem;
   font-weight: 700;
@@ -1503,10 +1425,7 @@
 .receipt-pdf-preview p {
   margin: 0;
 
-  color: var(
-    --p-text-muted-color,
-    var(--p-text-color-secondary)
-  );
+  color: var(--cheof-text-secondary);
 
   font-size: 0.72rem;
   line-height: 1.5;
@@ -1544,15 +1463,15 @@
 :host ::ng-deep .receipt-rejection-dialog .p-dialog-content {
   padding: 1rem 1.1rem;
 
-  background: var(--p-surface-0);
+  background: var(--cheof-card-background);
 }
 
 :host ::ng-deep .receipt-rejection-dialog .p-dialog-footer {
   padding: 0.9rem 1.1rem;
 
-  border-top: 1px solid var(--p-surface-200);
+  border-top: 1px solid var(--cheof-card-border);
 
-  background: var(--p-surface-0);
+  background: var(--cheof-card-background);
 }
 
 .rejection-dialog-content {
@@ -1571,23 +1490,23 @@
   border: 1px solid
     color-mix(
       in srgb,
-      #f59e0b 22%,
-      var(--p-surface-200)
+      var(--cheof-warning) 22%,
+      var(--cheof-card-border)
     );
 
   border-radius: 0.7rem;
 
   background: color-mix(
     in srgb,
-    #f59e0b 5%,
-    var(--p-surface-0)
+    var(--cheof-warning) 5%,
+    var(--cheof-card-background)
   );
 }
 
 .rejection-dialog-warning i {
   margin-top: 0.1rem;
 
-  color: #b45309;
+  color: var(--cheof-warning-strong);
 
   font-size: 0.75rem;
 }
@@ -1595,7 +1514,7 @@
 .rejection-dialog-warning p {
   margin: 0;
 
-  color: var(--p-text-color);
+  color: var(--cheof-text);
 
   font-size: 0.67rem;
   line-height: 1.45;
@@ -1610,10 +1529,7 @@
 }
 
 .rejection-field__footer small {
-  color: var(
-    --p-text-muted-color,
-    var(--p-text-color-secondary)
-  );
+  color: var(--cheof-text-secondary);
 
   font-size: 0.58rem;
 }
@@ -1643,10 +1559,10 @@
   margin: 2rem auto;
   padding: 2rem;
 
-  border: 1px solid var(--p-surface-200);
+  border: 1px solid var(--cheof-card-border);
   border-radius: 1rem;
 
-  background: var(--p-surface-0);
+  background: var(--cheof-card-background);
 
   box-shadow:
     0 0.8rem 2rem rgba(15, 23, 42, 0.04);
@@ -1665,11 +1581,11 @@
 
   background: color-mix(
     in srgb,
-    #dc2626 8%,
-    var(--p-surface-0)
+    var(--cheof-danger) 8%,
+    var(--cheof-card-background)
   );
 
-  color: #dc2626;
+  color: var(--cheof-danger);
 }
 
 .error-state__icon i {
@@ -1679,7 +1595,7 @@
 .error-state__eyebrow {
   margin-bottom: 0.4rem;
 
-  color: #b91c1c;
+  color: var(--cheof-danger-strong);
 
   font-size: 0.65rem;
   font-weight: 700;
@@ -1690,7 +1606,7 @@
 .error-state h1 {
   margin: 0;
 
-  color: var(--p-text-color);
+  color: var(--cheof-text);
 
   font-size: 1.4rem;
   font-weight: 750;
@@ -1700,10 +1616,7 @@
   max-width: 30rem;
   margin: 0.6rem 0 1.25rem;
 
-  color: var(
-    --p-text-muted-color,
-    var(--p-text-color-secondary)
-  );
+  color: var(--cheof-text-secondary);
 
   font-size: 0.78rem;
   line-height: 1.55;

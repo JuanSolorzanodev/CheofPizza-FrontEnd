@@ -11,18 +11,17 @@
 
 .surface-card {
   background:
-    var(--p-content-background);
+    var(--cheof-card-background);
 
   border:
     1px solid
-    var(--p-content-border-color);
+    var(--cheof-card-border);
 
   border-radius:
-    20px;
+    var(--cheof-radius-xl);
 
   box-shadow:
-    0 10px 34px
-    rgb(15 23 42 / 0.06);
+    var(--cheof-shadow-sm);
 }
 
 /*
@@ -78,7 +77,7 @@
     0.45rem 0 0;
 
   color:
-    var(--p-text-color);
+    var(--cheof-text);
 
   font-size:
     clamp(
@@ -101,7 +100,7 @@
     0.5rem 0 0;
 
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
 
   line-height:
     1.55;
@@ -122,7 +121,7 @@
 
 .filter-field label {
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
 
   font-size:
     0.76rem;
@@ -133,7 +132,7 @@
 
 .field-error {
   color:
-    var(--p-red-500);
+    var(--cheof-danger);
 
   font-size:
     0.72rem;
@@ -219,14 +218,14 @@
   flex: 0 0 auto;
 
   background:
-    var(--p-green-500);
+    var(--cheof-success);
 
   border-radius:
     50%;
 
   box-shadow:
     0 0 0 6px
-    rgb(34 197 94 / 0.12);
+    color-mix(in srgb, var(--cheof-success) 12%, transparent);
 }
 
 .model-status div,
@@ -238,7 +237,7 @@
 
 .model-strip span {
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
 
   font-size:
     0.71rem;
@@ -257,7 +256,7 @@
   overflow: hidden;
 
   color:
-    var(--p-text-color);
+    var(--cheof-text);
 
   font-size:
     0.91rem;
@@ -333,7 +332,7 @@
   flex: 0 0 auto;
 
   border-radius:
-    12px;
+    var(--cheof-radius-md);
 
   font-size:
     1rem;
@@ -341,39 +340,39 @@
 
 .summary-icon.predicted {
   color:
-    var(--p-yellow-600);
+    var(--cheof-warning-strong);
 
   background:
-    rgb(234 179 8 / 0.12);
+    color-mix(in srgb, var(--cheof-warning) 12%, transparent);
 }
 
 .summary-icon.actual {
   color:
-    var(--p-green-600);
+    var(--cheof-success-strong);
 
   background:
-    rgb(34 197 94 / 0.12);
+    color-mix(in srgb, var(--cheof-success) 12%, transparent);
 }
 
 .summary-icon.difference {
   color:
-    var(--p-blue-600);
+    var(--cheof-info);
 
   background:
-    rgb(59 130 246 / 0.12);
+    color-mix(in srgb, var(--cheof-info) 12%, transparent);
 }
 
 .summary-icon.error {
   color:
-    var(--p-orange-600);
+    var(--cheof-warning-strong);
 
   background:
-    rgb(249 115 22 / 0.12);
+    color-mix(in srgb, var(--cheof-warning) 12%, transparent);
 }
 
 .summary-icon.accuracy {
   color:
-    var(--p-purple-600);
+    var(--cheof-info-strong);
 
   background:
     rgb(147 51 234 / 0.12);
@@ -381,7 +380,7 @@
 
 .summary-label {
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
 
   font-size:
     0.7rem;
@@ -401,7 +400,7 @@
   z-index: 1;
 
   color:
-    var(--p-text-color);
+    var(--cheof-text);
 
   font-size:
     clamp(
@@ -422,7 +421,7 @@
   z-index: 1;
 
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
 
   font-size:
     0.77rem;
@@ -439,37 +438,37 @@
 
 .metric-positive {
   color:
-    var(--p-green-600) !important;
+    var(--cheof-success-strong) !important;
 }
 
 .metric-negative {
   color:
-    var(--p-red-600) !important;
+    var(--cheof-danger-strong) !important;
 }
 
 .metric-neutral {
   color:
-    var(--p-text-muted-color) !important;
+    var(--cheof-text-secondary) !important;
 }
 
 .accuracy-excellent {
   color:
-    var(--p-green-600) !important;
+    var(--cheof-success-strong) !important;
 }
 
 .accuracy-good {
   color:
-    var(--p-orange-600) !important;
+    var(--cheof-warning-strong) !important;
 }
 
 .accuracy-low {
   color:
-    var(--p-red-600) !important;
+    var(--cheof-danger-strong) !important;
 }
 
 .accuracy-pending {
   color:
-    var(--p-text-muted-color) !important;
+    var(--cheof-text-secondary) !important;
 }
 
 /*
@@ -520,7 +519,7 @@
 
 .insight-card span {
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
 
   font-size:
     0.72rem;
@@ -533,7 +532,7 @@
   overflow: hidden;
 
   color:
-    var(--p-text-color);
+    var(--cheof-text);
 
   font-size:
     0.93rem;
@@ -547,7 +546,7 @@
 
 .insight-card small {
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
 
   font-size:
     0.71rem;
@@ -561,15 +560,15 @@
     linear-gradient(
       135deg,
       rgb(34 197 94 / 0.08),
-      var(--p-content-background)
+      var(--cheof-card-background)
     );
 
   .insight-icon {
     color:
-      var(--p-green-600);
+      var(--cheof-success-strong);
 
     background:
-      rgb(34 197 94 / 0.12);
+      color-mix(in srgb, var(--cheof-success) 12%, transparent);
   }
 }
 
@@ -578,15 +577,15 @@
     linear-gradient(
       135deg,
       rgb(249 115 22 / 0.08),
-      var(--p-content-background)
+      var(--cheof-card-background)
     );
 
   .insight-icon {
     color:
-      var(--p-orange-600);
+      var(--cheof-warning-strong);
 
     background:
-      rgb(249 115 22 / 0.12);
+      color-mix(in srgb, var(--cheof-warning) 12%, transparent);
   }
 }
 
@@ -595,15 +594,15 @@
     linear-gradient(
       135deg,
       rgb(59 130 246 / 0.08),
-      var(--p-content-background)
+      var(--cheof-card-background)
     );
 
   .insight-icon {
     color:
-      var(--p-blue-600);
+      var(--cheof-info);
 
     background:
-      rgb(59 130 246 / 0.12);
+      color-mix(in srgb, var(--cheof-info) 12%, transparent);
   }
 }
 
@@ -612,12 +611,12 @@
     linear-gradient(
       135deg,
       rgb(147 51 234 / 0.08),
-      var(--p-content-background)
+      var(--cheof-card-background)
     );
 
   .insight-icon {
     color:
-      var(--p-purple-600);
+      var(--cheof-info-strong);
 
     background:
       rgb(147 51 234 / 0.12);
@@ -677,7 +676,7 @@
 
 .status-chip.completed {
   color:
-    var(--p-green-700);
+    var(--cheof-success-strong);
 
   background:
     rgb(34 197 94 / 0.11);
@@ -685,7 +684,7 @@
 
 .status-chip.progress {
   color:
-    var(--p-blue-700);
+    var(--cheof-info-strong);
 
   background:
     rgb(59 130 246 / 0.11);
@@ -693,7 +692,7 @@
 
 .status-chip.pending {
   color:
-    var(--p-orange-700);
+    var(--cheof-warning-strong);
 
   background:
     rgb(249 115 22 / 0.11);
@@ -708,10 +707,10 @@
     0.5rem 0.7rem;
 
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
 
   background:
-    var(--p-surface-100);
+    var(--cheof-muted-background);
 
   border-radius:
     999px;
@@ -757,7 +756,7 @@
 
 .chart-empty strong {
   color:
-    var(--p-text-color);
+    var(--cheof-text);
 
   font-size:
     1rem;
@@ -767,7 +766,7 @@
   max-width: 440px;
 
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
 
   line-height:
     1.5;
@@ -784,7 +783,7 @@
 
   border:
     1px solid
-    var(--p-content-border-color);
+    var(--cheof-card-border);
 
   border-radius:
     15px;
@@ -805,7 +804,7 @@ td {
 
   border-bottom:
     1px solid
-    var(--p-content-border-color);
+    var(--cheof-card-border);
 
   text-align:
     left;
@@ -819,10 +818,10 @@ td {
 
 th {
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
 
   background:
-    var(--p-surface-50);
+    var(--cheof-card-background-muted);
 
   font-size:
     0.68rem;
@@ -887,14 +886,14 @@ tbody tr:last-child td {
 .difference-cell strong,
 .accuracy-cell strong {
   color:
-    var(--p-text-color);
+    var(--cheof-text);
 }
 
 .date-cell span,
 .difference-cell small,
 .accuracy-cell small {
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
 
   font-size:
     0.7rem;
@@ -902,7 +901,7 @@ tbody tr:last-child td {
 
 .numeric-cell {
   color:
-    var(--p-text-color);
+    var(--cheof-text);
 
   font-variant-numeric:
     tabular-nums;
@@ -922,7 +921,7 @@ tbody tr:last-child td {
   height: 34px;
 
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
 
   background:
     transparent;
@@ -975,7 +974,7 @@ tbody tr:last-child td {
     0;
 
   background:
-    var(--p-surface-50);
+    var(--cheof-card-background-muted);
 }
 
 .size-comparison {
@@ -998,12 +997,12 @@ tbody tr:last-child td {
 
 .size-comparison-header strong {
   color:
-    var(--p-text-color);
+    var(--cheof-text);
 }
 
 .size-comparison-header span {
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
 
   font-size:
     0.75rem;
@@ -1035,12 +1034,12 @@ tbody tr:last-child td {
 
 .legend-dot.predicted {
   background:
-    var(--p-yellow-500);
+    var(--cheof-warning);
 }
 
 .legend-dot.actual {
   background:
-    var(--p-green-500);
+    var(--cheof-success);
 }
 
 .size-grid {
@@ -1058,11 +1057,11 @@ tbody tr:last-child td {
   padding: 0.85rem;
 
   background:
-    var(--p-content-background);
+    var(--cheof-card-background);
 
   border:
     1px solid
-    var(--p-content-border-color);
+    var(--cheof-card-border);
 
   border-radius:
     13px;
@@ -1079,7 +1078,7 @@ tbody tr:last-child td {
       in srgb,
       var(--p-primary-color)
       38%,
-      var(--p-content-border-color)
+      var(--cheof-card-border)
     );
 
   box-shadow:
@@ -1100,7 +1099,7 @@ tbody tr:last-child td {
 
 .size-name {
   color:
-    var(--p-text-color);
+    var(--cheof-text);
 
   font-size:
     0.81rem;
@@ -1135,7 +1134,7 @@ tbody tr:last-child td {
 
 .size-values span {
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
 
   font-size:
     0.66rem;
@@ -1143,7 +1142,7 @@ tbody tr:last-child td {
 
 .size-values strong {
   color:
-    var(--p-text-color);
+    var(--cheof-text);
 
   font-size:
     1rem;
@@ -1153,7 +1152,7 @@ tbody tr:last-child td {
   padding: 2.5rem;
 
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
 
   text-align:
     center;
@@ -1225,13 +1224,13 @@ tbody tr:last-child td {
 
   border:
     1px solid
-    var(--p-content-border-color);
+    var(--cheof-card-border);
 
   border-radius:
     15px;
 
   background:
-    var(--p-content-background);
+    var(--cheof-card-background);
 }
 
 .mobile-result-header {
@@ -1249,12 +1248,12 @@ tbody tr:last-child td {
 
 .mobile-date strong {
   color:
-    var(--p-text-color);
+    var(--cheof-text);
 }
 
 .mobile-date span {
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
 
   font-size:
     0.75rem;
@@ -1277,19 +1276,19 @@ tbody tr:last-child td {
   padding: 0.7rem;
 
   background:
-    var(--p-surface-50);
+    var(--cheof-card-background-muted);
 
   border:
     1px solid
     transparent;
 
   border-radius:
-    12px;
+    var(--cheof-radius-md);
 }
 
 .mobile-metrics span {
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
 
   font-size:
     0.68rem;
@@ -1297,7 +1296,7 @@ tbody tr:last-child td {
 
 .mobile-metrics strong {
   color:
-    var(--p-text-color);
+    var(--cheof-text);
 
   font-size:
     0.91rem;
@@ -1318,10 +1317,10 @@ tbody tr:last-child td {
     0.35rem 0.55rem;
 
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
 
   background:
-    var(--p-surface-100);
+    var(--cheof-muted-background);
 
   border-radius:
     999px;
@@ -1354,7 +1353,7 @@ tbody tr:last-child td {
     0;
   border-top:
     1px solid
-    var(--p-content-border-color);
+    var(--cheof-card-border);
 
   font-size:
     0.76rem;
@@ -1385,7 +1384,7 @@ tbody tr:last-child td {
 
   border:
     1px solid
-    var(--p-content-border-color);
+    var(--cheof-card-border);
 
   border-radius:
     11px;
@@ -1399,7 +1398,7 @@ tbody tr:last-child td {
 .mobile-size-item span,
 .mobile-size-item small {
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
 
   font-size:
     0.67rem;
@@ -1407,7 +1406,7 @@ tbody tr:last-child td {
 
 .mobile-size-item strong {
   color:
-    var(--p-text-color);
+    var(--cheof-text);
 
   font-size:
     0.8rem;
@@ -1436,7 +1435,7 @@ tbody tr:last-child td {
   gap: 0.4rem;
   padding: 2rem;
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
   text-align: center;
 }
 
@@ -1450,7 +1449,7 @@ tbody tr:last-child td {
 
 .mobile-empty strong {
   color:
-    var(--p-text-color);
+    var(--cheof-text);
 }
 
 .mobile-empty span {
@@ -1463,6 +1462,26 @@ tbody tr:last-child td {
 | Responsive
 |--------------------------------------------------------------------------
 */
+
+/* =========================================================
+   ACCESIBILIDAD
+   ========================================================= */
+
+.comparison-filter :is(button, input):focus-visible,
+.comparison-page :is(a, button):focus-visible {
+  outline: 0.16rem solid
+    color-mix(
+      in srgb,
+      var(--p-primary-color) 38%,
+      transparent
+    );
+
+  outline-offset: 0.14rem;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
 
 @media (
   max-width:
@@ -1729,5 +1748,19 @@ tbody tr:last-child td {
   .summary-value {
     font-size:
       1.8rem;
+  }
+}
+
+
+/* =========================================================
+   REDUCCIÓN DE MOVIMIENTO
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .summary-card,
+  .comparison-row,
+  .performance-item,
+  .product-row {
+    transition: none;
   }
 }

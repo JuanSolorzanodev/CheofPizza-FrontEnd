@@ -3,13 +3,13 @@ import {
   DOCUMENT,
 } from '@angular/common';
 import {
+  ChangeDetectionStrategy,
   Component,
   DestroyRef,
   OnInit,
   computed,
   inject,
   signal,
-  ViewChild,
 } from '@angular/core';
 import {
   takeUntilDestroyed,
@@ -131,6 +131,8 @@ interface ForecastSizeTotal {
   providers: [
     ConfirmationService,
   ],
+  changeDetection:
+    ChangeDetectionStrategy.OnPush,
   templateUrl:
     './machine-learning-dashboard.html',
   styleUrl:
@@ -139,12 +141,6 @@ interface ForecastSizeTotal {
 export class MachineLearningDashboard
   implements OnInit
 {
-  @ViewChild(
-    MachineLearningComparisonComponent,
-  )
-  private comparisonComponent?:
-    MachineLearningComparisonComponent;
-
   private readonly api =
     inject(MachineLearningApiService);
 
@@ -176,6 +172,17 @@ export class MachineLearningDashboard
     signal<DashboardSection>(
       'forecast',
     );
+
+
+  /**
+   * Incrementa este valor para pedir al componente diferido
+   * de comparación que vuelva a consultar sus datos.
+   *
+   * Evita usar ViewChild y permite que Angular mantenga
+   * MachineLearningComparisonComponent fuera del chunk inicial.
+   */
+  readonly comparisonRefreshKey =
+    signal(0);
 
   /*
   |--------------------------------------------------------------------------
@@ -873,8 +880,9 @@ export class MachineLearningDashboard
       this.activeSection() ===
       'comparison'
     ) {
-      this.comparisonComponent
-        ?.loadComparison();
+      this.comparisonRefreshKey.update(
+        value => value + 1,
+      );
       return;
     }
 

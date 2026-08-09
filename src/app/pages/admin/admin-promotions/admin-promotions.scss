@@ -71,7 +71,7 @@
 .promotions-hero p,
 .panel-header p {
   margin: 0.65rem 0 0;
-  color: var(--p-text-muted-color);
+  color: var(--cheof-text-secondary);
   line-height: 1.65;
 }
 
@@ -104,7 +104,7 @@
   min-width: 46px;
   height: 46px;
   place-items: center;
-  border-radius: 14px;
+  border-radius: var(--cheof-radius-lg);
   font-size: 1.05rem;
 }
 
@@ -120,28 +120,28 @@
 .summary-icon.is-success {
   background: color-mix(
     in srgb,
-    var(--p-green-500) 12%,
+    var(--cheof-success) 12%,
     transparent
   );
-  color: var(--p-green-500);
+  color: var(--cheof-success);
 }
 
 .summary-icon.is-info {
   background: color-mix(
     in srgb,
-    var(--p-blue-500) 12%,
+    var(--cheof-info) 12%,
     transparent
   );
-  color: var(--p-blue-500);
+  color: var(--cheof-info);
 }
 
 .summary-icon.is-warning {
   background: color-mix(
     in srgb,
-    var(--p-orange-500) 12%,
+    var(--cheof-warning) 12%,
     transparent
   );
-  color: var(--p-orange-500);
+  color: var(--cheof-warning);
 }
 
 .summary-content {
@@ -152,7 +152,7 @@
 
 .summary-label,
 .summary-card small {
-  color: var(--p-text-muted-color);
+  color: var(--cheof-text-secondary);
 }
 
 .summary-label {
@@ -195,7 +195,7 @@
   z-index: 1;
   top: 50%;
   left: 0.85rem;
-  color: var(--p-text-muted-color);
+  color: var(--cheof-text-secondary);
   transform: translateY(-50%);
   pointer-events: none;
 }
@@ -277,7 +277,7 @@
   display: grid;
   place-items: center;
   gap: 0.45rem;
-  color: var(--p-text-muted-color);
+  color: var(--cheof-text-secondary);
   text-align: center;
 }
 
@@ -322,7 +322,7 @@
   overflow: hidden;
   border-radius: 7px;
   background: var(--cheof-muted-background);
-  color: var(--p-text-muted-color);
+  color: var(--cheof-text-secondary);
   font-size: 0.72rem;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -330,7 +330,7 @@
 
 .promotion-heading p {
   margin: 0.45rem 0 0;
-  color: var(--p-text-muted-color);
+  color: var(--cheof-text-secondary);
   font-size: 0.85rem;
   line-height: 1.55;
 }
@@ -369,7 +369,7 @@
 
 .promotion-meta span,
 .promotion-meta small {
-  color: var(--p-text-muted-color);
+  color: var(--cheof-text-secondary);
 }
 
 .promotion-meta span {
@@ -426,7 +426,7 @@
 
 .empty-state p {
   margin: 0.45rem 0 1rem;
-  color: var(--p-text-muted-color);
+  color: var(--cheof-text-secondary);
 }
 
 .promotion-form {
@@ -456,7 +456,7 @@
   min-width: 40px;
   height: 40px;
   place-items: center;
-  border-radius: 12px;
+  border-radius: var(--cheof-radius-md);
   background: color-mix(
     in srgb,
     var(--p-primary-color) 12%,
@@ -472,7 +472,7 @@
 
 .form-section-header p {
   margin: 0.3rem 0 0;
-  color: var(--p-text-muted-color);
+  color: var(--cheof-text-secondary);
   font-size: 0.78rem;
   line-height: 1.5;
 }
@@ -506,14 +506,14 @@
 }
 
 .field-help {
-  color: var(--p-text-muted-color);
+  color: var(--cheof-text-secondary);
   font-size: 0.7rem;
   line-height: 1.45;
 }
 
 .field-error,
 .section-error {
-  color: var(--p-red-500);
+  color: var(--cheof-danger);
   font-size: 0.72rem;
   line-height: 1.45;
 }
@@ -581,7 +581,7 @@
 }
 
 .availability-card span {
-  color: var(--p-text-muted-color);
+  color: var(--cheof-text-secondary);
   font-size: 0.73rem;
   line-height: 1.45;
 }
@@ -616,6 +616,26 @@
     overflow: hidden;
   }
 }
+
+/* =========================================================
+   ACCESIBILIDAD
+   ========================================================= */
+
+.promotions-page :is(button, a):focus-visible,
+.promotions-page input:focus-visible {
+  outline: 0.16rem solid
+    color-mix(
+      in srgb,
+      var(--p-primary-color) 38%,
+      transparent
+    );
+
+  outline-offset: 0.14rem;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
 
 @media (max-width: 1100px) {
   .summary-grid {
@@ -750,5 +770,17 @@
 
   .promotion-content {
     padding: 0.95rem;
+  }
+}
+
+
+/* =========================================================
+   REDUCCIÓN DE MOVIMIENTO
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .promotion-card,
+  .promotion-row {
+    transition: none;
   }
 }

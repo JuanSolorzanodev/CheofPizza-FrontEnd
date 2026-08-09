@@ -26,13 +26,13 @@
     color-mix(
       in srgb,
       var(--p-primary-color) 38%,
-      var(--p-content-border-color)
+      var(--cheof-card-border)
     );
 
   border-radius: 14px;
 
   background:
-    var(--p-content-background);
+    var(--cheof-card-background);
 
   color:
     var(--p-primary-color);
@@ -58,7 +58,7 @@
     color-mix(
       in srgb,
       var(--p-primary-color) 8%,
-      var(--p-content-background)
+      var(--cheof-card-background)
     );
 
   box-shadow:
@@ -86,7 +86,7 @@
     color-mix(
       in srgb,
       var(--p-primary-color) 9%,
-      var(--p-content-background)
+      var(--cheof-card-background)
     );
 }
 
@@ -105,7 +105,7 @@
   place-items: center;
 
   border: 3px solid
-    var(--p-content-background);
+    var(--cheof-card-background);
 
   border-radius: 999px;
 
@@ -129,13 +129,13 @@
 :host ::ng-deep
 .cheof-cart-drawer.p-drawer {
   border-left: 1px solid
-    var(--p-content-border-color);
+    var(--cheof-card-border);
 
   background:
-    var(--p-content-background);
+    var(--cheof-card-background);
 
   color:
-    var(--p-text-color);
+    var(--cheof-text);
 
   box-shadow:
     -18px 0 55px
@@ -154,7 +154,7 @@
   overflow: hidden;
 
   background:
-    var(--p-content-background);
+    var(--cheof-card-background);
 }
 
 /*
@@ -175,10 +175,10 @@
   height: 100dvh;
 
   background:
-    var(--p-content-background);
+    var(--cheof-card-background);
 
   color:
-    var(--p-text-color);
+    var(--cheof-text);
 }
 
 /*
@@ -199,7 +199,7 @@
     1.1rem;
 
   border-bottom: 1px solid
-    var(--p-content-border-color);
+    var(--cheof-card-border);
 }
 
 .cart-drawer-header__main {
@@ -220,15 +220,15 @@
   place-items: center;
 
   border: 1px solid
-    var(--p-content-border-color);
+    var(--cheof-card-border);
 
   border-radius: 12px;
 
   background:
-    var(--p-content-background);
+    var(--cheof-card-background);
 
   color:
-    var(--p-text-color);
+    var(--cheof-text);
 
   cursor: pointer;
 
@@ -307,7 +307,7 @@
   margin: 0.4rem 0 0;
 
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
 
   font-size: 0.79rem;
   line-height: 1.45;
@@ -320,7 +320,7 @@
   background: transparent;
 
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
 
   cursor: pointer;
 
@@ -334,7 +334,7 @@
 
 .clear-cart-button:hover:not(:disabled) {
   color:
-    var(--p-red-500);
+    var(--cheof-danger);
 }
 
 .clear-cart-button:disabled {
@@ -361,15 +361,15 @@
   background:
     color-mix(
       in srgb,
-      var(--p-red-500) 10%,
+      var(--cheof-danger) 10%,
       transparent
     );
 
   color:
     color-mix(
       in srgb,
-      var(--p-red-500) 82%,
-      var(--p-text-color)
+      var(--cheof-danger) 82%,
+      var(--cheof-text)
     );
 
   font-size: 0.78rem;
@@ -428,7 +428,7 @@
   margin: 0 0 1.3rem;
 
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
 
   font-size: 0.84rem;
   line-height: 1.55;
@@ -461,7 +461,7 @@
   padding: 1.15rem 0;
 
   border-bottom: 1px solid
-    var(--p-content-border-color);
+    var(--cheof-card-border);
 }
 
 .cart-item:last-child {
@@ -475,7 +475,7 @@
   overflow: hidden;
 
   border: 1px solid
-    var(--p-content-border-color);
+    var(--cheof-card-border);
 
   border-radius: 18px;
 
@@ -483,7 +483,7 @@
     color-mix(
       in srgb,
       var(--p-primary-color) 7%,
-      var(--p-content-background)
+      var(--cheof-card-background)
     );
 }
 
@@ -542,7 +542,7 @@
   margin: 0.28rem 0 0;
 
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
 
   font-size: 0.75rem;
   line-height: 1.4;
@@ -563,7 +563,7 @@
   background: transparent;
 
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
 
   cursor: pointer;
 
@@ -576,12 +576,12 @@
   background:
     color-mix(
       in srgb,
-      var(--p-red-500) 10%,
+      var(--cheof-danger) 10%,
       transparent
     );
 
   color:
-    var(--p-red-500);
+    var(--cheof-danger);
 }
 
 .remove-item-button:disabled {
@@ -593,7 +593,7 @@
   margin: -0.2rem 0 0;
 
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
 
   font-size: 0.74rem;
   line-height: 1.4;
@@ -619,7 +619,7 @@
 
 .cart-item-price span {
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
 
   font-size: 0.7rem;
 }
@@ -645,15 +645,15 @@
   overflow: hidden;
 
   border: 1px solid
-    var(--p-content-border-color);
+    var(--cheof-card-border);
 
   border-radius: 12px;
 
   background:
     color-mix(
       in srgb,
-      var(--p-content-background) 96%,
-      var(--p-text-color)
+      var(--cheof-card-background) 96%,
+      var(--cheof-text)
     );
 }
 
@@ -688,7 +688,7 @@
 
 .quantity-control button:disabled {
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
 
   cursor: not-allowed;
   opacity: 0.38;
@@ -727,13 +727,13 @@
     );
 
   border-top: 1px solid
-    var(--p-content-border-color);
+    var(--cheof-card-border);
 
   background:
     color-mix(
       in srgb,
-      var(--p-content-background) 97%,
-      var(--p-text-color)
+      var(--cheof-card-background) 97%,
+      var(--cheof-text)
     );
 
   box-shadow:
@@ -765,7 +765,7 @@
 
 .cart-total small {
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
 
   font-size: 0.7rem;
 }
@@ -795,7 +795,7 @@
   background: transparent;
 
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
 
   cursor: pointer;
 

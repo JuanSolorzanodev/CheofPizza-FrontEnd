@@ -2,6 +2,10 @@
   display: block;
 }
 
+/* =========================================================
+   HISTORIAL
+   ========================================================= */
+
 .history-list {
   display: grid;
 }
@@ -14,13 +18,14 @@
     auto
     minmax(0, 1fr);
 
-  gap: 0.7rem;
+  gap: var(--cheof-space-3);
 
-  padding-bottom: 1rem;
+  padding-bottom: var(--cheof-space-4);
 }
 
 .history-item::before {
   position: absolute;
+
   top: 1.8rem;
   bottom: 0;
   left: 0.85rem;
@@ -28,7 +33,7 @@
   width: 1px;
 
   background:
-    var(--p-surface-300);
+    var(--cheof-divider);
 
   content: '';
 }
@@ -41,6 +46,10 @@
   display: none;
 }
 
+/* =========================================================
+   MARCADOR
+   ========================================================= */
+
 .history-marker {
   position: relative;
   z-index: 1;
@@ -52,7 +61,16 @@
 
   place-items: center;
 
-  border-radius: 999px;
+  border:
+    1px solid
+    color-mix(
+      in srgb,
+      var(--p-primary-color) 26%,
+      var(--cheof-card-border)
+    );
+
+  border-radius:
+    var(--cheof-radius-pill);
 
   background:
     var(--p-primary-color);
@@ -62,11 +80,19 @@
       --p-primary-contrast-color,
       white
     );
+
+  box-shadow:
+    0 0 0 0.22rem
+    var(--cheof-card-background);
 }
 
 .history-marker i {
   font-size: 0.55rem;
 }
+
+/* =========================================================
+   CONTENIDO
+   ========================================================= */
 
 .history-content {
   min-width: 0;
@@ -78,11 +104,11 @@
 
   border-bottom:
     1px solid
-    var(--p-surface-200);
+    var(--cheof-divider);
 }
 
 .history-item.is-last
-  .history-content {
+.history-content {
   padding-bottom: 0;
 
   border-bottom: 0;
@@ -90,70 +116,131 @@
 
 .history-heading {
   display: flex;
-  align-items: flex-start;
-  justify-content:
-    space-between;
 
-  gap: 1rem;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  gap: var(--cheof-space-4);
 }
 
 .history-heading > div {
   display: grid;
+
+  min-width: 0;
+
   gap: 0.1rem;
 }
 
 .history-heading strong {
   color:
-    var(--p-text-color);
+    var(--cheof-text);
 
   font-size: 0.72rem;
-  font-weight: 700;
+  font-weight: 750;
+  line-height: 1.4;
 }
 
 .history-heading span,
 .history-heading time,
 .history-content small {
   color:
-    var(
-      --p-text-muted-color,
-      var(
-        --p-text-color-secondary
-      )
-    );
+    var(--cheof-text-secondary);
 }
 
 .history-heading span {
   font-size: 0.6rem;
+  line-height: 1.4;
 }
 
 .history-heading time {
   flex-shrink: 0;
 
+  padding:
+    0.2rem
+    0.42rem;
+
+  border:
+    1px solid
+    var(--cheof-card-border);
+
+  border-radius:
+    var(--cheof-radius-pill);
+
+  background:
+    var(--cheof-card-background-muted);
+
   font-size: 0.6rem;
+  font-weight: 650;
+  line-height: 1.3;
+
+  white-space: nowrap;
 }
 
 .history-content p {
   margin:
     0.45rem 0 0;
 
+  padding:
+    0.5rem
+    0.6rem;
+
+  border-left:
+    2px solid
+    color-mix(
+      in srgb,
+      var(--p-primary-color) 32%,
+      var(--cheof-card-border)
+    );
+
+  border-radius:
+    0
+    var(--cheof-radius-sm)
+    var(--cheof-radius-sm)
+    0;
+
+  background:
+    var(--cheof-card-background-muted);
+
   color:
-    var(--p-text-color);
+    var(--cheof-text);
 
   font-size: 0.66rem;
-  line-height: 1.45;
+  line-height: 1.5;
 }
 
 .history-content small {
   display: block;
 
-  margin-top: 0.35rem;
+  margin-top: 0.4rem;
 
   font-size: 0.58rem;
+  line-height: 1.4;
 }
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
 
 @media (max-width: 30rem) {
   .history-heading {
     flex-direction: column;
+
     gap: 0.3rem;
+  }
+
+  .history-heading time {
+    align-self: flex-start;
+  }
+}
+
+/* =========================================================
+   REDUCCIÓN DE MOVIMIENTO
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .history-marker,
+  .history-content,
+  .history-heading time {
+    transition: none;
   }
 }

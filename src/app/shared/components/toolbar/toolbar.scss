@@ -1,52 +1,39 @@
 :host {
   position: sticky;
-  z-index: 1000;
+  z-index: var(--cheof-z-toolbar);
   top: 0;
 
   display: block;
 
-  --toolbar-height: 72px;
+  --toolbar-height: var(--cheof-toolbar-height);
 
   --toolbar-surface:
     color-mix(
       in srgb,
-      var(--p-content-background) 94%,
+      var(--cheof-card-background) 92%,
       transparent
     );
 
   --toolbar-border:
-    color-mix(
-      in srgb,
-      var(--p-content-border-color) 82%,
-      transparent
-    );
+    var(--cheof-card-border);
 
   --toolbar-brand:
-    var(
-      --p-primary-color,
-      #159447
-    );
+    var(--p-primary-color);
 
-  --toolbar-brand-dark:
+  --toolbar-brand-strong:
     color-mix(
       in srgb,
-      var(--toolbar-brand) 82%,
-      #04160a
+      var(--p-primary-color) 82%,
+      black
     );
 
   --toolbar-brand-soft:
-    color-mix(
-      in srgb,
-      var(--toolbar-brand) 8%,
-      var(--p-content-background)
-    );
+    var(--cheof-primary-soft);
 }
 
-/*
-|--------------------------------------------------------------------------
-| Contenedor principal
-|--------------------------------------------------------------------------
-*/
+/* =========================================================
+   HEADER
+   ========================================================= */
 
 .app-header {
   min-height:
@@ -60,12 +47,7 @@
     var(--toolbar-surface);
 
   box-shadow:
-    0 6px 24px
-    color-mix(
-      in srgb,
-      #000000 7%,
-      transparent
-    );
+    var(--cheof-shadow-sm);
 
   backdrop-filter:
     blur(18px)
@@ -80,11 +62,11 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1.5rem;
+  gap: var(--cheof-space-6);
 
   width:
     min(
-      1600px,
+      var(--cheof-page-max-width),
       100%
     );
 
@@ -95,49 +77,46 @@
 
   padding:
     0.65rem
-    clamp(
-      1rem,
-      3vw,
-      2.5rem
-    );
+    var(--cheof-page-padding);
 }
 
-/*
-|--------------------------------------------------------------------------
-| Marca
-|--------------------------------------------------------------------------
-*/
+/* =========================================================
+   MARCA
+   ========================================================= */
 
 .brand {
   position: relative;
 
   display: grid;
+  flex: 0 0 auto;
+
+  min-width: 7rem;
+  min-height: 46px;
+
   align-content: center;
   gap: 0.2rem;
 
-  flex: 0 0 auto;
-
-  min-width: 112px;
-  min-height: 46px;
   padding: 0;
 
   border: 0;
+  border-radius:
+    var(--cheof-radius-sm);
 
   background:
     transparent;
 
   color:
-    var(--p-text-color);
+    var(--cheof-text);
 
   cursor: pointer;
 
   font: inherit;
-
   text-align: left;
 }
 
 .brand::after {
   position: absolute;
+
   right: 0;
   bottom: 1px;
   left: 0;
@@ -145,7 +124,8 @@
   width: 42px;
   height: 3px;
 
-  border-radius: 999px;
+  border-radius:
+    var(--cheof-radius-pill);
 
   background:
     var(--toolbar-brand);
@@ -154,6 +134,9 @@
 }
 
 .brand__name {
+  color:
+    var(--cheof-text);
+
   font-size: 1.02rem;
   font-weight: 800;
   line-height: 1;
@@ -167,98 +150,106 @@
   padding-bottom: 0.38rem;
 
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
 
   font-size: 0.58rem;
-  font-weight: 520;
+  font-weight: 550;
 
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
-.brand:focus-visible {
-  border-radius: 9px;
-
-  outline:
-    3px solid
-    color-mix(
-      in srgb,
-      var(--toolbar-brand) 25%,
-      transparent
-    );
-
-  outline-offset: 4px;
-}
-
-/*
-|--------------------------------------------------------------------------
-| Escritorio
-|--------------------------------------------------------------------------
-*/
+/* =========================================================
+   DESKTOP
+   ========================================================= */
 
 .desktop-toolbar {
   display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 0.85rem;
+  flex: 1;
 
   min-width: 0;
-  flex: 1;
+
+  align-items: center;
+  justify-content: flex-end;
+
+  gap: 0.85rem;
 }
 
 .primary-navigation,
 .toolbar-actions {
   display: flex;
-  align-items: center;
-  gap: 0.25rem;
 
   min-width: 0;
+
+  align-items: center;
+
+  gap: 0.25rem;
 }
+
+/* =========================================================
+   NAVEGACIÓN
+   ========================================================= */
 
 .navigation-link {
   position: relative;
 
   display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.45rem;
 
   min-height: 40px;
+
+  align-items: center;
+  justify-content: center;
+
+  gap: 0.45rem;
+
   padding:
     0.55rem
-    0.72rem;
+    0.75rem;
 
-  border: 0;
-  border-radius: 10px;
+  border:
+    1px solid
+    transparent;
+
+  border-radius:
+    var(--cheof-radius-md);
 
   background:
     transparent;
 
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
 
   cursor: pointer;
 
   font: inherit;
+
   font-size: 0.76rem;
-  font-weight: 590;
+  font-weight: 650;
 
   white-space: nowrap;
 
   transition:
-    background-color 160ms ease,
-    color 160ms ease;
+    color
+      var(--cheof-transition-fast),
+    background
+      var(--cheof-transition-fast),
+    border-color
+      var(--cheof-transition-fast),
+    transform
+      var(--cheof-transition-fast);
 }
 
 .navigation-link::after {
   position: absolute;
+
   right: 0.7rem;
   bottom: 4px;
   left: 0.7rem;
 
   height: 2px;
 
-  border-radius: 999px;
+  border-radius:
+    var(--cheof-radius-pill);
 
   background:
     transparent;
@@ -266,23 +257,41 @@
   content: '';
 
   transition:
-    background-color 160ms ease;
+    background-color
+      var(--cheof-transition-fast);
 }
 
 .navigation-link:hover {
+  border-color:
+    color-mix(
+      in srgb,
+      var(--toolbar-brand) 14%,
+      var(--toolbar-border)
+    );
+
   background:
     var(--toolbar-brand-soft);
 
   color:
-    var(--p-text-color);
+    var(--cheof-text);
+
+  transform:
+    translateY(-1px);
 }
 
 .navigation-link--active {
+  border-color:
+    color-mix(
+      in srgb,
+      var(--toolbar-brand) 20%,
+      var(--toolbar-border)
+    );
+
   background:
     var(--toolbar-brand-soft);
 
   color:
-    var(--toolbar-brand-dark);
+    var(--toolbar-brand-strong);
 }
 
 .navigation-link--active::after {
@@ -297,38 +306,24 @@
   font-size: 0.76rem;
 }
 
-.navigation-link:focus-visible,
-.icon-action:focus-visible,
-.session-action:focus-visible,
-.mobile-menu-trigger:focus-visible,
-.drawer-link:focus-visible,
-.drawer-session-button:focus-visible {
-  outline:
-    3px solid
-    color-mix(
-      in srgb,
-      var(--toolbar-brand) 24%,
-      transparent
-    );
-
-  outline-offset: 3px;
-}
+/* =========================================================
+   DIVISOR
+   ========================================================= */
 
 .toolbar-divider {
   width: 1px;
   height: 28px;
 
-  margin-inline: 0.15rem;
+  margin-inline:
+    0.15rem;
 
   background:
-    var(--toolbar-border);
+    var(--cheof-divider);
 }
 
-/*
-|--------------------------------------------------------------------------
-| Acciones
-|--------------------------------------------------------------------------
-*/
+/* =========================================================
+   ACCIONES
+   ========================================================= */
 
 .toolbar-actions {
   gap: 0.45rem;
@@ -341,32 +336,44 @@
   width: 40px;
   min-width: 40px;
   height: 40px;
-  padding: 0;
 
   place-items: center;
+
+  padding: 0;
 
   border:
     1px solid
     var(--toolbar-border);
 
-  border-radius: 11px;
+  border-radius:
+    var(--cheof-radius-md);
 
   background:
-    transparent;
+    var(--cheof-card-background);
 
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
+
+  box-shadow:
+    var(--cheof-shadow-xs);
 
   cursor: pointer;
 
   font: inherit;
+
   font-size: 0.9rem;
 
   transition:
-    border-color 160ms ease,
-    background-color 160ms ease,
-    color 160ms ease,
-    transform 160ms ease;
+    border-color
+      var(--cheof-transition-fast),
+    background
+      var(--cheof-transition-fast),
+    color
+      var(--cheof-transition-fast),
+    transform
+      var(--cheof-transition-fast),
+    box-shadow
+      var(--cheof-transition-fast);
 }
 
 .icon-action:hover,
@@ -374,7 +381,7 @@
   border-color:
     color-mix(
       in srgb,
-      var(--toolbar-brand) 32%,
+      var(--toolbar-brand) 28%,
       var(--toolbar-border)
     );
 
@@ -382,7 +389,10 @@
     var(--toolbar-brand-soft);
 
   color:
-    var(--toolbar-brand-dark);
+    var(--toolbar-brand-strong);
+
+  box-shadow:
+    var(--cheof-shadow-sm);
 
   transform:
     translateY(-1px);
@@ -392,19 +402,15 @@
   border-color:
     color-mix(
       in srgb,
-      var(--p-red-500) 30%,
+      var(--cheof-danger) 28%,
       var(--toolbar-border)
     );
 
   background:
-    color-mix(
-      in srgb,
-      var(--p-red-500) 7%,
-      transparent
-    );
+    var(--cheof-danger-soft);
 
   color:
-    var(--p-red-500);
+    var(--cheof-danger);
 }
 
 .icon-action:disabled {
@@ -412,56 +418,80 @@
     not-allowed;
 
   opacity: 0.5;
+
+  transform:
+    none;
 }
+
+/* =========================================================
+   SESIÓN
+   ========================================================= */
 
 .session-action {
   display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
 
   min-height: 40px;
 
+  align-items: center;
+  justify-content: center;
+
+  gap: 0.5rem;
+
   padding:
     0.55rem
-    0.82rem;
+    0.85rem;
 
   border:
     1px solid
     var(--toolbar-brand);
 
-  border-radius: 11px;
+  border-radius:
+    var(--cheof-radius-md);
 
   background:
     var(--toolbar-brand);
 
-  color: #ffffff;
+  color:
+    #ffffff;
+
+  box-shadow:
+    0 5px 15px
+    color-mix(
+      in srgb,
+      var(--toolbar-brand) 16%,
+      transparent
+    );
 
   cursor: pointer;
 
   font: inherit;
+
   font-size: 0.74rem;
-  font-weight: 620;
+  font-weight: 700;
 
   transition:
-    background-color 160ms ease,
-    border-color 160ms ease,
-    box-shadow 160ms ease,
-    transform 160ms ease;
+    background
+      var(--cheof-transition-fast),
+    border-color
+      var(--cheof-transition-fast),
+    box-shadow
+      var(--cheof-transition-fast),
+    transform
+      var(--cheof-transition-fast);
 }
 
 .session-action:hover {
   border-color:
-    var(--toolbar-brand-dark);
+    var(--toolbar-brand-strong);
 
   background:
-    var(--toolbar-brand-dark);
+    var(--toolbar-brand-strong);
 
   box-shadow:
-    0 8px 18px
+    0 8px 20px
     color-mix(
       in srgb,
-      var(--toolbar-brand) 20%,
+      var(--toolbar-brand) 22%,
       transparent
     );
 
@@ -469,25 +499,32 @@
     translateY(-1px);
 }
 
-/*
-|--------------------------------------------------------------------------
-| Cuenta
-|--------------------------------------------------------------------------
-*/
+/* =========================================================
+   CUENTA
+   ========================================================= */
 
 .account {
   display: flex;
-  align-items: center;
-  gap: 0.55rem;
 
   min-width: 0;
-  max-width: 190px;
+  max-width: 200px;
+
+  align-items: center;
+
+  gap: 0.55rem;
 
   padding:
     0.25rem
-    0.35rem
+    0.45rem
     0.25rem
     0.25rem;
+
+  border:
+    1px solid
+    transparent;
+
+  border-radius:
+    var(--cheof-radius-pill);
 }
 
 .account__avatar,
@@ -512,7 +549,7 @@
     var(--toolbar-brand-soft);
 
   color:
-    var(--toolbar-brand-dark);
+    var(--toolbar-brand-strong);
 }
 
 .account__avatar {
@@ -534,74 +571,88 @@
 .account__avatar span,
 .drawer-account__avatar span {
   font-size: 0.75rem;
-  font-weight: 700;
+  font-weight: 800;
 }
 
 .account__copy {
   display: grid;
-  gap: 0.05rem;
 
   min-width: 0;
+
+  gap: 0.05rem;
 }
 
 .account__copy strong {
   overflow: hidden;
 
+  color:
+    var(--cheof-text);
+
   font-size: 0.72rem;
-  font-weight: 630;
+  font-weight: 700;
 
   text-overflow: ellipsis;
+
   white-space: nowrap;
 }
 
 .account__copy small {
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
 
   font-size: 0.58rem;
 }
 
-/*
-|--------------------------------------------------------------------------
-| Móvil
-|--------------------------------------------------------------------------
-*/
+/* =========================================================
+   MOBILE TOOLBAR
+   ========================================================= */
 
 .mobile-toolbar {
   display: none;
+
   align-items: center;
+
   gap: 0.5rem;
 }
 
-/*
-|--------------------------------------------------------------------------
-| Drawer
-|--------------------------------------------------------------------------
-*/
+/* =========================================================
+   DRAWER
+   ========================================================= */
 
 .drawer-content {
   display: flex;
+
   min-height: 100%;
+
   flex-direction: column;
 }
+
+/* =========================================================
+   CUENTA / BIENVENIDA DEL DRAWER
+   ========================================================= */
 
 .drawer-account,
 .drawer-welcome {
   display: flex;
+
   align-items: center;
+
   gap: 0.8rem;
 
-  margin-bottom: 1.25rem;
-  padding: 0.85rem;
+  margin-bottom:
+    var(--cheof-space-5);
+
+  padding: 0.9rem;
 
   border:
     1px solid
-    var(--toolbar-border);
+    var(--cheof-card-border);
 
-  border-radius: 15px;
+  border-radius:
+    var(--cheof-radius-lg);
 
   background:
-    var(--toolbar-brand-soft);
+    var(--cheof-primary-soft);
 }
 
 .drawer-account__avatar {
@@ -612,30 +663,36 @@
 
 .drawer-account__copy {
   display: grid;
-  gap: 0.15rem;
 
   min-width: 0;
+
+  gap: 0.15rem;
 }
 
 .drawer-account__copy strong {
   overflow: hidden;
 
+  color:
+    var(--cheof-text);
+
   font-size: 0.86rem;
-  font-weight: 650;
+  font-weight: 700;
 
   text-overflow: ellipsis;
+
   white-space: nowrap;
 }
 
 .drawer-account__copy span {
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
 
   font-size: 0.66rem;
 }
 
 .drawer-welcome {
-  align-items: flex-start;
+  align-items:
+    flex-start;
 }
 
 .drawer-welcome__icon {
@@ -647,18 +704,27 @@
 
   place-items: center;
 
-  border-radius: 12px;
+  border-radius:
+    var(--cheof-radius-md);
 
   background:
-    var(--p-content-background);
+    color-mix(
+      in srgb,
+      var(--toolbar-brand) 12%,
+      var(--cheof-card-background)
+    );
 
   color:
     var(--toolbar-brand);
+
+  font-size: 1rem;
 }
 
 .drawer-welcome strong {
-  font-size: 0.84rem;
-  font-weight: 650;
+  color:
+    var(--cheof-text);
+
+  font-size: 0.9rem;
 }
 
 .drawer-welcome p {
@@ -668,77 +734,92 @@
     0;
 
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
 
-  font-size: 0.67rem;
-  line-height: 1.45;
+  font-size: 0.75rem;
+
+  line-height: 1.5;
 }
+
+/* =========================================================
+   NAVEGACIÓN DEL DRAWER
+   ========================================================= */
 
 .drawer-navigation,
 .drawer-preferences {
   display: grid;
+
   gap: 0.35rem;
 }
 
 .drawer-preferences {
-  margin-top: 1.25rem;
-  padding-top: 1.25rem;
+  margin-top:
+    var(--cheof-space-5);
+
+  padding-top:
+    var(--cheof-space-4);
 
   border-top:
     1px solid
-    var(--toolbar-border);
+    var(--cheof-divider);
 }
 
 .drawer-section-label {
   display: block;
 
-  padding:
-    0
-    0.35rem
-    0.35rem;
+  margin-bottom:
+    0.3rem;
+
+  padding-inline:
+    0.65rem;
 
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
 
-  font-size: 0.58rem;
-  font-weight: 620;
+  font-size: 0.66rem;
+  font-weight: 800;
 
-  letter-spacing: 0.12em;
+  letter-spacing: 0.1em;
+
   text-transform: uppercase;
 }
 
 .drawer-section-label--spaced {
-  margin-top: 1rem;
+  margin-top:
+    var(--cheof-space-4);
 }
 
 .drawer-link {
   display: grid;
-  align-items: center;
 
   grid-template-columns:
-    auto
+    42px
     minmax(0, 1fr)
     auto;
 
-  gap: 0.7rem;
-
-  width: 100%;
+  min-width: 0;
   min-height: 58px;
+
+  align-items: center;
+
+  gap: 0.75rem;
+
   padding:
-    0.55rem
+    0.45rem
     0.65rem;
 
   border:
     1px solid
     transparent;
 
-  border-radius: 13px;
+  border-radius:
+    var(--cheof-radius-lg);
 
   background:
     transparent;
 
   color:
-    var(--p-text-color);
+    var(--cheof-text);
 
   cursor: pointer;
 
@@ -747,130 +828,232 @@
   text-align: left;
 
   transition:
-    border-color 160ms ease,
-    background-color 160ms ease;
+    background
+      var(--cheof-transition-fast),
+    border-color
+      var(--cheof-transition-fast),
+    color
+      var(--cheof-transition-fast),
+    transform
+      var(--cheof-transition-fast);
 }
 
 .drawer-link:hover {
   border-color:
-    var(--toolbar-border);
+    color-mix(
+      in srgb,
+      var(--toolbar-brand) 16%,
+      var(--cheof-card-border)
+    );
 
   background:
-    var(--toolbar-brand-soft);
+    var(--cheof-primary-soft);
+
+  color:
+    var(--toolbar-brand-strong);
+
+  transform:
+    translateX(2px);
 }
 
 .drawer-link--active {
   border-color:
     color-mix(
       in srgb,
-      var(--toolbar-brand) 25%,
-      var(--toolbar-border)
+      var(--toolbar-brand) 22%,
+      var(--cheof-card-border)
     );
 
   background:
-    var(--toolbar-brand-soft);
+    var(--cheof-primary-soft);
+
+  color:
+    var(--toolbar-brand-strong);
 }
 
 .drawer-link__icon {
   display: grid;
 
-  width: 36px;
-  min-width: 36px;
-  height: 36px;
+  width: 42px;
+  height: 42px;
 
   place-items: center;
 
-  border-radius: 11px;
+  border:
+    1px solid
+    color-mix(
+      in srgb,
+      var(--toolbar-brand) 12%,
+      var(--cheof-card-border)
+    );
+
+  border-radius:
+    var(--cheof-radius-md);
 
   background:
-    var(--toolbar-brand-soft);
+    var(--cheof-card-background);
 
   color:
     var(--toolbar-brand);
 
-  font-size: 0.82rem;
+  box-shadow:
+    var(--cheof-shadow-xs);
+}
+
+.drawer-link--active
+.drawer-link__icon {
+  border-color:
+    color-mix(
+      in srgb,
+      var(--toolbar-brand) 22%,
+      var(--cheof-card-border)
+    );
+
+  background:
+    color-mix(
+      in srgb,
+      var(--toolbar-brand) 12%,
+      var(--cheof-card-background)
+    );
 }
 
 .drawer-link__copy {
   display: grid;
-  gap: 0.1rem;
 
   min-width: 0;
+
+  gap: 0.14rem;
 }
 
 .drawer-link__copy strong {
-  font-size: 0.76rem;
-  font-weight: 620;
+  overflow: hidden;
+
+  color:
+    currentColor;
+
+  font-size: 0.82rem;
+  font-weight: 700;
+
+  text-overflow: ellipsis;
+
+  white-space: nowrap;
 }
 
 .drawer-link__copy small {
   overflow: hidden;
 
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
 
-  font-size: 0.62rem;
+  font-size: 0.68rem;
 
   text-overflow: ellipsis;
+
   white-space: nowrap;
 }
 
 .drawer-link > i {
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-soft);
 
-  font-size: 0.72rem;
+  font-size: 0.75rem;
 }
+
+/* =========================================================
+   FOOTER DRAWER
+   ========================================================= */
 
 .drawer-footer {
   margin-top: auto;
-  padding-top: 1.5rem;
+
+  padding-top:
+    var(--cheof-space-5);
 }
 
 .drawer-session-button {
   display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
 
   width: 100%;
-  min-height: 44px;
+  min-height: 46px;
+
+  align-items: center;
+  justify-content: center;
+
+  gap: 0.55rem;
 
   padding:
     0.65rem
-    0.85rem;
+    0.9rem;
 
   border:
     1px solid
     var(--toolbar-brand);
 
-  border-radius: 11px;
+  border-radius:
+    var(--cheof-radius-md);
 
   background:
     var(--toolbar-brand);
 
-  color: #ffffff;
+  color:
+    #ffffff;
 
   cursor: pointer;
 
   font: inherit;
-  font-size: 0.73rem;
-  font-weight: 630;
+
+  font-size: 0.8rem;
+  font-weight: 700;
+
+  transition:
+    background
+      var(--cheof-transition-fast),
+    border-color
+      var(--cheof-transition-fast),
+    box-shadow
+      var(--cheof-transition-fast),
+    transform
+      var(--cheof-transition-fast);
+}
+
+.drawer-session-button:hover {
+  border-color:
+    var(--toolbar-brand-strong);
+
+  background:
+    var(--toolbar-brand-strong);
+
+  box-shadow:
+    var(--cheof-shadow-sm);
+
+  transform:
+    translateY(-1px);
 }
 
 .drawer-session-button--logout {
   border-color:
     color-mix(
       in srgb,
-      var(--p-red-500) 36%,
-      var(--toolbar-border)
+      var(--cheof-danger) 32%,
+      var(--cheof-card-border)
     );
 
   background:
-    transparent;
+    var(--cheof-danger-soft);
 
   color:
-    var(--p-red-500);
+    var(--cheof-danger);
+}
+
+.drawer-session-button--logout:hover {
+  border-color:
+    var(--cheof-danger);
+
+  background:
+    var(--cheof-danger);
+
+  color:
+    #ffffff;
 }
 
 .drawer-session-button:disabled {
@@ -878,19 +1061,91 @@
     not-allowed;
 
   opacity: 0.55;
+
+  transform:
+    none;
 }
 
-/*
-|--------------------------------------------------------------------------
-| Escritorio compacto
-|--------------------------------------------------------------------------
-*/
+/* =========================================================
+   PRIMENG DRAWER
+   ========================================================= */
 
-@media (max-width: 1180px) {
+:host ::ng-deep
+.cheof-mobile-menu.p-drawer {
+  border-left:
+    1px solid
+    var(--cheof-card-border);
+
+  background:
+    var(--cheof-card-background);
+
+  color:
+    var(--cheof-text);
+}
+
+:host ::ng-deep
+.cheof-mobile-menu
+.p-drawer-header {
+  border-bottom:
+    1px solid
+    var(--cheof-divider);
+
+  background:
+    var(--cheof-card-background);
+}
+
+:host ::ng-deep
+.cheof-mobile-menu
+.p-drawer-title {
+  color:
+    var(--cheof-text);
+
+  font-weight: 800;
+}
+
+:host ::ng-deep
+.cheof-mobile-menu
+.p-drawer-content {
+  background:
+    var(--cheof-card-background);
+}
+
+/* =========================================================
+   ACCESIBILIDAD
+   ========================================================= */
+
+.brand:focus-visible,
+.navigation-link:focus-visible,
+.icon-action:focus-visible,
+.session-action:focus-visible,
+.mobile-menu-trigger:focus-visible,
+.drawer-link:focus-visible,
+.drawer-session-button:focus-visible {
+  outline:
+    0.16rem solid
+    color-mix(
+      in srgb,
+      var(--toolbar-brand) 38%,
+      transparent
+    );
+
+  outline-offset:
+    0.14rem;
+}
+
+/* =========================================================
+   DESKTOP COMPACTO
+   ========================================================= */
+
+@media (
+  max-width:
+    73.75rem
+) {
   .toolbar-shell {
     gap: 0.8rem;
 
-    padding-inline: 1rem;
+    padding-inline:
+      1rem;
   }
 
   .desktop-toolbar {
@@ -898,7 +1153,8 @@
   }
 
   .navigation-link {
-    padding-inline: 0.55rem;
+    padding-inline:
+      0.55rem;
 
     font-size: 0.7rem;
   }
@@ -912,15 +1168,17 @@
   }
 }
 
-/*
-|--------------------------------------------------------------------------
-| Cambio a navegación móvil
-|--------------------------------------------------------------------------
-*/
+/* =========================================================
+   NAVEGACIÓN MÓVIL
+   ========================================================= */
 
-@media (max-width: 930px) {
+@media (
+  max-width:
+    58.125rem
+) {
   :host {
-    --toolbar-height: 66px;
+    --toolbar-height:
+      66px;
   }
 
   .toolbar-shell {
@@ -949,13 +1207,14 @@
   }
 }
 
-/*
-|--------------------------------------------------------------------------
-| Móvil
-|--------------------------------------------------------------------------
-*/
+/* =========================================================
+   MÓVIL
+   ========================================================= */
 
-@media (max-width: 520px) {
+@media (
+  max-width:
+    32.5rem
+) {
   .toolbar-shell {
     padding:
       0.55rem
@@ -977,27 +1236,29 @@
   }
 }
 
-/*
-|--------------------------------------------------------------------------
-| Movimiento reducido
-|--------------------------------------------------------------------------
-*/
+/* =========================================================
+   MOVIMIENTO REDUCIDO
+   ========================================================= */
 
 @media (
   prefers-reduced-motion:
-  reduce
+    reduce
 ) {
   .navigation-link,
   .icon-action,
   .session-action,
   .mobile-menu-trigger,
-  .drawer-link {
+  .drawer-link,
+  .drawer-session-button {
     transition: none;
   }
 
+  .navigation-link:hover,
   .icon-action:hover,
   .session-action:hover,
-  .mobile-menu-trigger:hover {
+  .mobile-menu-trigger:hover,
+  .drawer-link:hover,
+  .drawer-session-button:hover {
     transform: none;
   }
 }

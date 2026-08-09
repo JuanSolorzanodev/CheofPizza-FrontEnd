@@ -5,7 +5,7 @@
 
 .ingredients-page {
   display: grid;
-  max-width: 1500px;
+  max-width: var(--cheof-page-max-width);
   margin-inline: auto;
   gap: 1.25rem;
 }
@@ -79,7 +79,7 @@
 .panel-header p {
   margin: 0.65rem 0 0;
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
   line-height: 1.65;
 }
 
@@ -112,7 +112,7 @@
   min-width: 46px;
   height: 46px;
   place-items: center;
-  border-radius: 14px;
+  border-radius: var(--cheof-radius-lg);
 }
 
 .summary-icon.primary {
@@ -128,33 +128,33 @@
 
 .summary-icon.info {
   color:
-    var(--p-blue-500);
+    var(--cheof-info);
   background:
     color-mix(
       in srgb,
-      var(--p-blue-500) 12%,
+      var(--cheof-info) 12%,
       transparent
     );
 }
 
 .summary-icon.warning {
   color:
-    var(--p-orange-500);
+    var(--cheof-warning);
   background:
     color-mix(
       in srgb,
-      var(--p-orange-500) 12%,
+      var(--cheof-warning) 12%,
       transparent
     );
 }
 
 .summary-icon.success {
   color:
-    var(--p-green-500);
+    var(--cheof-success);
   background:
     color-mix(
       in srgb,
-      var(--p-green-500) 12%,
+      var(--cheof-success) 12%,
       transparent
     );
 }
@@ -168,7 +168,7 @@
 .summary-card span,
 .summary-card small {
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
 }
 
 .summary-card > div > span {
@@ -204,10 +204,10 @@
   justify-content: center;
   gap: 0.5rem;
   border: 0;
-  border-radius: 12px;
+  border-radius: var(--cheof-radius-md);
   background: transparent;
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
   font: inherit;
   font-size: 0.8rem;
   font-weight: 750;
@@ -222,7 +222,7 @@
   background:
     var(--cheof-muted-background);
   color:
-    var(--p-text-color);
+    var(--cheof-text);
 }
 
 .catalog-tabs button.active {
@@ -272,7 +272,7 @@
   top: 50%;
   left: 0.9rem;
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
   transform:
     translateY(-50%);
 }
@@ -411,11 +411,11 @@
     0.35rem 0.5rem;
   border-radius: 999px;
   color:
-    var(--p-orange-500);
+    var(--cheof-warning);
   background:
     color-mix(
       in srgb,
-      var(--p-orange-500) 11%,
+      var(--cheof-warning) 11%,
       transparent
     );
   font-size: 0.62rem;
@@ -445,7 +445,7 @@
 
 .ingredient-stats span {
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
   font-size: 0.68rem;
 }
 
@@ -478,11 +478,11 @@
   width: 64px;
   height: 64px;
   place-items: center;
-  border-radius: 20px;
+  border-radius: var(--cheof-radius-xl);
   background:
     var(--cheof-muted-background);
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
   font-size: 1.45rem;
 }
 
@@ -493,7 +493,7 @@
 .empty-state p {
   margin: 0.45rem 0 1rem;
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
 }
 
 .types-list {
@@ -519,7 +519,7 @@
 .type-row p {
   margin: 0.3rem 0 0;
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
   font-size: 0.72rem;
 }
 
@@ -557,7 +557,7 @@
 
 .price-table th {
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
   font-size: 0.68rem;
   font-weight: 800;
   text-transform: uppercase;
@@ -600,7 +600,7 @@
   width: 40px;
   height: 40px;
   place-items: center;
-  border-radius: 12px;
+  border-radius: var(--cheof-radius-md);
   color:
     var(--p-primary-color);
   background:
@@ -618,7 +618,7 @@
 
 .dialog-title small {
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
   font-size: 0.68rem;
   font-weight: 800;
   letter-spacing: 0.08em;
@@ -649,7 +649,7 @@
 
 .field em {
   color:
-    var(--p-red-500);
+    var(--cheof-danger);
   font-style: normal;
 }
 
@@ -659,7 +659,7 @@
 
 .field-error {
   color:
-    var(--p-red-500);
+    var(--cheof-danger);
   font-size: 0.7rem;
 }
 
@@ -679,7 +679,7 @@
   border:
     1px solid
     var(--cheof-card-border);
-  border-radius: 14px;
+  border-radius: var(--cheof-radius-lg);
   background:
     var(--cheof-muted-background);
 }
@@ -695,9 +695,29 @@
 
 .price-row span {
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
   font-size: 0.68rem;
 }
+
+/* =========================================================
+   ACCESIBILIDAD
+   ========================================================= */
+
+.ingredients-page :is(button, a):focus-visible,
+.ingredients-page input:focus-visible {
+  outline: 0.16rem solid
+    color-mix(
+      in srgb,
+      var(--p-primary-color) 38%,
+      transparent
+    );
+
+  outline-offset: 0.14rem;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
 
 @media (max-width: 1180px) {
   .cards-grid {
@@ -770,5 +790,17 @@
   .price-row {
     grid-template-columns:
       minmax(0, 1fr);
+  }
+}
+
+
+/* =========================================================
+   REDUCCIÓN DE MOVIMIENTO
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .ingredient-card,
+  .ingredient-row {
+    transition: none;
   }
 }

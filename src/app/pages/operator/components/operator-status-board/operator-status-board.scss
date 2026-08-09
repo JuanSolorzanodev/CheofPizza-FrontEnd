@@ -7,29 +7,16 @@
 
   border:
     1px solid
-    var(--p-surface-200);
+    var(--cheof-card-border);
 
   border-radius:
-    0.9rem;
+    var(--cheof-radius-xl);
 
   background:
-    var(--p-surface-0);
+    var(--cheof-card-background);
 
   box-shadow:
-    0 0.2rem 0.65rem
-      rgba(
-        15,
-        23,
-        42,
-        0.025
-      ),
-    0 0.65rem 1.6rem
-      rgba(
-        15,
-        23,
-        42,
-        0.025
-      );
+    var(--cheof-shadow-sm);
 }
 
 .status-board__header {
@@ -47,7 +34,7 @@
   margin: 0;
 
   color:
-    var(--p-text-color);
+    var(--cheof-text);
 
   font-size: 1rem;
   font-weight: 750;
@@ -58,12 +45,7 @@
     0.14rem 0 0;
 
   color:
-    var(
-      --p-text-muted-color,
-      var(
-        --p-text-color-secondary
-      )
-    );
+    var(--cheof-text-secondary);
 
   font-size:
     0.75rem;
@@ -87,13 +69,13 @@
 
   border:
     1px solid
-    var(--p-surface-300);
+    var(--cheof-card-border);
 
   border-radius:
-    0.6rem;
+    var(--cheof-radius-sm);
 
   background:
-    var(--p-surface-0);
+    var(--cheof-card-background);
 
   color:
     var(--p-primary-color);
@@ -112,11 +94,11 @@
 
   transition:
     border-color
-      150ms ease,
+      var(--cheof-transition-fast),
     background
-      150ms ease,
+      var(--cheof-transition-fast),
     color
-      150ms ease;
+      var(--cheof-transition-fast);
 }
 
 .show-all-button:hover {
@@ -128,7 +110,7 @@
       in srgb,
       var(--p-primary-color)
         5%,
-      var(--p-surface-0)
+      var(--cheof-card-background)
     );
 }
 
@@ -164,12 +146,7 @@
 
 .status-group__label {
   color:
-    var(
-      --p-text-muted-color,
-      var(
-        --p-text-color-secondary
-      )
-    );
+    var(--cheof-text-secondary);
 
   font-size:
     0.66rem;
@@ -210,7 +187,7 @@
   width: 1px;
 
   background:
-    var(--p-surface-200);
+    var(--cheof-card-border);
 }
 
 .status-filter {
@@ -237,16 +214,16 @@
 
   border:
     1px solid
-    var(--p-surface-200);
+    var(--cheof-card-border);
 
   border-radius:
-    0.7rem;
+    var(--cheof-radius-md);
 
   background:
-    var(--p-surface-50);
+    var(--cheof-card-background-muted);
 
   color:
-    var(--p-text-color);
+    var(--cheof-text);
 
   cursor:
     pointer;
@@ -256,13 +233,13 @@
 
   transition:
     transform
-      150ms ease,
+      var(--cheof-transition-fast),
     border-color
-      150ms ease,
+      var(--cheof-transition-fast),
     background
-      150ms ease,
+      var(--cheof-transition-fast),
     box-shadow
-      150ms ease;
+      var(--cheof-transition-fast);
 }
 
 .status-filter:hover {
@@ -270,19 +247,13 @@
     translateY(-1px);
 
   border-color:
-    var(--p-surface-300);
+    var(--cheof-card-border);
 
   background:
-    var(--p-surface-0);
+    var(--cheof-card-background);
 
   box-shadow:
-    0 0.25rem 0.7rem
-    rgba(
-      15,
-      23,
-      42,
-      0.04
-    );
+    var(--cheof-shadow-sm);
 }
 
 .status-filter--active {
@@ -291,7 +262,7 @@
       in srgb,
       var(--p-primary-color)
         48%,
-      var(--p-surface-200)
+      var(--cheof-card-border)
     );
 
   background:
@@ -299,7 +270,7 @@
       in srgb,
       var(--p-primary-color)
         6%,
-      var(--p-surface-0)
+      var(--cheof-card-background)
     );
 
   box-shadow:
@@ -314,7 +285,7 @@
 
 .status-filter--historical {
   background:
-    var(--p-surface-0);
+    var(--cheof-card-background);
 }
 
 .status-filter__icon {
@@ -330,18 +301,13 @@
     center;
 
   border-radius:
-    0.6rem;
+    var(--cheof-radius-sm);
 
   background:
-    var(--p-surface-100);
+    var(--cheof-muted-background);
 
   color:
-    var(
-      --p-text-muted-color,
-      var(
-        --p-text-color-secondary
-      )
-    );
+    var(--cheof-text-secondary);
 }
 
 .status-filter__icon i {
@@ -352,70 +318,64 @@
 .status-filter--pending
   .status-filter__icon {
   background:
-    color-mix(
-      in srgb,
-      #f59e0b 10%,
-      var(--p-surface-0)
-    );
+    var(--cheof-order-pending-soft);
 
   color:
-    #b45309;
+    var(--cheof-order-pending-strong);
 }
 
 .status-filter--confirmed
-  .status-filter__icon,
+  .status-filter__icon {
+  background:
+    var(--cheof-order-confirmed-soft);
+
+  color:
+    var(--cheof-order-confirmed-strong);
+}
+
 .status-filter--on_the_way
   .status-filter__icon {
   background:
-    color-mix(
-      in srgb,
-      #2563eb 9%,
-      var(--p-surface-0)
-    );
+    var(--cheof-order-on-the-way-soft);
 
   color:
-    #1d4ed8;
+    var(--cheof-order-on-the-way-strong);
 }
 
 .status-filter--preparing
   .status-filter__icon {
   background:
-    color-mix(
-      in srgb,
-      #f97316 10%,
-      var(--p-surface-0)
-    );
+    var(--cheof-order-preparing-soft);
 
   color:
-    #c2410c;
+    var(--cheof-order-preparing-strong);
 }
 
 .status-filter--ready
-  .status-filter__icon,
+  .status-filter__icon {
+  background:
+    var(--cheof-order-ready-soft);
+
+  color:
+    var(--cheof-order-ready-strong);
+}
+
 .status-filter--delivered
   .status-filter__icon {
   background:
-    color-mix(
-      in srgb,
-      #16a34a 9%,
-      var(--p-surface-0)
-    );
+    var(--cheof-order-delivered-soft);
 
   color:
-    #15803d;
+    var(--cheof-order-delivered-strong);
 }
 
 .status-filter--cancelled
   .status-filter__icon {
   background:
-    color-mix(
-      in srgb,
-      #dc2626 8%,
-      var(--p-surface-0)
-    );
+    var(--cheof-order-cancelled-soft);
 
   color:
-    #b91c1c;
+    var(--cheof-order-cancelled-strong);
 }
 
 .status-filter__label {
@@ -455,13 +415,13 @@
     center;
 
   border-radius:
-    999px;
+    var(--cheof-radius-pill);
 
   background:
-    var(--p-surface-0);
+    var(--cheof-card-background);
 
   color:
-    var(--p-text-color);
+    var(--cheof-text);
 
   font-size:
     0.72rem;
@@ -492,7 +452,7 @@
     none;
 
   border-color:
-    var(--p-surface-200);
+    var(--cheof-card-border);
 
   box-shadow:
     none;
@@ -522,22 +482,18 @@
     1px solid
     color-mix(
       in srgb,
-      #dc2626 18%,
-      var(--p-surface-200)
+      var(--cheof-danger) 18%,
+      var(--cheof-card-border)
     );
 
   border-radius:
-    0.65rem;
+    var(--cheof-radius-sm);
 
   background:
-    color-mix(
-      in srgb,
-      #dc2626 4%,
-      var(--p-surface-0)
-    );
+    var(--cheof-danger-soft);
 
   color:
-    #b91c1c;
+    var(--cheof-danger-strong);
 
   font-size:
     0.7rem;

@@ -10,17 +10,17 @@
     1px solid
     color-mix(
       in srgb,
-      var(--p-content-border-color) 88%,
+      var(--cheof-card-border) 88%,
       transparent
     );
 
   border-radius: 22px;
 
   background:
-    var(--p-content-background);
+    var(--cheof-card-background);
 
   color:
-    var(--p-text-color);
+    var(--cheof-text);
 
   box-shadow:
     0 28px 90px
@@ -39,7 +39,7 @@
   overflow: hidden;
 
   background:
-    var(--p-content-background);
+    var(--cheof-card-background);
 }
 
 .auth-shell {
@@ -67,7 +67,7 @@
       ),
       transparent 30%
     ),
-    var(--p-content-background);
+    var(--cheof-card-background);
 
   scrollbar-color:
     color-mix(
@@ -124,7 +124,7 @@
     color-mix(
       in srgb,
       var(--p-primary-color) 15%,
-      var(--p-content-border-color)
+      var(--cheof-card-border)
     );
 
   border-radius: 12px;
@@ -133,13 +133,13 @@
     color-mix(
       in srgb,
       var(--p-primary-color) 8%,
-      var(--p-content-background)
+      var(--cheof-card-background)
     );
 }
 
 .auth-brand__symbol span {
   color:
-    var(--p-text-color);
+    var(--cheof-text);
 
   font-size: 0.7rem;
   font-weight: 800;
@@ -166,7 +166,7 @@
   overflow: hidden;
 
   color:
-    var(--p-text-color);
+    var(--cheof-text);
 
   font-size: 0.78rem;
   font-weight: 690;
@@ -179,7 +179,7 @@
   overflow: hidden;
 
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
 
   font-size: 0.59rem;
 
@@ -199,7 +199,7 @@
     transparent;
 
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
 
   cursor: pointer;
 
@@ -226,10 +226,10 @@
   :disabled
 ) {
   background:
-    var(--p-content-hover-background);
+    var(--cheof-muted-background);
 
   color:
-    var(--p-text-color);
+    var(--cheof-text);
 }
 
 .icon-button:hover:not(
@@ -268,7 +268,7 @@
   margin: 0;
 
   color:
-    var(--p-text-color);
+    var(--cheof-text);
 
   font-size:
     clamp(
@@ -289,7 +289,7 @@
   margin: 0;
 
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
 
   font-size: 0.76rem;
   line-height: 1.48;
@@ -330,7 +330,7 @@
 
 .field__label {
   color:
-    var(--p-text-color);
+    var(--cheof-text);
 
   font-size: 0.68rem;
   font-weight: 620;
@@ -355,15 +355,15 @@
 
   border:
     1px solid
-    var(--p-content-border-color);
+    var(--cheof-card-border);
 
   border-radius: 11px;
 
   background:
     color-mix(
       in srgb,
-      var(--p-content-background) 96%,
-      var(--p-surface-50)
+      var(--cheof-card-background) 96%,
+      var(--cheof-card-background-muted)
     );
 
   transition:
@@ -377,7 +377,7 @@
     color-mix(
       in srgb,
       var(--p-primary-color) 24%,
-      var(--p-content-border-color)
+      var(--cheof-card-border)
     );
 }
 
@@ -386,7 +386,7 @@
     var(--p-primary-color);
 
   background:
-    var(--p-content-background);
+    var(--cheof-card-background);
 
   box-shadow:
     0 0 0 3px
@@ -399,25 +399,25 @@
 
 .input-shell--invalid {
   border-color:
-    var(--p-red-500);
+    var(--cheof-danger);
 }
 
 .input-shell--invalid:focus-within {
   border-color:
-    var(--p-red-500);
+    var(--cheof-danger);
 
   box-shadow:
     0 0 0 3px
     color-mix(
       in srgb,
-      var(--p-red-500) 11%,
+      var(--cheof-danger) 11%,
       transparent
     );
 }
 
 .input-shell > i {
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
 
   font-size: 0.78rem;
 }
@@ -436,7 +436,7 @@
   box-shadow: none;
 
   color:
-    var(--p-text-color);
+    var(--cheof-text);
 
   font-size: 0.76rem;
 }
@@ -449,7 +449,7 @@
   color:
     color-mix(
       in srgb,
-      var(--p-text-muted-color) 78%,
+      var(--cheof-text-secondary) 78%,
       transparent
     );
 }
@@ -465,7 +465,7 @@
 
   border-right:
     1px solid
-    var(--p-content-border-color);
+    var(--cheof-card-border);
 
   color:
     var(--p-primary-color);
@@ -489,12 +489,12 @@
 
 .field__hint {
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
 }
 
 .field__error {
   color:
-    var(--p-red-500);
+    var(--cheof-danger);
 }
 
 .primary-button,
@@ -574,13 +574,13 @@
 .google-button {
   border:
     1px solid
-    var(--p-content-border-color);
+    var(--cheof-card-border);
 
   background:
-    var(--p-content-background);
+    var(--cheof-card-background);
 
   color:
-    var(--p-text-color);
+    var(--cheof-text);
 }
 
 .secondary-button:hover:not(
@@ -593,11 +593,11 @@
     color-mix(
       in srgb,
       var(--p-primary-color) 32%,
-      var(--p-content-border-color)
+      var(--cheof-card-border)
     );
 
   background:
-    var(--p-content-hover-background);
+    var(--cheof-muted-background);
 }
 
 .primary-button:disabled,
@@ -631,7 +631,7 @@
   gap: 0.7rem;
 
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
 
   font-size: 0.6rem;
 }
@@ -643,7 +643,7 @@
   flex: 1;
 
   background:
-    var(--p-content-border-color);
+    var(--cheof-card-border);
 
   content: '';
 }
@@ -693,7 +693,7 @@
   margin: 0;
 
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
 
   font-size: 0.68rem;
 
@@ -729,7 +729,7 @@
   gap: 0.65rem;
 
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
 
   font-size: 0.67rem;
   line-height: 1.45;
@@ -744,7 +744,7 @@
 
   border:
     1px solid
-    var(--p-content-border-color);
+    var(--cheof-card-border);
 
   border-radius: 12px;
 
@@ -752,7 +752,7 @@
     color-mix(
       in srgb,
       var(--p-primary-color) 4%,
-      var(--p-content-background)
+      var(--cheof-card-background)
     );
 }
 
@@ -771,7 +771,7 @@
 
 .google-profile-card strong {
   color:
-    var(--p-text-color);
+    var(--cheof-text);
 
   font-size: 0.74rem;
 }
@@ -780,7 +780,7 @@
   overflow: hidden;
 
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
 
   font-size: 0.64rem;
 
@@ -810,10 +810,10 @@
 
   border-top:
     1px solid
-    var(--p-content-border-color);
+    var(--cheof-card-border);
 
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
 
   font-size: 0.57rem;
   line-height: 1.4;

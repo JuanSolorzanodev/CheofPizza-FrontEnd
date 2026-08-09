@@ -5,7 +5,7 @@
 
 .prices-page {
   display: grid;
-  max-width: 1500px;
+  max-width: var(--cheof-page-max-width);
   margin-inline: auto;
   gap: 1.25rem;
 }
@@ -77,7 +77,7 @@
 .panel-header p {
   margin: 0.65rem 0 0;
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
   line-height: 1.65;
 }
 
@@ -109,7 +109,7 @@
   border-color:
     color-mix(
       in srgb,
-      var(--p-orange-500) 40%,
+      var(--cheof-warning) 40%,
       var(--cheof-card-border)
     );
 }
@@ -120,7 +120,7 @@
   min-width: 46px;
   height: 46px;
   place-items: center;
-  border-radius: 14px;
+  border-radius: var(--cheof-radius-lg);
 }
 
 .summary-icon.is-primary {
@@ -138,29 +138,29 @@
   background:
     color-mix(
       in srgb,
-      var(--p-green-500) 12%,
+      var(--cheof-success) 12%,
       transparent
     );
   color:
-    var(--p-green-500);
+    var(--cheof-success);
 }
 
 .summary-icon.is-muted {
   background:
     var(--cheof-muted-background);
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
 }
 
 .summary-icon.is-warning {
   background:
     color-mix(
       in srgb,
-      var(--p-orange-500) 12%,
+      var(--cheof-warning) 12%,
       transparent
     );
   color:
-    var(--p-orange-500);
+    var(--cheof-warning);
 }
 
 .summary-card > div {
@@ -172,7 +172,7 @@
 .summary-card span,
 .summary-card small {
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
 }
 
 .summary-card > div > span {
@@ -269,7 +269,7 @@
   background:
     var(--cheof-muted-background);
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
   text-align: center;
 }
 
@@ -296,7 +296,7 @@
 
 .size-heading strong {
   color:
-    var(--p-text-color);
+    var(--cheof-text);
   font-size: 0.82rem;
 }
 
@@ -327,7 +327,7 @@
   min-width: 40px;
   height: 40px;
   place-items: center;
-  border-radius: 12px;
+  border-radius: var(--cheof-radius-md);
   background:
     color-mix(
       in srgb,
@@ -346,13 +346,13 @@
 
 .category-heading strong {
   color:
-    var(--p-text-color);
+    var(--cheof-text);
   font-size: 0.84rem;
 }
 
 .category-heading span {
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
   font-size: 0.68rem;
 }
 
@@ -370,7 +370,7 @@
   background:
     color-mix(
       in srgb,
-      var(--p-surface-500) 4%,
+      var(--cheof-text-soft) 4%,
       var(--cheof-card-background)
     );
 }
@@ -379,12 +379,12 @@
   background:
     color-mix(
       in srgb,
-      var(--p-orange-500) 6%,
+      var(--cheof-warning) 6%,
       var(--cheof-card-background)
     );
   box-shadow:
     inset 0 3px 0
-    var(--p-orange-500);
+    var(--cheof-warning);
 }
 
 .price-control {
@@ -418,14 +418,14 @@
   align-items: center;
   gap: 0.35rem;
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
   font-size: 0.66rem;
   font-weight: 700;
 }
 
 .availability.is-active {
   color:
-    var(--p-green-500);
+    var(--cheof-success);
 }
 
 .reset-cell {
@@ -438,7 +438,7 @@
   background:
     transparent;
   color:
-    var(--p-orange-500);
+    var(--cheof-warning);
   cursor: pointer;
 }
 
@@ -446,14 +446,14 @@
   background:
     color-mix(
       in srgb,
-      var(--p-orange-500) 12%,
+      var(--cheof-warning) 12%,
       transparent
     );
 }
 
 .previous-value {
   color:
-    var(--p-orange-500);
+    var(--cheof-warning);
   font-size: 0.65rem;
 }
 
@@ -479,13 +479,13 @@
 
 .matrix-footer strong {
   color:
-    var(--p-text-color);
+    var(--cheof-text);
   font-size: 0.82rem;
 }
 
 .matrix-footer span {
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
   font-size: 0.72rem;
 }
 
@@ -501,11 +501,11 @@
   width: 64px;
   height: 64px;
   place-items: center;
-  border-radius: 20px;
+  border-radius: var(--cheof-radius-xl);
   background:
     var(--cheof-muted-background);
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
   font-size: 1.45rem;
 }
 
@@ -517,9 +517,29 @@
   max-width: 520px;
   margin: 0.45rem 0 0;
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
   line-height: 1.6;
 }
+
+/* =========================================================
+   ACCESIBILIDAD
+   ========================================================= */
+
+.prices-page :is(button, a):focus-visible,
+.prices-page input:focus-visible {
+  outline: 0.16rem solid
+    color-mix(
+      in srgb,
+      var(--p-primary-color) 38%,
+      transparent
+    );
+
+  outline-offset: 0.14rem;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
 
 @media (max-width: 1000px) {
   .summary-grid {
@@ -560,5 +580,17 @@
 
   .matrix-footer {
     align-items: stretch;
+  }
+}
+
+
+/* =========================================================
+   REDUCCIÓN DE MOVIMIENTO
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .price-card,
+  .price-row {
+    transition: none;
   }
 }

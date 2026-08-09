@@ -5,7 +5,7 @@
 
 .cash-history-page {
   display: grid;
-  max-width: 1500px;
+  max-width: var(--cheof-page-max-width);
   margin-inline: auto;
   gap: 1.25rem;
 }
@@ -57,7 +57,7 @@
   margin: 0.4rem 0 0;
 
   color:
-    var(--p-text-color);
+    var(--cheof-text);
 
   font-size:
     clamp(1.55rem, 4vw, 2.25rem);
@@ -70,7 +70,7 @@
   margin: 0.75rem 0 0;
 
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
 
   line-height: 1.6;
 }
@@ -118,7 +118,7 @@
 
 .cash-history-filter label {
   color:
-    var(--p-text-color);
+    var(--cheof-text);
 
   font-size: 0.75rem;
   font-weight: 700;
@@ -166,14 +166,14 @@
 .cash-history-content__header span,
 .cash-history-content__header small {
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
 
   font-size: 0.72rem;
 }
 
 .cash-history-content__header strong {
   color:
-    var(--p-text-color);
+    var(--cheof-text);
 
   font-size: 1.05rem;
 }
@@ -192,14 +192,14 @@
 
 .cash-history-date strong {
   color:
-    var(--p-text-color);
+    var(--cheof-text);
 
   font-size: 0.78rem;
 }
 
 .cash-history-date small {
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
 
   font-size: 0.7rem;
 }
@@ -243,21 +243,21 @@
 
 .cash-history-user strong {
   color:
-    var(--p-text-color);
+    var(--cheof-text);
 
   font-size: 0.76rem;
 }
 
 .cash-history-user small {
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
 
   font-size: 0.67rem;
 }
 
 .cash-history-money {
   color:
-    var(--p-text-color);
+    var(--cheof-text);
 
   font-size: 0.8rem;
   white-space: nowrap;
@@ -270,17 +270,17 @@
 
 .cash-history-difference--neutral {
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
 }
 
 .cash-history-difference--positive {
   color:
-    var(--p-green-500);
+    var(--cheof-success);
 }
 
 .cash-history-difference--negative {
   color:
-    var(--p-red-500);
+    var(--cheof-danger);
 }
 
 .cash-history-table__actions {
@@ -305,7 +305,7 @@
   height: 64px;
   place-items: center;
 
-  border-radius: 20px;
+  border-radius: var(--cheof-radius-xl);
 
   background:
     color-mix(
@@ -325,7 +325,7 @@
   margin: 0;
 
   color:
-    var(--p-text-color);
+    var(--cheof-text);
 }
 
 .cash-history-empty p {
@@ -333,7 +333,7 @@
   margin: 0;
 
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
 
   font-size: 0.8rem;
   line-height: 1.6;
@@ -351,7 +351,7 @@
     padding-block: 0.8rem;
 
     color:
-      var(--p-text-muted-color);
+      var(--cheof-text-secondary);
 
     font-size: 0.68rem;
     font-weight: 800;
@@ -373,6 +373,25 @@
     border-radius: 0;
   }
 }
+
+/* =========================================================
+   ACCESIBILIDAD
+   ========================================================= */
+
+.cash-history-page :is(button, a):focus-visible {
+  outline: 0.16rem solid
+    color-mix(
+      in srgb,
+      var(--p-primary-color) 38%,
+      transparent
+    );
+
+  outline-offset: 0.14rem;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
 
 @media (max-width: 1100px) {
   .cash-history-filters {
@@ -420,5 +439,17 @@
   .cash-history-filter__actions
   :is(p-button, .p-button) {
     width: 100%;
+  }
+}
+
+
+/* =========================================================
+   REDUCCIÓN DE MOVIMIENTO
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .cash-history-card,
+  .cash-history-row {
+    transition: none;
   }
 }

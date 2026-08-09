@@ -556,7 +556,23 @@
       </article>
     }
   } @else if (activeSection() === 'comparison') {
-    <app-machine-learning-comparison />
+    @defer (when activeSection() === 'comparison') {
+      <app-machine-learning-comparison
+        [refreshKey]="comparisonRefreshKey()"
+      />
+    } @loading {
+      <section class="training-loading" aria-busy="true" aria-label="Cargando comparación predictiva">
+        <p-skeleton height="126px" borderRadius="18px" />
+
+        <div class="training-overview-grid">
+          <p-skeleton height="310px" borderRadius="18px" />
+
+          <p-skeleton height="310px" borderRadius="18px" />
+        </div>
+
+        <p-skeleton height="300px" borderRadius="18px" />
+      </section>
+    }
   } @else {
     @if (trainingLoading()) {
       <section class="training-loading">

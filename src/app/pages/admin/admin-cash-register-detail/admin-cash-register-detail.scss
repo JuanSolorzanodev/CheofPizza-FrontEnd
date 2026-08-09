@@ -5,7 +5,7 @@
 
 .cash-detail-page {
   display: grid;
-  max-width: 1500px;
+  max-width: var(--cheof-page-max-width);
   margin-inline: auto;
   gap: 1.25rem;
 }
@@ -51,7 +51,7 @@
 .cash-detail-header h2 {
   margin: 0.4rem 0 0;
 
-  color: var(--p-text-color);
+  color: var(--cheof-text);
 
   font-size: clamp(1.6rem, 4vw, 2.35rem);
 
@@ -62,7 +62,7 @@
   max-width: 720px;
   margin: 0.75rem 0 0;
 
-  color: var(--p-text-muted-color);
+  color: var(--cheof-text-secondary);
 
   line-height: 1.65;
 }
@@ -108,15 +108,15 @@
 }
 
 .cash-detail-session__indicator--open {
-  background: var(--p-green-500);
+  background: var(--cheof-success);
 
-  box-shadow: 0 0 0 7px color-mix(in srgb, var(--p-green-500) 15%, transparent);
+  box-shadow: 0 0 0 7px color-mix(in srgb, var(--cheof-success) 15%, transparent);
 }
 
 .cash-detail-session__indicator--closed {
-  background: var(--p-text-muted-color);
+  background: var(--cheof-text-secondary);
 
-  box-shadow: 0 0 0 7px color-mix(in srgb, var(--p-text-muted-color) 14%, transparent);
+  box-shadow: 0 0 0 7px color-mix(in srgb, var(--cheof-text-secondary) 14%, transparent);
 }
 
 .cash-detail-session__status > div {
@@ -127,13 +127,13 @@
 
 .cash-detail-session__status span,
 .cash-detail-session__status small {
-  color: var(--p-text-muted-color);
+  color: var(--cheof-text-secondary);
 
   font-size: 0.72rem;
 }
 
 .cash-detail-session__status strong {
-  color: var(--p-text-color);
+  color: var(--cheof-text);
 
   font-size: 1rem;
 }
@@ -178,7 +178,7 @@
   height: 46px;
   place-items: center;
 
-  border-radius: 14px;
+  border-radius: var(--cheof-radius-lg);
 
   background: color-mix(in srgb, var(--p-primary-color) 11%, var(--cheof-card-background));
 
@@ -193,7 +193,7 @@
 
 .cash-detail-info-card span,
 .cash-detail-info-card small {
-  color: var(--p-text-muted-color);
+  color: var(--cheof-text-secondary);
 
   font-size: 0.7rem;
 }
@@ -201,7 +201,7 @@
 .cash-detail-info-card strong {
   overflow: hidden;
 
-  color: var(--p-text-color);
+  color: var(--cheof-text);
 
   font-size: 0.86rem;
   text-overflow: ellipsis;
@@ -252,7 +252,7 @@
 .cash-detail-section-header h3 {
   margin: 0.3rem 0 0;
 
-  color: var(--p-text-color);
+  color: var(--cheof-text);
 
   font-size: 1.12rem;
 }
@@ -260,7 +260,7 @@
 .cash-detail-section-header p {
   margin: 0.4rem 0 0;
 
-  color: var(--p-text-muted-color);
+  color: var(--cheof-text-secondary);
 
   font-size: 0.77rem;
   line-height: 1.55;
@@ -272,7 +272,7 @@
   height: 42px;
   place-items: center;
 
-  border-radius: 14px;
+  border-radius: var(--cheof-radius-lg);
 
   background: color-mix(in srgb, var(--p-primary-color) 11%, var(--cheof-card-background));
 
@@ -304,24 +304,24 @@
 }
 
 .cash-detail-summary-card span {
-  color: var(--p-text-muted-color);
+  color: var(--cheof-text-secondary);
 
   font-size: 0.68rem;
 }
 
 .cash-detail-summary-card strong {
-  color: var(--p-text-color);
+  color: var(--cheof-text);
 
   font-size: 1rem;
   white-space: nowrap;
 }
 
 .cash-detail-summary-card--income strong {
-  color: var(--p-green-500);
+  color: var(--cheof-success);
 }
 
 .cash-detail-summary-card--expense strong {
-  color: var(--p-red-500);
+  color: var(--cheof-danger);
 }
 
 .cash-detail-summary-card--expected {
@@ -335,7 +335,7 @@
 }
 
 .cash-detail-summary-card--counted strong {
-  color: var(--p-text-color);
+  color: var(--cheof-text);
 }
 
 .cash-detail-result {
@@ -351,7 +351,7 @@
 
   border-radius: var(--cheof-radius-lg);
 
-  background: color-mix(in srgb, var(--p-surface-100) 45%, var(--cheof-card-background));
+  background: color-mix(in srgb, var(--cheof-muted-background) 45%, var(--cheof-card-background));
 }
 
 .cash-detail-result > div {
@@ -360,13 +360,13 @@
 }
 
 .cash-detail-result span {
-  color: var(--p-text-muted-color);
+  color: var(--cheof-text-secondary);
 
   font-size: 0.7rem;
 }
 
 .cash-detail-result strong {
-  color: var(--p-text-color);
+  color: var(--cheof-text);
 }
 
 .cash-detail-difference {
@@ -375,15 +375,15 @@
 }
 
 .cash-detail-difference--neutral {
-  color: var(--p-text-muted-color);
+  color: var(--cheof-text-secondary);
 }
 
 .cash-detail-difference--positive {
-  color: var(--p-green-500);
+  color: var(--cheof-success);
 }
 
 .cash-detail-difference--negative {
-  color: var(--p-red-500);
+  color: var(--cheof-danger);
 }
 
 .cash-detail-notes-grid {
@@ -401,11 +401,11 @@
 
   border-radius: var(--cheof-radius-md);
 
-  background: color-mix(in srgb, var(--p-surface-100) 35%, var(--cheof-card-background));
+  background: color-mix(in srgb, var(--cheof-muted-background) 35%, var(--cheof-card-background));
 }
 
 .cash-detail-notes-grid span {
-  color: var(--p-text-muted-color);
+  color: var(--cheof-text-secondary);
 
   font-size: 0.7rem;
   font-weight: 700;
@@ -414,7 +414,7 @@
 .cash-detail-notes-grid p {
   margin: 0.55rem 0 0;
 
-  color: var(--p-text-color);
+  color: var(--cheof-text);
 
   font-size: 0.78rem;
   line-height: 1.6;
@@ -435,7 +435,7 @@
 
 .cash-detail-customer strong,
 .cash-detail-movement strong {
-  color: var(--p-text-color);
+  color: var(--cheof-text);
 
   font-size: 0.78rem;
 }
@@ -443,7 +443,7 @@
 .cash-detail-customer small,
 .cash-detail-movement small,
 .cash-detail-date {
-  color: var(--p-text-muted-color);
+  color: var(--cheof-text-secondary);
 
   font-size: 0.7rem;
 }
@@ -469,11 +469,11 @@
 }
 
 .cash-detail-movement--income {
-  color: var(--p-green-500);
+  color: var(--cheof-success);
 }
 
 .cash-detail-movement--expense {
-  color: var(--p-red-500);
+  color: var(--cheof-danger);
 }
 
 .cash-detail-empty {
@@ -504,14 +504,14 @@
 .cash-detail-empty h4 {
   margin: 0;
 
-  color: var(--p-text-color);
+  color: var(--cheof-text);
 }
 
 .cash-detail-empty p {
   max-width: 480px;
   margin: 0;
 
-  color: var(--p-text-muted-color);
+  color: var(--cheof-text-secondary);
 
   font-size: 0.78rem;
   line-height: 1.55;
@@ -543,7 +543,7 @@
   .cash-detail-movements-table .p-datatable-thead > tr > th {
     padding-block: 0.8rem;
 
-    color: var(--p-text-muted-color);
+    color: var(--cheof-text-secondary);
 
     font-size: 0.68rem;
     font-weight: 800;
@@ -576,7 +576,7 @@
 
 .cash-detail-collections__total span,
 .cash-detail-collections__total small {
-  color: var(--p-text-muted-color);
+  color: var(--cheof-text-secondary);
 
   font-size: 0.68rem;
 }
@@ -607,7 +607,7 @@
 
   border-radius: var(--cheof-radius-lg);
 
-  background: color-mix(in srgb, var(--p-surface-50) 35%, var(--cheof-card-background));
+  background: color-mix(in srgb, var(--cheof-card-background-muted) 35%, var(--cheof-card-background));
 }
 
 .cash-detail-collection-card__icon {
@@ -617,7 +617,7 @@
   height: 46px;
   place-items: center;
 
-  border-radius: 14px;
+  border-radius: var(--cheof-radius-lg);
 
   background: color-mix(in srgb, var(--p-primary-color) 11%, var(--cheof-card-background));
 
@@ -632,16 +632,36 @@
 
 .cash-detail-collection-card span,
 .cash-detail-collection-card small {
-  color: var(--p-text-muted-color);
+  color: var(--cheof-text-secondary);
 
   font-size: 0.7rem;
 }
 
 .cash-detail-collection-card strong {
-  color: var(--p-text-color);
+  color: var(--cheof-text);
 
   font-size: 1.05rem;
 }
+
+/* =========================================================
+   ACCESIBILIDAD
+   ========================================================= */
+
+.cash-detail-header__actions :is(button, a):focus-visible,
+.cash-detail-page :is(button, a):focus-visible {
+  outline: 0.16rem solid
+    color-mix(
+      in srgb,
+      var(--p-primary-color) 38%,
+      transparent
+    );
+
+  outline-offset: 0.14rem;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
 
 @media (max-width: 1200px) {
   .cash-detail-info-grid {
@@ -692,5 +712,17 @@
   .cash-detail-collections__total {
     width: 100%;
     text-align: left;
+  }
+}
+
+
+/* =========================================================
+   REDUCCIÓN DE MOVIMIENTO
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .cash-detail-info-card,
+  .cash-detail-summary-card {
+    transition: none;
   }
 }

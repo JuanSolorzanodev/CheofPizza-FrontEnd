@@ -71,7 +71,7 @@
   border: 1px solid
     color-mix(
       in srgb,
-      var(--p-content-border-color) 85%,
+      var(--cheof-card-border) 85%,
       transparent
     );
 
@@ -483,17 +483,17 @@
   border: 1px solid
     color-mix(
       in srgb,
-      var(--p-content-border-color) 90%,
+      var(--cheof-card-border) 90%,
       transparent
     );
 
   border-radius: 50%;
 
   background:
-    var(--p-content-background);
+    var(--cheof-card-background);
 
   color:
-    var(--p-text-color);
+    var(--cheof-text);
 
   cursor: pointer;
 
@@ -521,14 +521,14 @@
     color-mix(
       in srgb,
       var(--p-primary-color) 45%,
-      var(--p-content-border-color)
+      var(--cheof-card-border)
     );
 
   background:
     color-mix(
       in srgb,
       var(--p-primary-color) 8%,
-      var(--p-content-background)
+      var(--cheof-card-background)
     );
 
   color:
@@ -594,7 +594,7 @@
   background:
     color-mix(
       in srgb,
-      var(--p-text-color) 18%,
+      var(--cheof-text) 18%,
       transparent
     );
 
@@ -629,7 +629,7 @@
     color-mix(
       in srgb,
       var(--p-primary-color) 28%,
-      var(--p-content-border-color)
+      var(--cheof-card-border)
     );
 
   border-radius: 24px;
@@ -638,11 +638,11 @@
     color-mix(
       in srgb,
       var(--p-primary-color) 4%,
-      var(--p-content-background)
+      var(--cheof-card-background)
     );
 
   color:
-    var(--p-text-color);
+    var(--cheof-text);
 }
 
 .carousel-empty-icon {
@@ -685,7 +685,7 @@
   margin: 0;
 
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
 
   line-height: 1.55;
 }
@@ -703,12 +703,12 @@
     0.9rem;
 
   border: 1px solid
-    var(--p-content-border-color);
+    var(--cheof-card-border);
 
   border-radius: 11px;
 
   background:
-    var(--p-content-background);
+    var(--cheof-card-background);
 
   color:
     var(--p-primary-color);

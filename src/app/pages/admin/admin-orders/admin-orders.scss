@@ -5,7 +5,7 @@
 
 .admin-orders {
   display: grid;
-  max-width: 1500px;
+  max-width: var(--cheof-page-max-width);
   margin-inline: auto;
   gap: 1.25rem;
 }
@@ -67,7 +67,7 @@
 .orders-hero p {
   max-width: 720px;
   margin: 0.75rem 0 0;
-  color: var(--p-text-muted-color);
+  color: var(--cheof-text-secondary);
   line-height: 1.7;
 }
 
@@ -85,7 +85,7 @@
   border: 1px solid var(--cheof-card-border);
   border-radius: var(--cheof-radius-pill);
   background: var(--cheof-card-background);
-  color: var(--p-text-muted-color);
+  color: var(--cheof-text-secondary);
   font-size: 0.75rem;
   font-weight: 700;
   white-space: nowrap;
@@ -95,12 +95,12 @@
   width: 9px;
   height: 9px;
   border-radius: 50%;
-  background: var(--p-green-500);
+  background: var(--cheof-success);
   box-shadow:
     0 0 0 5px
     color-mix(
       in srgb,
-      var(--p-green-500) 14%,
+      var(--cheof-success) 14%,
       transparent
     );
 }
@@ -130,7 +130,7 @@
   min-width: 46px;
   height: 46px;
   place-items: center;
-  border-radius: 14px;
+  border-radius: var(--cheof-radius-lg);
 }
 
 .overview-card__icon.is-primary {
@@ -147,25 +147,25 @@
   background:
     color-mix(
       in srgb,
-      var(--p-green-500) 12%,
+      var(--cheof-success) 12%,
       var(--cheof-card-background)
     );
-  color: var(--p-green-500);
+  color: var(--cheof-success);
 }
 
 .overview-card__icon.is-danger {
   background:
     color-mix(
       in srgb,
-      var(--p-red-500) 12%,
+      var(--cheof-danger) 12%,
       var(--cheof-card-background)
     );
-  color: var(--p-red-500);
+  color: var(--cheof-danger);
 }
 
 .overview-card__icon.is-neutral {
   background: var(--cheof-muted-background);
-  color: var(--p-text-muted-color);
+  color: var(--cheof-text-secondary);
 }
 
 .overview-card > div {
@@ -176,7 +176,7 @@
 
 .overview-card span,
 .overview-card small {
-  color: var(--p-text-muted-color);
+  color: var(--cheof-text-secondary);
 }
 
 .overview-card > div > span {
@@ -214,7 +214,7 @@
 }
 
 .section-header small {
-  color: var(--p-text-muted-color);
+  color: var(--cheof-text-secondary);
 }
 
 .queue-grid {
@@ -233,7 +233,7 @@
   border: 1px solid var(--cheof-card-border);
   border-radius: var(--cheof-radius-md);
   background: var(--cheof-muted-background);
-  color: var(--p-text-color);
+  color: var(--cheof-text);
   cursor: pointer;
   text-align: left;
   transition:
@@ -271,19 +271,19 @@
   min-width: 34px;
   height: 34px;
   place-items: center;
-  border-radius: 10px;
+  border-radius: var(--cheof-radius-md);
   background: var(--cheof-card-background);
-  color: var(--p-text-muted-color);
+  color: var(--cheof-text-secondary);
 }
 
 .queue-card[data-tone='warning']
 .queue-card__icon {
-  color: var(--p-orange-500);
+  color: var(--cheof-order-preparing);
 }
 
 .queue-card[data-tone='info']
 .queue-card__icon {
-  color: var(--p-blue-500);
+  color: var(--cheof-order-confirmed);
 }
 
 .queue-card[data-tone='primary']
@@ -293,12 +293,12 @@
 
 .queue-card[data-tone='success']
 .queue-card__icon {
-  color: var(--p-green-500);
+  color: var(--cheof-success);
 }
 
 .queue-card[data-tone='danger']
 .queue-card__icon {
-  color: var(--p-red-500);
+  color: var(--cheof-danger);
 }
 
 .queue-card__copy {
@@ -308,7 +308,7 @@
 
 .queue-card__copy > span {
   overflow: hidden;
-  color: var(--p-text-muted-color);
+  color: var(--cheof-text-secondary);
   font-size: 0.7rem;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -348,7 +348,7 @@
 }
 
 .filter-control > span {
-  color: var(--p-text-muted-color);
+  color: var(--cheof-text-secondary);
   font-size: 0.72rem;
   font-weight: 700;
 }
@@ -368,7 +368,7 @@
   z-index: 1;
   top: 50%;
   left: 0.9rem;
-  color: var(--p-text-muted-color);
+  color: var(--cheof-text-secondary);
   transform: translateY(-50%);
 }
 
@@ -394,7 +394,7 @@
 .table-header small {
   display: block;
   margin-top: 0.35rem;
-  color: var(--p-text-muted-color);
+  color: var(--cheof-text-secondary);
 }
 
 .orders-skeleton {
@@ -418,7 +418,7 @@
   padding: 0.8rem 1rem;
   border-bottom: 1px solid var(--cheof-card-border);
   background: var(--cheof-muted-background);
-  color: var(--p-text-muted-color);
+  color: var(--cheof-text-secondary);
   font-size: 0.68rem;
   font-weight: 800;
   letter-spacing: 0.06em;
@@ -457,7 +457,7 @@
 
 .order-number span,
 .customer-cell span {
-  color: var(--p-text-muted-color);
+  color: var(--cheof-text-secondary);
   font-size: 0.7rem;
 }
 
@@ -511,9 +511,9 @@
   height: 34px;
   place-items: center;
   border: 1px solid var(--cheof-card-border);
-  border-radius: 10px;
+  border-radius: var(--cheof-radius-md);
   background: var(--cheof-card-background);
-  color: var(--p-text-muted-color);
+  color: var(--cheof-text-secondary);
   text-decoration: none;
   transition:
     border-color 150ms ease,
@@ -542,9 +542,9 @@
   align-items: flex-start;
   gap: 0.55rem;
   padding: 0.65rem 0.75rem;
-  border-radius: 10px;
+  border-radius: var(--cheof-radius-md);
   background: var(--cheof-muted-background);
-  color: var(--p-text-muted-color);
+  color: var(--cheof-text-secondary);
   font-size: 0.72rem;
   line-height: 1.5;
 }
@@ -573,9 +573,9 @@
   width: 66px;
   height: 66px;
   place-items: center;
-  border-radius: 20px;
+  border-radius: var(--cheof-radius-xl);
   background: var(--cheof-muted-background);
-  color: var(--p-text-muted-color);
+  color: var(--cheof-text-secondary);
   font-size: 1.5rem;
 }
 
@@ -586,9 +586,30 @@
 .orders-empty p {
   max-width: 480px;
   margin: 0.45rem 0 1rem;
-  color: var(--p-text-muted-color);
+  color: var(--cheof-text-secondary);
   line-height: 1.6;
 }
+
+/* =========================================================
+   ACCESIBILIDAD
+   ========================================================= */
+
+.orders-hero__actions :is(button, a):focus-visible,
+.queue-card:focus-visible,
+.clear-filter:focus-visible {
+  outline: 0.16rem solid
+    color-mix(
+      in srgb,
+      var(--p-primary-color) 38%,
+      transparent
+    );
+
+  outline-offset: 0.14rem;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
 
 @media (max-width: 1250px) {
   .queue-grid {
@@ -650,5 +671,17 @@
   .filters-panel,
   .orders-table-panel {
     border-radius: var(--cheof-radius-lg);
+  }
+}
+
+
+/* =========================================================
+   REDUCCIÓN DE MOVIMIENTO
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .queue-card,
+  .orders-table-panel {
+    transition: none;
   }
 }

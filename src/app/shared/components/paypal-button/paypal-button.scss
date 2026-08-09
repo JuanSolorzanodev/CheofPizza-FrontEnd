@@ -31,7 +31,7 @@
   align-items: center;
   justify-content: center;
   gap: 12px;
-  color: var(--p-text-muted-color, #64748b);
+  color: var(--cheof-text-secondary);
   font-size: 0.94rem;
 }
 
@@ -39,10 +39,10 @@
   min-height: 96px;
   padding: 18px;
   border: 1px solid
-    var(--p-surface-border, #e2e8f0);
+    var(--cheof-card-border);
   border-radius: 14px;
   background:
-    var(--p-surface-50, #f8fafc);
+    var(--cheof-card-background-muted);
 
   display: flex;
   align-items: center;
@@ -56,12 +56,12 @@
 
   strong {
     color:
-      var(--p-text-color, #0f172a);
+      var(--cheof-text);
   }
 
   span {
     color:
-      var(--p-text-muted-color, #64748b);
+      var(--cheof-text-secondary);
     font-size: 0.88rem;
   }
 }
@@ -113,7 +113,7 @@
 .paypal-payment__security {
   margin-top: 12px;
   color:
-    var(--p-text-muted-color, #64748b);
+    var(--cheof-text-secondary);
   display: flex;
   align-items: flex-start;
   justify-content: center;

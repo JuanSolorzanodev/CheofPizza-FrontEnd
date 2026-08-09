@@ -1,7 +1,11 @@
 /*
- * PrimeIcons y Leaflet se cargan globalmente desde angular.json.
+ * PrimeIcons se carga globalmente desde angular.json.
  *
- * Las utilidades visuales de CheofPizza se mantienen dentro
- * del sistema de estilos propio de la aplicación.
+ * Leaflet se carga bajo demanda desde LocationPicker,
+ * ya que únicamente se utiliza en el flujo de entrega.
+ *
+ * El sistema visual global de CheofPizza vive en
+ * src/styles y utiliza los tokens de PrimeNG como base.
  */
+
 @use "./styles/index";

@@ -4,7 +4,7 @@
 }
 
 .operator-workspace {
-  min-height: calc(100vh - 5rem);
+  min-height: calc(100vh - var(--cheof-toolbar-height));
 
   padding:
     clamp(1rem, 2vw, 1.6rem)
@@ -21,11 +21,11 @@
       ),
       transparent 26rem
     ),
-    var(--p-surface-50);
+    var(--cheof-page-background);
 }
 
 .operator-workspace__container {
-  width: min(100%, 92rem);
+  width: min(100%, var(--cheof-page-max-width));
   margin-inline: auto;
 }
 
@@ -75,7 +75,7 @@
 .workspace-header h1 {
   margin: 0;
 
-  color: var(--p-text-color);
+  color: var(--cheof-text);
 
   font-size: clamp(2rem, 3vw, 2.75rem);
   font-weight: 850;
@@ -87,10 +87,7 @@
   max-width: 44rem;
   margin: 0.5rem 0 0;
 
-  color: var(
-    --p-text-muted-color,
-    var(--p-text-color-secondary)
-  );
+  color: var(--cheof-text-secondary);
 
   font-size: 0.95rem;
   line-height: 1.5;
@@ -108,7 +105,7 @@
     color-mix(
       in srgb,
       var(--p-primary-color) 20%,
-      var(--p-surface-200)
+      var(--cheof-card-border)
     );
 
   border-radius: 999px;
@@ -116,7 +113,7 @@
   background: color-mix(
     in srgb,
     var(--p-primary-color) 5%,
-    var(--p-surface-0)
+    var(--cheof-card-background)
   );
 
   color: var(--p-primary-color);
@@ -143,16 +140,14 @@
     color-mix(
       in srgb,
       var(--p-primary-color) 20%,
-      var(--p-surface-200)
+      var(--cheof-card-border)
     );
 
   border-radius: 0.75rem;
 
-  background: var(--p-surface-0);
+  background: var(--cheof-card-background);
 
-  box-shadow:
-    0 0.2rem 0.65rem
-    rgba(15, 23, 42, 0.025);
+  box-shadow: var(--cheof-shadow-xs);
 }
 
 .live-status__indicator {
@@ -189,17 +184,14 @@
 }
 
 .live-status strong {
-  color: var(--p-text-color);
+  color: var(--cheof-text);
 
   font-size: 0.76rem;
   font-weight: 650;
 }
 
 .live-status span {
-  color: var(
-    --p-text-muted-color,
-    var(--p-text-color-secondary)
-  );
+  color: var(--cheof-text-secondary);
 
   font-size: 0.68rem;
 }
@@ -233,10 +225,10 @@
   margin-top: 0.85rem;
   padding: 0.78rem;
 
-  border: 1px solid var(--p-surface-200);
+  border: 1px solid var(--cheof-card-border);
   border-radius: 0.85rem;
 
-  background: var(--p-surface-0);
+  background: var(--cheof-card-background);
 
   box-shadow:
     0 0.2rem 0.65rem
@@ -253,10 +245,7 @@
   left: 0.82rem;
   z-index: 1;
 
-  color: var(
-    --p-text-muted-color,
-    var(--p-text-color-secondary)
-  );
+  color: var(--cheof-text-secondary);
 
   font-size: 0.78rem;
 
@@ -289,10 +278,7 @@
 
   background: transparent;
 
-  color: var(
-    --p-text-muted-color,
-    var(--p-text-color-secondary)
-  );
+  color: var(--cheof-text-secondary);
 
   cursor: pointer;
 
@@ -300,8 +286,8 @@
 }
 
 .orders-search button:hover {
-  background: var(--p-surface-100);
-  color: var(--p-text-color);
+  background: var(--cheof-muted-background);
+  color: var(--cheof-text);
 }
 
 :host ::ng-deep
@@ -341,11 +327,11 @@
 
   padding: 0.48rem 0.75rem;
 
-  border: 1px solid var(--p-surface-300);
+  border: 1px solid var(--cheof-divider);
   border-radius: 0.7rem;
 
-  background: var(--p-surface-0);
-  color: var(--p-text-color);
+  background: var(--cheof-card-background);
+  color: var(--cheof-text);
 
   cursor: pointer;
 
@@ -365,7 +351,7 @@
   background: color-mix(
     in srgb,
     var(--p-primary-color) 4%,
-    var(--p-surface-0)
+    var(--cheof-card-background)
   );
 
   color: var(--p-primary-color);
@@ -379,16 +365,12 @@
   margin-top: 0.85rem;
   overflow: hidden;
 
-  border: 1px solid var(--p-surface-200);
+  border: 1px solid var(--cheof-card-border);
   border-radius: 0.9rem;
 
-  background: var(--p-surface-0);
+  background: var(--cheof-card-background);
 
-  box-shadow:
-    0 0.25rem 0.8rem
-      rgba(15, 23, 42, 0.025),
-    0 0.8rem 2rem
-      rgba(15, 23, 42, 0.03);
+  box-shadow: var(--cheof-shadow-sm);
 }
 
 .orders-panel__header {
@@ -399,7 +381,7 @@
 
   padding: 0.95rem 1.05rem;
 
-  border-bottom: 1px solid var(--p-surface-200);
+  border-bottom: 1px solid var(--cheof-card-border);
 }
 
 .orders-panel__header > div {
@@ -421,7 +403,7 @@
   background: color-mix(
     in srgb,
     var(--p-primary-color) 9%,
-    var(--p-surface-0)
+    var(--cheof-card-background)
   );
 
   color: var(--p-primary-color);
@@ -434,7 +416,7 @@
 .orders-panel h2 {
   margin: 0;
 
-  color: var(--p-text-color);
+  color: var(--cheof-text);
 
   font-size: 1rem;
   font-weight: 750;
@@ -443,16 +425,13 @@
 .orders-panel__header p {
   margin: 0.12rem 0 0;
 
-  color: var(
-    --p-text-muted-color,
-    var(--p-text-color-secondary)
-  );
+  color: var(--cheof-text-secondary);
 
   font-size: 0.72rem;
 }
 
 .orders-panel__header p strong {
-  color: var(--p-text-color);
+  color: var(--cheof-text);
   font-weight: 700;
 }
 
@@ -461,15 +440,12 @@
 
   padding: 0.36rem 0.6rem;
 
-  border: 1px solid var(--p-surface-200);
+  border: 1px solid var(--cheof-card-border);
   border-radius: 999px;
 
-  background: var(--p-surface-50);
+  background: var(--cheof-card-background-muted);
 
-  color: var(
-    --p-text-muted-color,
-    var(--p-text-color-secondary)
-  );
+  color: var(--cheof-text-secondary);
 
   font-size: 0.68rem;
   font-weight: 600;
@@ -501,16 +477,14 @@
 
   padding: 0.48rem 0.7rem;
 
-  border: 1px solid var(--p-surface-200);
+  border: 1px solid var(--cheof-card-border);
   border-radius: 999px;
 
-  background: var(--p-surface-0);
+  background: var(--cheof-card-background);
 
-  box-shadow:
-    0 0.45rem 1rem
-    rgba(15, 23, 42, 0.08);
+  box-shadow: var(--cheof-shadow-md);
 
-  color: var(--p-text-color);
+  color: var(--cheof-text);
 
   font-size: 0.7rem;
   font-weight: 600;
@@ -563,14 +537,11 @@
 .orders-table th {
   padding: 0.75rem 0.9rem;
 
-  border-bottom: 1px solid var(--p-surface-200);
+  border-bottom: 1px solid var(--cheof-card-border);
 
-  background: var(--p-surface-50);
+  background: var(--cheof-card-background-muted);
 
-  color: var(
-    --p-text-muted-color,
-    var(--p-text-color-secondary)
-  );
+  color: var(--cheof-text-secondary);
 
   font-size: 0.66rem;
   font-weight: 750;
@@ -582,7 +553,7 @@
 .orders-table td {
   padding: 1rem 0.9rem;
 
-  border-bottom: 1px solid var(--p-surface-200);
+  border-bottom: 1px solid var(--cheof-card-border);
 
   vertical-align: top;
 }
@@ -592,7 +563,7 @@
 }
 
 .order-row {
-  background: var(--p-surface-0);
+  background: var(--cheof-card-background);
 
   transition:
     background 150ms ease,
@@ -611,45 +582,51 @@
 
   width: 0.22rem;
 
-  background: var(--p-surface-300);
+  background: var(--cheof-divider);
 
   content: '';
 }
 
 .order-row--pending
   > td:first-child::before {
-  background: #d97706;
+  background: var(--cheof-order-pending);
 }
 
 .order-row--confirmed
-  > td:first-child::before,
+  > td:first-child::before {
+  background: var(--cheof-order-confirmed);
+}
+
 .order-row--on_the_way
   > td:first-child::before {
-  background: #2563eb;
+  background: var(--cheof-order-on-the-way);
 }
 
 .order-row--preparing
   > td:first-child::before {
-  background: #f97316;
+  background: var(--cheof-order-preparing);
 }
 
 .order-row--ready
-  > td:first-child::before,
+  > td:first-child::before {
+  background: var(--cheof-order-ready);
+}
+
 .order-row--delivered
   > td:first-child::before {
-  background: #16a34a;
+  background: var(--cheof-order-delivered);
 }
 
 .order-row--cancelled
   > td:first-child::before {
-  background: #dc2626;
+  background: var(--cheof-order-cancelled);
 }
 
 .order-row:hover {
   background: color-mix(
     in srgb,
     var(--p-primary-color) 2.8%,
-    var(--p-surface-0)
+    var(--cheof-card-background)
   );
 }
 
@@ -693,64 +670,44 @@
 
   border-radius: 0.65rem;
 
-  background: var(--p-surface-100);
+  background: var(--cheof-muted-background);
 
-  color: var(
-    --p-text-muted-color,
-    var(--p-text-color-secondary)
-  );
+  color: var(--cheof-text-secondary);
 }
 
 .priority-cell__icon[data-status='pending'] {
-  background: color-mix(
-    in srgb,
-    #f59e0b 10%,
-    var(--p-surface-0)
-  );
-
-  color: #b45309;
+  background: var(--cheof-order-pending-soft);
+  color: var(--cheof-order-pending-strong);
 }
 
-.priority-cell__icon[data-status='confirmed'],
-.priority-cell__icon[data-status='on_the_way'] {
-  background: color-mix(
-    in srgb,
-    #2563eb 9%,
-    var(--p-surface-0)
-  );
-
-  color: #1d4ed8;
+.priority-cell__icon[data-status='confirmed'] {
+  background: var(--cheof-order-confirmed-soft);
+  color: var(--cheof-order-confirmed-strong);
 }
 
 .priority-cell__icon[data-status='preparing'] {
-  background: color-mix(
-    in srgb,
-    #f97316 10%,
-    var(--p-surface-0)
-  );
-
-  color: #c2410c;
+  background: var(--cheof-order-preparing-soft);
+  color: var(--cheof-order-preparing-strong);
 }
 
-.priority-cell__icon[data-status='ready'],
-.priority-cell__icon[data-status='delivered'] {
-  background: color-mix(
-    in srgb,
-    #16a34a 9%,
-    var(--p-surface-0)
-  );
+.priority-cell__icon[data-status='ready'] {
+  background: var(--cheof-order-ready-soft);
+  color: var(--cheof-order-ready-strong);
+}
 
-  color: #15803d;
+.priority-cell__icon[data-status='on_the_way'] {
+  background: var(--cheof-order-on-the-way-soft);
+  color: var(--cheof-order-on-the-way-strong);
+}
+
+.priority-cell__icon[data-status='delivered'] {
+  background: var(--cheof-order-delivered-soft);
+  color: var(--cheof-order-delivered-strong);
 }
 
 .priority-cell__icon[data-status='cancelled'] {
-  background: color-mix(
-    in srgb,
-    #dc2626 8%,
-    var(--p-surface-0)
-  );
-
-  color: #b91c1c;
+  background: var(--cheof-order-cancelled-soft);
+  color: var(--cheof-order-cancelled-strong);
 }
 
 .priority-cell__icon i {
@@ -764,7 +721,7 @@
 }
 
 .priority-cell strong {
-  color: var(--p-text-color);
+  color: var(--cheof-text);
 
   font-size: 0.8rem;
   font-weight: 700;
@@ -797,7 +754,7 @@
 .identity-cell__order strong {
   display: block;
 
-  color: var(--p-text-color);
+  color: var(--cheof-text);
 
   font-size: 0.82rem;
   font-weight: 750;
@@ -807,10 +764,7 @@
 }
 
 .identity-cell__order span {
-  color: var(
-    --p-text-muted-color,
-    var(--p-text-color-secondary)
-  );
+  color: var(--cheof-text-secondary);
 
   font-size: 0.67rem;
 }
@@ -838,7 +792,7 @@
   background: color-mix(
     in srgb,
     var(--p-primary-color) 7%,
-    var(--p-surface-0)
+    var(--cheof-card-background)
   );
 
   color: var(--p-primary-color);
@@ -862,7 +816,7 @@
 .identity-cell__customer strong {
   overflow: hidden;
 
-  color: var(--p-text-color);
+  color: var(--cheof-text);
 
   font-size: 0.74rem;
   font-weight: 650;
@@ -876,10 +830,7 @@
   align-items: center;
   gap: 0.3rem;
 
-  color: var(
-    --p-text-muted-color,
-    var(--p-text-color-secondary)
-  );
+  color: var(--cheof-text-secondary);
 
   font-size: 0.65rem;
 }
@@ -891,10 +842,10 @@
 .preparation-cell {
   padding: 0.78rem;
 
-  border: 1px dashed var(--p-surface-300);
+  border: 1px dashed var(--cheof-divider);
   border-radius: 0.7rem;
 
-  background: var(--p-surface-50);
+  background: var(--cheof-card-background-muted);
 }
 
 .preparation-cell > span {
@@ -902,7 +853,7 @@
   align-items: center;
   gap: 0.38rem;
 
-  color: var(--p-text-color);
+  color: var(--cheof-text);
 
   font-size: 0.68rem;
   font-weight: 700;
@@ -920,10 +871,7 @@
 
   margin: 0.4rem 0 0;
 
-  color: var(
-    --p-text-muted-color,
-    var(--p-text-color-secondary)
-  );
+  color: var(--cheof-text-secondary);
 
   font-size: 0.74rem;
   line-height: 1.5;
@@ -960,12 +908,9 @@
 
   border-radius: 0.52rem;
 
-  background: var(--p-surface-100);
+  background: var(--cheof-muted-background);
 
-  color: var(
-    --p-text-muted-color,
-    var(--p-text-color-secondary)
-  );
+  color: var(--cheof-text-secondary);
 }
 
 .logistics-cell__icon i {
@@ -979,16 +924,13 @@
 }
 
 .logistics-cell__row span {
-  color: var(
-    --p-text-muted-color,
-    var(--p-text-color-secondary)
-  );
+  color: var(--cheof-text-secondary);
 
   font-size: 0.62rem;
 }
 
 .logistics-cell__row strong {
-  color: var(--p-text-color);
+  color: var(--cheof-text);
 
   font-size: 0.72rem;
   font-weight: 650;
@@ -1006,19 +948,15 @@
   border: 1px solid
     color-mix(
       in srgb,
-      #2563eb 18%,
-      var(--p-surface-200)
+      var(--cheof-info) 18%,
+      var(--cheof-card-border)
     );
 
   border-radius: 0.52rem;
 
-  background: color-mix(
-    in srgb,
-    #2563eb 4%,
-    var(--p-surface-0)
-  );
+  background: var(--cheof-info-soft);
 
-  color: #1d4ed8;
+  color: var(--cheof-info-strong);
 
   font-size: 0.61rem;
   font-weight: 650;
@@ -1102,14 +1040,12 @@
 
   overflow: hidden;
 
-  border: 1px solid var(--p-surface-200);
+  border: 1px solid var(--cheof-card-border);
   border-radius: 0.85rem;
 
-  background: var(--p-surface-0);
+  background: var(--cheof-card-background);
 
-  box-shadow:
-    0 0.25rem 0.8rem
-    rgba(15, 23, 42, 0.03);
+  box-shadow: var(--cheof-shadow-sm);
 }
 
 .mobile-order::before {
@@ -1118,31 +1054,37 @@
 
   width: 0.2rem;
 
-  background: var(--p-surface-300);
+  background: var(--cheof-divider);
 
   content: '';
 }
 
 .mobile-order--pending::before {
-  background: #d97706;
+  background: var(--cheof-order-pending);
 }
 
-.mobile-order--confirmed::before,
+.mobile-order--confirmed::before {
+  background: var(--cheof-order-confirmed);
+}
+
 .mobile-order--on_the_way::before {
-  background: #2563eb;
+  background: var(--cheof-order-on-the-way);
 }
 
 .mobile-order--preparing::before {
-  background: #f97316;
+  background: var(--cheof-order-preparing);
 }
 
-.mobile-order--ready::before,
+.mobile-order--ready::before {
+  background: var(--cheof-order-ready);
+}
+
 .mobile-order--delivered::before {
-  background: #16a34a;
+  background: var(--cheof-order-delivered);
 }
 
 .mobile-order--cancelled::before {
-  background: #dc2626;
+  background: var(--cheof-order-cancelled);
 }
 
 .mobile-order--historical {
@@ -1176,59 +1118,42 @@
 
   border-radius: 0.62rem;
 
-  background: var(--p-surface-100);
+  background: var(--cheof-muted-background);
 }
 
 .mobile-order__status-icon[data-status='pending'] {
-  background: color-mix(
-    in srgb,
-    #f59e0b 10%,
-    var(--p-surface-0)
-  );
-
-  color: #b45309;
+  background: var(--cheof-order-pending-soft);
+  color: var(--cheof-order-pending-strong);
 }
 
-.mobile-order__status-icon[data-status='confirmed'],
-.mobile-order__status-icon[data-status='on_the_way'] {
-  background: color-mix(
-    in srgb,
-    #2563eb 9%,
-    var(--p-surface-0)
-  );
-
-  color: #1d4ed8;
+.mobile-order__status-icon[data-status='confirmed'] {
+  background: var(--cheof-order-confirmed-soft);
+  color: var(--cheof-order-confirmed-strong);
 }
 
 .mobile-order__status-icon[data-status='preparing'] {
-  background: color-mix(
-    in srgb,
-    #f97316 10%,
-    var(--p-surface-0)
-  );
-
-  color: #c2410c;
+  background: var(--cheof-order-preparing-soft);
+  color: var(--cheof-order-preparing-strong);
 }
 
-.mobile-order__status-icon[data-status='ready'],
-.mobile-order__status-icon[data-status='delivered'] {
-  background: color-mix(
-    in srgb,
-    #16a34a 9%,
-    var(--p-surface-0)
-  );
+.mobile-order__status-icon[data-status='ready'] {
+  background: var(--cheof-order-ready-soft);
+  color: var(--cheof-order-ready-strong);
+}
 
-  color: #15803d;
+.mobile-order__status-icon[data-status='on_the_way'] {
+  background: var(--cheof-order-on-the-way-soft);
+  color: var(--cheof-order-on-the-way-strong);
+}
+
+.mobile-order__status-icon[data-status='delivered'] {
+  background: var(--cheof-order-delivered-soft);
+  color: var(--cheof-order-delivered-strong);
 }
 
 .mobile-order__status-icon[data-status='cancelled'] {
-  background: color-mix(
-    in srgb,
-    #dc2626 8%,
-    var(--p-surface-0)
-  );
-
-  color: #b91c1c;
+  background: var(--cheof-order-cancelled-soft);
+  color: var(--cheof-order-cancelled-strong);
 }
 
 .mobile-order__status > div {
@@ -1237,17 +1162,14 @@
 }
 
 .mobile-order__status strong {
-  color: var(--p-text-color);
+  color: var(--cheof-text);
 
   font-size: 0.76rem;
   font-weight: 700;
 }
 
 .mobile-order__status span {
-  color: var(
-    --p-text-muted-color,
-    var(--p-text-color-secondary)
-  );
+  color: var(--cheof-text-secondary);
 
   font-size: 0.63rem;
 }
@@ -1257,10 +1179,7 @@
 }
 
 .mobile-order__identity > span {
-  color: var(
-    --p-text-muted-color,
-    var(--p-text-color-secondary)
-  );
+  color: var(--cheof-text-secondary);
 
   font-size: 0.62rem;
 }
@@ -1268,7 +1187,7 @@
 .mobile-order__identity h3 {
   margin: 0.14rem 0 0;
 
-  color: var(--p-text-color);
+  color: var(--cheof-text);
 
   font-size: 0.84rem;
   font-weight: 750;
@@ -1291,7 +1210,7 @@
 
   border-radius: 0.65rem;
 
-  background: var(--p-surface-50);
+  background: var(--cheof-card-background-muted);
 }
 
 .mobile-order__customer > i {
@@ -1309,7 +1228,7 @@
 .mobile-order__customer strong {
   overflow: hidden;
 
-  color: var(--p-text-color);
+  color: var(--cheof-text);
 
   font-size: 0.72rem;
   font-weight: 650;
@@ -1319,10 +1238,7 @@
 }
 
 .mobile-order__customer span {
-  color: var(
-    --p-text-muted-color,
-    var(--p-text-color-secondary)
-  );
+  color: var(--cheof-text-secondary);
 
   font-size: 0.64rem;
 }
@@ -1331,10 +1247,10 @@
   margin: 0.65rem 0.9rem 0;
   padding: 0.68rem;
 
-  border: 1px dashed var(--p-surface-300);
+  border: 1px dashed var(--cheof-divider);
   border-radius: 0.65rem;
 
-  background: var(--p-surface-50);
+  background: var(--cheof-card-background-muted);
 }
 
 .mobile-order__preparation > span {
@@ -1342,7 +1258,7 @@
   align-items: center;
   gap: 0.32rem;
 
-  color: var(--p-text-color);
+  color: var(--cheof-text);
 
   font-size: 0.66rem;
   font-weight: 700;
@@ -1354,10 +1270,7 @@
 
   margin: 0.34rem 0 0;
 
-  color: var(
-    --p-text-muted-color,
-    var(--p-text-color-secondary)
-  );
+  color: var(--cheof-text-secondary);
 
   font-size: 0.68rem;
   line-height: 1.45;
@@ -1381,10 +1294,7 @@
   align-items: center;
   gap: 0.3rem;
 
-  color: var(
-    --p-text-muted-color,
-    var(--p-text-color-secondary)
-  );
+  color: var(--cheof-text-secondary);
 
   font-size: 0.65rem;
 }
@@ -1409,19 +1319,15 @@
   border: 1px solid
     color-mix(
       in srgb,
-      #2563eb 18%,
-      var(--p-surface-200)
+      var(--cheof-info) 18%,
+      var(--cheof-card-border)
     );
 
   border-radius: 0.6rem;
 
-  background: color-mix(
-    in srgb,
-    #2563eb 4%,
-    var(--p-surface-0)
-  );
+  background: var(--cheof-info-soft);
 
-  color: #1d4ed8;
+  color: var(--cheof-info-strong);
 
   font-size: 0.65rem;
   font-weight: 650;
@@ -1473,7 +1379,7 @@
 
   padding: 1rem;
 
-  border-bottom: 1px solid var(--p-surface-200);
+  border-bottom: 1px solid var(--cheof-card-border);
 }
 
 /* =========================================================
@@ -1496,17 +1402,13 @@
   border: 1px solid
     color-mix(
       in srgb,
-      #dc2626 18%,
-      var(--p-surface-200)
+      var(--cheof-danger) 18%,
+      var(--cheof-card-border)
     );
 
   border-radius: 0.75rem;
 
-  background: color-mix(
-    in srgb,
-    #dc2626 4%,
-    var(--p-surface-0)
-  );
+  background: var(--cheof-danger-soft);
 }
 
 .orders-error__icon {
@@ -1517,17 +1419,13 @@
 
   border-radius: 0.68rem;
 
-  background: color-mix(
-    in srgb,
-    #dc2626 8%,
-    var(--p-surface-0)
-  );
+  background: var(--cheof-danger-soft);
 
-  color: #dc2626;
+  color: var(--cheof-danger);
 }
 
 .orders-error strong {
-  color: var(--p-text-color);
+  color: var(--cheof-text);
 
   font-size: 0.8rem;
   font-weight: 700;
@@ -1536,10 +1434,7 @@
 .orders-error p {
   margin: 0.14rem 0 0;
 
-  color: var(
-    --p-text-muted-color,
-    var(--p-text-color-secondary)
-  );
+  color: var(--cheof-text-secondary);
 
   font-size: 0.7rem;
 }
@@ -1571,7 +1466,7 @@
   background: color-mix(
     in srgb,
     var(--p-primary-color) 8%,
-    var(--p-surface-0)
+    var(--cheof-card-background)
   );
 
   color: var(--p-primary-color);
@@ -1593,7 +1488,7 @@
 .empty-orders h3 {
   margin: 0.4rem 0 0;
 
-  color: var(--p-text-color);
+  color: var(--cheof-text);
 
   font-size: 1.05rem;
   font-weight: 750;
@@ -1603,10 +1498,7 @@
   max-width: 28rem;
   margin: 0.45rem 0 1rem;
 
-  color: var(
-    --p-text-muted-color,
-    var(--p-text-color-secondary)
-  );
+  color: var(--cheof-text-secondary);
 
   font-size: 0.78rem;
   line-height: 1.5;
@@ -1623,7 +1515,7 @@
 
   padding: 0.85rem;
 
-  border-top: 1px solid var(--p-surface-200);
+  border-top: 1px solid var(--cheof-card-border);
 }
 
 :host ::ng-deep
@@ -1632,10 +1524,10 @@
   gap: 0.2rem;
   padding: 0.3rem;
 
-  border: 1px solid var(--p-surface-200);
+  border: 1px solid var(--cheof-card-border);
   border-radius: 0.76rem;
 
-  background: var(--p-surface-0);
+  background: var(--cheof-card-background);
 }
 
 :host ::ng-deep
@@ -1674,10 +1566,7 @@
 }
 
 .orders-pagination > span {
-  color: var(
-    --p-text-muted-color,
-    var(--p-text-color-secondary)
-  );
+  color: var(--cheof-text-secondary);
 
   font-size: 0.67rem;
 }

@@ -10,10 +10,7 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
-  FormBuilder,
   FormsModule,
-  ReactiveFormsModule,
-  Validators,
 } from '@angular/forms';
 import { finalize, forkJoin } from 'rxjs';
 
@@ -23,23 +20,22 @@ import {
 } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
-import { MultiSelectModule } from 'primeng/multiselect';
 import { SelectModule } from 'primeng/select';
 import { SkeletonModule } from 'primeng/skeleton';
 import { TagModule } from 'primeng/tag';
-import { TextareaModule } from 'primeng/textarea';
-import { ToggleSwitchModule } from 'primeng/toggleswitch';
 import { TooltipModule } from 'primeng/tooltip';
 
 import { AdminCatalogApiService } from '../../../core/api/admin/catalog/admin-catalog-api.service';
 import {
   AdminCategory,
   AdminPizza,
-  AdminPizzaPayload,
   AdminValidationErrorResponse,
 } from '../../../core/api/admin/catalog/admin-catalog.models';
+import {
+  AdminPizzaEditorComponent,
+} from '../admin-pizza-editor/admin-pizza-editor';
+
 import { CatalogApiService } from '../../../core/api/catalog/catalog-api.service';
 import {
   IngredientDto,
@@ -50,24 +46,26 @@ interface SelectOption<T = number | string> {
   value: T;
 }
 
+
+interface AdminPizzaEditorSavedEvent {
+  pizza: AdminPizza;
+  editing: boolean;
+}
+
 @Component({
   selector: 'app-admin-pizzas',
   standalone: true,
   imports: [
     CommonModule,
     FormsModule,
-    ReactiveFormsModule,
     ButtonModule,
     ConfirmDialogModule,
-    DialogModule,
     InputTextModule,
-    MultiSelectModule,
     SelectModule,
     SkeletonModule,
     TagModule,
-    TextareaModule,
-    ToggleSwitchModule,
     TooltipModule,
+    AdminPizzaEditorComponent,
   ],
   providers: [
     ConfirmationService,
@@ -82,9 +80,6 @@ export class AdminPizzas {
 
   private readonly publicCatalogApi =
     inject(CatalogApiService);
-
-  private readonly fb =
-    inject(FormBuilder);
 
   private readonly messages =
     inject(MessageService);
@@ -134,9 +129,6 @@ export class AdminPizzas {
   readonly editingPizza =
     signal<AdminPizza | null>(null);
 
-  readonly imagePreviewError =
-    signal(false);
-
   readonly categoryOptions =
     computed<SelectOption<number | null>[]>(() => [
       {
@@ -164,28 +156,6 @@ export class AdminPizzas {
         value: 'hidden',
       },
     ]);
-
-  readonly ingredientOptions =
-    computed(() =>
-      this.ingredients()
-        .map(ingredient => ({
-          label: ingredient.type?.name
-            ? `${ingredient.name} · ${ingredient.type.name}`
-            : ingredient.name,
-
-          value: ingredient.id,
-
-          typeName:
-            ingredient.type?.name ??
-            'Sin tipo',
-        }))
-        .sort((a, b) =>
-          a.label.localeCompare(
-            b.label,
-            'es',
-          ),
-        ),
-    );
 
   readonly totalPizzas =
     computed(
@@ -269,54 +239,6 @@ export class AdminPizzas {
           );
         },
       );
-    });
-
-  readonly pizzaForm =
-    this.fb.nonNullable.group({
-      category_id: [
-        0,
-        [
-          Validators.required,
-          Validators.min(1),
-        ],
-      ],
-
-      name: [
-        '',
-        [
-          Validators.required,
-          Validators.minLength(2),
-          Validators.maxLength(150),
-        ],
-      ],
-
-      description: [
-        '',
-        [
-          Validators.maxLength(3000),
-        ],
-      ],
-
-      image_url: [
-        '',
-        [
-          Validators.maxLength(2048),
-          Validators.pattern(
-            /^https?:\/\/.+/i,
-          ),
-        ],
-      ],
-
-      ingredient_ids: [
-        [] as number[],
-        [
-          Validators.required,
-        ],
-      ],
-
-      is_visible: [
-        true,
-      ],
     });
 
   constructor() {
@@ -408,23 +330,6 @@ export class AdminPizzas {
 
   openNewPizza(): void {
     this.editingPizza.set(null);
-    this.imagePreviewError.set(false);
-
-    this.pizzaForm.reset({
-      category_id:
-        this.categories()[0]?.id ?? 0,
-
-      name: '',
-
-      description: '',
-
-      image_url: '',
-
-      ingredient_ids: [],
-
-      is_visible: true,
-    });
-
     this.dialogVisible.set(true);
   }
 
@@ -432,187 +337,58 @@ export class AdminPizzas {
     pizza: AdminPizza,
   ): void {
     this.editingPizza.set(pizza);
-    this.imagePreviewError.set(false);
-
-    this.pizzaForm.reset({
-      category_id:
-        pizza.category_id,
-
-      name:
-        pizza.name,
-
-      description:
-        pizza.description ?? '',
-
-      image_url:
-        pizza.image_url ?? '',
-
-      ingredient_ids:
-        pizza.ingredients.map(
-          ingredient =>
-            ingredient.id,
-        ),
-
-      is_visible:
-        pizza.is_visible,
-    });
-
     this.dialogVisible.set(true);
   }
 
-  onDialogVisibleChange(visible: boolean): void {
-    if (visible) {
-      this.dialogVisible.set(true);
-      return;
-    }
-
-    this.closeDialog();
-  }
-
-  closeDialog(): void {
+  closeEditor(): void {
     if (this.saving()) {
       return;
     }
 
-    this.resetDialog();
+    this.dialogVisible.set(false);
+    this.editingPizza.set(null);
   }
 
-  savePizza(): void {
-    this.pizzaForm.markAllAsTouched();
+  onEditorSavingChange(
+    saving: boolean,
+  ): void {
+    this.saving.set(saving);
+  }
 
-    const ingredientIds =
-      this.pizzaForm.controls
-        .ingredient_ids.value;
-
-    if (
-      !ingredientIds.length
-    ) {
-      this.pizzaForm.controls
-        .ingredient_ids
-        .setErrors({
-          required: true,
-        });
-    }
-
-    if (
-      this.pizzaForm.invalid ||
-      this.saving()
-    ) {
-      return;
-    }
-
-    const value =
-      this.pizzaForm.getRawValue();
-
-    const payload:
-      AdminPizzaPayload = {
-        category_id:
-          Number(value.category_id),
-
-        name:
-          value.name.trim(),
-
-        description:
-          value.description.trim() ||
-          null,
-
-        image_url:
-          value.image_url.trim() ||
-          null,
-
-        ingredient_ids:
-          value.ingredient_ids.map(
-            id => Number(id),
-          ),
-
-        is_visible:
-          Boolean(value.is_visible),
-      };
-
-    const editing =
-      this.editingPizza();
-
-    const request = editing
-      ? this.adminCatalogApi.updatePizza(
-          editing.id,
-          payload,
-        )
-      : this.adminCatalogApi.createPizza(
-          payload,
-        );
-
-    this.saving.set(true);
-
-    request
-      .pipe(
-        finalize(() =>
-          this.saving.set(false),
-        ),
-
-        takeUntilDestroyed(
-          this.destroyRef,
-        ),
-      )
-      .subscribe({
-        next: response => {
-          const saved =
-            response.data;
-
-          this.pizzas.update(
-            current =>
-              editing
-                ? current
-                    .map(pizza =>
-                      pizza.id ===
-                      saved.id
-                        ? saved
-                        : pizza,
-                    )
-                    .sort(
-                      (a, b) =>
-                        a.name.localeCompare(
-                          b.name,
-                          'es',
-                        ),
-                    )
-                : [
-                    ...current,
-                    saved,
-                  ].sort(
-                    (a, b) =>
-                      a.name.localeCompare(
-                        b.name,
-                        'es',
-                      ),
+  onPizzaSaved(
+    event: AdminPizzaEditorSavedEvent,
+  ): void {
+    this.pizzas.update(
+      current =>
+        event.editing
+          ? current
+              .map(pizza =>
+                pizza.id ===
+                event.pizza.id
+                  ? event.pizza
+                  : pizza,
+              )
+              .sort(
+                (a, b) =>
+                  a.name.localeCompare(
+                    b.name,
+                    'es',
                   ),
-          );
+              )
+          : [
+              ...current,
+              event.pizza,
+            ].sort(
+              (a, b) =>
+                a.name.localeCompare(
+                  b.name,
+                  'es',
+                ),
+            ),
+    );
 
-          this.messages.add({
-            severity: 'success',
-            summary: editing
-              ? 'Pizza actualizada'
-              : 'Pizza creada',
-            detail:
-              response.message,
-            life: 3000,
-          });
-
-          this.resetDialog();
-        },
-
-        error: (
-          error: HttpErrorResponse,
-        ) => {
-          this.messages.add({
-            severity: 'error',
-            summary:
-              'No se guardó la pizza',
-            detail:
-              this.errorMessage(error),
-            life: 4500,
-          });
-        },
-      });
+    this.dialogVisible.set(false);
+    this.editingPizza.set(null);
   }
 
   confirmVisibility(
@@ -704,14 +480,6 @@ export class AdminPizzas {
       accept: () =>
         this.deletePizza(pizza),
     });
-  }
-
-  imageUrl(): string {
-    return (
-      this.pizzaForm.controls
-        .image_url.value
-        .trim()
-    );
   }
 
   ingredientNames(
@@ -882,21 +650,6 @@ export class AdminPizzas {
           });
         },
       });
-  }
-
-  private resetDialog(): void {
-    this.dialogVisible.set(false);
-    this.editingPizza.set(null);
-    this.imagePreviewError.set(false);
-
-    this.pizzaForm.reset({
-      category_id: 0,
-      name: '',
-      description: '',
-      image_url: '',
-      ingredient_ids: [],
-      is_visible: true,
-    });
   }
 
   private errorMessage(

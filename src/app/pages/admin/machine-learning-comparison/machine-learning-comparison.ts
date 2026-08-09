@@ -2,11 +2,14 @@ import {
   CommonModule,
 } from '@angular/common';
 import {
+  ChangeDetectionStrategy,
   Component,
   DestroyRef,
   OnInit,
   computed,
+  effect,
   inject,
+  input,
   signal,
 } from '@angular/core';
 import {
@@ -92,10 +95,23 @@ interface SizeComparisonItem {
 
   styleUrl:
     './machine-learning-comparison.scss',
+
+  changeDetection:
+    ChangeDetectionStrategy.OnPush,
 })
 export class MachineLearningComparisonComponent
   implements OnInit
 {
+  /**
+   * Señal enviada por el dashboard padre cuando el usuario
+   * pulsa "Actualizar" mientras esta sección está visible.
+   */
+  readonly refreshKey =
+    input(0);
+
+  private previousRefreshKey =
+    0;
+
   private readonly api =
     inject(
       MachineLearningApiService,
@@ -778,6 +794,26 @@ export class MachineLearningComparisonComponent
   | Ciclo de vida
   |--------------------------------------------------------------------------
   */
+
+  constructor() {
+    effect(() => {
+      const refreshKey =
+        this.refreshKey();
+
+      if (
+        refreshKey <= 0 ||
+        refreshKey ===
+          this.previousRefreshKey
+      ) {
+        return;
+      }
+
+      this.previousRefreshKey =
+        refreshKey;
+
+      this.loadComparison();
+    });
+  }
 
   ngOnInit(): void {
     this.loadComparison();

@@ -4,30 +4,13 @@
 }
 
 .promotion-page {
-  --promotion-primary:
-    var(
-      --p-primary-color,
-      #159447
-    );
+  --promotion-primary: var(--p-primary-color);
 
-  --promotion-primary-dark:
-    color-mix(
-      in srgb,
-      var(--promotion-primary) 82%,
-      #06170c
-    );
+  --promotion-primary-dark: color-mix(in srgb, var(--promotion-primary) 82%, var(--cheof-text));
 
-  --promotion-surface:
-    var(
-      --cheof-card-background,
-      var(--p-content-background)
-    );
+  --promotion-surface: var(--cheof-card-background);
 
-  --promotion-background:
-    var(
-      --p-surface-ground,
-      #f7faf8
-    );
+  --promotion-background: var(--cheof-page-background);
 
   --promotion-soft:
     color-mix(
@@ -39,17 +22,13 @@
   --promotion-border:
     color-mix(
       in srgb,
-      var(--p-content-border-color) 82%,
+      var(--cheof-card-border) 82%,
       transparent
     );
 
-  --promotion-muted:
-    var(
-      --p-text-muted-color,
-      #66736a
-    );
+  --promotion-muted: var(--cheof-text-secondary);
 
-  width: min(1500px, 100%);
+  width: min(var(--cheof-page-max-width), 100%);
   margin-inline: auto;
 
   padding:
@@ -60,7 +39,7 @@
     )
     clamp(7rem, 10vw, 9rem);
 
-  color: var(--p-text-color);
+  color: var(--cheof-text);
 }
 
 /* Loading */
@@ -99,7 +78,7 @@
     clamp(1.5rem, 4vw, 2.7rem);
 
   border: 1px solid var(--promotion-border);
-  border-radius: 24px;
+  border-radius: var(--cheof-radius-xl);
 
   background: var(--promotion-surface);
 
@@ -109,7 +88,7 @@
     0 20px 50px
     color-mix(
       in srgb,
-      #000000 8%,
+      var(--cheof-text) 8%,
       transparent
     );
 }
@@ -118,7 +97,7 @@
   border-color:
     color-mix(
       in srgb,
-      var(--p-red-500) 24%,
+      var(--cheof-danger) 24%,
       var(--promotion-border)
     );
 }
@@ -130,16 +109,16 @@
 
   place-items: center;
 
-  border-radius: 18px;
+  border-radius: var(--cheof-radius-lg);
 
   background:
     color-mix(
       in srgb,
-      var(--p-red-500) 10%,
+      var(--cheof-danger) 10%,
       transparent
     );
 
-  color: var(--p-red-500);
+  color: var(--cheof-danger);
   font-size: 1.45rem;
 }
 
@@ -150,7 +129,7 @@
 }
 
 .promotion-state__eyebrow {
-  color: var(--p-red-500);
+  color: var(--cheof-danger);
 
   font-size: 0.68rem;
   font-weight: 650;
@@ -199,7 +178,7 @@
     clamp(1.35rem, 3vw, 2.2rem);
 
   border: 1px solid var(--promotion-border);
-  border-radius: 26px;
+  border-radius: var(--cheof-radius-2xl);
 
   background:
     linear-gradient(
@@ -216,7 +195,7 @@
     0 15px 40px
     color-mix(
       in srgb,
-      #000000 6%,
+      var(--cheof-text) 6%,
       transparent
     );
 }
@@ -359,7 +338,7 @@
 }
 
 .hero-progress__label strong {
-  color: var(--p-text-color);
+  color: var(--cheof-text);
   font-weight: 640;
 }
 
@@ -424,7 +403,7 @@
     0 11px 30px
     color-mix(
       in srgb,
-      #000000 5%,
+      var(--cheof-text) 5%,
       transparent
     );
 }
@@ -525,7 +504,7 @@
   padding: 0.85rem;
 
   border: 1px solid var(--promotion-border);
-  border-radius: 14px;
+  border-radius: var(--cheof-radius-lg);
 
   background:
     color-mix(
@@ -563,7 +542,7 @@
       var(--promotion-border)
     );
 
-  border-radius: 14px;
+  border-radius: var(--cheof-radius-lg);
 
   background: var(--promotion-soft);
 }
@@ -623,7 +602,7 @@
       var(--promotion-border)
     );
 
-  border-radius: 14px;
+  border-radius: var(--cheof-radius-lg);
 
   background: var(--promotion-soft);
 }
@@ -730,7 +709,7 @@
   border-radius: 9px;
 
   background: var(--promotion-primary-dark);
-  color: #ffffff;
+  color: var(--cheof-card-background);
 
   font-size: 0.68rem;
   font-weight: 660;
@@ -768,7 +747,7 @@
   border-radius: 999px;
 
   background: var(--promotion-primary);
-  color: #ffffff;
+  color: var(--cheof-card-background);
 
   font-size: 0.66rem;
 }
@@ -867,7 +846,7 @@
   border-radius: 11px;
 
   background: var(--promotion-surface);
-  color: var(--p-text-color);
+  color: var(--cheof-text);
 
   cursor: pointer;
   text-align: left;
@@ -1157,7 +1136,7 @@
 
 .extras-limit--full {
   background: var(--promotion-primary);
-  color: #ffffff;
+  color: var(--cheof-card-background);
 }
 
 .extras-grid {
@@ -1275,7 +1254,7 @@
   padding: 1.1rem;
 
   border: 1px solid var(--promotion-border);
-  border-radius: 20px;
+  border-radius: var(--cheof-radius-xl);
 
   background: var(--promotion-surface);
 
@@ -1283,7 +1262,7 @@
     0 15px 38px
     color-mix(
       in srgb,
-      #000000 7%,
+      var(--cheof-text) 7%,
       transparent
     );
 }
@@ -1423,7 +1402,7 @@
 }
 
 .summary-costs strong {
-  color: var(--p-text-color);
+  color: var(--cheof-text);
   font-weight: 620;
 }
 
@@ -1433,7 +1412,7 @@
 
   border-top: 1px solid var(--promotion-border);
 
-  color: var(--p-text-color) !important;
+  color: var(--cheof-text) !important;
   font-size: 0.82rem !important;
 }
 
@@ -1497,7 +1476,7 @@
   border-radius: 11px;
 
   background: var(--promotion-primary);
-  color: #ffffff;
+  color: var(--cheof-card-background);
 
   font-size: 0.73rem;
   font-weight: 650;
@@ -1536,7 +1515,7 @@
   border-radius: 10px;
 
   background: transparent;
-  color: var(--p-text-color);
+  color: var(--cheof-text);
 
   font-size: 0.68rem;
   font-weight: 590;
@@ -1564,7 +1543,7 @@
   border-radius: 10px;
 
   background: var(--promotion-surface);
-  color: var(--p-text-color);
+  color: var(--cheof-text);
 
   font-size: 0.7rem;
   font-weight: 590;
@@ -1671,7 +1650,7 @@
   border-radius: 999px;
 
   background: var(--promotion-surface);
-  color: var(--p-text-color);
+  color: var(--cheof-text);
 
   font-size: 0.64rem;
 }
@@ -1706,18 +1685,18 @@
   border-color:
     color-mix(
       in srgb,
-      var(--p-red-500) 22%,
+      var(--cheof-danger) 22%,
       var(--promotion-border)
     );
 
   background:
     color-mix(
       in srgb,
-      var(--p-red-500) 6%,
+      var(--cheof-danger) 6%,
       var(--promotion-surface)
     );
 
-  color: var(--p-red-600);
+  color: var(--cheof-danger-strong);
 }
 
 /* Mobile bar */
@@ -1727,6 +1706,31 @@
 }
 
 /* Responsive */
+
+/* =========================================================
+   ACCESIBILIDAD
+   ========================================================= */
+
+.promotion-page :is(
+  a,
+  button,
+  input,
+  select,
+  textarea,
+  [tabindex]:not([tabindex="-1"])
+):focus-visible {
+  outline: 0.16rem solid
+    color-mix(
+      in srgb,
+      var(--p-primary-color) 38%,
+      transparent
+    );
+  outline-offset: 0.14rem;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
 
 @media (max-width: 1160px) {
   .promotion-layout {
@@ -1815,7 +1819,7 @@
       0 16px 40px
       color-mix(
         in srgb,
-        #000000 17%,
+        var(--cheof-text) 17%,
         transparent
       );
 
@@ -1853,7 +1857,7 @@
 
   .promotion-hero {
     padding: 1.1rem;
-    border-radius: 20px;
+    border-radius: var(--cheof-radius-xl);
   }
 
   .promotion-hero h1 {

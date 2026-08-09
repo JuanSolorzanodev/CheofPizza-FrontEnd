@@ -5,7 +5,7 @@
 
 .cash-register-page {
   display: grid;
-  max-width: 1500px;
+  max-width: var(--cheof-page-max-width);
   margin-inline: auto;
   gap: 1.25rem;
 }
@@ -55,7 +55,7 @@
 .cash-register-header h2 {
   margin: 0.4rem 0 0;
 
-  color: var(--p-text-color);
+  color: var(--cheof-text);
 
   font-size: clamp(1.65rem, 4vw, 2.5rem);
 
@@ -66,7 +66,7 @@
   max-width: 720px;
   margin: 0.8rem 0 0;
 
-  color: var(--p-text-muted-color);
+  color: var(--cheof-text-secondary);
 
   line-height: 1.7;
 }
@@ -87,13 +87,13 @@
 
   padding: 1.15rem 1.25rem;
 
-  border: 1px solid color-mix(in srgb, var(--p-green-500) 30%, var(--cheof-card-border));
+  border: 1px solid color-mix(in srgb, var(--cheof-success) 30%, var(--cheof-card-border));
 
   border-radius: var(--cheof-radius-xl);
 
   background: linear-gradient(
     135deg,
-    color-mix(in srgb, var(--p-green-500) 7%, var(--cheof-card-background)),
+    color-mix(in srgb, var(--cheof-success) 7%, var(--cheof-card-background)),
     var(--cheof-card-background)
   );
 
@@ -114,9 +114,9 @@
 
   border-radius: 50%;
 
-  background: var(--p-green-500);
+  background: var(--cheof-success);
 
-  box-shadow: 0 0 0 7px color-mix(in srgb, var(--p-green-500) 15%, transparent);
+  box-shadow: 0 0 0 7px color-mix(in srgb, var(--cheof-success) 15%, transparent);
 }
 
 .cash-register-status__main div {
@@ -126,13 +126,13 @@
 }
 
 .cash-register-status__main span {
-  color: var(--p-text-muted-color);
+  color: var(--cheof-text-secondary);
 
   font-size: 0.74rem;
 }
 
 .cash-register-status__main strong {
-  color: var(--p-text-color);
+  color: var(--cheof-text);
 
   font-size: 1.05rem;
 }
@@ -140,7 +140,7 @@
 .cash-register-status__main small {
   overflow: hidden;
 
-  color: var(--p-text-muted-color);
+  color: var(--cheof-text-secondary);
 
   font-size: 0.75rem;
   text-overflow: ellipsis;
@@ -179,8 +179,8 @@
   box-shadow: var(--cheof-shadow-xs);
 
   transition:
-    transform 160ms ease,
-    box-shadow 160ms ease;
+    transform var(--cheof-transition),
+    box-shadow var(--cheof-transition);
 }
 
 .cash-summary-card:hover {
@@ -206,15 +206,15 @@
 }
 
 .cash-summary-card--income .cash-summary-card__icon {
-  background: color-mix(in srgb, var(--p-green-500) 12%, var(--cheof-card-background));
+  background: color-mix(in srgb, var(--cheof-success) 12%, var(--cheof-card-background));
 
-  color: var(--p-green-500);
+  color: var(--cheof-success);
 }
 
 .cash-summary-card--expense .cash-summary-card__icon {
-  background: color-mix(in srgb, var(--p-red-500) 12%, var(--cheof-card-background));
+  background: color-mix(in srgb, var(--cheof-danger) 12%, var(--cheof-card-background));
 
-  color: var(--p-red-500);
+  color: var(--cheof-danger);
 }
 
 .cash-summary-card > div {
@@ -224,13 +224,13 @@
 }
 
 .cash-summary-card span {
-  color: var(--p-text-muted-color);
+  color: var(--cheof-text-secondary);
 
   font-size: 0.76rem;
 }
 
 .cash-summary-card strong {
-  color: var(--p-text-color);
+  color: var(--cheof-text);
 
   font-size: 1.12rem;
 }
@@ -238,7 +238,7 @@
 .cash-summary-card small {
   overflow: hidden;
 
-  color: var(--p-text-muted-color);
+  color: var(--cheof-text-secondary);
 
   font-size: 0.7rem;
   text-overflow: ellipsis;
@@ -277,7 +277,7 @@
 }
 
 .cash-register-balance__copy > span {
-  color: var(--p-text-muted-color);
+  color: var(--cheof-text-secondary);
 
   font-size: 0.76rem;
   font-weight: 700;
@@ -298,7 +298,7 @@
   max-width: 420px;
   margin: 0.65rem 0 0;
 
-  color: var(--p-text-muted-color);
+  color: var(--cheof-text-secondary);
 
   font-size: 0.78rem;
   line-height: 1.55;
@@ -331,19 +331,19 @@
 }
 
 .cash-register-balance__formula span {
-  color: var(--p-text-muted-color);
+  color: var(--cheof-text-secondary);
 
   font-size: 0.68rem;
 }
 
 .cash-register-balance__formula strong {
-  color: var(--p-text-color);
+  color: var(--cheof-text);
 
   font-size: 0.9rem;
 }
 
 .cash-register-balance__formula > i {
-  color: var(--p-text-muted-color);
+  color: var(--cheof-text-secondary);
 
   font-size: 0.72rem;
 }
@@ -389,7 +389,7 @@
 .cash-register-section__header h3 {
   margin: 0.3rem 0 0;
 
-  color: var(--p-text-color);
+  color: var(--cheof-text);
 
   font-size: 1.15rem;
 }
@@ -397,7 +397,7 @@
 .cash-register-section__header p {
   margin: 0.4rem 0 0;
 
-  color: var(--p-text-muted-color);
+  color: var(--cheof-text-secondary);
 
   font-size: 0.78rem;
   line-height: 1.55;
@@ -410,7 +410,7 @@
 }
 
 .cash-movement-reason strong {
-  color: var(--p-text-color);
+  color: var(--cheof-text);
 
   font-size: 0.82rem;
 }
@@ -419,7 +419,7 @@
   max-width: 220px;
   overflow: hidden;
 
-  color: var(--p-text-muted-color);
+  color: var(--cheof-text-secondary);
 
   font-size: 0.66rem;
   text-overflow: ellipsis;
@@ -428,7 +428,7 @@
 
 .cash-movement-user,
 .cash-movement-date {
-  color: var(--p-text-muted-color);
+  color: var(--cheof-text-secondary);
 
   font-size: 0.78rem;
 }
@@ -442,11 +442,11 @@
 }
 
 .cash-movement-amount--income {
-  color: var(--p-green-500);
+  color: var(--cheof-success);
 }
 
 .cash-movement-amount--expense {
-  color: var(--p-red-500);
+  color: var(--cheof-danger);
 }
 
 .cash-register-empty {
@@ -493,7 +493,7 @@
 .cash-register-empty h4 {
   margin: 0;
 
-  color: var(--p-text-color);
+  color: var(--cheof-text);
 }
 
 .cash-register-empty h3 {
@@ -508,7 +508,7 @@
   max-width: 560px;
   margin: 0;
 
-  color: var(--p-text-muted-color);
+  color: var(--cheof-text-secondary);
 
   font-size: 0.82rem;
   line-height: 1.65;
@@ -567,13 +567,13 @@
 }
 
 .cash-register-dialog-copy strong {
-  color: var(--p-text-color);
+  color: var(--cheof-text);
 }
 
 .cash-register-dialog-copy p {
   margin: 0;
 
-  color: var(--p-text-muted-color);
+  color: var(--cheof-text-secondary);
 
   font-size: 0.77rem;
   line-height: 1.5;
@@ -589,33 +589,33 @@
   align-items: center;
   gap: 0.25rem;
 
-  color: var(--p-text-color);
+  color: var(--cheof-text);
 
   font-size: 0.78rem;
   font-weight: 700;
 }
 
 .cash-register-field label > span {
-  color: var(--p-red-500);
+  color: var(--cheof-danger);
 }
 
 .cash-register-field label > small {
   margin-left: auto;
 
-  color: var(--p-text-muted-color);
+  color: var(--cheof-text-secondary);
 
   font-size: 0.65rem;
   font-weight: 500;
 }
 
 .cash-register-field__help {
-  color: var(--p-text-muted-color);
+  color: var(--cheof-text-secondary);
 
   font-size: 0.68rem;
 }
 
 .cash-register-field__error {
-  color: var(--p-red-500);
+  color: var(--cheof-danger);
 
   font-size: 0.7rem;
 }
@@ -649,7 +649,7 @@
 }
 
 .cash-closing-summary span {
-  color: var(--p-text-muted-color);
+  color: var(--cheof-text-secondary);
 
   font-size: 0.72rem;
 }
@@ -666,7 +666,7 @@
 .cash-closing-summary p {
   margin: 0.55rem 0 0;
 
-  color: var(--p-text-muted-color);
+  color: var(--cheof-text-secondary);
 
   font-size: 0.74rem;
   line-height: 1.5;
@@ -688,21 +688,21 @@
 }
 
 .cash-closing-difference span {
-  color: var(--p-text-muted-color);
+  color: var(--cheof-text-secondary);
 
   font-size: 0.75rem;
 }
 
 .cash-closing-difference strong {
-  color: var(--p-text-color);
+  color: var(--cheof-text);
 }
 
 .cash-closing-difference--positive {
-  color: var(--p-green-500) !important;
+  color: var(--cheof-success) !important;
 }
 
 .cash-closing-difference--negative {
-  color: var(--p-red-500) !important;
+  color: var(--cheof-danger) !important;
 }
 
 :host ::ng-deep {
@@ -713,7 +713,7 @@
   .cash-movement-table .p-datatable-thead > tr > th {
     padding-block: 0.8rem;
 
-    color: var(--p-text-muted-color);
+    color: var(--cheof-text-secondary);
 
     font-size: 0.7rem;
     font-weight: 750;
@@ -759,7 +759,7 @@
 
 .cash-register-collections__total span,
 .cash-register-collections__total small {
-  color: var(--p-text-muted-color);
+  color: var(--cheof-text-secondary);
 
   font-size: 0.68rem;
 }
@@ -790,7 +790,7 @@
 
   border-radius: var(--cheof-radius-lg);
 
-  background: color-mix(in srgb, var(--p-surface-50) 35%, var(--cheof-card-background));
+  background: color-mix(in srgb, var(--cheof-card-background-muted) 35%, var(--cheof-card-background));
 }
 
 .cash-collection-card__icon {
@@ -806,21 +806,21 @@
 }
 
 .cash-collection-card__icon--cash {
-  background: color-mix(in srgb, var(--p-green-500) 12%, var(--cheof-card-background));
+  background: color-mix(in srgb, var(--cheof-success) 12%, var(--cheof-card-background));
 
-  color: var(--p-green-500);
+  color: var(--cheof-success);
 }
 
 .cash-collection-card__icon--transfer {
-  background: color-mix(in srgb, var(--p-blue-500) 12%, var(--cheof-card-background));
+  background: color-mix(in srgb, var(--cheof-info) 12%, var(--cheof-card-background));
 
-  color: var(--p-blue-500);
+  color: var(--cheof-info);
 }
 
 .cash-collection-card__icon--paypal {
-  background: color-mix(in srgb, var(--p-indigo-500) 12%, var(--cheof-card-background));
+  background: color-mix(in srgb, var(--cheof-info-strong) 12%, var(--cheof-card-background));
 
-  color: var(--p-indigo-500);
+  color: var(--cheof-info-strong);
 }
 
 .cash-collection-card > div {
@@ -830,13 +830,13 @@
 }
 
 .cash-collection-card span {
-  color: var(--p-text-muted-color);
+  color: var(--cheof-text-secondary);
 
   font-size: 0.72rem;
 }
 
 .cash-collection-card strong {
-  color: var(--p-text-color);
+  color: var(--cheof-text);
 
   font-size: 1.1rem;
 }
@@ -844,7 +844,7 @@
 .cash-collection-card small {
   overflow: hidden;
 
-  color: var(--p-text-muted-color);
+  color: var(--cheof-text-secondary);
 
   font-size: 0.68rem;
   text-overflow: ellipsis;
@@ -859,13 +859,13 @@
   margin-top: 1rem;
   padding: 0.8rem 0.9rem;
 
-  border: 1px solid color-mix(in srgb, var(--p-blue-500) 20%, var(--cheof-card-border));
+  border: 1px solid color-mix(in srgb, var(--cheof-info) 20%, var(--cheof-card-border));
 
   border-radius: var(--cheof-radius-md);
 
-  background: color-mix(in srgb, var(--p-blue-500) 5%, var(--cheof-card-background));
+  background: color-mix(in srgb, var(--cheof-info) 5%, var(--cheof-card-background));
 
-  color: var(--p-blue-500);
+  color: var(--cheof-info);
 }
 
 .cash-register-collections__notice i {
@@ -875,11 +875,35 @@
 .cash-register-collections__notice p {
   margin: 0;
 
-  color: var(--p-text-muted-color);
+  color: var(--cheof-text-secondary);
 
   font-size: 0.72rem;
   line-height: 1.55;
 }
+
+/* =========================================================
+   ACCESIBILIDAD
+   ========================================================= */
+
+.cash-register-header__actions
+  :is(button, a):focus-visible,
+.cash-register-status__actions
+  :is(button, a):focus-visible,
+.cash-register-dialog-actions
+  :is(button, a):focus-visible {
+  outline: 0.16rem solid
+    color-mix(
+      in srgb,
+      var(--p-primary-color) 38%,
+      transparent
+    );
+
+  outline-offset: 0.14rem;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
 
 @media (max-width: 1180px) {
   .cash-summary-grid,
@@ -972,5 +996,20 @@
 
   .cash-register-dialog-actions :is(.p-button, p-button) {
     width: 100%;
+  }
+}
+
+
+/* =========================================================
+   REDUCCIÓN DE MOVIMIENTO
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .cash-summary-card {
+    transition: none;
+  }
+
+  .cash-summary-card:hover {
+    transform: none;
   }
 }

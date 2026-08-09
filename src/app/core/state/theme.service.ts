@@ -1,44 +1,125 @@
-import { Injectable, signal } from '@angular/core';
-import { SafeStorageService } from './safe-storage.service';
+import {
+  DOCUMENT,
+} from '@angular/common';
 
-type ThemeMode = 'light' | 'dark';
+import {
+  Injectable,
+  inject,
+  signal,
+} from '@angular/core';
 
-@Injectable({ providedIn: 'root' })
+import {
+  SafeStorageService,
+} from './safe-storage.service';
+
+export type ThemeMode =
+  | 'light'
+  | 'dark';
+
+@Injectable({
+  providedIn: 'root',
+})
 export class ThemeService {
-  private readonly storageKey = 'cheof_theme';
-  readonly mode = signal<ThemeMode>('light');
+  private readonly document =
+    inject(DOCUMENT);
 
-  constructor(private readonly storage: SafeStorageService) {
-    const initial = this.getInitialMode();
-    this.mode.set(initial);
-    this.apply(initial);
+  private readonly storage =
+    inject(SafeStorageService);
+
+  private readonly storageKey =
+    'cheof_theme';
+
+  readonly mode =
+    signal<ThemeMode>(
+      'light',
+    );
+
+  constructor() {
+    const initialMode =
+      this.resolveInitialMode();
+
+    this.apply(
+      initialMode,
+      false,
+    );
   }
 
   toggle(): void {
-    const next: ThemeMode = this.mode() === 'dark' ? 'light' : 'dark';
-    this.mode.set(next);
-    this.apply(next);
-    this.storage.setItem(this.storageKey, next);
+    this.setMode(
+      this.mode() === 'dark'
+        ? 'light'
+        : 'dark',
+    );
   }
 
-  private apply(mode: ThemeMode): void {
-    // si document no existe (SSR o context raro), no revientes
-    try {
-      document.documentElement.classList.toggle('cheof-dark', mode === 'dark');
-    } catch {
-      // ignore
+  setMode(
+    mode: ThemeMode,
+  ): void {
+    this.apply(
+      mode,
+      true,
+    );
+  }
+
+  private apply(
+    mode: ThemeMode,
+    persist: boolean,
+  ): void {
+    this.mode.set(
+      mode,
+    );
+
+    const root =
+      this.document
+        .documentElement;
+
+    root.classList.toggle(
+      'cheof-dark',
+      mode === 'dark',
+    );
+
+    root.dataset['theme'] =
+      mode;
+
+    root.style.colorScheme =
+      mode;
+
+    if (persist) {
+      this.storage.setItem(
+        this.storageKey,
+        mode,
+      );
     }
   }
 
-  private getInitialMode(): ThemeMode {
-    const saved = this.storage.getItem(this.storageKey) as ThemeMode | null;
-    if (saved === 'light' || saved === 'dark') return saved;
+  private resolveInitialMode():
+    ThemeMode {
+    const saved =
+      this.storage.getItem(
+        this.storageKey,
+      );
 
-    try {
-      const prefersDark = window.matchMedia?.('(prefers-color-scheme: dark)')?.matches ?? false;
-      return prefersDark ? 'dark' : 'light';
-    } catch {
+    if (
+      saved === 'light' ||
+      saved === 'dark'
+    ) {
+      return saved;
+    }
+
+    const windowRef =
+      this.document
+        .defaultView;
+
+    if (!windowRef) {
       return 'light';
     }
+
+    return windowRef
+      .matchMedia(
+        '(prefers-color-scheme: dark)',
+      )
+      .matches
+      ? 'dark'
+      : 'light';
   }
 }

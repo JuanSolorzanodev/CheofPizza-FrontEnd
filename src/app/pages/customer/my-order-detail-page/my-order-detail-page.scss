@@ -4,11 +4,21 @@
 
 .order-detail {
   width: min(
-    1220px,
-    calc(100% - 32px)
+    100%,
+    var(--cheof-content-max-width)
   );
-  margin: 0 auto;
-  padding: 32px 0 56px;
+
+  min-height: calc(
+    100vh -
+    var(--cheof-toolbar-height)
+  );
+
+  margin-inline: auto;
+
+  padding:
+    clamp(1rem, 2.5vw, 2rem)
+    var(--cheof-page-padding)
+    3.5rem;
 }
 
 .page-header,
@@ -44,7 +54,7 @@
 .page-header h1,
 .panel-header h2 {
   margin: 0;
-  color: var(--p-text-color);
+  color: var(--cheof-text);
   line-height: 1.15;
 }
 
@@ -59,7 +69,7 @@
 
 .page-header p {
   margin: 8px 0 0;
-  color: var(--p-text-muted-color);
+  color: var(--cheof-text-secondary);
   font-size: 0.95rem;
 }
 
@@ -72,12 +82,11 @@
 .panel {
   border:
     1px solid
-    var(--p-surface-200);
+    var(--cheof-card-border);
   background:
-    var(--p-surface-0);
+    var(--cheof-card-background);
   box-shadow:
-    0 18px 50px
-    rgba(15, 23, 42, 0.06);
+    var(--cheof-shadow-md);
 }
 
 .order-hero {
@@ -92,7 +101,7 @@
   padding: 24px 26px;
   border-bottom:
     1px solid
-    var(--p-surface-200);
+    var(--cheof-card-border);
   background:
     radial-gradient(
       circle at top right,
@@ -103,7 +112,7 @@
       ),
       transparent 38%
     ),
-    var(--p-surface-0);
+    var(--cheof-card-background);
 }
 
 .order-hero__identity {
@@ -113,14 +122,14 @@
 }
 
 .order-hero__label {
-  color: var(--p-text-muted-color);
+  color: var(--cheof-text-secondary);
   font-size: 0.78rem;
   font-weight: 700;
 }
 
 .order-hero__identity strong {
   overflow-wrap: anywhere;
-  color: var(--p-text-color);
+  color: var(--cheof-text);
   font-size:
     clamp(
       1.15rem,
@@ -131,7 +140,7 @@
 }
 
 .order-hero__date {
-  color: var(--p-text-muted-color);
+  color: var(--cheof-text-secondary);
   font-size: 0.84rem;
 }
 
@@ -156,7 +165,7 @@
   gap: 12px;
   border-right:
     1px solid
-    var(--p-surface-200);
+    var(--cheof-card-border);
 }
 
 .hero-fact i,
@@ -171,7 +180,7 @@
     color-mix(
       in srgb,
       var(--p-primary-color) 10%,
-      var(--p-surface-0)
+      var(--cheof-card-background)
     );
   color: var(--p-primary-color);
 }
@@ -186,7 +195,7 @@
 .hero-total span,
 .payment-status-card span,
 .totals span {
-  color: var(--p-text-muted-color);
+  color: var(--cheof-text-secondary);
   font-size: 0.76rem;
   font-weight: 700;
 }
@@ -194,7 +203,7 @@
 .hero-fact strong,
 .hero-total strong {
   overflow-wrap: anywhere;
-  color: var(--p-text-color);
+  color: var(--cheof-text);
   font-size: 0.9rem;
 }
 
@@ -204,7 +213,7 @@
     color-mix(
       in srgb,
       var(--p-primary-color) 5%,
-      var(--p-surface-0)
+      var(--cheof-card-background)
     );
 }
 
@@ -272,7 +281,7 @@
     color-mix(
       in srgb,
       var(--p-primary-color) 10%,
-      var(--p-surface-0)
+      var(--cheof-card-background)
     );
   color: var(--p-primary-color);
   font-size: 0.74rem;
@@ -297,10 +306,10 @@
   background:
     color-mix(
       in srgb,
-      var(--p-green-500) 11%,
-      var(--p-surface-0)
+      var(--cheof-success) 11%,
+      var(--cheof-card-background)
     );
-  color: var(--p-green-700);
+  color: var(--cheof-success-strong);
 }
 
 .count-pill {
@@ -308,11 +317,11 @@
   padding: 0 11px;
   border:
     1px solid
-    var(--p-surface-200);
+    var(--cheof-card-border);
   background:
-    var(--p-surface-50);
+    var(--cheof-card-background-muted);
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
   font-size: 0.75rem;
   font-weight: 800;
 }
@@ -345,12 +354,12 @@
   height: 30px;
   border:
     2px solid
-    var(--p-surface-300);
+    var(--cheof-divider);
   border-radius: 50%;
   background:
-    var(--p-surface-0);
+    var(--cheof-card-background);
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
   font-size: 0.72rem;
 }
 
@@ -358,7 +367,7 @@
   width: 2px;
   min-height: 34px;
   background:
-    var(--p-surface-200);
+    var(--cheof-card-border);
 }
 
 .timeline-event__content {
@@ -367,10 +376,10 @@
   padding: 14px 15px;
   border:
     1px solid
-    var(--p-surface-200);
+    var(--cheof-card-border);
   border-radius: 16px;
   background:
-    var(--p-surface-0);
+    var(--cheof-card-background);
 }
 
 .timeline-event--current
@@ -398,22 +407,22 @@
     color-mix(
       in srgb,
       var(--p-primary-color) 32%,
-      var(--p-surface-200)
+      var(--cheof-card-border)
     );
   background:
     color-mix(
       in srgb,
       var(--p-primary-color) 4%,
-      var(--p-surface-0)
+      var(--cheof-card-background)
     );
 }
 
 .timeline-event--final
 .timeline-event__icon {
   border-color:
-    var(--p-green-500);
+    var(--cheof-success);
   background:
-    var(--p-green-500);
+    var(--cheof-success);
   color: white;
 }
 
@@ -431,14 +440,14 @@
 }
 
 .timeline-event__title strong {
-  color: var(--p-text-color);
+  color: var(--cheof-text);
 }
 
 .timeline-event__top time,
 .timeline-event__duration,
 .timeline-event__author {
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
   font-size: 0.75rem;
 }
 
@@ -449,7 +458,7 @@
     color-mix(
       in srgb,
       var(--p-primary-color) 11%,
-      var(--p-surface-0)
+      var(--cheof-card-background)
     );
   color:
     var(--p-primary-color);
@@ -461,11 +470,11 @@
   background:
     color-mix(
       in srgb,
-      var(--p-green-500) 11%,
-      var(--p-surface-0)
+      var(--cheof-success) 11%,
+      var(--cheof-card-background)
     );
   color:
-    var(--p-green-700);
+    var(--cheof-success-strong);
 }
 
 .timeline-event__duration,
@@ -476,7 +485,7 @@
 }
 
 .timeline-event__note {
-  color: var(--p-text-color);
+  color: var(--cheof-text);
   font-size: 0.86rem;
   line-height: 1.5;
 }
@@ -495,10 +504,10 @@
   padding: 16px;
   border:
     1px solid
-    var(--p-surface-200);
+    var(--cheof-card-border);
   border-radius: 17px;
   background:
-    var(--p-surface-0);
+    var(--cheof-card-background);
 }
 
 .product-item__quantity {
@@ -511,7 +520,7 @@
     color-mix(
       in srgb,
       var(--p-primary-color) 10%,
-      var(--p-surface-0)
+      var(--cheof-card-background)
     );
   color:
     var(--p-primary-color);
@@ -536,7 +545,7 @@
 }
 
 .product-item__heading strong {
-  color: var(--p-text-color);
+  color: var(--cheof-text);
   font-size: 0.96rem;
 }
 
@@ -549,7 +558,7 @@
 
 .product-item__meta span {
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
   font-size: 0.76rem;
 }
 
@@ -572,7 +581,7 @@ span:not(:last-child)::after {
 
 .product-item__price span {
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
   font-size: 0.72rem;
 }
 
@@ -582,12 +591,12 @@ span:not(:last-child)::after {
   padding-top: 11px;
   border-top:
     1px dashed
-    var(--p-surface-200);
+    var(--cheof-card-border);
 }
 
 .product-detail__label {
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
   font-size: 0.71rem;
   font-weight: 800;
   letter-spacing: 0.05em;
@@ -604,9 +613,9 @@ span:not(:last-child)::after {
   min-height: 27px;
   padding: 0 9px;
   background:
-    var(--p-surface-100);
+    var(--cheof-muted-background);
   color:
-    var(--p-text-color);
+    var(--cheof-text);
   font-size: 0.74rem;
   font-weight: 700;
 }
@@ -624,13 +633,13 @@ span:not(:last-child)::after {
   justify-content: space-between;
   gap: 12px;
   color:
-    var(--p-text-color);
+    var(--cheof-text);
   font-size: 0.8rem;
 }
 
 .personalization-list small {
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
 }
 
 .detail-list {
@@ -645,7 +654,7 @@ span:not(:last-child)::after {
   padding: 12px 0;
   border-bottom:
     1px solid
-    var(--p-surface-200);
+    var(--cheof-card-border);
 }
 
 .detail-list > div:first-child {
@@ -658,7 +667,7 @@ span:not(:last-child)::after {
 
 .detail-list dt {
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
   font-size: 0.72rem;
   font-weight: 700;
 }
@@ -667,7 +676,7 @@ span:not(:last-child)::after {
   margin: 0;
   overflow-wrap: anywhere;
   color:
-    var(--p-text-color);
+    var(--cheof-text);
   font-size: 0.87rem;
   font-weight: 700;
   line-height: 1.45;
@@ -680,10 +689,10 @@ span:not(:last-child)::after {
   padding: 14px;
   border:
     1px solid
-    var(--p-surface-200);
+    var(--cheof-card-border);
   border-radius: 15px;
   background:
-    var(--p-surface-50);
+    var(--cheof-card-background-muted);
 }
 
 .payment-status-card > div {
@@ -693,7 +702,7 @@ span:not(:last-child)::after {
 
 .payment-status-card strong {
   color:
-    var(--p-text-color);
+    var(--cheof-text);
   font-size: 0.9rem;
 }
 
@@ -710,7 +719,7 @@ span:not(:last-child)::after {
     color-mix(
       in srgb,
       var(--p-primary-color) 4%,
-      var(--p-surface-50)
+      var(--cheof-card-background-muted)
     );
 }
 
@@ -721,7 +730,7 @@ span:not(:last-child)::after {
 
 .totals strong {
   color:
-    var(--p-text-color);
+    var(--cheof-text);
   font-size: 0.88rem;
 }
 
@@ -730,13 +739,13 @@ span:not(:last-child)::after {
   padding-top: 12px;
   border-top:
     1px dashed
-    var(--p-surface-300);
+    var(--cheof-divider);
 }
 
 .totals__grand span,
 .totals__grand strong {
   color:
-    var(--p-text-color);
+    var(--cheof-text);
   font-size: 1rem;
   font-weight: 900;
 }
@@ -755,11 +764,11 @@ span:not(:last-child)::after {
   background:
     color-mix(
       in srgb,
-      var(--p-green-500) 8%,
-      var(--p-surface-0)
+      var(--cheof-success) 8%,
+      var(--cheof-card-background)
     );
   color:
-    var(--p-green-700);
+    var(--cheof-success-strong);
   font-size: 0.78rem;
   line-height: 1.45;
 }
@@ -778,11 +787,11 @@ span:not(:last-child)::after {
   background:
     color-mix(
       in srgb,
-      var(--p-yellow-500) 11%,
-      var(--p-surface-0)
+      var(--cheof-warning) 11%,
+      var(--cheof-card-background)
     );
   color:
-    var(--p-yellow-800);
+    var(--cheof-warning-strong);
 }
 
 .qr-wrapper {
@@ -792,10 +801,10 @@ span:not(:last-child)::after {
   padding: 14px;
   border:
     1px dashed
-    var(--p-surface-300);
+    var(--cheof-divider);
   border-radius: 16px;
   background:
-    var(--p-surface-50);
+    var(--cheof-card-background-muted);
 }
 
 .qr-wrapper img {
@@ -831,7 +840,7 @@ span:not(:last-child)::after {
   padding: 28px 18px;
   text-align: center;
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
 }
 
 .empty-state i {
@@ -842,7 +851,7 @@ span:not(:last-child)::after {
 
 .empty-state strong {
   color:
-    var(--p-text-color);
+    var(--cheof-text);
 }
 
 /* =========================================================
@@ -856,7 +865,7 @@ span:not(:last-child)::after {
   padding-top: 18px;
   border-top:
     1px solid
-    var(--p-surface-200);
+    var(--cheof-card-border);
 }
 
 .receipt-section__header {
@@ -884,7 +893,7 @@ span:not(:last-child)::after {
     color-mix(
       in srgb,
       var(--p-primary-color) 11%,
-      var(--p-surface-0)
+      var(--cheof-card-background)
     );
   color:
     var(--p-primary-color);
@@ -893,7 +902,7 @@ span:not(:last-child)::after {
 .receipt-section__heading h3 {
   margin: 0;
   color:
-    var(--p-text-color);
+    var(--cheof-text);
   font-size: 0.96rem;
   line-height: 1.25;
 }
@@ -901,7 +910,7 @@ span:not(:last-child)::after {
 .receipt-section__heading p {
   margin: 4px 0 0;
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
   font-size: 0.76rem;
   line-height: 1.45;
 }
@@ -920,24 +929,24 @@ span:not(:last-child)::after {
   padding: 15px;
   border:
     1px solid
-    var(--p-surface-200);
+    var(--cheof-card-border);
   border-radius: 17px;
   background:
-    var(--p-surface-50);
+    var(--cheof-card-background-muted);
 }
 
 .receipt-current--pending {
   border-color:
     color-mix(
       in srgb,
-      var(--p-yellow-500) 42%,
-      var(--p-surface-200)
+      var(--cheof-warning) 42%,
+      var(--cheof-card-border)
     );
   background:
     color-mix(
       in srgb,
-      var(--p-yellow-500) 6%,
-      var(--p-surface-0)
+      var(--cheof-warning) 6%,
+      var(--cheof-card-background)
     );
 }
 
@@ -945,14 +954,14 @@ span:not(:last-child)::after {
   border-color:
     color-mix(
       in srgb,
-      var(--p-green-500) 42%,
-      var(--p-surface-200)
+      var(--cheof-success) 42%,
+      var(--cheof-card-border)
     );
   background:
     color-mix(
       in srgb,
-      var(--p-green-500) 6%,
-      var(--p-surface-0)
+      var(--cheof-success) 6%,
+      var(--cheof-card-background)
     );
 }
 
@@ -960,14 +969,14 @@ span:not(:last-child)::after {
   border-color:
     color-mix(
       in srgb,
-      var(--p-red-500) 42%,
-      var(--p-surface-200)
+      var(--cheof-danger) 42%,
+      var(--cheof-card-border)
     );
   background:
     color-mix(
       in srgb,
-      var(--p-red-500) 5%,
-      var(--p-surface-0)
+      var(--cheof-danger) 5%,
+      var(--cheof-card-background)
     );
 }
 
@@ -978,9 +987,9 @@ span:not(:last-child)::after {
   place-items: center;
   border-radius: 13px;
   background:
-    var(--p-surface-0);
+    var(--cheof-card-background);
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
   font-size: 1rem;
   box-shadow:
     0 5px 16px
@@ -990,19 +999,19 @@ span:not(:last-child)::after {
 .receipt-current--pending
 .receipt-current__icon {
   color:
-    var(--p-yellow-700);
+    var(--cheof-warning-strong);
 }
 
 .receipt-current--approved
 .receipt-current__icon {
   color:
-    var(--p-green-600);
+    var(--cheof-success);
 }
 
 .receipt-current--rejected
 .receipt-current__icon {
   color:
-    var(--p-red-500);
+    var(--cheof-danger);
 }
 
 .receipt-current__content {
@@ -1026,13 +1035,13 @@ span:not(:last-child)::after {
 
 .receipt-current__top strong {
   color:
-    var(--p-text-color);
+    var(--cheof-text);
   font-size: 0.88rem;
 }
 
 .receipt-current__top span {
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
   font-size: 0.72rem;
 }
 
@@ -1045,10 +1054,10 @@ span:not(:last-child)::after {
   padding: 11px;
   border:
     1px solid
-    var(--p-surface-200);
+    var(--cheof-card-border);
   border-radius: 14px;
   background:
-    var(--p-surface-0);
+    var(--cheof-card-background);
 }
 
 .receipt-file-info__icon,
@@ -1063,7 +1072,7 @@ span:not(:last-child)::after {
     color-mix(
       in srgb,
       var(--p-primary-color) 9%,
-      var(--p-surface-0)
+      var(--cheof-card-background)
     );
   color:
     var(--p-primary-color);
@@ -1080,7 +1089,7 @@ span:not(:last-child)::after {
 .selected-receipt__info strong {
   overflow: hidden;
   color:
-    var(--p-text-color);
+    var(--cheof-text);
   font-size: 0.8rem;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -1089,14 +1098,14 @@ span:not(:last-child)::after {
 .receipt-file-info span,
 .selected-receipt__info span {
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
   font-size: 0.7rem;
 }
 
 .receipt-current__message {
   margin: 0;
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
   font-size: 0.77rem;
   line-height: 1.5;
 }
@@ -1109,21 +1118,21 @@ span:not(:last-child)::after {
     1px solid
     color-mix(
       in srgb,
-      var(--p-red-500) 30%,
-      var(--p-surface-200)
+      var(--cheof-danger) 30%,
+      var(--cheof-card-border)
     );
   border-radius: 13px;
   background:
     color-mix(
       in srgb,
-      var(--p-red-500) 7%,
-      var(--p-surface-0)
+      var(--cheof-danger) 7%,
+      var(--cheof-card-background)
     );
 }
 
 .receipt-rejection span {
   color:
-    var(--p-red-600);
+    var(--cheof-danger);
   font-size: 0.69rem;
   font-weight: 800;
   letter-spacing: 0.05em;
@@ -1132,7 +1141,7 @@ span:not(:last-child)::after {
 
 .receipt-rejection strong {
   color:
-    var(--p-red-700);
+    var(--cheof-danger-strong);
   font-size: 0.78rem;
   line-height: 1.45;
 }
@@ -1173,14 +1182,14 @@ span:not(:last-child)::after {
     color-mix(
       in srgb,
       var(--p-primary-color) 42%,
-      var(--p-surface-300)
+      var(--cheof-divider)
     );
   border-radius: 17px;
   background:
     color-mix(
       in srgb,
       var(--p-primary-color) 4%,
-      var(--p-surface-0)
+      var(--cheof-card-background)
     );
   text-align: center;
   cursor: pointer;
@@ -1197,7 +1206,7 @@ span:not(:last-child)::after {
     color-mix(
       in srgb,
       var(--p-primary-color) 8%,
-      var(--p-surface-0)
+      var(--cheof-card-background)
     );
   transform:
     translateY(-1px);
@@ -1234,7 +1243,7 @@ span:not(:last-child)::after {
     color-mix(
       in srgb,
       var(--p-primary-color) 12%,
-      var(--p-surface-0)
+      var(--cheof-card-background)
     );
   color:
     var(--p-primary-color);
@@ -1243,14 +1252,14 @@ span:not(:last-child)::after {
 
 .receipt-dropzone strong {
   color:
-    var(--p-text-color);
+    var(--cheof-text);
   font-size: 0.88rem;
 }
 
 .receipt-dropzone span,
 .receipt-dropzone small {
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
 }
 
 .receipt-dropzone span {
@@ -1273,12 +1282,12 @@ span:not(:last-child)::after {
   flex: 0 0 auto;
   border:
     1px solid
-    var(--p-surface-200);
+    var(--cheof-card-border);
   border-radius: 10px;
   background:
-    var(--p-surface-50);
+    var(--cheof-card-background-muted);
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
   cursor: pointer;
   transition:
     border-color 160ms ease,
@@ -1290,17 +1299,17 @@ span:not(:last-child)::after {
   border-color:
     color-mix(
       in srgb,
-      var(--p-red-500) 35%,
-      var(--p-surface-200)
+      var(--cheof-danger) 35%,
+      var(--cheof-card-border)
     );
   background:
     color-mix(
       in srgb,
-      var(--p-red-500) 8%,
-      var(--p-surface-0)
+      var(--cheof-danger) 8%,
+      var(--cheof-card-background)
     );
   color:
-    var(--p-red-500);
+    var(--cheof-danger);
 }
 
 .selected-receipt__remove:disabled {
@@ -1318,13 +1327,13 @@ span:not(:last-child)::after {
   justify-content: space-between;
   gap: 10px;
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
   font-size: 0.72rem;
 }
 
 .receipt-progress__label strong {
   color:
-    var(--p-text-color);
+    var(--cheof-text);
 }
 
 .receipt-error {
@@ -1336,18 +1345,18 @@ span:not(:last-child)::after {
     1px solid
     color-mix(
       in srgb,
-      var(--p-red-500) 30%,
-      var(--p-surface-200)
+      var(--cheof-danger) 30%,
+      var(--cheof-card-border)
     );
   border-radius: 13px;
   background:
     color-mix(
       in srgb,
-      var(--p-red-500) 7%,
-      var(--p-surface-0)
+      var(--cheof-danger) 7%,
+      var(--cheof-card-background)
     );
   color:
-    var(--p-red-700);
+    var(--cheof-danger-strong);
   font-size: 0.76rem;
   line-height: 1.45;
 }
@@ -1369,10 +1378,10 @@ span:not(:last-child)::after {
   padding: 12px;
   border:
     1px dashed
-    var(--p-surface-300);
+    var(--cheof-divider);
   border-radius: 14px;
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
   font-size: 0.76rem;
 }
 
@@ -1401,14 +1410,6 @@ span:not(:last-child)::after {
   border-radius: 999px;
 }
 
-:host-context(.cheof-dark)
-.order-hero,
-:host-context(.cheof-dark)
-.panel {
-  border-color:
-    var(--p-surface-700);
-  box-shadow: none;
-}
 
 @media (
   max-width: 1000px
@@ -1445,7 +1446,7 @@ span:not(:last-child)::after {
   .hero-fact:nth-child(-n + 2) {
     border-bottom:
       1px solid
-      var(--p-surface-200);
+      var(--cheof-card-border);
   }
 }
 
@@ -1489,7 +1490,7 @@ span:not(:last-child)::after {
     border-right: 0;
     border-bottom:
       1px solid
-      var(--p-surface-200);
+      var(--cheof-card-border);
   }
 
   .hero-total {
@@ -1548,5 +1549,18 @@ span:not(:last-child)::after {
   .receipt-upload__actions
   .p-button {
     width: 100%;
+  }
+}
+
+
+/* =========================================================
+   REDUCCIÓN DE MOVIMIENTO
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
   }
 }

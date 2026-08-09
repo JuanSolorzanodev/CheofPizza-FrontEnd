@@ -4,7 +4,7 @@
 
 .module-page {
   display: grid;
-  max-width: 1500px;
+  max-width: var(--cheof-page-max-width);
   margin-inline: auto;
   gap: 1.25rem;
 }
@@ -59,7 +59,7 @@
   margin: 0.4rem 0 0;
 
   color:
-    var(--p-text-color);
+    var(--cheof-text);
 
   font-size:
     clamp(
@@ -74,7 +74,7 @@
   margin: 0.7rem 0 0;
 
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
 
   line-height: 1.7;
 }
@@ -91,13 +91,13 @@
     1px solid
     var(--cheof-card-border);
 
-  border-radius: 12px;
+  border-radius: var(--cheof-radius-md);
 
   background:
     var(--cheof-card-background);
 
   color:
-    var(--p-text-color);
+    var(--cheof-text);
 
   font-size: 0.8rem;
   font-weight: 700;
@@ -184,7 +184,7 @@
 .module-placeholder h3 {
   margin: 0.45rem 0 0;
   color:
-    var(--p-text-color);
+    var(--cheof-text);
   font-size:
     clamp(
       1.3rem,
@@ -196,9 +196,28 @@
 .module-placeholder p {
   margin: 0.75rem 0 0;
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
   line-height: 1.7;
 }
+
+/* =========================================================
+   ACCESIBILIDAD
+   ========================================================= */
+
+.module-placeholder :is(button, a):focus-visible {
+  outline: 0.16rem solid
+    color-mix(
+      in srgb,
+      var(--p-primary-color) 38%,
+      transparent
+    );
+
+  outline-offset: 0.14rem;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
 
 @media (max-width: 700px) {
   .module-header {
@@ -215,7 +234,18 @@
     width: 64px;
     min-width: 64px;
     height: 64px;
-    border-radius: 18px;
+    border-radius: var(--cheof-radius-xl);
     font-size: 1.45rem;
+  }
+}
+
+
+/* =========================================================
+   REDUCCIÓN DE MOVIMIENTO
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .module-placeholder {
+    transition: none;
   }
 }

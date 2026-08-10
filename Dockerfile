@@ -1,4 +1,4 @@
-FROM node:22-alpine AS build
+FROM node:24-alpine AS build
 
 WORKDIR /app
 
@@ -14,6 +14,8 @@ RUN npm run build
 FROM caddy:2-alpine
 
 WORKDIR /app
+
+RUN npm install -g npm@11.8.0
 
 COPY Caddyfile /etc/caddy/Caddyfile
 

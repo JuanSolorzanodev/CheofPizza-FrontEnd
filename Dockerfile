@@ -15,8 +15,6 @@ FROM caddy:2-alpine
 
 WORKDIR /app
 
-RUN npm install -g npm@11.8.0
-
 COPY Caddyfile /etc/caddy/Caddyfile
 
 COPY --from=build /app/dist ./dist

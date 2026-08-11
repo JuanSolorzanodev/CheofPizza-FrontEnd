@@ -1,13 +1,106 @@
 <!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <title>CheofPizzaFront</title>
-  <base href="/">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
-</head>
-<body>
-  <app-root></app-root>
-</body>
+
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+
+    <title>Cheo' F Pizza</title>
+
+    <base href="/" />
+
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1"
+    />
+
+    <meta
+      name="description"
+      content="Cheo' F Pizza — pizzas, promociones y pedidos en línea."
+    />
+
+    <meta
+      name="theme-color"
+      content="#f7f9f7"
+      id="theme-color-meta"
+    />
+
+    <!-- ===================================================
+         THEME BOOTSTRAP
+
+         Se ejecuta antes de Angular para evitar el flash
+         del tema incorrecto durante la carga inicial.
+         =================================================== -->
+    <script>
+      (() => {
+        const STORAGE_KEY = 'cheof_theme';
+
+        try {
+          const savedTheme =
+            localStorage.getItem(
+              STORAGE_KEY,
+            );
+
+          const prefersDark =
+            window.matchMedia(
+              '(prefers-color-scheme: dark)',
+            ).matches;
+
+          const theme =
+            savedTheme === 'dark' ||
+            savedTheme === 'light'
+              ? savedTheme
+              : prefersDark
+                ? 'dark'
+                : 'light';
+
+          const root =
+            document.documentElement;
+
+          root.dataset.theme =
+            theme;
+
+          root.classList.toggle(
+            'cheof-dark',
+            theme === 'dark',
+          );
+
+          root.style.colorScheme =
+            theme;
+        } catch {
+          // Angular ThemeService aplicará el tema
+          // una vez inicializada la aplicación.
+        }
+      })();
+    </script>
+
+    <link
+      rel="icon"
+      href="favicon.ico"
+      sizes="any"
+    />
+
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="favicon-32x32.png"
+    />
+
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="192x192"
+      href="favicon-192x192.png"
+    />
+
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="apple-touch-icon.png"
+    />
+  </head>
+
+  <body>
+    <app-root></app-root>
+  </body>
 </html>

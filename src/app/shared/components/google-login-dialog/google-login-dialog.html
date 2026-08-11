@@ -3,63 +3,46 @@
   [modal]="true"
   [draggable]="false"
   [resizable]="false"
-  [closable]="!loading"
-  [closeOnEscape]="!loading"
+  [closable]="false"
   [dismissableMask]="!loading"
-  [showHeader]="false"
-  appendTo="body"
-  styleClass="auth-dialog"
-  [style]="{
-    width:
-      view === 'register'
-        ? 'min(760px, calc(100vw - 1.25rem))'
-        : 'min(470px, calc(100vw - 1.25rem))'
-  }"
+  [closeOnEscape]="!loading"
+  [styleClass]="
+    view === 'register'
+      ? 'auth-dialog auth-dialog--register'
+      : 'auth-dialog auth-dialog--compact'
+  "
   (visibleChange)="onVisibleChange($event)"
 >
   <section
     class="auth-shell"
-    [class.auth-shell--login]="
-      view === 'login'
-    "
-    [class.auth-shell--register]="
-      view === 'register'
-    "
-    [class.auth-shell--google-profile]="
-      view === 'google-profile'
-    "
-    aria-labelledby="auth-dialog-title"
+    [class.auth-shell--login]="view === 'login'"
+    [class.auth-shell--register]="view === 'register'"
+    [class.auth-shell--google-profile]="view === 'google-profile'"
+    [attr.aria-busy]="loading"
   >
+    <!-- =====================================================
+         HEADER
+         ===================================================== -->
     <header class="auth-header">
-      <div class="auth-brand">
-        <span
-          class="auth-brand__symbol"
-          aria-hidden="true"
-        >
-          <span>
-            CHEO'
-          </span>
-
-          <strong>
-            F
-          </strong>
-        </span>
-
-        <span class="auth-brand__copy">
-          <strong>
-            Cheof Pizza
-          </strong>
-
-          <small>
-            Pedidos rápidos y seguros
-          </small>
-        </span>
-      </div>
+      <a
+        class="auth-brand"
+        href="/"
+        aria-label="Ir al inicio de Cheof Pizza"
+        (click)="close()"
+      >
+        <img
+          class="auth-brand__logo"
+          src="/assets/branding/cheof-pizza-logo-header.png"
+          alt="Cheof Pizza"
+          width="512"
+          height="379"
+        />
+      </a>
 
       <button
         type="button"
         class="icon-button"
-        aria-label="Cerrar"
+        aria-label="Cerrar ventana"
         [disabled]="loading"
         (click)="close()"
       >
@@ -70,309 +53,53 @@
       </button>
     </header>
 
-    <div class="auth-heading">
-      <span class="auth-heading__eyebrow">
-        {{
-          view === 'register'
-            ? 'Nueva cuenta'
-            : view === 'google-profile'
-              ? 'Último paso'
-              : 'Bienvenido'
-        }}
-      </span>
-
-      <h2 id="auth-dialog-title">
-        {{ dialogTitle }}
-      </h2>
-
-      <p>
-        {{ dialogDescription }}
-      </p>
-    </div>
-
-    @if (errorMsg) {
-      <p-message
-        severity="error"
-        [text]="errorMsg"
-        styleClass="auth-message"
-      />
-    }
-
+    <!-- =====================================================
+         LOGIN
+         ===================================================== -->
     @if (view === 'login') {
-      <form
-        class="auth-form"
-        [formGroup]="loginForm"
-        (ngSubmit)="submitLogin()"
-        novalidate
-      >
-        <label class="field">
-          <span class="field__label">
-            Correo electrónico
+      <main class="auth-content">
+        <div class="auth-heading">
+          <span class="auth-heading__eyebrow">
+            Bienvenido
           </span>
 
-          <span
-            class="input-shell"
-            [class.input-shell--invalid]="
-              fieldError(
-                loginForm,
-                'email'
-              )
-            "
+          <h2>
+            Inicia sesión
+          </h2>
+
+          <p>
+            Accede a tu cuenta para continuar con tu pedido.
+          </p>
+        </div>
+
+        @if (errorMessage) {
+          <p-message
+            severity="error"
+            styleClass="auth-message"
           >
-            <i
-              class="pi pi-envelope"
-              aria-hidden="true"
-            ></i>
+            {{ errorMessage }}
+          </p-message>
+        }
 
-            <input
-              pInputText
-              type="email"
-              formControlName="email"
-              autocomplete="email"
-              placeholder="correo@ejemplo.com"
-            />
-          </span>
-
-          @if (
-            fieldError(
-              loginForm,
-              'email'
-            );
-            as error
-          ) {
-            <small class="field__error">
-              {{ error }}
-            </small>
-          }
-        </label>
-
-        <label class="field">
-          <span class="field__label">
-            Contraseña
-          </span>
-
-          <span
-            class="input-shell"
-            [class.input-shell--invalid]="
-              fieldError(
-                loginForm,
-                'password'
-              )
-            "
-          >
-            <i
-              class="pi pi-lock"
-              aria-hidden="true"
-            ></i>
-
-            <input
-              pInputText
-              [type]="
-                showPassword
-                  ? 'text'
-                  : 'password'
-              "
-              formControlName="password"
-              autocomplete="current-password"
-              placeholder="Ingresa tu contraseña"
-            />
-
-            <button
-              type="button"
-              class="password-toggle"
-              [attr.aria-label]="
-                showPassword
-                  ? 'Ocultar contraseña'
-                  : 'Mostrar contraseña'
-              "
-              (click)="togglePassword()"
-            >
-              <i
-                [class]="
-                  showPassword
-                    ? 'pi pi-eye-slash'
-                    : 'pi pi-eye'
-                "
-                aria-hidden="true"
-              ></i>
-            </button>
-          </span>
-
-          @if (
-            fieldError(
-              loginForm,
-              'password'
-            );
-            as error
-          ) {
-            <small class="field__error">
-              {{ error }}
-            </small>
-          }
-        </label>
-
-        <button
-          type="submit"
-          class="primary-button"
-          [disabled]="loading"
+        <form
+          class="auth-form"
+          novalidate
+          (ngSubmit)="login()"
         >
-          @if (loading) {
-            <i
-              class="pi pi-spin pi-spinner"
-              aria-hidden="true"
-            ></i>
-
-            Iniciando sesión
-          } @else {
-            Iniciar sesión
-
-            <i
-              class="pi pi-arrow-right"
-              aria-hidden="true"
-            ></i>
-          }
-        </button>
-      </form>
-
-      <div class="auth-separator">
-        <span>
-          o continúa con
-        </span>
-      </div>
-
-      <button
-        type="button"
-        class="google-button"
-        [disabled]="loading"
-        (click)="continueWithGoogle()"
-      >
-        <span
-          class="google-mark"
-          aria-hidden="true"
-        >
-          G
-        </span>
-
-        <span>
-          Continuar con Google
-        </span>
-      </button>
-
-      <p class="auth-switch">
-        ¿Todavía no tienes una cuenta?
-
-        <button
-          type="button"
-          [disabled]="loading"
-          (click)="showRegister()"
-        >
-          Crear cuenta
-        </button>
-      </p>
-    } @else if (
-      view === 'register'
-    ) {
-      <form
-        class="auth-form"
-        [formGroup]="registerForm"
-        (ngSubmit)="submitRegister()"
-        novalidate
-      >
-        <div class="form-grid">
-          <label class="field">
-            <span class="field__label">
-              Nombres
-            </span>
-
-            <span
-              class="input-shell"
-              [class.input-shell--invalid]="
-                fieldError(
-                  registerForm,
-                  'first_name'
-                )
-              "
+          <!-- CORREO -->
+          <div class="field">
+            <label
+              class="field__label"
+              for="login-email"
             >
-              <i
-                class="pi pi-user"
-                aria-hidden="true"
-              ></i>
-
-              <input
-                pInputText
-                type="text"
-                formControlName="first_name"
-                autocomplete="given-name"
-                placeholder="Tus nombres"
-              />
-            </span>
-
-            @if (
-              fieldError(
-                registerForm,
-                'first_name'
-              );
-              as error
-            ) {
-              <small class="field__error">
-                {{ error }}
-              </small>
-            }
-          </label>
-
-          <label class="field">
-            <span class="field__label">
-              Apellidos
-            </span>
-
-            <span
-              class="input-shell"
-              [class.input-shell--invalid]="
-                fieldError(
-                  registerForm,
-                  'last_name'
-                )
-              "
-            >
-              <i
-                class="pi pi-user"
-                aria-hidden="true"
-              ></i>
-
-              <input
-                pInputText
-                type="text"
-                formControlName="last_name"
-                autocomplete="family-name"
-                placeholder="Tus apellidos"
-              />
-            </span>
-
-            @if (
-              fieldError(
-                registerForm,
-                'last_name'
-              );
-              as error
-            ) {
-              <small class="field__error">
-                {{ error }}
-              </small>
-            }
-          </label>
-
-          <label class="field">
-            <span class="field__label">
               Correo electrónico
-            </span>
+            </label>
 
-            <span
+            <div
               class="input-shell"
               [class.input-shell--invalid]="
-                fieldError(
-                  registerForm,
-                  'email'
-                )
+                loginForm.controls.email.invalid &&
+                loginForm.controls.email.touched
               "
             >
               <i
@@ -381,85 +108,40 @@
               ></i>
 
               <input
+                id="login-email"
                 pInputText
                 type="email"
-                formControlName="email"
                 autocomplete="email"
-                placeholder="correo@ejemplo.com"
+                inputmode="email"
+                placeholder="nombre@correo.com"
+                [formControl]="loginForm.controls.email"
               />
-            </span>
+            </div>
 
             @if (
-              fieldError(
-                registerForm,
-                'email'
-              );
-              as error
+              loginForm.controls.email.invalid &&
+              loginForm.controls.email.touched
             ) {
               <small class="field__error">
-                {{ error }}
+                Ingresa un correo electrónico válido.
               </small>
             }
-          </label>
+          </div>
 
-          <label class="field">
-            <span class="field__label">
-              Teléfono
-            </span>
-
-            <span
-              class="input-shell input-shell--phone"
-              [class.input-shell--invalid]="
-                fieldError(
-                  registerForm,
-                  'phone'
-                )
-              "
+          <!-- CONTRASEÑA -->
+          <div class="field">
+            <label
+              class="field__label"
+              for="login-password"
             >
-              <span class="phone-prefix">
-                +593
-              </span>
-
-              <input
-                pInputText
-                type="tel"
-                formControlName="phone"
-                inputmode="numeric"
-                autocomplete="tel-national"
-                maxlength="9"
-                placeholder="991234567"
-              />
-            </span>
-
-            <small class="field__hint">
-              Ingresa los 9 dígitos sin el cero inicial.
-            </small>
-
-            @if (
-              fieldError(
-                registerForm,
-                'phone'
-              );
-              as error
-            ) {
-              <small class="field__error">
-                {{ error }}
-              </small>
-            }
-          </label>
-
-          <label class="field">
-            <span class="field__label">
               Contraseña
-            </span>
+            </label>
 
-            <span
+            <div
               class="input-shell"
               [class.input-shell--invalid]="
-                fieldError(
-                  registerForm,
-                  'password'
-                )
+                loginForm.controls.password.invalid &&
+                loginForm.controls.password.touched
               "
             >
               <i
@@ -468,367 +150,49 @@
               ></i>
 
               <input
+                id="login-password"
                 pInputText
                 [type]="
-                  showPassword
+                  showLoginPassword
                     ? 'text'
                     : 'password'
                 "
-                formControlName="password"
-                autocomplete="new-password"
-                placeholder="Crea una contraseña segura"
+                autocomplete="current-password"
+                placeholder="Ingresa tu contraseña"
+                [formControl]="loginForm.controls.password"
               />
 
               <button
                 type="button"
                 class="password-toggle"
                 [attr.aria-label]="
-                  showPassword
+                  showLoginPassword
                     ? 'Ocultar contraseña'
                     : 'Mostrar contraseña'
                 "
-                (click)="togglePassword()"
+                (click)="
+                  showLoginPassword =
+                    !showLoginPassword
+                "
               >
                 <i
-                  [class]="
-                    showPassword
-                      ? 'pi pi-eye-slash'
-                      : 'pi pi-eye'
-                  "
+                  class="pi"
+                  [class.pi-eye]="!showLoginPassword"
+                  [class.pi-eye-slash]="showLoginPassword"
                   aria-hidden="true"
                 ></i>
               </button>
-            </span>
-
-            <small class="field__hint">
-              Mínimo 8 caracteres, una mayúscula, una minúscula y un número.
-            </small>
+            </div>
 
             @if (
-              fieldError(
-                registerForm,
-                'password'
-              );
-              as error
+              loginForm.controls.password.invalid &&
+              loginForm.controls.password.touched
             ) {
               <small class="field__error">
-                {{ error }}
+                Ingresa tu contraseña.
               </small>
             }
-          </label>
-
-          <label class="field">
-            <span class="field__label">
-              Confirmar contraseña
-            </span>
-
-            <span
-              class="input-shell"
-              [class.input-shell--invalid]="
-                passwordConfirmationError()
-              "
-            >
-              <i
-                class="pi pi-lock"
-                aria-hidden="true"
-              ></i>
-
-              <input
-                pInputText
-                [type]="
-                  showPasswordConfirmation
-                    ? 'text'
-                    : 'password'
-                "
-                formControlName="password_confirmation"
-                autocomplete="new-password"
-                placeholder="Repite tu contraseña"
-              />
-
-              <button
-                type="button"
-                class="password-toggle"
-                [attr.aria-label]="
-                  showPasswordConfirmation
-                    ? 'Ocultar confirmación'
-                    : 'Mostrar confirmación'
-                "
-                (click)="togglePasswordConfirmation()"
-              >
-                <i
-                  [class]="
-                    showPasswordConfirmation
-                      ? 'pi pi-eye-slash'
-                      : 'pi pi-eye'
-                  "
-                  aria-hidden="true"
-                ></i>
-              </button>
-            </span>
-
-            @if (
-              passwordConfirmationError();
-              as error
-            ) {
-              <small class="field__error">
-                {{ error }}
-              </small>
-            }
-          </label>
-        </div>
-
-        <label class="terms-field">
-          <p-checkbox
-            formControlName="terms"
-            [binary]="true"
-            inputId="auth-terms"
-          />
-
-          <span>
-            Acepto el tratamiento de mis datos para gestionar
-            mi cuenta y mis pedidos.
-          </span>
-        </label>
-
-        @if (
-          registerForm.controls
-            .terms.invalid &&
-          registerForm.controls
-            .terms.touched
-        ) {
-          <small class="field__error">
-            Debes aceptar para crear tu cuenta.
-          </small>
-        }
-
-        <button
-          type="submit"
-          class="primary-button"
-          [disabled]="loading"
-        >
-          @if (loading) {
-            <i
-              class="pi pi-spin pi-spinner"
-              aria-hidden="true"
-            ></i>
-
-            Creando cuenta
-          } @else {
-            Crear cuenta
-
-            <i
-              class="pi pi-arrow-right"
-              aria-hidden="true"
-            ></i>
-          }
-        </button>
-      </form>
-
-      <div class="auth-separator">
-        <span>
-          o regístrate con
-        </span>
-      </div>
-
-      <button
-        type="button"
-        class="google-button"
-        [disabled]="loading"
-        (click)="continueWithGoogle()"
-      >
-        <span
-          class="google-mark"
-          aria-hidden="true"
-        >
-          G
-        </span>
-
-        <span>
-          Continuar con Google
-        </span>
-      </button>
-
-      <p class="auth-switch">
-        ¿Ya tienes una cuenta?
-
-        <button
-          type="button"
-          [disabled]="loading"
-          (click)="showLogin()"
-        >
-          Iniciar sesión
-        </button>
-      </p>
-    } @else {
-      <div class="google-profile-card">
-        <span
-          class="google-profile-card__mark"
-          aria-hidden="true"
-        >
-          G
-        </span>
-
-        <div>
-          <strong>
-            Cuenta de Google
-          </strong>
-
-          <small>
-            {{ googleEmail }}
-          </small>
-        </div>
-      </div>
-
-      <form
-        class="auth-form"
-        [formGroup]="googleProfileForm"
-        (ngSubmit)="completeGoogleProfile()"
-        novalidate
-      >
-        <div class="form-grid">
-          <label class="field">
-            <span class="field__label">
-              Nombres
-            </span>
-
-            <span
-              class="input-shell"
-              [class.input-shell--invalid]="
-                fieldError(
-                  googleProfileForm,
-                  'first_name'
-                )
-              "
-            >
-              <i
-                class="pi pi-user"
-                aria-hidden="true"
-              ></i>
-
-              <input
-                pInputText
-                type="text"
-                formControlName="first_name"
-                autocomplete="given-name"
-                placeholder="Tus nombres"
-              />
-            </span>
-
-            @if (
-              fieldError(
-                googleProfileForm,
-                'first_name'
-              );
-              as error
-            ) {
-              <small class="field__error">
-                {{ error }}
-              </small>
-            }
-          </label>
-
-          <label class="field">
-            <span class="field__label">
-              Apellidos
-            </span>
-
-            <span
-              class="input-shell"
-              [class.input-shell--invalid]="
-                fieldError(
-                  googleProfileForm,
-                  'last_name'
-                )
-              "
-            >
-              <i
-                class="pi pi-user"
-                aria-hidden="true"
-              ></i>
-
-              <input
-                pInputText
-                type="text"
-                formControlName="last_name"
-                autocomplete="family-name"
-                placeholder="Tus apellidos"
-              />
-            </span>
-
-            @if (
-              fieldError(
-                googleProfileForm,
-                'last_name'
-              );
-              as error
-            ) {
-              <small class="field__error">
-                {{ error }}
-              </small>
-            }
-          </label>
-        </div>
-
-        <label class="field">
-          <span class="field__label">
-            Teléfono para tus pedidos
-          </span>
-
-          <span
-            class="input-shell input-shell--phone"
-            [class.input-shell--invalid]="
-              fieldError(
-                googleProfileForm,
-                'phone'
-              )
-            "
-          >
-            <span class="phone-prefix">
-              +593
-            </span>
-
-            <input
-              pInputText
-              type="tel"
-              formControlName="phone"
-              inputmode="numeric"
-              autocomplete="tel-national"
-              maxlength="9"
-              placeholder="991234567"
-            />
-          </span>
-
-          <small class="field__hint">
-            Lo usaremos únicamente para coordinar tus pedidos.
-          </small>
-
-          @if (
-            fieldError(
-              googleProfileForm,
-              'phone'
-            );
-            as error
-          ) {
-            <small class="field__error">
-              {{ error }}
-            </small>
-          }
-        </label>
-
-        <div class="form-actions">
-          <button
-            type="button"
-            class="secondary-button"
-            [disabled]="loading"
-            (click)="backFromGoogleProfile()"
-          >
-            <i
-              class="pi pi-arrow-left"
-              aria-hidden="true"
-            ></i>
-
-            Volver
-          </button>
+          </div>
 
           <button
             type="submit"
@@ -841,31 +205,793 @@
                 aria-hidden="true"
               ></i>
 
-              Guardando
+              <span>
+                Ingresando...
+              </span>
             } @else {
-              Completar cuenta
+              <span>
+                Iniciar sesión
+              </span>
 
               <i
-                class="pi pi-check"
+                class="pi pi-arrow-right"
                 aria-hidden="true"
               ></i>
             }
           </button>
+        </form>
+
+        <div class="auth-separator">
+          <span>
+            o continúa con
+          </span>
         </div>
-      </form>
+
+        <button
+          type="button"
+          class="google-button"
+          [disabled]="loading"
+          (click)="continueWithGoogle()"
+        >
+          <span
+            class="google-button__icon"
+            aria-hidden="true"
+          >
+            <img
+              src="/assets/branding/google-g.svg"
+              alt=""
+              width="22"
+              height="22"
+            />
+          </span>
+
+          <span class="google-button__label">
+            Continuar con Google
+          </span>
+
+          <span
+            class="google-button__balance"
+            aria-hidden="true"
+          ></span>
+        </button>
+
+        <div class="auth-switch">
+          <span>
+            ¿Aún no tienes una cuenta?
+          </span>
+
+          <button
+            type="button"
+            [disabled]="loading"
+            (click)="showRegister()"
+          >
+            Crear cuenta
+          </button>
+        </div>
+      </main>
     }
 
+    <!-- =====================================================
+         REGISTRO
+         ===================================================== -->
+    @if (view === 'register') {
+      <main class="auth-content auth-content--register">
+        <div class="auth-heading">
+          <span class="auth-heading__eyebrow">
+            Nueva cuenta
+          </span>
+
+          <h2>
+            Crea tu cuenta
+          </h2>
+
+          <p>
+            Guarda tus pedidos y disfruta de una experiencia
+            de compra más rápida.
+          </p>
+        </div>
+
+        @if (errorMessage) {
+          <p-message
+            severity="error"
+            styleClass="auth-message"
+          >
+            {{ errorMessage }}
+          </p-message>
+        }
+
+        <form
+          class="auth-form auth-form--register"
+          novalidate
+          (ngSubmit)="register()"
+        >
+          <div class="form-grid">
+            <!-- NOMBRES -->
+            <div class="field">
+              <label
+                class="field__label"
+                for="register-first-name"
+              >
+                Nombres
+              </label>
+
+              <div
+                class="input-shell"
+                [class.input-shell--invalid]="
+                  registerForm.controls.firstName.invalid &&
+                  registerForm.controls.firstName.touched
+                "
+              >
+                <i
+                  class="pi pi-user"
+                  aria-hidden="true"
+                ></i>
+
+                <input
+                  id="register-first-name"
+                  pInputText
+                  type="text"
+                  autocomplete="given-name"
+                  placeholder="Ingresa tus nombres"
+                  [formControl]="registerForm.controls.firstName"
+                />
+              </div>
+
+              @if (
+                registerFieldError('firstName');
+                as error
+              ) {
+                <small class="field__error">
+                  {{ error }}
+                </small>
+              }
+            </div>
+
+            <!-- APELLIDOS -->
+            <div class="field">
+              <label
+                class="field__label"
+                for="register-last-name"
+              >
+                Apellidos
+              </label>
+
+              <div
+                class="input-shell"
+                [class.input-shell--invalid]="
+                  registerForm.controls.lastName.invalid &&
+                  registerForm.controls.lastName.touched
+                "
+              >
+                <i
+                  class="pi pi-user"
+                  aria-hidden="true"
+                ></i>
+
+                <input
+                  id="register-last-name"
+                  pInputText
+                  type="text"
+                  autocomplete="family-name"
+                  placeholder="Ingresa tus apellidos"
+                  [formControl]="registerForm.controls.lastName"
+                />
+              </div>
+
+              @if (
+                registerFieldError('lastName');
+                as error
+              ) {
+                <small class="field__error">
+                  {{ error }}
+                </small>
+              }
+            </div>
+
+            <!-- CORREO -->
+            <div class="field">
+              <label
+                class="field__label"
+                for="register-email"
+              >
+                Correo electrónico
+              </label>
+
+              <div
+                class="input-shell"
+                [class.input-shell--invalid]="
+                  registerForm.controls.email.invalid &&
+                  registerForm.controls.email.touched
+                "
+              >
+                <i
+                  class="pi pi-envelope"
+                  aria-hidden="true"
+                ></i>
+
+                <input
+                  id="register-email"
+                  pInputText
+                  type="email"
+                  autocomplete="email"
+                  inputmode="email"
+                  placeholder="nombre@correo.com"
+                  [formControl]="registerForm.controls.email"
+                />
+              </div>
+
+              @if (
+                registerFieldError('email');
+                as error
+              ) {
+                <small class="field__error">
+                  {{ error }}
+                </small>
+              }
+            </div>
+
+            <!-- CELULAR -->
+            <div class="field">
+              <label
+                class="field__label"
+                for="register-phone"
+              >
+                Celular
+              </label>
+
+              <div
+                class="input-shell input-shell--phone"
+                [class.input-shell--invalid]="
+                  registerForm.controls.phone.invalid &&
+                  registerForm.controls.phone.touched
+                "
+              >
+                <span class="phone-prefix">
+                  +593
+                </span>
+
+                <input
+                  id="register-phone"
+                  pInputText
+                  type="tel"
+                  inputmode="numeric"
+                  autocomplete="tel-national"
+                  maxlength="9"
+                  placeholder="991234567"
+                  [formControl]="registerForm.controls.phone"
+                />
+              </div>
+
+              <small class="field__hint">
+                9 dígitos, sin el cero inicial.
+              </small>
+
+              @if (
+                registerFieldError('phone');
+                as error
+              ) {
+                <small class="field__error">
+                  {{ error }}
+                </small>
+              }
+            </div>
+
+            <!-- CONTRASEÑA -->
+            <div class="field">
+              <label
+                class="field__label"
+                for="register-password"
+              >
+                Contraseña
+              </label>
+
+              <div
+                class="input-shell"
+                [class.input-shell--invalid]="
+                  registerForm.controls.password.invalid &&
+                  registerForm.controls.password.touched
+                "
+              >
+                <i
+                  class="pi pi-lock"
+                  aria-hidden="true"
+                ></i>
+
+                <input
+                  id="register-password"
+                  pInputText
+                  [type]="
+                    showRegisterPassword
+                      ? 'text'
+                      : 'password'
+                  "
+                  autocomplete="new-password"
+                  placeholder="Crea una contraseña"
+                  [formControl]="registerForm.controls.password"
+                />
+
+                <button
+                  type="button"
+                  class="password-toggle"
+                  [attr.aria-label]="
+                    showRegisterPassword
+                      ? 'Ocultar contraseña'
+                      : 'Mostrar contraseña'
+                  "
+                  (click)="
+                    showRegisterPassword =
+                      !showRegisterPassword
+                  "
+                >
+                  <i
+                    class="pi"
+                    [class.pi-eye]="!showRegisterPassword"
+                    [class.pi-eye-slash]="showRegisterPassword"
+                    aria-hidden="true"
+                  ></i>
+                </button>
+              </div>
+
+              <small class="field__hint">
+                8+ caracteres, mayúscula, minúscula y número.
+              </small>
+
+              @if (
+                registerFieldError('password');
+                as error
+              ) {
+                <small class="field__error">
+                  {{ error }}
+                </small>
+              }
+            </div>
+
+            <!-- CONFIRMACIÓN -->
+            <div class="field">
+              <label
+                class="field__label"
+                for="register-password-confirmation"
+              >
+                Confirmar contraseña
+              </label>
+
+              <div
+                class="input-shell"
+                [class.input-shell--invalid]="
+                  (
+                    registerForm.controls
+                      .passwordConfirmation.invalid ||
+                    registerForm.errors?.['passwordMismatch']
+                  ) &&
+                  registerForm.controls
+                    .passwordConfirmation.touched
+                "
+              >
+                <i
+                  class="pi pi-lock"
+                  aria-hidden="true"
+                ></i>
+
+                <input
+                  id="register-password-confirmation"
+                  pInputText
+                  [type]="
+                    showRegisterPasswordConfirmation
+                      ? 'text'
+                      : 'password'
+                  "
+                  autocomplete="new-password"
+                  placeholder="Repite tu contraseña"
+                  [formControl]="
+                    registerForm.controls
+                      .passwordConfirmation
+                  "
+                />
+
+                <button
+                  type="button"
+                  class="password-toggle"
+                  [attr.aria-label]="
+                    showRegisterPasswordConfirmation
+                      ? 'Ocultar contraseña'
+                      : 'Mostrar contraseña'
+                  "
+                  (click)="
+                    showRegisterPasswordConfirmation =
+                      !showRegisterPasswordConfirmation
+                  "
+                >
+                  <i
+                    class="pi"
+                    [class.pi-eye]="
+                      !showRegisterPasswordConfirmation
+                    "
+                    [class.pi-eye-slash]="
+                      showRegisterPasswordConfirmation
+                    "
+                    aria-hidden="true"
+                  ></i>
+                </button>
+              </div>
+
+              @if (
+                registerFieldError(
+                  'passwordConfirmation'
+                );
+                as error
+              ) {
+                <small class="field__error">
+                  {{ error }}
+                </small>
+              }
+            </div>
+          </div>
+
+          <!-- PRIVACIDAD -->
+          <div
+            class="terms-row"
+            [class.terms-row--invalid]="
+              registerForm.controls.acceptTerms.invalid &&
+              registerForm.controls.acceptTerms.touched
+            "
+          >
+            <p-checkbox
+              inputId="register-terms"
+              [binary]="true"
+              [formControl]="
+                registerForm.controls.acceptTerms
+              "
+            ></p-checkbox>
+
+            <label for="register-terms">
+              Acepto el tratamiento de mis datos
+              para crear y gestionar mi cuenta.
+            </label>
+          </div>
+
+          @if (
+            registerForm.controls.acceptTerms.invalid &&
+            registerForm.controls.acceptTerms.touched
+          ) {
+            <small class="field__error terms-error">
+              Debes aceptar el tratamiento de tus datos.
+            </small>
+          }
+
+          <button
+            type="submit"
+            class="primary-button"
+            [disabled]="loading"
+          >
+            @if (loading) {
+              <i
+                class="pi pi-spin pi-spinner"
+                aria-hidden="true"
+              ></i>
+
+              <span>
+                Creando cuenta...
+              </span>
+            } @else {
+              <span>
+                Crear cuenta
+              </span>
+
+              <i
+                class="pi pi-arrow-right"
+                aria-hidden="true"
+              ></i>
+            }
+          </button>
+        </form>
+
+        <div class="auth-separator">
+          <span>
+            o regístrate con
+          </span>
+        </div>
+
+        <button
+          type="button"
+          class="google-button"
+          [disabled]="loading"
+          (click)="continueWithGoogle()"
+        >
+          <span
+            class="google-button__icon"
+            aria-hidden="true"
+          >
+            <img
+              src="/assets/branding/google-g.svg"
+              alt=""
+              width="22"
+              height="22"
+            />
+          </span>
+
+          <span class="google-button__label">
+            Continuar con Google
+          </span>
+
+          <span
+            class="google-button__balance"
+            aria-hidden="true"
+          ></span>
+        </button>
+
+        <div class="auth-switch">
+          <span>
+            ¿Ya tienes una cuenta?
+          </span>
+
+          <button
+            type="button"
+            [disabled]="loading"
+            (click)="showLogin()"
+          >
+            Iniciar sesión
+          </button>
+        </div>
+      </main>
+    }
+
+    <!-- =====================================================
+         COMPLETAR PERFIL DE GOOGLE
+         ===================================================== -->
+    @if (view === 'google-profile') {
+      <main class="auth-content">
+        <div class="auth-heading">
+          <span class="auth-heading__eyebrow">
+            Un último paso
+          </span>
+
+          <h2>
+            Completa tu perfil
+          </h2>
+
+          <p>
+            Google ya verificó tu correo.
+            Completa tus datos para continuar.
+          </p>
+        </div>
+
+        @if (errorMessage) {
+          <p-message
+            severity="error"
+            styleClass="auth-message"
+          >
+            {{ errorMessage }}
+          </p-message>
+        }
+
+        <div class="google-account">
+          <div
+            class="google-account__icon"
+            aria-hidden="true"
+          >
+            <img
+              src="/assets/branding/google-g.svg"
+              alt=""
+              width="22"
+              height="22"
+            />
+          </div>
+
+          <div class="google-account__content">
+            <span>
+              Cuenta verificada
+            </span>
+
+            <strong>
+              {{ googleEmail }}
+            </strong>
+          </div>
+
+          <i
+            class="pi pi-check-circle"
+            aria-hidden="true"
+          ></i>
+        </div>
+
+        <form
+          class="auth-form"
+          novalidate
+          (ngSubmit)="completeGoogleProfile()"
+        >
+          <div class="form-grid">
+            <!-- NOMBRES -->
+            <div class="field">
+              <label
+                class="field__label"
+                for="google-first-name"
+              >
+                Nombres
+              </label>
+
+              <div
+                class="input-shell"
+                [class.input-shell--invalid]="
+                  googleProfileForm.controls.firstName.invalid &&
+                  googleProfileForm.controls.firstName.touched
+                "
+              >
+                <i
+                  class="pi pi-user"
+                  aria-hidden="true"
+                ></i>
+
+                <input
+                  id="google-first-name"
+                  pInputText
+                  type="text"
+                  autocomplete="given-name"
+                  placeholder="Ingresa tus nombres"
+                  [formControl]="
+                    googleProfileForm.controls.firstName
+                  "
+                />
+              </div>
+
+              @if (
+                googleProfileFieldError('firstName');
+                as error
+              ) {
+                <small class="field__error">
+                  {{ error }}
+                </small>
+              }
+            </div>
+
+            <!-- APELLIDOS -->
+            <div class="field">
+              <label
+                class="field__label"
+                for="google-last-name"
+              >
+                Apellidos
+              </label>
+
+              <div
+                class="input-shell"
+                [class.input-shell--invalid]="
+                  googleProfileForm.controls.lastName.invalid &&
+                  googleProfileForm.controls.lastName.touched
+                "
+              >
+                <i
+                  class="pi pi-user"
+                  aria-hidden="true"
+                ></i>
+
+                <input
+                  id="google-last-name"
+                  pInputText
+                  type="text"
+                  autocomplete="family-name"
+                  placeholder="Ingresa tus apellidos"
+                  [formControl]="
+                    googleProfileForm.controls.lastName
+                  "
+                />
+              </div>
+
+              @if (
+                googleProfileFieldError('lastName');
+                as error
+              ) {
+                <small class="field__error">
+                  {{ error }}
+                </small>
+              }
+            </div>
+          </div>
+
+          <!-- CELULAR -->
+          <div class="field">
+            <label
+              class="field__label"
+              for="google-phone"
+            >
+              Celular
+            </label>
+
+            <div
+              class="input-shell input-shell--phone"
+              [class.input-shell--invalid]="
+                googleProfileForm.controls.phone.invalid &&
+                googleProfileForm.controls.phone.touched
+              "
+            >
+              <span class="phone-prefix">
+                +593
+              </span>
+
+              <input
+                id="google-phone"
+                pInputText
+                type="tel"
+                inputmode="numeric"
+                autocomplete="tel-national"
+                maxlength="9"
+                placeholder="991234567"
+                [formControl]="
+                  googleProfileForm.controls.phone
+                "
+              />
+            </div>
+
+            <small class="field__hint">
+              9 dígitos, sin el cero inicial.
+            </small>
+
+            @if (
+              googleProfileFieldError('phone');
+              as error
+            ) {
+              <small class="field__error">
+                {{ error }}
+              </small>
+            }
+          </div>
+
+          <div class="profile-actions">
+            <button
+              type="button"
+              class="secondary-button"
+              [disabled]="loading"
+              (click)="backFromGoogleProfile()"
+            >
+              <i
+                class="pi pi-arrow-left"
+                aria-hidden="true"
+              ></i>
+
+              <span>
+                Volver
+              </span>
+            </button>
+
+            <button
+              type="submit"
+              class="primary-button"
+              [disabled]="loading"
+            >
+              @if (loading) {
+                <i
+                  class="pi pi-spin pi-spinner"
+                  aria-hidden="true"
+                ></i>
+
+                <span>
+                  Guardando...
+                </span>
+              } @else {
+                <span>
+                  Continuar
+                </span>
+
+                <i
+                  class="pi pi-arrow-right"
+                  aria-hidden="true"
+                ></i>
+              }
+            </button>
+          </div>
+        </form>
+      </main>
+    }
+
+    <!-- =====================================================
+         FOOTER
+         ===================================================== -->
     <footer class="auth-footer">
-      <span class="auth-footer__icon">
-        <i
-          class="pi pi-shield"
-          aria-hidden="true"
-        ></i>
-      </span>
+      <i
+        class="pi pi-shield"
+        aria-hidden="true"
+      ></i>
 
       <span>
-        Acceso seguro. Tu contraseña se protege mediante cifrado
-        y nunca se almacena en texto plano.
+        Acceso protegido y datos tratados de forma segura.
       </span>
     </footer>
   </section>

@@ -3,16 +3,20 @@
     <button
       type="button"
       class="brand"
-      aria-label="Ir al inicio"
+      aria-label="Ir al inicio de Cheof Pizza"
+      title="Cheof Pizza"
       (click)="goToHome()"
     >
-      <span class="brand__name">
-        CHEO' F
-      </span>
-
-      <span class="brand__descriptor">
-        Pizza artesanal
-      </span>
+      <img
+        class="brand__logo"
+        src="/assets/branding/cheof-pizza-logo-header.png"
+        alt="Cheof Pizza - Il sapore di Chone"
+        width="512"
+        height="379"
+        loading="eager"
+        decoding="async"
+        fetchpriority="high"
+      />
     </button>
 
     <div class="desktop-toolbar">
@@ -26,9 +30,7 @@
             class="navigation-link"
             (click)="goToSencillas()"
           >
-            <span>
-              Sencillas
-            </span>
+            <span>Sencillas</span>
           </button>
 
           <button
@@ -36,9 +38,7 @@
             class="navigation-link"
             (click)="goToEspeciales()"
           >
-            <span>
-              Especiales
-            </span>
+            <span>Especiales</span>
           </button>
 
           @if (
@@ -58,9 +58,7 @@
               "
               (click)="goToMyOrders()"
             >
-              <span>
-                Mis pedidos
-              </span>
+              <span>Mis pedidos</span>
             </button>
           }
         </nav>
@@ -92,9 +90,7 @@
               aria-hidden="true"
             ></i>
 
-            <span>
-              Operativo
-            </span>
+            <span>Operativo</span>
           </button>
 
           @if (isAdmin()) {
@@ -116,9 +112,7 @@
                 aria-hidden="true"
               ></i>
 
-              <span>
-                Analítica
-              </span>
+              <span>Analítica</span>
             </button>
           }
         </nav>
@@ -154,9 +148,7 @@
               aria-hidden="true"
             ></i>
 
-            <span>
-              Iniciar sesión
-            </span>
+            <span>Iniciar sesión</span>
           </button>
         } @else {
           <div class="account">
@@ -193,7 +185,10 @@
 
           <button
             type="button"
-            class="icon-action icon-action--logout"
+            class="
+              icon-action
+              icon-action--logout
+            "
             aria-label="Cerrar sesión"
             title="Cerrar sesión"
             [disabled]="loggingOut()"
@@ -201,7 +196,11 @@
           >
             @if (loggingOut()) {
               <i
-                class="pi pi-spin pi-spinner"
+                class="
+                  pi
+                  pi-spin
+                  pi-spinner
+                "
                 aria-hidden="true"
               ></i>
             } @else {
@@ -220,6 +219,23 @@
     </div>
 
     <div class="mobile-toolbar">
+      @if (!isAuthenticated()) {
+        <button
+          type="button"
+          class="mobile-login-action"
+          aria-label="Iniciar sesión"
+          title="Iniciar sesión"
+          (click)="openLoginDialog()"
+        >
+          <i
+            class="pi pi-user"
+            aria-hidden="true"
+          ></i>
+
+          <span>Iniciar sesión</span>
+        </button>
+      }
+
       @if (!isBackofficeView()) {
         <app-cart-popover />
       }
@@ -231,7 +247,9 @@
         [attr.aria-expanded]="
           mobileMenuVisible()
         "
-        aria-controls="mobile-navigation-drawer"
+        aria-controls="
+          mobile-navigation-drawer
+        "
         (click)="openMobileMenu()"
       >
         <i
@@ -256,10 +274,12 @@
   [baseZIndex]="3000"
   [visible]="mobileMenuVisible()"
   [style]="{
-    width: 'min(90vw, 380px)'
+    width: 'min(90vw, 380px)',
   }"
   (visibleChange)="
-    onMobileMenuVisibleChange($event)
+    onMobileMenuVisibleChange(
+      $event
+    )
   "
   (onHide)="closeMobileMenu()"
 >
@@ -309,12 +329,12 @@
         </span>
 
         <div>
-          <strong>
-            Bienvenido
-          </strong>
+          <strong>Bienvenido</strong>
 
           <p>
-            Explora el menú o inicia sesión para consultar tus pedidos.
+            Explora el menú o inicia
+            sesión para consultar tus
+            pedidos.
           </p>
         </div>
       </header>
@@ -344,9 +364,7 @@
         </span>
 
         <span class="drawer-link__copy">
-          <strong>
-            Inicio
-          </strong>
+          <strong>Inicio</strong>
 
           <small>
             Promociones y menú
@@ -437,9 +455,7 @@
           </span>
 
           <span class="drawer-link__copy">
-            <strong>
-              Mis pedidos
-            </strong>
+            <strong>Mis pedidos</strong>
 
             <small>
               Historial y seguimiento
@@ -457,7 +473,12 @@
         isAuthenticated() &&
         isOperatorOrAdmin()
       ) {
-        <span class="drawer-section-label drawer-section-label--spaced">
+        <span
+          class="
+            drawer-section-label
+            drawer-section-label--spaced
+          "
+        >
           Administración
         </span>
 
@@ -477,9 +498,7 @@
           </span>
 
           <span class="drawer-link__copy">
-            <strong>
-              Operativo
-            </strong>
+            <strong>Operativo</strong>
 
             <small>
               Gestión de pedidos
@@ -548,9 +567,7 @@
         </span>
 
         <span class="drawer-link__copy">
-          <strong>
-            Apariencia
-          </strong>
+          <strong>Apariencia</strong>
 
           <small>
             {{
@@ -585,13 +602,20 @@
       } @else {
         <button
           type="button"
-          class="drawer-session-button drawer-session-button--logout"
+          class="
+            drawer-session-button
+            drawer-session-button--logout
+          "
           [disabled]="loggingOut()"
           (click)="logout()"
         >
           @if (loggingOut()) {
             <i
-              class="pi pi-spin pi-spinner"
+              class="
+                pi
+                pi-spin
+                pi-spinner
+              "
               aria-hidden="true"
             ></i>
 

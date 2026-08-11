@@ -69,18 +69,31 @@ import {
   ROLE_IDS,
 } from '../../../core/auth/roles';
 
+/* =========================================================
+   TIPOS
+   ========================================================= */
+
 type AuthView =
   | 'login'
   | 'register'
   | 'google-profile';
 
-type FieldName =
-  | 'first_name'
-  | 'last_name'
+type RegisterFieldName =
+  | 'firstName'
+  | 'lastName'
   | 'phone'
   | 'email'
   | 'password'
-  | 'password_confirmation';
+  | 'passwordConfirmation';
+
+type GoogleProfileFieldName =
+  | 'firstName'
+  | 'lastName'
+  | 'phone';
+
+/* =========================================================
+   COMPONENTE
+   ========================================================= */
 
 @Component({
   selector:
@@ -108,6 +121,10 @@ type FieldName =
     ChangeDetectionStrategy.OnPush,
 })
 export class GoogleLoginDialogComponent {
+  /* =======================================================
+     DEPENDENCIAS
+     ======================================================= */
+
   private readonly firebase =
     inject(FirebaseAuthService);
 
@@ -126,6 +143,10 @@ export class GoogleLoginDialogComponent {
   private readonly cdr =
     inject(ChangeDetectorRef);
 
+  /* =======================================================
+     ESTADO DEL MODAL
+     ======================================================= */
+
   visible =
     false;
 
@@ -136,19 +157,31 @@ export class GoogleLoginDialogComponent {
     AuthView =
     'login';
 
-  errorMsg:
+  errorMessage:
     string | null =
     null;
 
-  showPassword =
+  /*
+   * Cada campo de contraseña tiene su propio estado.
+   * Esto evita que mostrar una contraseña revele
+   * automáticamente otra contraseña del formulario.
+   */
+  showLoginPassword =
     false;
 
-  showPasswordConfirmation =
+  showRegisterPassword =
+    false;
+
+  showRegisterPasswordConfirmation =
     false;
 
   private pendingGoogleProfile:
     GoogleFirebaseProfile | null =
     null;
+
+  /* =======================================================
+     FORMULARIO LOGIN
+     ======================================================= */
 
   readonly loginForm =
     new FormGroup({
@@ -183,10 +216,14 @@ export class GoogleLoginDialogComponent {
         ),
     });
 
+  /* =======================================================
+     FORMULARIO REGISTRO
+     ======================================================= */
+
   readonly registerForm =
     new FormGroup(
       {
-        first_name:
+        firstName:
           new FormControl(
             '',
             {
@@ -195,9 +232,11 @@ export class GoogleLoginDialogComponent {
 
               validators: [
                 Validators.required,
+
                 Validators.minLength(
                   2,
                 ),
+
                 Validators.maxLength(
                   100,
                 ),
@@ -205,7 +244,7 @@ export class GoogleLoginDialogComponent {
             },
           ),
 
-        last_name:
+        lastName:
           new FormControl(
             '',
             {
@@ -214,9 +253,11 @@ export class GoogleLoginDialogComponent {
 
               validators: [
                 Validators.required,
+
                 Validators.minLength(
                   2,
                 ),
+
                 Validators.maxLength(
                   100,
                 ),
@@ -235,8 +276,12 @@ export class GoogleLoginDialogComponent {
                 Validators.required,
 
                 /*
-                 * El prefijo +593 se presenta visualmente.
-                 * El usuario solo ingresa los nueve dígitos móviles.
+                 * El usuario ingresa únicamente:
+                 *
+                 * 991234567
+                 *
+                 * El +593 se muestra visualmente
+                 * y se añade antes de enviar al backend.
                  */
                 Validators.pattern(
                   /^9\d{8}$/,
@@ -255,6 +300,7 @@ export class GoogleLoginDialogComponent {
               validators: [
                 Validators.required,
                 Validators.email,
+
                 Validators.maxLength(
                   255,
                 ),
@@ -271,14 +317,16 @@ export class GoogleLoginDialogComponent {
 
               validators: [
                 Validators.required,
+
                 Validators.minLength(
                   8,
                 ),
 
                 /*
-                 * Debe contener:
-                 * - una minúscula;
-                 * - una mayúscula;
+                 * La contraseña debe incluir:
+                 *
+                 * - una letra minúscula;
+                 * - una letra mayúscula;
                  * - un número.
                  */
                 Validators.pattern(
@@ -288,7 +336,7 @@ export class GoogleLoginDialogComponent {
             },
           ),
 
-        password_confirmation:
+        passwordConfirmation:
           new FormControl(
             '',
             {
@@ -301,7 +349,7 @@ export class GoogleLoginDialogComponent {
             },
           ),
 
-        terms:
+        acceptTerms:
           new FormControl(
             false,
             {
@@ -321,9 +369,13 @@ export class GoogleLoginDialogComponent {
       },
     );
 
+  /* =======================================================
+     FORMULARIO PERFIL GOOGLE
+     ======================================================= */
+
   readonly googleProfileForm =
     new FormGroup({
-      first_name:
+      firstName:
         new FormControl(
           '',
           {
@@ -332,9 +384,11 @@ export class GoogleLoginDialogComponent {
 
             validators: [
               Validators.required,
+
               Validators.minLength(
                 2,
               ),
+
               Validators.maxLength(
                 100,
               ),
@@ -342,7 +396,7 @@ export class GoogleLoginDialogComponent {
           },
         ),
 
-      last_name:
+      lastName:
         new FormControl(
           '',
           {
@@ -351,9 +405,11 @@ export class GoogleLoginDialogComponent {
 
             validators: [
               Validators.required,
+
               Validators.minLength(
                 2,
               ),
+
               Validators.maxLength(
                 100,
               ),
@@ -370,6 +426,7 @@ export class GoogleLoginDialogComponent {
 
             validators: [
               Validators.required,
+
               Validators.pattern(
                 /^9\d{8}$/,
               ),
@@ -378,25 +435,36 @@ export class GoogleLoginDialogComponent {
         ),
     });
 
+  /* =======================================================
+     INFORMACIÓN COMPUTADA
+     ======================================================= */
+
   get dialogTitle(): string {
     if (
       this.view ===
       'register'
     ) {
-      return 'Crear una cuenta';
+      return (
+        'Crear una cuenta'
+      );
     }
 
     if (
       this.view ===
       'google-profile'
     ) {
-      return 'Completa tu cuenta';
+      return (
+        'Completa tu cuenta'
+      );
     }
 
-    return 'Iniciar sesión';
+    return (
+      'Iniciar sesión'
+    );
   }
 
-  get dialogDescription(): string {
+  get dialogDescription():
+    string {
     if (
       this.view ===
       'register'
@@ -423,7 +491,8 @@ export class GoogleLoginDialogComponent {
     );
   }
 
-  get googleEmail(): string {
+  get googleEmail():
+    string {
     return (
       this.pendingGoogleProfile
         ?.email ??
@@ -431,8 +500,14 @@ export class GoogleLoginDialogComponent {
     );
   }
 
+  /* =======================================================
+     ABRIR / CERRAR
+     ======================================================= */
+
   open(): void {
-    if (this.loading) {
+    if (
+      this.loading
+    ) {
       return;
     }
 
@@ -441,11 +516,14 @@ export class GoogleLoginDialogComponent {
     this.visible =
       true;
 
-    this.cdr.markForCheck();
+    this.cdr
+      .markForCheck();
   }
 
   close(): void {
-    if (this.loading) {
+    if (
+      this.loading
+    ) {
       return;
     }
 
@@ -454,7 +532,8 @@ export class GoogleLoginDialogComponent {
 
     this.resetState();
 
-    this.cdr.markForCheck();
+    this.cdr
+      .markForCheck();
   }
 
   onVisibleChange(
@@ -470,55 +549,74 @@ export class GoogleLoginDialogComponent {
     this.visible =
       visible;
 
-    if (!visible) {
+    if (
+      !visible
+    ) {
       this.resetState();
     }
 
-    this.cdr.markForCheck();
+    this.cdr
+      .markForCheck();
   }
 
+  /* =======================================================
+     CAMBIO DE VISTA
+     ======================================================= */
+
   showLogin(): void {
-    if (this.loading) {
+    if (
+      this.loading
+    ) {
       return;
     }
 
     this.view =
       'login';
 
-    this.errorMsg =
+    this.errorMessage =
       null;
 
     this.clearServerErrors(
       this.loginForm,
     );
 
-    this.cdr.markForCheck();
+    this.cdr
+      .markForCheck();
   }
 
   showRegister(): void {
-    if (this.loading) {
+    if (
+      this.loading
+    ) {
       return;
     }
 
     this.view =
       'register';
 
-    this.errorMsg =
+    this.errorMessage =
       null;
 
     this.clearServerErrors(
       this.registerForm,
     );
 
-    this.cdr.markForCheck();
+    this.cdr
+      .markForCheck();
   }
 
-  submitLogin(): void {
-    if (this.loading) {
+  /* =======================================================
+     LOGIN
+     ======================================================= */
+
+  login(): void {
+    if (
+      this.loading
+    ) {
       return;
     }
 
-    this.errorMsg =
+    this.errorMessage =
       null;
 
     this.clearServerErrors(
@@ -531,7 +629,8 @@ export class GoogleLoginDialogComponent {
       this.loginForm
         .markAllAsTouched();
 
-      this.cdr.markForCheck();
+      this.cdr
+        .markForCheck();
 
       return;
     }
@@ -546,7 +645,8 @@ export class GoogleLoginDialogComponent {
     this.loading =
       true;
 
-    this.cdr.markForCheck();
+    this.cdr
+      .markForCheck();
 
     this.api
       .login({
@@ -576,12 +676,18 @@ export class GoogleLoginDialogComponent {
       });
   }
 
-  submitRegister(): void {
-    if (this.loading) {
+  /* =======================================================
+     REGISTRO
+     ======================================================= */
+
+  register(): void {
+    if (
+      this.loading
+    ) {
       return;
     }
 
-    this.errorMsg =
+    this.errorMessage =
       null;
 
     this.clearServerErrors(
@@ -594,7 +700,25 @@ export class GoogleLoginDialogComponent {
       this.registerForm
         .markAllAsTouched();
 
-      this.cdr.markForCheck();
+      /*
+       * El validador passwordMismatch pertenece
+       * al FormGroup y no directamente al control.
+       * Marcamos confirmación para mostrar correctamente
+       * el error en la interfaz.
+       */
+      if (
+        this.registerForm
+          .errors
+          ?.['passwordMismatch']
+      ) {
+        this.registerForm
+          .controls
+          .passwordConfirmation
+          .markAsTouched();
+      }
+
+      this.cdr
+        .markForCheck();
 
       return;
     }
@@ -606,16 +730,23 @@ export class GoogleLoginDialogComponent {
     this.loading =
       true;
 
-    this.cdr.markForCheck();
+    this.cdr
+      .markForCheck();
 
+    /*
+     * El frontend utiliza camelCase.
+     *
+     * Aquí convertimos explícitamente al contrato
+     * snake_case esperado por Laravel.
+     */
     this.api
       .register({
         first_name:
-          value.first_name
+          value.firstName
             .trim(),
 
         last_name:
-          value.last_name
+          value.lastName
             .trim(),
 
         phone:
@@ -633,7 +764,7 @@ export class GoogleLoginDialogComponent {
 
         password_confirmation:
           value
-            .password_confirmation,
+            .passwordConfirmation,
       })
       .subscribe({
         next:
@@ -646,27 +777,33 @@ export class GoogleLoginDialogComponent {
 
         error:
           error => {
-            this.processAuthError(
+            this.processRegisterError(
               error,
-              this.registerForm,
             );
           },
       });
   }
 
+  /* =======================================================
+     GOOGLE
+     ======================================================= */
+
   async continueWithGoogle():
     Promise<void> {
-    if (this.loading) {
+    if (
+      this.loading
+    ) {
       return;
     }
 
-    this.errorMsg =
+    this.errorMessage =
       null;
 
     this.loading =
       true;
 
-    this.cdr.markForCheck();
+    this.cdr
+      .markForCheck();
 
     try {
       const profile =
@@ -687,11 +824,8 @@ export class GoogleLoginDialogComponent {
 
       this.googleProfileForm
         .patchValue({
-          first_name:
-            firstName,
-
-          last_name:
-            lastName,
+          firstName,
+          lastName,
         });
 
       this.api
@@ -720,36 +854,47 @@ export class GoogleLoginDialogComponent {
       this.loading =
         false;
 
-      this.errorMsg =
+      this.errorMessage =
         this.resolveFirebaseError(
           error,
         );
 
-      this.cdr.markForCheck();
+      this.cdr
+        .markForCheck();
     }
   }
 
-  completeGoogleProfile(): void {
-    if (this.loading) {
+  /* =======================================================
+     COMPLETAR PERFIL GOOGLE
+     ======================================================= */
+
+  completeGoogleProfile():
+    void {
+    if (
+      this.loading
+    ) {
       return;
     }
 
     const profile =
       this.pendingGoogleProfile;
 
-    if (!profile) {
-      this.errorMsg =
+    if (
+      !profile
+    ) {
+      this.errorMessage =
         'La sesión de Google expiró. Vuelve a iniciar el proceso.';
 
       this.view =
         'login';
 
-      this.cdr.markForCheck();
+      this.cdr
+        .markForCheck();
 
       return;
     }
 
-    this.errorMsg =
+    this.errorMessage =
       null;
 
     this.clearServerErrors(
@@ -757,12 +902,14 @@ export class GoogleLoginDialogComponent {
     );
 
     if (
-      this.googleProfileForm.invalid
+      this.googleProfileForm
+        .invalid
     ) {
       this.googleProfileForm
         .markAllAsTouched();
 
-      this.cdr.markForCheck();
+      this.cdr
+        .markForCheck();
 
       return;
     }
@@ -774,7 +921,8 @@ export class GoogleLoginDialogComponent {
     this.loading =
       true;
 
-    this.cdr.markForCheck();
+    this.cdr
+      .markForCheck();
 
     this.api
       .loginWithGoogle(
@@ -786,10 +934,12 @@ export class GoogleLoginDialogComponent {
             ),
 
           firstName:
-            value.first_name,
+            value.firstName
+              .trim(),
 
           lastName:
-            value.last_name,
+            value.lastName
+              .trim(),
         },
       )
       .subscribe({
@@ -803,16 +953,18 @@ export class GoogleLoginDialogComponent {
 
         error:
           error => {
-            this.processAuthError(
+            this.processGoogleProfileError(
               error,
-              this.googleProfileForm,
             );
           },
       });
   }
 
-  backFromGoogleProfile(): void {
-    if (this.loading) {
+  backFromGoogleProfile():
+    void {
+    if (
+      this.loading
+    ) {
       return;
     }
 
@@ -821,10 +973,10 @@ export class GoogleLoginDialogComponent {
 
     this.googleProfileForm
       .reset({
-        first_name:
+        firstName:
           '',
 
-        last_name:
+        lastName:
           '',
 
         phone:
@@ -834,34 +986,436 @@ export class GoogleLoginDialogComponent {
     this.view =
       'login';
 
-    this.errorMsg =
+    this.errorMessage =
       null;
 
-    this.cdr.markForCheck();
+    this.cdr
+      .markForCheck();
   }
 
-  togglePassword(): void {
-    this.showPassword =
-      !this.showPassword;
-  }
+  /* =======================================================
+     ERRORES DEL FORMULARIO
+     ======================================================= */
 
-  togglePasswordConfirmation(): void {
-    this.showPasswordConfirmation =
-      !this.showPasswordConfirmation;
-  }
-
-  fieldError(
-    form: FormGroup,
-    field: FieldName,
+  registerFieldError(
+    field:
+      RegisterFieldName,
   ): string | null {
     const control =
-      form.get(
-        field,
-      );
+      this.registerForm
+        .get(
+          field,
+        );
 
     if (
       !control ||
-      !control.touched ||
+      !control.touched
+    ) {
+      return null;
+    }
+
+    /*
+     * passwordConfirmation tiene además un error
+     * perteneciente al formulario completo.
+     */
+    if (
+      field ===
+        'passwordConfirmation' &&
+      this.registerForm
+        .errors
+        ?.['passwordMismatch']
+    ) {
+      return (
+        'Las contraseñas no coinciden.'
+      );
+    }
+
+    return (
+      this.resolveControlError(
+        control,
+        field,
+      )
+    );
+  }
+
+  googleProfileFieldError(
+    field:
+      GoogleProfileFieldName,
+  ): string | null {
+    const control =
+      this.googleProfileForm
+        .get(
+          field,
+        );
+
+    if (
+      !control ||
+      !control.touched
+    ) {
+      return null;
+    }
+
+    return (
+      this.resolveControlError(
+        control,
+        field,
+      )
+    );
+  }
+
+  /* =======================================================
+     ERROR GOOGLE
+     ======================================================= */
+
+  private processGoogleError(
+    error:
+      HttpErrorResponse,
+  ): void {
+    const apiError =
+      (
+        error.error ??
+        {}
+      ) as ApiErrorResponse;
+
+    const completionCodes = [
+      'PROFILE_COMPLETION_REQUIRED',
+      'PHONE_REQUIRED',
+    ];
+
+    if (
+      error.status ===
+        422 &&
+      completionCodes.includes(
+        apiError.code ??
+        '',
+      )
+    ) {
+      this.loading =
+        false;
+
+      this.view =
+        'google-profile';
+
+      this.errorMessage =
+        null;
+
+      this.cdr
+        .markForCheck();
+
+      return;
+    }
+
+    this.processAuthError(
+      error,
+      this.googleProfileForm,
+    );
+  }
+
+  /* =======================================================
+     LOGIN EXITOSO
+     ======================================================= */
+
+  private processSuccessfulLogin(
+    response:
+      AuthSessionResponse,
+
+    photoUrl:
+      string | null,
+  ): void {
+    const userWithPhoto:
+      AuthUser = {
+      ...response.data.user,
+
+      photo_url:
+        photoUrl ??
+        response.data
+          .user
+          .photo_url ??
+        null,
+    };
+
+    this.auth
+      .setSession(
+        response.data.token,
+        userWithPhoto,
+      );
+
+    this.cart
+      .replaceCart(
+        response.data.cart,
+      );
+
+    this.loading =
+      false;
+
+    this.visible =
+      false;
+
+    this.resetState();
+
+    this.cdr
+      .markForCheck();
+
+    this.redirectByRole(
+      userWithPhoto
+        .role_id,
+    );
+  }
+
+  /* =======================================================
+     ERRORES DE AUTENTICACIÓN
+     ======================================================= */
+
+  private processAuthError(
+    error:
+      HttpErrorResponse,
+
+    form:
+      FormGroup,
+  ): void {
+    this.loading =
+      false;
+
+    const apiError =
+      (
+        error.error ??
+        {}
+      ) as ApiErrorResponse;
+
+    this.applyServerErrors(
+      form,
+      apiError.errors,
+    );
+
+    this.errorMessage =
+      this.resolveApiError(
+        error,
+        apiError,
+      );
+
+    this.cdr
+      .markForCheck();
+  }
+
+  /*
+   * Laravel devuelve nombres snake_case.
+   *
+   * El formulario visual trabaja con camelCase,
+   * por lo que debemos transformar los nombres
+   * de los errores antes de asignarlos.
+   */
+  private processRegisterError(
+    error:
+      HttpErrorResponse,
+  ): void {
+    this.loading =
+      false;
+
+    const apiError =
+      (
+        error.error ??
+        {}
+      ) as ApiErrorResponse;
+
+    const mappedErrors:
+      Record<
+        string,
+        string[]
+      > = {};
+
+    if (
+      apiError.errors
+    ) {
+      for (
+        const [
+          field,
+          messages,
+        ] of Object.entries(
+          apiError.errors,
+        )
+      ) {
+        mappedErrors[
+          this.mapRegisterApiField(
+            field,
+          )
+        ] =
+          messages;
+      }
+    }
+
+    this.applyServerErrors(
+      this.registerForm,
+      mappedErrors,
+    );
+
+    this.errorMessage =
+      this.resolveApiError(
+        error,
+        apiError,
+      );
+
+    this.cdr
+      .markForCheck();
+  }
+
+  private processGoogleProfileError(
+    error:
+      HttpErrorResponse,
+  ): void {
+    this.loading =
+      false;
+
+    const apiError =
+      (
+        error.error ??
+        {}
+      ) as ApiErrorResponse;
+
+    const mappedErrors:
+      Record<
+        string,
+        string[]
+      > = {};
+
+    if (
+      apiError.errors
+    ) {
+      for (
+        const [
+          field,
+          messages,
+        ] of Object.entries(
+          apiError.errors,
+        )
+      ) {
+        mappedErrors[
+          this.mapGoogleApiField(
+            field,
+          )
+        ] =
+          messages;
+      }
+    }
+
+    this.applyServerErrors(
+      this.googleProfileForm,
+      mappedErrors,
+    );
+
+    this.errorMessage =
+      this.resolveApiError(
+        error,
+        apiError,
+      );
+
+    this.cdr
+      .markForCheck();
+  }
+
+  /* =======================================================
+     SERVER ERRORS
+     ======================================================= */
+
+  private applyServerErrors(
+    form:
+      FormGroup,
+
+    errors?:
+      Record<
+        string,
+        string[]
+      >,
+  ): void {
+    if (
+      !errors
+    ) {
+      return;
+    }
+
+    for (
+      const [
+        field,
+        messages,
+      ] of Object.entries(
+        errors,
+      )
+    ) {
+      const control =
+        form.get(
+          field,
+        );
+
+      const message =
+        messages?.[0];
+
+      if (
+        !control ||
+        !message
+      ) {
+        continue;
+      }
+
+      control.setErrors({
+        ...(
+          control.errors ??
+          {}
+        ),
+
+        server:
+          message,
+      });
+
+      control
+        .markAsTouched();
+    }
+  }
+
+  private clearServerErrors(
+    form:
+      FormGroup,
+  ): void {
+    Object.values(
+      form.controls,
+    ).forEach(
+      control => {
+        if (
+          !control.errors
+            ?.['server']
+        ) {
+          return;
+        }
+
+        const {
+          server:
+            _server,
+
+          ...remaining
+        } =
+          control.errors;
+
+        control.setErrors(
+          Object.keys(
+            remaining,
+          ).length
+            ? remaining
+            : null,
+        );
+      },
+    );
+  }
+
+  /* =======================================================
+     ERRORES DE CONTROLES
+     ======================================================= */
+
+  private resolveControlError(
+    control:
+      AbstractControl,
+
+    field:
+      string,
+  ): string | null {
+    if (
       !control.errors
     ) {
       return null;
@@ -901,9 +1455,28 @@ export class GoogleLoginDialogComponent {
 
     if (
       control.errors[
+        'requiredTrue'
+      ]
+    ) {
+      return (
+        'Debes aceptar el tratamiento de tus datos.'
+      );
+    }
+
+    if (
+      control.errors[
         'minlength'
       ]
     ) {
+      if (
+        field ===
+        'password'
+      ) {
+        return (
+          'La contraseña debe contener al menos 8 caracteres.'
+        );
+      }
+
       return (
         'Debe contener al menos 2 caracteres.'
       );
@@ -949,232 +1522,82 @@ export class GoogleLoginDialogComponent {
     );
   }
 
-  passwordConfirmationError():
-    string | null {
-    const control =
-      this.registerForm
-        .controls
-        .password_confirmation;
+  /* =======================================================
+     MAPEO BACKEND → FRONTEND
+     ======================================================= */
 
-    if (!control.touched) {
-      return null;
-    }
-
-    if (
-      control.errors
-        ?.['required']
-    ) {
-      return (
-        'Confirma tu contraseña.'
-      );
-    }
-
-    if (
-      this.registerForm
-        .errors
-        ?.['passwordMismatch']
-    ) {
-      return (
-        'Las contraseñas no coinciden.'
-      );
-    }
-
-    return null;
-  }
-
-  private processGoogleError(
-    error: HttpErrorResponse,
-  ): void {
-    const apiError =
-      (
-        error.error ??
-        {}
-      ) as ApiErrorResponse;
-
-    const completionCodes = [
-      'PROFILE_COMPLETION_REQUIRED',
-      'PHONE_REQUIRED',
-    ];
-
-    if (
-      error.status ===
-        422 &&
-      completionCodes.includes(
-        apiError.code ??
-        '',
-      )
-    ) {
-      this.loading =
-        false;
-
-      this.view =
-        'google-profile';
-
-      this.errorMsg =
-        null;
-
-      this.cdr.markForCheck();
-
-      return;
-    }
-
-    this.processAuthError(
-      error,
-      this.googleProfileForm,
-    );
-  }
-
-  private processSuccessfulLogin(
-    response: AuthSessionResponse,
-    photoUrl: string | null,
-  ): void {
-    const userWithPhoto:
-      AuthUser = {
-      ...response.data.user,
-
-      photo_url:
-        photoUrl ??
-        response.data
-          .user
-          .photo_url ??
-        null,
-    };
-
-    this.auth.setSession(
-      response.data.token,
-      userWithPhoto,
-    );
-
-    this.cart.replaceCart(
-      response.data.cart,
-    );
-
-    this.loading =
-      false;
-
-    this.visible =
-      false;
-
-    this.resetState();
-
-    this.cdr.markForCheck();
-
-    this.redirectByRole(
-      userWithPhoto.role_id,
-    );
-  }
-
-  private processAuthError(
-    error: HttpErrorResponse,
-    form: FormGroup,
-  ): void {
-    this.loading =
-      false;
-
-    const apiError =
-      (
-        error.error ??
-        {}
-      ) as ApiErrorResponse;
-
-    this.applyServerErrors(
-      form,
-      apiError.errors,
-    );
-
-    this.errorMsg =
-      this.resolveApiError(
-        error,
-        apiError,
-      );
-
-    this.cdr.markForCheck();
-  }
-
-  private applyServerErrors(
-    form: FormGroup,
-    errors?:
+  private mapRegisterApiField(
+    field:
+      string,
+  ): string {
+    const map:
       Record<
         string,
-        string[]
-      >,
-  ): void {
-    if (!errors) {
-      return;
-    }
+        string
+      > = {
+      first_name:
+        'firstName',
 
-    for (
-      const [
-        field,
-        messages,
-      ] of Object.entries(
-        errors,
-      )
-    ) {
-      const control =
-        form.get(
-          field,
-        );
+      last_name:
+        'lastName',
 
-      const message =
-        messages?.[0];
+      phone:
+        'phone',
 
-      if (
-        !control ||
-        !message
-      ) {
-        continue;
-      }
+      email:
+        'email',
 
-      control.setErrors({
-        ...(
-          control.errors ??
-          {}
-        ),
+      password:
+        'password',
 
-        server:
-          message,
-      });
+      password_confirmation:
+        'passwordConfirmation',
+    };
 
-      control.markAsTouched();
-    }
-  }
-
-  private clearServerErrors(
-    form: FormGroup,
-  ): void {
-    Object.values(
-      form.controls,
-    ).forEach(
-      control => {
-        if (
-          !control.errors
-            ?.['server']
-        ) {
-          return;
-        }
-
-        const {
-          server:
-            _server,
-
-          ...remaining
-        } =
-          control.errors;
-
-        control.setErrors(
-          Object.keys(
-            remaining,
-          ).length
-            ? remaining
-            : null,
-        );
-      },
+    return (
+      map[field] ??
+      field
     );
   }
 
+  private mapGoogleApiField(
+    field:
+      string,
+  ): string {
+    const map:
+      Record<
+        string,
+        string
+      > = {
+      first_name:
+        'firstName',
+
+      firstName:
+        'firstName',
+
+      last_name:
+        'lastName',
+
+      lastName:
+        'lastName',
+
+      phone:
+        'phone',
+    };
+
+    return (
+      map[field] ??
+      field
+    );
+  }
+
+  /* =======================================================
+     REDIRECCIÓN POR ROL
+     ======================================================= */
+
   private redirectByRole(
-    roleId: number,
+    roleId:
+      number,
   ): void {
     if (
       roleId ===
@@ -1206,15 +1629,23 @@ export class GoogleLoginDialogComponent {
       );
   }
 
+  /* =======================================================
+     MENSAJES DE API
+     ======================================================= */
+
   private resolveApiError(
-    error: HttpErrorResponse,
+    error:
+      HttpErrorResponse,
+
     apiError:
       ApiErrorResponse,
   ): string {
     if (
       apiError.message
     ) {
-      return apiError.message;
+      return (
+        apiError.message
+      );
     }
 
     if (
@@ -1231,7 +1662,16 @@ export class GoogleLoginDialogComponent {
       401
     ) {
       return (
-        'La sesión no es válida o ha expirado.'
+        'El correo o la contraseña no son correctos.'
+      );
+    }
+
+    if (
+      error.status ===
+      422
+    ) {
+      return (
+        'Revisa los datos ingresados e inténtalo nuevamente.'
       );
     }
 
@@ -1258,8 +1698,13 @@ export class GoogleLoginDialogComponent {
     );
   }
 
+  /* =======================================================
+     FIREBASE ERRORS
+     ======================================================= */
+
   private resolveFirebaseError(
-    error: unknown,
+    error:
+      unknown,
   ): string {
     const message =
       error instanceof Error
@@ -1287,20 +1732,38 @@ export class GoogleLoginDialogComponent {
     ) {
       return (
         'El navegador bloqueó la ventana de Google. ' +
-        'Habilita las ventanas emergentes.'
+        'Habilita las ventanas emergentes e inténtalo nuevamente.'
+      );
+    }
+
+    if (
+      message.includes(
+        'network',
+      )
+    ) {
+      return (
+        'No fue posible conectar con Google. Revisa tu conexión.'
       );
     }
 
     return (
-      'No se pudo abrir el acceso con Google.'
+      'No se pudo iniciar sesión con Google.'
     );
   }
 
+  /* =======================================================
+     NOMBRE DE GOOGLE
+     ======================================================= */
+
   private splitDisplayName(
-    fullName: string,
+    fullName:
+      string,
   ): {
-    firstName: string;
-    lastName: string;
+    firstName:
+      string;
+
+    lastName:
+      string;
   } {
     const parts =
       fullName
@@ -1324,8 +1787,13 @@ export class GoogleLoginDialogComponent {
     };
   }
 
+  /* =======================================================
+     TELÉFONO ECUADOR
+     ======================================================= */
+
   private toEcuadorPhone(
-    localPhone: string,
+    localPhone:
+      string,
   ): string {
     const digits =
       localPhone
@@ -1338,11 +1806,18 @@ export class GoogleLoginDialogComponent {
           '',
         );
 
-    return `+593${digits}`;
+    return (
+      `+593${digits}`
+    );
   }
 
+  /* =======================================================
+     VALIDACIÓN CONTRASEÑAS
+     ======================================================= */
+
   private passwordsMatchValidator(
-    control: AbstractControl,
+    control:
+      AbstractControl,
   ): ValidationErrors | null {
     const password =
       control.get(
@@ -1351,14 +1826,19 @@ export class GoogleLoginDialogComponent {
 
     const confirmation =
       control.get(
-        'password_confirmation',
+        'passwordConfirmation',
       )?.value;
 
+    if (
+      !password ||
+      !confirmation
+    ) {
+      return null;
+    }
+
     return (
-      password &&
-      confirmation &&
       password !==
-        confirmation
+      confirmation
     )
       ? {
           passwordMismatch:
@@ -1367,65 +1847,76 @@ export class GoogleLoginDialogComponent {
       : null;
   }
 
-  private resetState(): void {
+  /* =======================================================
+     RESET
+     ======================================================= */
+
+  private resetState():
+    void {
     this.loading =
       false;
 
     this.view =
       'login';
 
-    this.errorMsg =
+    this.errorMessage =
       null;
 
-    this.showPassword =
+    this.showLoginPassword =
       false;
 
-    this.showPasswordConfirmation =
+    this.showRegisterPassword =
+      false;
+
+    this.showRegisterPasswordConfirmation =
       false;
 
     this.pendingGoogleProfile =
       null;
 
-    this.loginForm.reset({
-      email:
-        '',
+    this.loginForm
+      .reset({
+        email:
+          '',
 
-      password:
-        '',
-    });
+        password:
+          '',
+      });
 
-    this.registerForm.reset({
-      first_name:
-        '',
+    this.registerForm
+      .reset({
+        firstName:
+          '',
 
-      last_name:
-        '',
+        lastName:
+          '',
 
-      phone:
-        '',
+        phone:
+          '',
 
-      email:
-        '',
+        email:
+          '',
 
-      password:
-        '',
+        password:
+          '',
 
-      password_confirmation:
-        '',
+        passwordConfirmation:
+          '',
 
-      terms:
-        false,
-    });
+        acceptTerms:
+          false,
+      });
 
-    this.googleProfileForm.reset({
-      first_name:
-        '',
+    this.googleProfileForm
+      .reset({
+        firstName:
+          '',
 
-      last_name:
-        '',
+        lastName:
+          '',
 
-      phone:
-        '',
-    });
+        phone:
+          '',
+      });
   }
 }

@@ -19,7 +19,53 @@
     border-color
       var(--cheof-transition-fast),
     background-color
+      var(--cheof-transition-fast),
+    color
       var(--cheof-transition-fast);
+}
+
+.p-button:not(
+  .p-button-outlined,
+  .p-button-text,
+  .p-button-secondary,
+  .p-button-danger,
+  .p-button-warn,
+  .p-button-info,
+  .p-button-success
+) {
+  border-color:
+    var(--cheof-action-border);
+
+  background:
+    var(--cheof-action-background);
+
+  color:
+    var(--cheof-action-text);
+
+  box-shadow:
+    var(--cheof-action-shadow);
+}
+
+.p-button:not(
+  .p-button-outlined,
+  .p-button-text,
+  .p-button-secondary,
+  .p-button-danger,
+  .p-button-warn,
+  .p-button-info,
+  .p-button-success
+):not(:disabled):hover {
+  border-color:
+    var(--cheof-action-border-hover);
+
+  background:
+    var(--cheof-action-background-hover);
+
+  color:
+    var(--cheof-action-text);
+
+  box-shadow:
+    var(--cheof-action-shadow-hover);
 }
 
 .p-button:not(:disabled):hover {
@@ -35,6 +81,55 @@
 .p-button:disabled {
   cursor:
     not-allowed;
+
+  opacity:
+    0.58;
+}
+
+/* =========================================================
+   OUTLINED BUTTON
+   ========================================================= */
+
+.p-button.p-button-outlined {
+  border-color:
+    var(--cheof-secondary-action-border);
+
+  background:
+    var(--cheof-secondary-action-background);
+
+  color:
+    var(--cheof-secondary-action-text);
+}
+
+.p-button.p-button-outlined:not(:disabled):hover {
+  border-color:
+    var(--cheof-secondary-action-border-hover);
+
+  background:
+    var(--cheof-secondary-action-background-hover);
+
+  color:
+    var(--cheof-text);
+}
+
+/* =========================================================
+   TEXT BUTTON
+   ========================================================= */
+
+.p-button.p-button-text {
+  background:
+    transparent;
+
+  color:
+    var(--cheof-text-secondary);
+}
+
+.p-button.p-button-text:not(:disabled):hover {
+  background:
+    var(--cheof-hover-background);
+
+  color:
+    var(--cheof-text);
 }
 
 /* =========================================================
@@ -50,8 +145,25 @@
   min-height:
     var(--cheof-control-height);
 
+  border-color:
+    var(--cheof-input-border);
+
   border-radius:
     var(--cheof-radius-sm);
+
+  background:
+    var(--cheof-input-background);
+
+  color:
+    var(--cheof-text);
+
+  transition:
+    border-color
+      var(--cheof-transition-fast),
+    background-color
+      var(--cheof-transition-fast),
+    box-shadow
+      var(--cheof-transition-fast);
 }
 
 .p-inputtext,
@@ -62,11 +174,29 @@
   width: 100%;
 }
 
+.p-inputtext:hover,
+.p-textarea:hover,
+.p-select:hover,
+.p-multiselect:hover,
+.p-inputnumber-input:hover {
+  border-color:
+    var(--cheof-input-border-hover);
+}
+
+.p-inputtext::placeholder,
+.p-textarea::placeholder {
+  color:
+    var(--cheof-input-placeholder);
+}
+
 /* =========================================================
-   CARDS
+   CARD
    ========================================================= */
 
 .p-card {
+  overflow:
+    hidden;
+
   border:
     1px solid
     var(--cheof-card-border);
@@ -78,7 +208,7 @@
     var(--cheof-card-background);
 
   color:
-    var(--p-text-color);
+    var(--cheof-text);
 
   box-shadow:
     var(--cheof-shadow-sm);
@@ -86,63 +216,148 @@
 
 .p-card .p-card-title {
   color:
-    var(--p-text-color);
+    var(--cheof-text);
 
-  font-weight: 750;
+  font-weight:
+    750;
 }
 
 .p-card .p-card-subtitle {
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
 }
 
 /* =========================================================
-   TABLE
+   DIALOG
+   ========================================================= */
+
+.p-dialog {
+  overflow:
+    hidden;
+
+  border:
+    1px solid
+    var(--cheof-card-border);
+
+  border-radius:
+    var(--cheof-radius-xl);
+
+  background:
+    var(--cheof-card-background);
+
+  color:
+    var(--cheof-text);
+
+  box-shadow:
+    var(--cheof-shadow-lg);
+}
+
+.p-dialog-header,
+.p-dialog-content,
+.p-dialog-footer {
+  background:
+    var(--cheof-card-background);
+
+  color:
+    var(--cheof-text);
+}
+
+/* =========================================================
+   POPOVER / MENU
+   ========================================================= */
+
+.p-popover,
+.p-menu,
+.p-tieredmenu {
+  border:
+    1px solid
+    var(--cheof-card-border);
+
+  background:
+    var(--cheof-card-background);
+
+  color:
+    var(--cheof-text);
+
+  box-shadow:
+    var(--cheof-shadow-md);
+}
+
+/* =========================================================
+   DATA TABLE
    ========================================================= */
 
 .p-datatable {
+  overflow:
+    hidden;
+
   border-radius:
     var(--cheof-radius-md);
-
-  overflow: hidden;
 }
 
 .p-datatable-table {
-  min-width: 100%;
+  min-width:
+    100%;
 }
 
 .p-datatable-thead > tr > th {
+  border-color:
+    var(--cheof-divider);
+
+  background:
+    var(--cheof-card-background-muted);
+
   color:
-    var(--p-text-muted-color);
+    var(--cheof-text-secondary);
 
-  font-size: 0.78rem;
-  font-weight: 750;
+  font-size:
+    0.76rem;
 
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  font-weight:
+    750;
+
+  letter-spacing:
+    0.04em;
+
+  text-transform:
+    uppercase;
 }
 
 .p-datatable-tbody > tr {
+  background:
+    var(--cheof-card-background);
+
+  color:
+    var(--cheof-text);
+
   transition:
     background-color
-    var(--cheof-transition-fast);
+      var(--cheof-transition-fast);
+}
+
+.p-datatable-tbody > tr > td {
+  border-color:
+    var(--cheof-divider);
 }
 
 .p-datatable-tbody > tr:hover {
   background:
-    var(--p-content-hover-background);
+    var(--cheof-hover-background);
 }
 
 /* =========================================================
-   TAGS
+   TAG
    ========================================================= */
 
 .p-tag {
   border-radius:
     var(--cheof-radius-pill);
 
-  font-size: 0.76rem;
-  font-weight: 750;
+  font-size:
+    0.74rem;
+
+  font-weight:
+    750;
 }
 
 /* =========================================================
@@ -150,10 +365,14 @@
    ========================================================= */
 
 .p-paginator {
-  border: 0;
+  border:
+    0;
 
   background:
     transparent;
+
+  color:
+    var(--cheof-text-secondary);
 }
 
 /* =========================================================
@@ -163,7 +382,7 @@
 .p-toast {
   width:
     min(
-      380px,
+      390px,
       calc(
         100vw - 1rem
       )
@@ -176,4 +395,20 @@
 
   box-shadow:
     var(--cheof-shadow-md);
+}
+
+/* =========================================================
+   FOCUS
+   ========================================================= */
+
+.p-button:focus-visible,
+.p-inputtext:focus-visible,
+.p-select:focus-visible,
+.p-multiselect:focus-visible {
+  outline:
+    2px solid
+    var(--p-primary-color);
+
+  outline-offset:
+    2px;
 }

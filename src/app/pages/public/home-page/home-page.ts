@@ -6,6 +6,11 @@ import {
 import {
   CarouselComponent,
 } from '../../../shared/components/carousel-component/carousel-component';
+
+import {
+  FooterComponent,
+} from '../../../shared/components/footer/footer';
+
 import {
   Menu,
 } from '../../../shared/components/menu/menu';
@@ -16,12 +21,10 @@ import {
   imports: [
     CarouselComponent,
     Menu,
+    FooterComponent,
   ],
-  templateUrl:
-    './home-page.html',
-  styleUrl:
-    './home-page.scss',
-  changeDetection:
-    ChangeDetectionStrategy.OnPush,
+  templateUrl: './home-page.html',
+  styleUrl: './home-page.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HomePage {}

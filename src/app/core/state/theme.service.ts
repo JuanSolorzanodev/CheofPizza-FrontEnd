@@ -35,11 +35,8 @@ export class ThemeService {
     );
 
   constructor() {
-    const initialMode =
-      this.resolveInitialMode();
-
     this.apply(
-      initialMode,
+      this.resolveInitialMode(),
       false,
     );
   }
@@ -65,13 +62,13 @@ export class ThemeService {
     mode: ThemeMode,
     persist: boolean,
   ): void {
-    this.mode.set(
-      mode,
-    );
-
     const root =
       this.document
         .documentElement;
+
+    this.mode.set(
+      mode,
+    );
 
     root.classList.toggle(
       'cheof-dark',
@@ -84,12 +81,35 @@ export class ThemeService {
     root.style.colorScheme =
       mode;
 
+    this.updateThemeColor(
+      mode,
+    );
+
     if (persist) {
       this.storage.setItem(
         this.storageKey,
         mode,
       );
     }
+  }
+
+  private updateThemeColor(
+    mode: ThemeMode,
+  ): void {
+    const meta =
+      this.document
+        .querySelector<HTMLMetaElement>(
+          'meta[name="theme-color"]',
+        );
+
+    if (!meta) {
+      return;
+    }
+
+    meta.content =
+      mode === 'dark'
+        ? '#09100b'
+        : '#f8faf8';
   }
 
   private resolveInitialMode():

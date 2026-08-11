@@ -9,254 +9,514 @@ $bp-xl: 1280px;
 $bp-2xl: 1536px;
 
 /* =========================================================
-   DESIGN TOKENS — CHEO' F
+   CHEO' F PIZZA — DESIGN SYSTEM
    ========================================================= */
 
 :root {
   color-scheme: light;
 
-  /* -------------------------------------------------------
-     Marca
-     ------------------------------------------------------- */
+  /* =======================================================
+     BRAND
+     ======================================================= */
 
-  --cheof-brand-green: #379b59;
+  --cheof-brand-green-50: #eef9f1;
+  --cheof-brand-green-100: #d9f1df;
+  --cheof-brand-green-200: #b6e2c2;
+  --cheof-brand-green-300: #88cd9d;
+  --cheof-brand-green-400: #5bb577;
+  --cheof-brand-green-500: #379b59;
+  --cheof-brand-green-600: #287d45;
+  --cheof-brand-green-700: #23643a;
+  --cheof-brand-green-800: #1f5031;
+  --cheof-brand-green-900: #1b422a;
+  --cheof-brand-green-950: #0d2416;
 
-  --cheof-brand-green-hover: #287d45;
+  --cheof-brand-green:
+    var(--cheof-brand-green-500);
 
-  --cheof-brand-green-strong: #23643a;
+  --cheof-brand-green-hover:
+    var(--cheof-brand-green-600);
 
-  --cheof-brand-red: #e41f1e;
+  --cheof-brand-green-strong:
+    var(--cheof-brand-green-700);
 
-  --cheof-brand-white: #ffffff;
+  --cheof-brand-red:
+    #dc2626;
 
-  /* -------------------------------------------------------
-     Colores semánticos
-     ------------------------------------------------------- */
+  --cheof-brand-white:
+    #ffffff;
 
-  --cheof-success: #16a34a;
+  /* =======================================================
+     SEMANTIC COLORS
+     ======================================================= */
 
-  --cheof-success-strong: #15803d;
+  --cheof-success:
+    #16803d;
 
-  --cheof-warning: #f59e0b;
+  --cheof-success-strong:
+    #116b33;
 
-  --cheof-warning-strong: #b45309;
+  --cheof-warning:
+    #d97706;
 
-  --cheof-danger: #dc2626;
+  --cheof-warning-strong:
+    #b45309;
 
-  --cheof-danger-strong: #b91c1c;
+  --cheof-danger:
+    #dc2626;
 
-  --cheof-info: #2563eb;
+  --cheof-danger-strong:
+    #b91c1c;
 
-  --cheof-info-strong: #1d4ed8;
+  --cheof-info:
+    #2563eb;
 
-  /* -------------------------------------------------------
-   Estados de pedidos
-   ------------------------------------------------------- */
+  --cheof-info-strong:
+    #1d4ed8;
 
-  --cheof-order-pending: #f59e0b;
+  /* =======================================================
+     ORDER STATES
+     ======================================================= */
 
-  --cheof-order-pending-strong: #b45309;
+  --cheof-order-pending:
+    #d97706;
 
-  --cheof-order-confirmed: #2563eb;
+  --cheof-order-pending-strong:
+    #b45309;
 
-  --cheof-order-confirmed-strong: #1d4ed8;
+  --cheof-order-confirmed:
+    #2563eb;
 
-  --cheof-order-preparing: #f97316;
+  --cheof-order-confirmed-strong:
+    #1d4ed8;
 
-  --cheof-order-preparing-strong: #c2410c;
+  --cheof-order-preparing:
+    #ea580c;
 
-  --cheof-order-ready: #16a34a;
+  --cheof-order-preparing-strong:
+    #c2410c;
 
-  --cheof-order-ready-strong: #15803d;
+  --cheof-order-ready:
+    #16803d;
 
-  --cheof-order-on-the-way: #2563eb;
+  --cheof-order-ready-strong:
+    #116b33;
 
-  --cheof-order-on-the-way-strong: #1d4ed8;
+  --cheof-order-on-the-way:
+    #2563eb;
 
-  --cheof-order-delivered: #16a34a;
+  --cheof-order-on-the-way-strong:
+    #1d4ed8;
 
-  --cheof-order-delivered-strong: #15803d;
+  --cheof-order-delivered:
+    #16803d;
 
-  --cheof-order-cancelled: #dc2626;
+  --cheof-order-delivered-strong:
+    #116b33;
 
-  --cheof-order-cancelled-strong: #b91c1c;
+  --cheof-order-cancelled:
+    #dc2626;
 
-  --cheof-order-pending-soft: color-mix(
-    in srgb,
-    var(--cheof-order-pending) 10%,
-    var(--cheof-card-background)
-  );
+  --cheof-order-cancelled-strong:
+    #b91c1c;
 
-  --cheof-order-confirmed-soft: color-mix(
-    in srgb,
-    var(--cheof-order-confirmed) 9%,
-    var(--cheof-card-background)
-  );
+  /* =======================================================
+     LAYOUT
+     ======================================================= */
 
-  --cheof-order-preparing-soft: color-mix(
-    in srgb,
-    var(--cheof-order-preparing) 10%,
-    var(--cheof-card-background)
-  );
+  --cheof-toolbar-height:
+    78px;
 
-  --cheof-order-ready-soft: color-mix(
-    in srgb,
-    var(--cheof-order-ready) 9%,
-    var(--cheof-card-background)
-  );
+  --cheof-page-max-width:
+    1480px;
 
-  --cheof-order-on-the-way-soft: color-mix(
-    in srgb,
-    var(--cheof-order-on-the-way) 9%,
-    var(--cheof-card-background)
-  );
+  --cheof-content-max-width:
+    1280px;
 
-  --cheof-order-delivered-soft: color-mix(
-    in srgb,
-    var(--cheof-order-delivered) 9%,
-    var(--cheof-card-background)
-  );
+  --cheof-page-padding:
+    clamp(
+      1rem,
+      3vw,
+      2.75rem
+    );
 
-  --cheof-order-cancelled-soft: color-mix(
-    in srgb,
-    var(--cheof-order-cancelled) 8%,
-    var(--cheof-card-background)
-  );
-  /* -------------------------------------------------------
-     Layout
-     ------------------------------------------------------- */
+  /* =======================================================
+     SPACING
+     ======================================================= */
 
-  --cheof-toolbar-height: 72px;
+  --cheof-space-1:
+    0.25rem;
 
-  --cheof-page-max-width: 1480px;
+  --cheof-space-2:
+    0.5rem;
 
-  --cheof-content-max-width: 1280px;
+  --cheof-space-3:
+    0.75rem;
 
-  --cheof-page-padding: clamp(0.75rem, 2vw, 2rem);
+  --cheof-space-4:
+    1rem;
 
-  /* -------------------------------------------------------
-     Espaciado
-     ------------------------------------------------------- */
+  --cheof-space-5:
+    1.25rem;
 
-  --cheof-space-1: 0.25rem;
+  --cheof-space-6:
+    1.5rem;
 
-  --cheof-space-2: 0.5rem;
+  --cheof-space-8:
+    2rem;
 
-  --cheof-space-3: 0.75rem;
+  --cheof-space-10:
+    2.5rem;
 
-  --cheof-space-4: 1rem;
+  --cheof-space-12:
+    3rem;
 
-  --cheof-space-5: 1.25rem;
+  --cheof-space-16:
+    4rem;
 
-  --cheof-space-6: 1.5rem;
+  /* =======================================================
+     RADII
+     ======================================================= */
 
-  --cheof-space-8: 2rem;
+  --cheof-radius-xs:
+    8px;
 
-  --cheof-space-10: 2.5rem;
+  --cheof-radius-sm:
+    12px;
 
-  --cheof-space-12: 3rem;
+  --cheof-radius-md:
+    14px;
 
-  /* -------------------------------------------------------
-     Radios
-     ------------------------------------------------------- */
+  --cheof-radius-lg:
+    18px;
 
-  --cheof-radius-xs: 0.5rem;
+  --cheof-radius-xl:
+    22px;
 
-  --cheof-radius-sm: 0.625rem;
+  --cheof-radius-2xl:
+    28px;
 
-  --cheof-radius-md: 0.875rem;
+  --cheof-radius-pill:
+    999px;
 
-  --cheof-radius-lg: 1.125rem;
+  /* =======================================================
+     CONTROLS
+     ======================================================= */
 
-  --cheof-radius-xl: 1.5rem;
+  --cheof-control-height:
+    44px;
 
-  --cheof-radius-2xl: 1.625rem;
+  --cheof-control-height-lg:
+    48px;
 
-  --cheof-radius-pill: 999px;
+  /* =======================================================
+     LIGHT — PAGE
+     ======================================================= */
 
-  /* -------------------------------------------------------
-     Controles
-     ------------------------------------------------------- */
+  --cheof-page-background:
+    #f8faf8;
 
-  --cheof-control-height: 42px;
+  --cheof-page-background-secondary:
+    #f3f6f4;
 
-  --cheof-control-height-lg: 48px;
+  --cheof-card-background:
+    #ffffff;
 
-  /* -------------------------------------------------------
-     Superficies
-     ------------------------------------------------------- */
+  --cheof-card-background-muted:
+    #f7f9f7;
 
-  --cheof-page-background: var(--p-surface-50);
+  --cheof-card-background-raised:
+    #ffffff;
 
-  --cheof-card-background: var(--p-surface-0);
+  --cheof-card-border:
+    #e2e9e4;
 
-  --cheof-card-background-muted: var(--p-surface-50);
+  --cheof-card-border-strong:
+    #cbd8ce;
 
-  --cheof-card-border: var(--p-surface-200);
+  --cheof-divider:
+    #e5ebe7;
 
-  --cheof-divider: var(--p-surface-200);
+  --cheof-muted-background:
+    #f2f6f3;
 
-  --cheof-muted-background: var(--p-surface-100);
+  --cheof-hover-background:
+    #eef5f0;
 
-  /* -------------------------------------------------------
-     Texto
-     ------------------------------------------------------- */
+  /* =======================================================
+     LIGHT — TEXT
+     ======================================================= */
 
-  --cheof-text: var(--p-text-color);
+  --cheof-text:
+    #142019;
 
-  --cheof-text-secondary: var(--p-text-muted-color, var(--p-text-color-secondary));
+  --cheof-text-secondary:
+    #4f5f54;
 
-  --cheof-text-soft: var(--p-surface-500);
+  --cheof-text-soft:
+    #77847b;
 
-  /* -------------------------------------------------------
-     Superficies semánticas
-     ------------------------------------------------------- */
+  --cheof-text-inverse:
+    #ffffff;
 
-  --cheof-primary-soft: color-mix(in srgb, var(--p-primary-color) 8%, var(--cheof-card-background));
+  /* =======================================================
+     LIGHT — ACTIONS
+     ======================================================= */
 
-  --cheof-success-soft: color-mix(in srgb, var(--cheof-success) 9%, var(--cheof-card-background));
+  --cheof-action-background:
+    #287d45;
 
-  --cheof-warning-soft: color-mix(in srgb, var(--cheof-warning) 9%, var(--cheof-card-background));
+  --cheof-action-background-hover:
+    #236d3d;
 
-  --cheof-danger-soft: color-mix(in srgb, var(--cheof-danger) 8%, var(--cheof-card-background));
+  --cheof-action-background-active:
+    #1e6035;
 
-  --cheof-info-soft: color-mix(in srgb, var(--cheof-info) 8%, var(--cheof-card-background));
+  --cheof-action-border:
+    #287d45;
 
-  /* -------------------------------------------------------
-     Sombras
-     ------------------------------------------------------- */
+  --cheof-action-border-hover:
+    #236d3d;
 
-  --cheof-shadow-xs: 0 1px 2px rgb(15 23 42 / 4%);
+  --cheof-action-text:
+    #ffffff;
 
-  --cheof-shadow-sm: 0 4px 14px rgb(15 23 42 / 6%);
+  --cheof-action-shadow:
+    0 9px 22px
+    rgb(40 125 69 / 18%);
 
-  --cheof-shadow-md: 0 10px 30px rgb(15 23 42 / 9%);
+  --cheof-action-shadow-hover:
+    0 14px 30px
+    rgb(40 125 69 / 24%);
 
-  --cheof-shadow-lg: 0 24px 70px rgb(15 23 42 / 18%);
+  /* =======================================================
+     LIGHT — SECONDARY ACTIONS
+     ======================================================= */
 
-  /* -------------------------------------------------------
-     Transiciones
-     ------------------------------------------------------- */
+  --cheof-secondary-action-background:
+    #ffffff;
 
-  --cheof-transition-fast: 140ms ease;
+  --cheof-secondary-action-background-hover:
+    #f4f8f5;
 
-  --cheof-transition: 180ms ease;
+  --cheof-secondary-action-border:
+    #d8e2da;
 
-  /* -------------------------------------------------------
-     Capas
-     ------------------------------------------------------- */
+  --cheof-secondary-action-border-hover:
+    #b9cbbf;
 
-  --cheof-z-content: 1;
+  --cheof-secondary-action-text:
+    #1d2c22;
 
-  --cheof-z-toolbar: 900;
+  /* =======================================================
+     PRODUCT CARDS
+     ======================================================= */
 
-  --cheof-z-floating: 950;
+  --cheof-product-surface:
+    #ffffff;
 
-  --cheof-z-overlay: 2000;
+  --cheof-product-border:
+    #dfe7e1;
 
-  --cheof-z-dialog: 3000;
+  /*
+   * Importante:
+   * fondo neutro, no beige.
+   *
+   * La pizza debe proporcionar los tonos cálidos,
+   * no el contenedor.
+   */
+  --cheof-product-media-background:
+    #f0f4f1;
 
-  --cheof-z-toast: 4000;
+  --cheof-product-media-background-end:
+    #e9efeb;
+
+  --cheof-product-media-glow:
+    rgb(165 196 174 / 25%);
+
+  --cheof-product-badge-background:
+    rgb(250 253 251 / 92%);
+
+  --cheof-product-badge-text:
+    #23643a;
+
+  --cheof-product-badge-border:
+    rgb(55 155 89 / 25%);
+
+  /* =======================================================
+     INPUTS
+     ======================================================= */
+
+  --cheof-input-background:
+    #ffffff;
+
+  --cheof-input-background-hover:
+    #fbfdfb;
+
+  --cheof-input-border:
+    #d7e1da;
+
+  --cheof-input-border-hover:
+    #b6c9bb;
+
+  --cheof-input-placeholder:
+    #7e8c83;
+
+  /* =======================================================
+     OVERLAYS
+     ======================================================= */
+
+  --cheof-overlay:
+    rgb(8 17 11 / 56%);
+
+  /* =======================================================
+     SOFT SEMANTIC SURFACES
+     ======================================================= */
+
+  --cheof-primary-soft:
+    color-mix(
+      in srgb,
+      var(--cheof-brand-green) 9%,
+      var(--cheof-card-background)
+    );
+
+  --cheof-success-soft:
+    color-mix(
+      in srgb,
+      var(--cheof-success) 9%,
+      var(--cheof-card-background)
+    );
+
+  --cheof-warning-soft:
+    color-mix(
+      in srgb,
+      var(--cheof-warning) 10%,
+      var(--cheof-card-background)
+    );
+
+  --cheof-danger-soft:
+    color-mix(
+      in srgb,
+      var(--cheof-danger) 8%,
+      var(--cheof-card-background)
+    );
+
+  --cheof-info-soft:
+    color-mix(
+      in srgb,
+      var(--cheof-info) 8%,
+      var(--cheof-card-background)
+    );
+
+  --cheof-order-pending-soft:
+    color-mix(
+      in srgb,
+      var(--cheof-order-pending) 10%,
+      var(--cheof-card-background)
+    );
+
+  --cheof-order-confirmed-soft:
+    color-mix(
+      in srgb,
+      var(--cheof-order-confirmed) 9%,
+      var(--cheof-card-background)
+    );
+
+  --cheof-order-preparing-soft:
+    color-mix(
+      in srgb,
+      var(--cheof-order-preparing) 10%,
+      var(--cheof-card-background)
+    );
+
+  --cheof-order-ready-soft:
+    color-mix(
+      in srgb,
+      var(--cheof-order-ready) 9%,
+      var(--cheof-card-background)
+    );
+
+  --cheof-order-on-the-way-soft:
+    color-mix(
+      in srgb,
+      var(--cheof-order-on-the-way) 9%,
+      var(--cheof-card-background)
+    );
+
+  --cheof-order-delivered-soft:
+    color-mix(
+      in srgb,
+      var(--cheof-order-delivered) 9%,
+      var(--cheof-card-background)
+    );
+
+  --cheof-order-cancelled-soft:
+    color-mix(
+      in srgb,
+      var(--cheof-order-cancelled) 8%,
+      var(--cheof-card-background)
+    );
+
+  /* =======================================================
+     SHADOWS
+     ======================================================= */
+
+  --cheof-shadow-xs:
+    0 1px 2px
+    rgb(15 23 42 / 4%);
+
+  --cheof-shadow-sm:
+    0 5px 18px
+    rgb(15 23 42 / 6%);
+
+  --cheof-shadow-md:
+    0 14px 38px
+    rgb(15 23 42 / 9%);
+
+  --cheof-shadow-lg:
+    0 28px 80px
+    rgb(15 23 42 / 16%);
+
+  /* =======================================================
+     TRANSITIONS
+     ======================================================= */
+
+  --cheof-transition-fast:
+    140ms ease;
+
+  --cheof-transition:
+    190ms ease;
+
+  --cheof-transition-slow:
+    300ms
+    cubic-bezier(
+      0.22,
+      1,
+      0.36,
+      1
+    );
+
+  /* =======================================================
+     Z INDEX
+     ======================================================= */
+
+  --cheof-z-content:
+    1;
+
+  --cheof-z-toolbar:
+    900;
+
+  --cheof-z-floating:
+    950;
+
+  --cheof-z-overlay:
+    2000;
+
+  --cheof-z-dialog:
+    3000;
+
+  --cheof-z-toast:
+    4000;
 }
 
 /* =========================================================
@@ -266,25 +526,184 @@ $bp-2xl: 1536px;
 html.cheof-dark {
   color-scheme: dark;
 
-  --cheof-page-background: var(--p-surface-0);
+  /* =======================================================
+     PAGE
+     ======================================================= */
 
-  --cheof-card-background: var(--p-surface-50);
+  --cheof-page-background:
+    #09100b;
 
-  --cheof-card-background-muted: var(--p-surface-100);
+  --cheof-page-background-secondary:
+    #0d1510;
 
-  --cheof-card-border: var(--p-surface-200);
+  --cheof-card-background:
+    #111914;
 
-  --cheof-divider: var(--p-surface-200);
+  --cheof-card-background-muted:
+    #151f18;
 
-  --cheof-muted-background: var(--p-surface-100);
+  --cheof-card-background-raised:
+    #18231b;
 
-  --cheof-text-soft: var(--p-surface-700);
+  --cheof-card-border:
+    #27352c;
 
-  --cheof-shadow-xs: 0 1px 2px rgb(0 0 0 / 18%);
+  --cheof-card-border-strong:
+    #35483b;
 
-  --cheof-shadow-sm: 0 4px 16px rgb(0 0 0 / 22%);
+  --cheof-divider:
+    #26352b;
 
-  --cheof-shadow-md: 0 12px 34px rgb(0 0 0 / 30%);
+  --cheof-muted-background:
+    #172119;
 
-  --cheof-shadow-lg: 0 30px 90px rgb(0 0 0 / 46%);
+  --cheof-hover-background:
+    #1c2920;
+
+  /* =======================================================
+     TEXT
+     ======================================================= */
+
+  --cheof-text:
+    #f3f7f4;
+
+  --cheof-text-secondary:
+    #b7c2ba;
+
+  --cheof-text-soft:
+    #89988e;
+
+  --cheof-text-inverse:
+    #ffffff;
+
+  /* =======================================================
+     PRIMARY ACTION
+     ======================================================= */
+
+  /*
+   * Mantener un verde suficientemente oscuro permite
+   * utilizar texto blanco con mejor legibilidad.
+   */
+  --cheof-action-background:
+    #2e8b4c;
+
+  --cheof-action-background-hover:
+    #349d56;
+
+  --cheof-action-background-active:
+    #287d45;
+
+  --cheof-action-border:
+    #3aa35b;
+
+  --cheof-action-border-hover:
+    #4bb969;
+
+  --cheof-action-text:
+    #ffffff;
+
+  --cheof-action-shadow:
+    0 10px 24px
+    rgb(24 139 67 / 17%);
+
+  --cheof-action-shadow-hover:
+    0 15px 34px
+    rgb(34 164 82 / 23%);
+
+  /* =======================================================
+     SECONDARY ACTIONS
+     ======================================================= */
+
+  --cheof-secondary-action-background:
+    #141e17;
+
+  --cheof-secondary-action-background-hover:
+    #1b2820;
+
+  --cheof-secondary-action-border:
+    #304137;
+
+  --cheof-secondary-action-border-hover:
+    #476050;
+
+  --cheof-secondary-action-text:
+    #eef4ef;
+
+  /* =======================================================
+     PRODUCTS
+     ======================================================= */
+
+  --cheof-product-surface:
+    #101914;
+
+  --cheof-product-border:
+    #26362c;
+
+  /*
+   * Sin fondo marrón/beige.
+   * El media container ahora es gris-verde neutro.
+   */
+  --cheof-product-media-background:
+    #172019;
+
+  --cheof-product-media-background-end:
+    #121a15;
+
+  --cheof-product-media-glow:
+    rgb(75 120 88 / 16%);
+
+  --cheof-product-badge-background:
+    rgb(17 27 20 / 90%);
+
+  --cheof-product-badge-text:
+    #8edda2;
+
+  --cheof-product-badge-border:
+    rgb(91 192 119 / 34%);
+
+  /* =======================================================
+     INPUTS
+     ======================================================= */
+
+  --cheof-input-background:
+    #121b15;
+
+  --cheof-input-background-hover:
+    #17221a;
+
+  --cheof-input-border:
+    #2a3a30;
+
+  --cheof-input-border-hover:
+    #405747;
+
+  --cheof-input-placeholder:
+    #7d8c82;
+
+  /* =======================================================
+     OVERLAY
+     ======================================================= */
+
+  --cheof-overlay:
+    rgb(0 0 0 / 70%);
+
+  /* =======================================================
+     SHADOWS
+     ======================================================= */
+
+  --cheof-shadow-xs:
+    0 1px 3px
+    rgb(0 0 0 / 24%);
+
+  --cheof-shadow-sm:
+    0 6px 20px
+    rgb(0 0 0 / 28%);
+
+  --cheof-shadow-md:
+    0 16px 42px
+    rgb(0 0 0 / 36%);
+
+  --cheof-shadow-lg:
+    0 32px 100px
+    rgb(0 0 0 / 54%);
 }

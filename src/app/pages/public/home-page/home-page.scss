@@ -1,3 +1,22 @@
 :host {
   display: block;
+
+  min-width: 0;
+
+  background:
+    var(--cheof-page-background);
+
+  color:
+    var(--cheof-text);
+}
+
+.home-promotions {
+  scroll-margin-top:
+    calc(
+      var(
+        --cheof-toolbar-height,
+        76px
+      ) +
+      1rem
+    );
 }

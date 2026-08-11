@@ -1,0 +1,278 @@
+<footer class="site-footer">
+  <div class="site-footer__container">
+    <!-- =====================================================
+         CONTENIDO PRINCIPAL
+         ===================================================== -->
+    <div class="site-footer__main">
+      <!-- ===================================================
+           MARCA
+           =================================================== -->
+      <section
+        class="footer-brand"
+        aria-labelledby="footer-brand-title"
+      >
+        <button
+          type="button"
+          class="footer-brand__logo-button"
+          aria-label="Ir al inicio de Cheof Pizza"
+          (click)="goToHome()"
+        >
+          <img
+            class="footer-brand__logo"
+            src="/assets/branding/cheof-pizza-logo-header.png"
+            alt="Cheof Pizza"
+            width="512"
+            height="379"
+            loading="lazy"
+            decoding="async"
+          />
+        </button>
+
+        <div class="footer-brand__copy">
+          <span class="footer-brand__eyebrow">
+            CHEO' F PIZZA
+          </span>
+
+          <h2 id="footer-brand-title">
+            El sabor que convierte cada pedido
+            en un buen momento.
+          </h2>
+
+          <p>
+            Elige tu pizza favorita, personalízala a tu
+            gusto y realiza tu pedido de forma rápida
+            y sencilla.
+          </p>
+        </div>
+
+        <div class="footer-trust">
+          <span
+            class="footer-trust__icon"
+            aria-hidden="true"
+          >
+            <i class="pi pi-shield"></i>
+          </span>
+
+          <div>
+            <strong>
+              Compra segura
+            </strong>
+
+            <span>
+              Tus datos son tratados de forma segura.
+            </span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================================================
+           MENÚ
+           =================================================== -->
+      <nav
+        class="footer-column"
+        aria-labelledby="footer-menu-title"
+      >
+        <h3 id="footer-menu-title">
+          Nuestro menú
+        </h3>
+
+        <ul class="footer-links">
+          <li>
+            <button
+              type="button"
+              class="footer-link"
+              (click)="goToSencillas()"
+            >
+              <span>
+                Pizzas sencillas
+              </span>
+
+              <i
+                class="pi pi-arrow-right"
+                aria-hidden="true"
+              ></i>
+            </button>
+          </li>
+
+          <li>
+            <button
+              type="button"
+              class="footer-link"
+              (click)="goToEspeciales()"
+            >
+              <span>
+                Pizzas especiales
+              </span>
+
+              <i
+                class="pi pi-arrow-right"
+                aria-hidden="true"
+              ></i>
+            </button>
+          </li>
+
+          <li>
+            <button
+              type="button"
+              class="footer-link"
+              (click)="goToPromotions()"
+            >
+              <span>
+                Promociones
+              </span>
+
+              <i
+                class="pi pi-arrow-right"
+                aria-hidden="true"
+              ></i>
+            </button>
+          </li>
+        </ul>
+      </nav>
+
+      <!-- ===================================================
+           TU PEDIDO
+           =================================================== -->
+      <section
+        class="footer-column"
+        aria-labelledby="footer-order-title"
+      >
+        <h3 id="footer-order-title">
+          Tu pedido
+        </h3>
+
+        <ul class="footer-features">
+          <li>
+            <span
+              class="footer-feature__icon"
+              aria-hidden="true"
+            >
+              <i class="pi pi-sliders-h"></i>
+            </span>
+
+            <span>
+              Personaliza tu pizza
+            </span>
+          </li>
+
+          <li>
+            <span
+              class="footer-feature__icon"
+              aria-hidden="true"
+            >
+              <i class="pi pi-shopping-cart"></i>
+            </span>
+
+            <span>
+              Compra desde la web
+            </span>
+          </li>
+
+          <li>
+            <span
+              class="footer-feature__icon"
+              aria-hidden="true"
+            >
+              <i class="pi pi-check-circle"></i>
+            </span>
+
+            <span>
+              Pedido fácil y rápido
+            </span>
+          </li>
+        </ul>
+      </section>
+
+      <!-- ===================================================
+           CTA
+           =================================================== -->
+      <section
+        class="footer-cta"
+        aria-labelledby="footer-cta-title"
+      >
+        <span class="footer-cta__eyebrow">
+          LISTOS PARA PREPARAR
+        </span>
+
+        <h3 id="footer-cta-title">
+          ¿Ya sabes cuál será tu próxima pizza?
+        </h3>
+
+        <p>
+          Descubre nuestras recetas y arma tu pedido
+          exactamente como lo quieres.
+        </p>
+
+        <button
+          type="button"
+          class="footer-cta__button"
+          (click)="goToSencillas()"
+        >
+          <span>
+            Ver menú
+          </span>
+
+          <i
+            class="pi pi-arrow-right"
+            aria-hidden="true"
+          ></i>
+        </button>
+      </section>
+    </div>
+
+    <!-- =====================================================
+         BARRA INFERIOR
+         ===================================================== -->
+    <div class="site-footer__bottom">
+      <div class="footer-copyright">
+        <span
+          class="footer-copyright__mark"
+          aria-hidden="true"
+        >
+          ©
+        </span>
+
+        <span>
+          {{ currentYear }} Cheo' F Pizza.
+          Todos los derechos reservados.
+        </span>
+      </div>
+
+      <div class="footer-status">
+        <span
+          class="footer-status__dot"
+          aria-hidden="true"
+        ></span>
+
+        <span>
+          Pedidos en línea
+        </span>
+
+        <span
+          class="footer-status__divider"
+          aria-hidden="true"
+        ></span>
+
+        <span>
+          Il sapore di Chone
+        </span>
+      </div>
+
+      <button
+        type="button"
+        class="back-to-top"
+        aria-label="Volver al inicio de la página"
+        (click)="scrollToTop()"
+      >
+        <span>
+          Volver arriba
+        </span>
+
+        <i
+          class="pi pi-arrow-up"
+          aria-hidden="true"
+        ></i>
+      </button>
+    </div>
+  </div>
+</footer>

@@ -20,6 +20,60 @@
     [class.auth-shell--google-profile]="view === 'google-profile'"
     [attr.aria-busy]="loading"
   >
+
+    @if (view === 'register') {
+      <aside class="register-showcase" aria-hidden="true">
+        <div class="register-showcase__glow register-showcase__glow--one"></div>
+        <div class="register-showcase__glow register-showcase__glow--two"></div>
+
+        <div class="register-showcase__brand">
+          <img
+            src="/assets/branding/cheof-pizza-logo-header.png"
+            alt=""
+            width="512"
+            height="379"
+          />
+        </div>
+
+        <div class="register-showcase__content">
+          <span class="register-showcase__eyebrow">Tu cuenta Cheof Pizza</span>
+          <h3>Más rápido para pedir. Más fácil para volver.</h3>
+          <p>Guarda tus datos y consulta el avance de tus pedidos desde un solo lugar.</p>
+
+          <div class="register-benefits">
+            <div class="register-benefit">
+              <span><i class="pi pi-shopping-bag"></i></span>
+              <div>
+                <strong>Pedidos en un solo lugar</strong>
+                <small>Consulta tu historial y tus órdenes activas.</small>
+              </div>
+            </div>
+
+            <div class="register-benefit">
+              <span><i class="pi pi-bolt"></i></span>
+              <div>
+                <strong>Checkout más rápido</strong>
+                <small>Menos pasos cuando vuelvas a comprar.</small>
+              </div>
+            </div>
+
+            <div class="register-benefit">
+              <span><i class="pi pi-shield"></i></span>
+              <div>
+                <strong>Acceso seguro</strong>
+                <small>Tus datos se usan únicamente para gestionar tu cuenta y pedidos.</small>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="register-showcase__footer">
+          <i class="pi pi-lock"></i>
+          Compra segura y seguimiento de pedidos
+        </div>
+      </aside>
+    }
+
     <!-- =====================================================
          HEADER
          ===================================================== -->
@@ -486,17 +540,12 @@
               </label>
 
               <div
-                class="input-shell"
+                class="input-shell input-shell--password"
                 [class.input-shell--invalid]="
                   registerForm.controls.password.invalid &&
                   registerForm.controls.password.touched
                 "
               >
-                <i
-                  class="pi pi-lock"
-                  aria-hidden="true"
-                ></i>
-
                 <input
                   id="register-password"
                   pInputText
@@ -556,7 +605,7 @@
               </label>
 
               <div
-                class="input-shell"
+                class="input-shell input-shell--password"
                 [class.input-shell--invalid]="
                   (
                     registerForm.controls
@@ -567,11 +616,6 @@
                     .passwordConfirmation.touched
                 "
               >
-                <i
-                  class="pi pi-lock"
-                  aria-hidden="true"
-                ></i>
-
                 <input
                   id="register-password-confirmation"
                   pInputText

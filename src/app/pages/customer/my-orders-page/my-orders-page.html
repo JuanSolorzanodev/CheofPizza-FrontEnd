@@ -1,78 +1,178 @@
 <section class="orders-page">
   <div class="orders-page__container">
+    <!-- ==================================================
+         HEADER
+         ================================================== -->
+
     <header class="page-header">
       <div class="page-header__content">
         <span class="page-header__eyebrow">
-          <i class="pi pi-receipt" aria-hidden="true"></i>
+          <i
+            class="pi pi-receipt"
+            aria-hidden="true"
+          ></i>
+
           Historial de compras
         </span>
 
-        <h1>Mis pedidos</h1>
+        <h1>
+          Mis pedidos
+        </h1>
 
         <p>
-          Consulta el estado de tus pedidos, la información de entrega y
-          los detalles del pago.
+          Consulta el estado de tus pedidos,
+          la información de entrega y los
+          detalles del pago.
         </p>
       </div>
 
-      <div class="automatic-tracking" aria-label="Seguimiento automático">
-        <span class="automatic-tracking__icon" aria-hidden="true">
+      <div
+        class="automatic-tracking"
+        aria-label="Seguimiento automático"
+      >
+        <span
+          class="automatic-tracking__icon"
+          aria-hidden="true"
+        >
           <i class="pi pi-bolt"></i>
         </span>
 
         <div>
-          <strong>Seguimiento automático</strong>
-          <span>Los estados se actualizan sin recargar</span>
+          <strong>
+            Seguimiento automático
+          </strong>
+
+          <span>
+            Los estados se actualizan sin recargar
+          </span>
         </div>
       </div>
     </header>
 
-    @if (!initialLoading() && pagination().total > 0) {
+    <!-- ==================================================
+         SUMMARY
+         ================================================== -->
+
+    @if (
+      !initialLoading() &&
+      pagination().total >
+        0
+    ) {
       <div class="page-summary">
         <span>
           Mostrando
-          <strong>{{ pagination().from }}</strong>
+
+          <strong>
+            {{ pagination().from }}
+          </strong>
+
           –
-          <strong>{{ pagination().to }}</strong>
+
+          <strong>
+            {{ pagination().to }}
+          </strong>
+
           de
-          <strong>{{ pagination().total }}</strong>
+
+          <strong>
+            {{ pagination().total }}
+          </strong>
+
           pedidos
         </span>
 
-        <span class="page-summary__separator" aria-hidden="true"></span>
+        <span
+          class="page-summary__separator"
+          aria-hidden="true"
+        ></span>
 
         <span>
           Página
-          <strong>{{ pagination().current_page }}</strong>
+
+          <strong>
+            {{
+              pagination()
+                .current_page
+            }}
+          </strong>
+
           de
-          <strong>{{ pagination().last_page }}</strong>
+
+          <strong>
+            {{
+              pagination()
+                .last_page
+            }}
+          </strong>
         </span>
       </div>
     }
 
-    @if (loadError() && orders().length > 0) {
-      <div class="inline-alert" role="alert">
+    <!-- ==================================================
+         INLINE ERROR
+         ================================================== -->
+
+    @if (
+      loadError() &&
+      orders().length >
+        0
+    ) {
+      <div
+        class="inline-alert"
+        role="alert"
+      >
         <span class="inline-alert__icon">
-          <i class="pi pi-exclamation-circle" aria-hidden="true"></i>
+          <i
+            class="pi pi-exclamation-circle"
+            aria-hidden="true"
+          ></i>
         </span>
 
         <div>
-          <strong>No se pudo cargar esta página</strong>
-          <span>{{ loadError() }}</span>
+          <strong>
+            No se pudo cargar esta página
+          </strong>
+
+          <span>
+            {{ loadError() }}
+          </span>
         </div>
 
-        <button type="button" (click)="retry()">Reintentar</button>
+        <button
+          type="button"
+          (click)="retry()"
+        >
+          Reintentar
+        </button>
       </div>
     }
 
+    <!-- ==================================================
+         INITIAL LOADING
+         ================================================== -->
+
     @if (initialLoading()) {
-      <div class="skeleton-grid" aria-label="Cargando pedidos">
-        @for (_ of skeletons; track $index) {
+      <div
+        class="skeleton-grid"
+        aria-label="Cargando pedidos"
+        aria-busy="true"
+      >
+        @for (
+          _ of skeletons;
+          track $index
+        ) {
           <article class="skeleton-card">
             <div class="skeleton-card__header">
               <div>
-                <p-skeleton width="8rem" height=".75rem" />
-                <p-skeleton width="15rem" height="1.1rem" />
+                <p-skeleton
+                  width="8rem"
+                  height=".75rem"
+                />
+
+                <p-skeleton
+                  width="15rem"
+                  height="1.1rem"
+                />
               </div>
 
               <p-skeleton
@@ -116,17 +216,39 @@
           </article>
         }
       </div>
-    } @else if (loadError() && orders().length === 0) {
-      <section class="state-card state-card--error">
+    } @else if (
+      loadError() &&
+      orders().length ===
+        0
+    ) {
+      <!-- ================================================
+           ERROR STATE
+           ================================================ -->
+
+      <section
+        class="
+          state-card
+          state-card--error
+        "
+      >
         <span class="state-card__icon">
-          <i class="pi pi-wifi" aria-hidden="true"></i>
+          <i
+            class="pi pi-wifi"
+            aria-hidden="true"
+          ></i>
         </span>
 
-        <span class="state-card__eyebrow">Problema de conexión</span>
+        <span class="state-card__eyebrow">
+          Problema de conexión
+        </span>
 
-        <h2>No pudimos cargar tus pedidos</h2>
+        <h2>
+          No pudimos cargar tus pedidos
+        </h2>
 
-        <p>{{ loadError() }}</p>
+        <p>
+          {{ loadError() }}
+        </p>
 
         <p-button
           label="Intentar nuevamente"
@@ -135,19 +257,34 @@
           (onClick)="retry()"
         />
       </section>
-    } @else if (orders().length === 0) {
+    } @else if (
+      orders().length ===
+      0
+    ) {
+      <!-- ================================================
+           EMPTY STATE
+           ================================================ -->
+
       <section class="state-card">
         <span class="state-card__icon">
-          <i class="pi pi-shopping-bag" aria-hidden="true"></i>
+          <i
+            class="pi pi-shopping-bag"
+            aria-hidden="true"
+          ></i>
         </span>
 
-        <span class="state-card__eyebrow">Tu historial está vacío</span>
+        <span class="state-card__eyebrow">
+          Tu historial está vacío
+        </span>
 
-        <h2>Aún no tienes pedidos</h2>
+        <h2>
+          Aún no tienes pedidos
+        </h2>
 
         <p>
-          Cuando realices tu primera compra, podrás consultar aquí su
-          estado, entrega y detalles del pago.
+          Cuando realices tu primera compra,
+          podrás consultar aquí su estado,
+          entrega y detalles del pago.
         </p>
 
         <p-button
@@ -159,35 +296,69 @@
         />
       </section>
     } @else {
+      <!-- ================================================
+           CONTENT
+           ================================================ -->
+
       <div
         class="orders-content"
-        [class.orders-content--loading]="pageLoading()"
-        [attr.aria-busy]="pageLoading()"
+        [class.orders-content--loading]="
+          pageLoading()
+        "
+        [attr.aria-busy]="
+          pageLoading()
+        "
       >
         @if (pageLoading()) {
-          <div class="page-loader" role="status">
-            <i class="pi pi-spin pi-spinner" aria-hidden="true"></i>
-            <span>Cargando página...</span>
+          <div
+            class="page-loader"
+            role="status"
+          >
+            <i
+              class="pi pi-spin pi-spinner"
+              aria-hidden="true"
+            ></i>
+
+            <span>
+              Cargando página...
+            </span>
           </div>
         }
 
-        @if (activeOrders().length > 0) {
+        <!-- ==============================================
+             ACTIVE ORDERS
+             ============================================== -->
+
+        @if (
+          activeOrders().length >
+          0
+        ) {
           <section
             class="orders-section"
             aria-labelledby="active-orders-title"
           >
             <header class="section-heading">
               <div>
-                <span class="section-heading__icon section-heading__icon--active">
-                  <span class="live-indicator" aria-hidden="true"></span>
+                <span
+                  class="
+                    section-heading__icon
+                    section-heading__icon--active
+                  "
+                >
+                  <span
+                    class="live-indicator"
+                    aria-hidden="true"
+                  ></span>
                 </span>
 
                 <div>
-                  <h2 id="active-orders-title">Pedidos en curso</h2>
+                  <h2 id="active-orders-title">
+                    Pedidos en curso
+                  </h2>
 
                   <p>
-                    Sigue el avance de los pedidos que todavía se están
-                    procesando.
+                    Sigue el avance de los pedidos
+                    que todavía se están procesando.
                   </p>
                 </div>
               </div>
@@ -198,235 +369,56 @@
             </header>
 
             <div class="active-orders-grid">
-              @for (order of activeOrders(); track order.id) {
-                <article class="active-order-card">
-                  <header class="active-order-card__header">
-                    <div class="active-order-card__identity">
-                      <span class="active-order-card__date">
-                        {{ relativeDateLabel(order.ordered_at) }}
-                      </span>
-
-                      <h3>
-                        Pedido
-                        <span>#{{ order.order_number }}</span>
-                      </h3>
-                    </div>
-
-                    <span [class]="statusClass(order)">
-                      <span
-                        class="order-status__pulse"
-                        aria-hidden="true"
-                      ></span>
-
-                      {{ statusLabel(order) }}
-                    </span>
-                  </header>
-
-                  <div class="status-message">
-                    <span class="status-message__icon">
-                      <i
-                        [class]="
-                          isPickup(order) ? 'pi pi-shop' : 'pi pi-clock'
-                        "
-                        aria-hidden="true"
-                      ></i>
-                    </span>
-
-                    <p>{{ statusDescription(order) }}</p>
-                  </div>
-
-                  <section
-                    class="order-progress"
-                    aria-label="Progreso del pedido"
-                  >
-                    <div class="order-progress__heading">
-                      <div>
-                        <span>Progreso del pedido</span>
-
-                        <strong>
-                          Paso {{ currentStepNumber(order) }} de
-                          {{ totalSteps(order) }}
-                        </strong>
-                      </div>
-
-                      <span class="order-progress__percentage">
-                        {{
-                          progressPercentage(order)
-                            | number: '1.0-0'
-                        }}%
-                      </span>
-                    </div>
-
-                    <div
-                      class="order-progress__mobile-bar"
-                      role="progressbar"
-                      aria-valuemin="0"
-                      aria-valuemax="100"
-                      [attr.aria-valuenow]="progressPercentage(order)"
-                    >
-                      <span
-                        [style.width.%]="progressPercentage(order)"
-                      ></span>
-                    </div>
-
-                    <div class="order-progress__steps">
-                      @for (step of stepsFor(order); track step.key) {
-                        <div
-                          class="progress-step"
-                          [class.progress-step--completed]="
-                            isStepCompleted(order, step.key)
-                          "
-                          [class.progress-step--current]="
-                            isCurrentStep(order, step.key)
-                          "
-                        >
-                          <span class="progress-step__marker">
-                            @if (
-                              isStepCompleted(order, step.key) &&
-                              !isCurrentStep(order, step.key)
-                            ) {
-                              <i
-                                class="pi pi-check"
-                                aria-hidden="true"
-                              ></i>
-                            }
-                          </span>
-
-                          <span class="progress-step__label">
-                            {{ step.shortLabel }}
-                          </span>
-                        </div>
-                      }
-                    </div>
-
-                    @if (nextStepLabel(order); as nextStep) {
-                      <div class="order-progress__next">
-                        <i
-                          class="pi pi-arrow-right"
-                          aria-hidden="true"
-                        ></i>
-
-                        <span>
-                          Siguiente etapa:
-                          <strong>{{ nextStep }}</strong>
-                        </span>
-                      </div>
-                    }
-                  </section>
-
-                  <div class="order-facts">
-                    <div class="order-fact">
-                      <span class="order-fact__icon">
-                        <i
-                          [class]="deliveryIcon(order.delivery_type)"
-                          aria-hidden="true"
-                        ></i>
-                      </span>
-
-                      <div>
-                        <span>Entrega</span>
-                        <strong>
-                          {{ deliveryLabel(order.delivery_type) }}
-                        </strong>
-                      </div>
-                    </div>
-
-                    <div class="order-fact">
-                      <span class="order-fact__icon">
-                        <i
-                          [class]="paymentIcon(order.payment_method)"
-                          aria-hidden="true"
-                        ></i>
-                      </span>
-
-                      <div>
-                        <span>Pago</span>
-                        <strong>
-                          {{ paymentLabel(order.payment_method) }}
-                        </strong>
-                      </div>
-                    </div>
-
-                    <div class="order-fact order-fact--total">
-                      <span class="order-fact__icon">
-                        <i class="pi pi-wallet" aria-hidden="true"></i>
-                      </span>
-
-                      <div>
-                        <span>Total</span>
-                        <strong>
-                          {{
-                            order.total
-                              | currency:
-                                  (order.currency ?? 'USD'):
-                                  'symbol':
-                                  '1.2-2'
-                          }}
-                        </strong>
-                      </div>
-                    </div>
-                  </div>
-
-                  @if (isDelivery(order)) {
-                    <div class="order-address">
-                      <span class="order-address__icon">
-                        <i
-                          class="pi pi-map-marker"
-                          aria-hidden="true"
-                        ></i>
-                      </span>
-
-                      <div>
-                        <span>Dirección de entrega</span>
-                        <strong>{{ orderAddress(order) }}</strong>
-
-                        @if (orderReference(order); as reference) {
-                          <small>Referencia: {{ reference }}</small>
-                        }
-                      </div>
-                    </div>
-                  }
-
-                  <footer class="active-order-card__footer">
-                    <button
-                      type="button"
-                      class="primary-detail-button"
-                      (click)="openOrder(order)"
-                    >
-                      <span>
-                        <i class="pi pi-eye" aria-hidden="true"></i>
-                        Ver detalles del pedido
-                      </span>
-
-                      <i
-                        class="pi pi-arrow-right"
-                        aria-hidden="true"
-                      ></i>
-                    </button>
-                  </footer>
-                </article>
+              @for (
+                order of activeOrders();
+                track order.id
+              ) {
+                <app-customer-active-order-card
+                  [order]="order"
+                  (openDetail)="
+                    openOrder(
+                      $event
+                    )
+                  "
+                />
               }
             </div>
           </section>
         }
 
-        @if (historyOrders().length > 0) {
+        <!-- ==============================================
+             HISTORY
+             ============================================== -->
+
+        @if (
+          historyOrders().length >
+          0
+        ) {
           <section
-            class="orders-section orders-section--history"
+            class="
+              orders-section
+              orders-section--history
+            "
             aria-labelledby="history-orders-title"
           >
             <header class="section-heading">
               <div>
                 <span class="section-heading__icon">
-                  <i class="pi pi-history" aria-hidden="true"></i>
+                  <i
+                    class="pi pi-history"
+                    aria-hidden="true"
+                  ></i>
                 </span>
 
                 <div>
-                  <h2 id="history-orders-title">Historial de esta página</h2>
+                  <h2 id="history-orders-title">
+                    Historial de esta página
+                  </h2>
 
                   <p>
-                    Pedidos entregados, retirados o cancelados incluidos
-                    en esta página.
+                    Pedidos entregados, retirados
+                    o cancelados incluidos en
+                    esta página.
                   </p>
                 </div>
               </div>
@@ -437,130 +429,61 @@
             </header>
 
             <div class="history-grid">
-              @for (order of historyOrders(); track order.id) {
-                <article [class]="historyCardClass(order)">
-                  <header class="history-card__header">
-                    <div class="history-card__status">
-                      <span class="history-card__status-icon">
-                        <i
-                          [class]="
-                            isCancelledOrder(order)
-                              ? 'pi pi-times'
-                              : 'pi pi-check'
-                          "
-                          aria-hidden="true"
-                        ></i>
-                      </span>
-
-                      <div>
-                        <strong>{{ statusLabel(order) }}</strong>
-                        <span>
-                          {{ relativeDateLabel(order.ordered_at) }}
-                        </span>
-                      </div>
-                    </div>
-
-                    <div class="history-card__total">
-                      <span>Total</span>
-
-                      <strong>
-                        {{
-                          order.total
-                            | currency:
-                                (order.currency ?? 'USD'):
-                                'symbol':
-                                '1.2-2'
-                        }}
-                      </strong>
-                    </div>
-                  </header>
-
-                  <div class="history-card__body">
-                    <h3>
-                      Pedido
-                      <span>#{{ order.order_number }}</span>
-                    </h3>
-
-                    <div class="history-card__meta">
-                      <span>
-                        <i
-                          [class]="deliveryIcon(order.delivery_type)"
-                          aria-hidden="true"
-                        ></i>
-
-                        {{ deliveryLabel(order.delivery_type) }}
-                      </span>
-
-                      <span class="history-card__dot" aria-hidden="true">
-                        •
-                      </span>
-
-                      <span>
-                        <i
-                          [class]="paymentIcon(order.payment_method)"
-                          aria-hidden="true"
-                        ></i>
-
-                        {{ paymentLabel(order.payment_method) }}
-                      </span>
-                    </div>
-
-                    @if (isDelivery(order)) {
-                      <div class="history-card__address">
-                        <i
-                          class="pi pi-map-marker"
-                          aria-hidden="true"
-                        ></i>
-
-                        <div>
-                          <span>{{ orderAddress(order) }}</span>
-
-                          @if (orderReference(order); as reference) {
-                            <small>Referencia: {{ reference }}</small>
-                          }
-                        </div>
-                      </div>
-                    }
-                  </div>
-
-                  <footer class="history-card__footer">
-                    <button
-                      type="button"
-                      class="history-detail-button"
-                      (click)="openOrder(order)"
-                    >
-                      <span>Ver detalle</span>
-
-                      <i
-                        class="pi pi-arrow-right"
-                        aria-hidden="true"
-                      ></i>
-                    </button>
-                  </footer>
-                </article>
+              @for (
+                order of historyOrders();
+                track order.id
+              ) {
+                <app-customer-order-history-card
+                  [order]="order"
+                  (openDetail)="
+                    openOrder(
+                      $event
+                    )
+                  "
+                />
               }
             </div>
           </section>
         }
       </div>
 
+      <!-- ================================================
+           PAGINATION
+           ================================================ -->
+
       @if (hasPagination()) {
         <div class="orders-pagination">
           <p-paginator
-            [first]="paginatorFirst()"
+            [first]="
+              paginatorFirst()
+            "
             [rows]="perPage"
-            [totalRecords]="pagination().total"
+            [totalRecords]="
+              pagination().total
+            "
             [showFirstLastIcon]="true"
             [showPageLinks]="true"
             [showCurrentPageReport]="false"
             [alwaysShow]="false"
             styleClass="customer-orders-paginator"
-            (onPageChange)="onPageChange($event)"
+            (onPageChange)="
+              onPageChange(
+                $event
+              )
+            "
           />
 
           <span class="orders-pagination__caption">
-            Página {{ pagination().current_page }} de
-            {{ pagination().last_page }}
+            Página
+            {{
+              pagination()
+                .current_page
+            }}
+            de
+            {{
+              pagination()
+                .last_page
+            }}
           </span>
         </div>
       }

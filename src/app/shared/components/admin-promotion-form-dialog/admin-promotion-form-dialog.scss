@@ -1,0 +1,247 @@
+:host {
+  display: contents;
+}
+
+.promotion-form {
+  display: grid;
+  max-height: calc(100vh - 9rem);
+  overflow-y: auto;
+  background: var(--cheof-card-background);
+  color: var(--cheof-text);
+}
+
+.form-section {
+  display: grid;
+  gap: 1rem;
+  padding: 1.25rem clamp(1rem, 3vw, 1.5rem);
+  border-bottom: 1px solid var(--cheof-card-border);
+}
+
+.form-section-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.8rem;
+}
+
+.form-section-header > span {
+  display: grid;
+  width: 40px;
+  min-width: 40px;
+  height: 40px;
+  place-items: center;
+  border-radius: var(--cheof-radius-md);
+  background: color-mix(
+    in srgb,
+    var(--p-primary-color) 12%,
+    transparent
+  );
+  color: var(--p-primary-color);
+}
+
+.form-section-header h3 {
+  margin: 0;
+  color: var(--cheof-text);
+  font-size: 1rem;
+}
+
+.form-section-header p {
+  margin: 0.3rem 0 0;
+  color: var(--cheof-text-secondary);
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.field {
+  display: grid;
+  min-width: 0;
+  align-content: start;
+  gap: 0.4rem;
+}
+
+.field > span {
+  color: var(--cheof-text);
+  font-size: 0.75rem;
+  font-weight: 750;
+}
+
+.field-span-2 {
+  grid-column: 1 / -1;
+}
+
+.field input,
+.field textarea {
+  width: 100%;
+}
+
+.field-help {
+  color: var(--cheof-text-secondary);
+  font-size: 0.7rem;
+  line-height: 1.45;
+}
+
+.field-error,
+.section-error {
+  color: var(--cheof-danger);
+  font-size: 0.72rem;
+  line-height: 1.45;
+}
+
+.input-action {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.5rem;
+}
+
+.rules-list,
+.size-price-list {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.rule-row {
+  display: grid;
+  grid-template-columns:
+    minmax(160px, 1fr)
+    minmax(170px, 1fr)
+    minmax(110px, 140px)
+    auto;
+  align-items: end;
+  gap: 0.75rem;
+  padding: 0.9rem;
+  border: 1px solid var(--cheof-card-border);
+  border-radius: var(--cheof-radius-md);
+  background: var(--cheof-muted-background);
+}
+
+.size-price-row {
+  display: grid;
+  grid-template-columns:
+    minmax(180px, 1fr)
+    minmax(180px, 1fr)
+    auto;
+  align-items: end;
+  gap: 0.75rem;
+  padding: 0.9rem;
+  border: 1px solid var(--cheof-card-border);
+  border-radius: var(--cheof-radius-md);
+  background: var(--cheof-muted-background);
+}
+
+.availability-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem;
+  border: 1px solid var(--cheof-card-border);
+  border-radius: var(--cheof-radius-md);
+  background: var(--cheof-muted-background);
+}
+
+.availability-card > div {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.availability-card strong {
+  color: var(--cheof-text);
+  font-size: 0.85rem;
+}
+
+.availability-card span {
+  color: var(--cheof-text-secondary);
+  font-size: 0.73rem;
+  line-height: 1.45;
+}
+
+.dialog-footer {
+  position: sticky;
+  z-index: 2;
+  bottom: 0;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.65rem;
+  padding: 1rem clamp(1rem, 3vw, 1.5rem);
+  border-top: 1px solid var(--cheof-card-border);
+  background: var(--cheof-card-background);
+}
+
+:host ::ng-deep {
+  .field .p-select,
+  .field .p-inputnumber,
+  .field .p-datepicker {
+    width: 100%;
+  }
+
+  .field .p-inputnumber-input,
+  .field .p-datepicker-input {
+    width: 100%;
+  }
+
+  .p-dialog-content {
+    overflow: hidden;
+    background: var(--cheof-card-background);
+    color: var(--cheof-text);
+  }
+}
+
+.promotion-form :is(button, input, textarea):focus-visible {
+  outline: 0.16rem solid
+    color-mix(
+      in srgb,
+      var(--p-primary-color) 38%,
+      transparent
+    );
+  outline-offset: 0.14rem;
+}
+
+@media (max-width: 900px) {
+  .rule-row {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .rule-row > p-button {
+    justify-self: end;
+  }
+}
+
+@media (max-width: 650px) {
+  .form-grid,
+  .rule-row,
+  .size-price-row {
+    grid-template-columns: 1fr;
+  }
+
+  .field-span-2 {
+    grid-column: auto;
+  }
+
+  .dialog-footer {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .input-action {
+    grid-template-columns: 1fr;
+  }
+
+  .availability-card {
+    align-items: flex-start;
+  }
+
+  :host ::ng-deep .dialog-footer .p-button {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .promotion-form * {
+    scroll-behavior: auto;
+  }
+}

@@ -301,6 +301,7 @@
 
           <p-select
             inputId="transactions_method_desktop"
+            ariaLabel="Filtrar transacciones por método de pago"
             [ngModel]="method()"
             (ngModelChange)="method.set($event)"
             [options]="methodOptions"
@@ -317,6 +318,7 @@
 
           <p-select
             inputId="transactions_status_desktop"
+            ariaLabel="Filtrar transacciones por estado"
             [ngModel]="status()"
             (ngModelChange)="status.set($event)"
             [options]="statusOptions"
@@ -416,109 +418,11 @@
           </ng-template>
 
           <ng-template pTemplate="body" let-transaction>
-            <tr>
-              <td>
-                <div
-                  class="transaction-method"
-                  [class.transaction-method--cash]="transaction.method === 'cash'"
-                  [class.transaction-method--transfer]="transaction.method === 'transfer'"
-                  [class.transaction-method--paypal]="transaction.method === 'paypal'"
-                >
-                  <span class="transaction-method__icon">
-                    <i [class]="methodIcon(transaction.method)"></i>
-                  </span>
-
-                  <div>
-                    <strong>
-                      {{ methodLabel(transaction.method) }}
-                    </strong>
-
-                    <small>
-                      {{ transactionSourceLabel(transaction.source) }}
-                    </small>
-                  </div>
-                </div>
-              </td>
-
-              <td>
-                <div class="transaction-identity">
-                  <div class="transaction-identity__primary">
-                    <strong
-                      [pTooltip]="transaction.order_number || 'Sin pedido relacionado'"
-                      tooltipPosition="top"
-                    >
-                      {{ transaction.order_number || 'Sin pedido' }}
-                    </strong>
-
-                    <span>
-                      {{ transaction.customer.name || 'Cliente sin nombre' }}
-                    </span>
-                  </div>
-
-                  <div class="transaction-identity__secondary">
-                    <span>
-                      {{ customerContact(transaction) }}
-                    </span>
-
-                    <span class="transaction-reference-inline">
-                      {{ transaction.reference || transaction.transaction_key }}
-                    </span>
-                  </div>
-                </div>
-              </td>
-
-              <td>
-                <p-tag
-                  [value]="statusLabel(transaction.status)"
-                  [severity]="statusSeverity(transaction.status)"
-                  [icon]="statusIcon(transaction.status)"
-                  styleClass="transaction-status-tag"
-                />
-              </td>
-
-              <td>
-                <div class="transaction-effective-date">
-                  @if (transaction.effective_at) {
-                    <strong>
-                      {{ transaction.effective_at | date: 'dd/MM/yyyy' }}
-                    </strong>
-
-                    <small>
-                      {{ transaction.effective_at | date: 'HH:mm' }}
-                    </small>
-                  } @else {
-                    <strong> Sin fecha </strong>
-
-                    <small> No disponible </small>
-                  }
-                </div>
-              </td>
-
-              <td class="transactions-column-amount">
-                <div class="transaction-amount">
-                  <strong>
-                    {{ transaction.amount | currency: transaction.currency }}
-                  </strong>
-
-                  <small>
-                    {{ transaction.currency }}
-                  </small>
-                </div>
-              </td>
-
-              <td class="transactions-column-action">
-                <p-button
-                  icon="pi pi-eye"
-                  severity="secondary"
-                  [text]="true"
-                  [rounded]="true"
-                  pTooltip="Ver detalle"
-                  tooltipPosition="left"
-                  ariaLabel="Ver detalle de la transacción"
-                  (onClick)="showTransactionDetail(transaction)"
-                />
-              </td>
-            </tr>
+            <tr
+              appAdminPaymentTransactionRow
+              [transaction]="transaction"
+              (view)="showTransactionDetail($event)"
+            ></tr>
           </ng-template>
         </p-table>
       </div>
@@ -527,103 +431,10 @@
 
       <div class="transactions-mobile-list">
         @for (transaction of transactions(); track transaction.transaction_key) {
-          <article class="transaction-mobile-card">
-            <header class="transaction-mobile-card__header">
-              <div
-                class="transaction-method"
-                [class.transaction-method--cash]="transaction.method === 'cash'"
-                [class.transaction-method--transfer]="transaction.method === 'transfer'"
-                [class.transaction-method--paypal]="transaction.method === 'paypal'"
-              >
-                <span class="transaction-method__icon">
-                  <i [class]="methodIcon(transaction.method)"></i>
-                </span>
-
-                <div>
-                  <strong>
-                    {{ methodLabel(transaction.method) }}
-                  </strong>
-
-                  <small>
-                    {{ transactionSourceLabel(transaction.source) }}
-                  </small>
-                </div>
-              </div>
-
-              <p-tag
-                [value]="statusLabel(transaction.status)"
-                [severity]="statusSeverity(transaction.status)"
-                [icon]="statusIcon(transaction.status)"
-                styleClass="transaction-status-tag"
-              />
-            </header>
-
-            <div class="transaction-mobile-card__body">
-              <div class="transaction-mobile-order">
-                <span> Pedido </span>
-
-                <strong>
-                  {{ transaction.order_number || 'Sin pedido relacionado' }}
-                </strong>
-              </div>
-
-              <div class="transaction-mobile-customer">
-                <span class="transaction-mobile-customer__avatar">
-                  {{ (transaction.customer.name || 'C').slice(0, 1).toUpperCase() }}
-                </span>
-
-                <div>
-                  <strong>
-                    {{ transaction.customer.name || 'Cliente' }}
-                  </strong>
-
-                  <small>
-                    {{ customerContact(transaction) }}
-                  </small>
-                </div>
-              </div>
-
-              <div class="transaction-mobile-card__meta">
-                <div>
-                  <span> Fecha </span>
-
-                  <strong>
-                    @if (transaction.effective_at) {
-                      {{ transaction.effective_at | date: 'dd/MM/yyyy HH:mm' }}
-                    } @else {
-                      Sin fecha
-                    }
-                  </strong>
-                </div>
-
-                <div class="transaction-mobile-card__amount">
-                  <span> Monto </span>
-
-                  <strong>
-                    {{ transaction.amount | currency: transaction.currency }}
-                  </strong>
-                </div>
-              </div>
-            </div>
-
-            <footer class="transaction-mobile-card__footer">
-              <span
-                class="transaction-mobile-reference"
-                [pTooltip]="transaction.reference || transaction.transaction_key"
-                tooltipPosition="top"
-              >
-                {{ transaction.reference || transaction.transaction_key }}
-              </span>
-
-              <p-button
-                icon="pi pi-arrow-right"
-                label="Ver detalle"
-                severity="secondary"
-                [text]="true"
-                (onClick)="showTransactionDetail(transaction)"
-              />
-            </footer>
-          </article>
+          <app-admin-payment-transaction-mobile-card
+            [transaction]="transaction"
+            (view)="showTransactionDetail($event)"
+          />
         }
       </div>
 
@@ -745,6 +556,7 @@
 
         <p-select
           inputId="transactions_method_mobile"
+          ariaLabel="Filtrar transacciones por método de pago"
           [ngModel]="method()"
           (ngModelChange)="method.set($event)"
           [options]="methodOptions"
@@ -760,6 +572,7 @@
 
         <p-select
           inputId="transactions_status_mobile"
+          ariaLabel="Filtrar transacciones por estado"
           [ngModel]="status()"
           (ngModelChange)="status.set($event)"
           [options]="statusOptions"
@@ -792,286 +605,9 @@
   |--------------------------------------------------------------------------
   -->
 
-  <p-dialog
-    header="Detalle de la transacción"
-    [modal]="true"
+  <app-admin-payment-transaction-detail-dialog
     [visible]="detailVisible()"
-    (visibleChange)="detailVisible.set($event)"
-    [draggable]="false"
-    [resizable]="false"
-    [dismissableMask]="true"
-    [closeOnEscape]="true"
-    [breakpoints]="{
-      '960px': '72vw',
-      '640px': '94vw',
-    }"
-    [style]="{
-      width: '600px',
-    }"
-    styleClass="transaction-detail-dialog"
-  >
-    @if (selectedTransaction(); as transaction) {
-      <section class="transaction-detail">
-        <!-- Encabezado -->
-
-        <header class="transaction-detail__header">
-          <div
-            class="transaction-method"
-            [class.transaction-method--cash]="transaction.method === 'cash'"
-            [class.transaction-method--transfer]="transaction.method === 'transfer'"
-            [class.transaction-method--paypal]="transaction.method === 'paypal'"
-          >
-            <span class="transaction-method__icon">
-              <i [class]="methodIcon(transaction.method)"></i>
-            </span>
-
-            <div>
-              <strong>
-                {{ methodLabel(transaction.method) }}
-              </strong>
-
-              <small>
-                {{ transactionSourceLabel(transaction.source) }}
-              </small>
-            </div>
-          </div>
-
-          <p-tag
-            [value]="statusLabel(transaction.status)"
-            [severity]="statusSeverity(transaction.status)"
-            [icon]="statusIcon(transaction.status)"
-          />
-        </header>
-
-        <!-- Importe -->
-
-        <section class="transaction-detail__amount">
-          <span> Importe de la transacción </span>
-
-          <strong>
-            {{ transaction.amount | currency: transaction.currency }}
-          </strong>
-
-          <small>
-            {{ transaction.currency }}
-          </small>
-        </section>
-
-        <!-- Datos principales -->
-
-        <section class="transaction-detail__grid">
-          <article class="transaction-detail-card">
-            <span class="transaction-detail-card__icon">
-              <i class="pi pi-receipt"></i>
-            </span>
-
-            <div>
-              <span> Pedido </span>
-
-              @if (transaction.order_id !== null) {
-                <a
-                  class="transaction-detail-card__link"
-                  [routerLink]="['/admin/orders', transaction.order_id]"
-                  (click)="closeTransactionDetail()"
-                >
-                  {{ transaction.order_number || 'Abrir pedido' }}
-
-                  <i class="pi pi-arrow-up-right"></i>
-                </a>
-              } @else {
-                <strong> Sin pedido relacionado </strong>
-              }
-            </div>
-          </article>
-
-          <article class="transaction-detail-card">
-            <span class="transaction-detail-card__icon">
-              <i class="pi pi-calendar"></i>
-            </span>
-
-            <div>
-              <span> Fecha efectiva </span>
-
-              <strong>
-                @if (transaction.effective_at) {
-                  {{ transaction.effective_at | date: 'dd/MM/yyyy HH:mm' }}
-                } @else {
-                  Sin fecha registrada
-                }
-              </strong>
-            </div>
-          </article>
-
-          <article class="transaction-detail-card">
-            <span class="transaction-detail-card__icon">
-              <i class="pi pi-user"></i>
-            </span>
-
-            <div>
-              <span> Cliente </span>
-
-              <strong>
-                {{ transaction.customer.name || 'Cliente sin nombre' }}
-              </strong>
-            </div>
-          </article>
-
-          <article class="transaction-detail-card">
-            <span class="transaction-detail-card__icon">
-              <i class="pi pi-phone"></i>
-            </span>
-
-            <div>
-              <span> Contacto </span>
-
-              <strong>
-                {{ customerContact(transaction) }}
-              </strong>
-            </div>
-          </article>
-        </section>
-
-        <!-- Información técnica -->
-
-        <section class="transaction-detail__technical">
-          <header class="transaction-detail__technical-header">
-            <div>
-              <span> Información técnica </span>
-
-              <strong> Identificadores y referencias </strong>
-            </div>
-
-            <i class="pi pi-shield"></i>
-          </header>
-
-          <div class="transaction-technical-row">
-            <div>
-              <span> Referencia </span>
-
-              <code>
-                {{ transaction.reference || 'Sin referencia' }}
-              </code>
-            </div>
-
-            <button
-              type="button"
-              class="transaction-copy-button"
-              aria-label="Copiar referencia"
-              pTooltip="Copiar referencia"
-              tooltipPosition="left"
-              [disabled]="!transaction.reference"
-              (click)="copyToClipboard(transaction.reference, 'Referencia')"
-            >
-              <i class="pi pi-copy"></i>
-            </button>
-          </div>
-
-          <div class="transaction-technical-row">
-            <div>
-              <span> Identificador interno </span>
-
-              <code>
-                {{ transaction.transaction_key }}
-              </code>
-            </div>
-
-            <button
-              type="button"
-              class="transaction-copy-button"
-              aria-label="Copiar identificador interno"
-              pTooltip="Copiar identificador"
-              tooltipPosition="left"
-              (click)="copyToClipboard(transaction.transaction_key, 'Identificador interno')"
-            >
-              <i class="pi pi-copy"></i>
-            </button>
-          </div>
-
-          @if (transaction.receipt_uuid) {
-            <div class="transaction-technical-row">
-              <div>
-                <span> UUID del comprobante </span>
-
-                <code>
-                  {{ transaction.receipt_uuid }}
-                </code>
-              </div>
-
-              <button
-                type="button"
-                class="transaction-copy-button"
-                aria-label="Copiar UUID del comprobante"
-                pTooltip="Copiar UUID"
-                tooltipPosition="left"
-                (click)="copyToClipboard(transaction.receipt_uuid, 'UUID del comprobante')"
-              >
-                <i class="pi pi-copy"></i>
-              </button>
-            </div>
-          }
-
-          @if (transaction.reviewed_by) {
-            <div class="transaction-technical-row">
-              <div>
-                <span> Revisado por </span>
-
-                <strong>
-                  {{ transaction.reviewed_by }}
-                </strong>
-              </div>
-
-              <span class="transaction-technical-row__verified">
-                <i class="pi pi-verified"></i>
-              </span>
-            </div>
-          }
-
-          @if (transaction.failure_code) {
-            <div class="transaction-technical-row transaction-technical-row--failure">
-              <div>
-                <span> Código de error </span>
-
-                <code>
-                  {{ transaction.failure_code }}
-                </code>
-              </div>
-
-              <button
-                type="button"
-                class="transaction-copy-button"
-                aria-label="Copiar código de error"
-                pTooltip="Copiar código"
-                tooltipPosition="left"
-                (click)="copyToClipboard(transaction.failure_code, 'Código de error')"
-              >
-                <i class="pi pi-copy"></i>
-              </button>
-            </div>
-          }
-        </section>
-      </section>
-    }
-
-    <ng-template pTemplate="footer">
-      <div class="transaction-detail__actions">
-        <p-button
-          label="Cerrar"
-          severity="secondary"
-          [outlined]="true"
-          (onClick)="closeTransactionDetail()"
-        />
-
-        @if (
-          selectedTransaction()?.order_id !== null && selectedTransaction()?.order_id !== undefined
-        ) {
-          <p-button
-            icon="pi pi-arrow-up-right"
-            label="Ver pedido"
-            [routerLink]="['/admin/orders', selectedTransaction()!.order_id]"
-            (onClick)="closeTransactionDetail()"
-          />
-        }
-      </div>
-    </ng-template>
-  </p-dialog>
+    [transaction]="selectedTransaction()"
+    (visibleChange)="onDetailVisibleChange($event)"
+  />
 </section>

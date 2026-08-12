@@ -1,0 +1,62 @@
+<article class="ingredient-card">
+  <header>
+    <div class="ingredient-icon" aria-hidden="true">
+      <i class="pi pi-circle-fill"></i>
+    </div>
+
+    <div class="ingredient-heading">
+      <h4>{{ ingredient().name }}</h4>
+      <p-tag [value]="ingredient().type.name" severity="secondary" [rounded]="true" />
+    </div>
+
+    @if (!ingredient().can_delete) {
+      <span class="protected-badge" pTooltip="Tiene registros asociados">
+        <i class="pi pi-lock" aria-hidden="true"></i>
+        Protegido
+      </span>
+    }
+  </header>
+
+  <div class="ingredient-stats">
+    <div>
+      <span>Asociado a</span>
+      <strong>{{ usageText() }}</strong>
+    </div>
+
+    <div>
+      <span>Recargo según tamaño</span>
+      <strong>{{ priceRange() }}</strong>
+    </div>
+  </div>
+
+  <footer>
+    <p-button
+      label="Editar"
+      icon="pi pi-pencil"
+      severity="secondary"
+      [outlined]="true"
+      [disabled]="actionsDisabled()"
+      (onClick)="edit.emit(ingredient())"
+    />
+
+    <p-button
+      label="Recargos"
+      icon="pi pi-dollar"
+      [outlined]="true"
+      [disabled]="actionsDisabled()"
+      pTooltip="Administrar precios extra por tamaño"
+      (onClick)="prices.emit(ingredient())"
+    />
+
+    <p-button
+      icon="pi pi-trash"
+      severity="danger"
+      [text]="true"
+      [rounded]="true"
+      [loading]="deleting()"
+      [disabled]="actionsDisabled()"
+      [pTooltip]="ingredient().can_delete ? 'Eliminar ingrediente' : 'Tiene registros asociados'"
+      (onClick)="delete.emit(ingredient())"
+    />
+  </footer>
+</article>

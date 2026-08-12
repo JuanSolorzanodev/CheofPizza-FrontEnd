@@ -1,0 +1,112 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+.ingredient-card {
+  display: grid;
+  min-width: 0;
+  gap: 1rem;
+  height: 100%;
+  padding: 1rem;
+  border: 1px solid var(--cheof-card-border);
+  border-radius: var(--cheof-radius-lg);
+  background: var(--cheof-card-background);
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    transform 160ms ease;
+}
+.ingredient-card:hover {
+  border-color: color-mix(in srgb, var(--p-primary-color) 30%, var(--cheof-card-border));
+  box-shadow: var(--cheof-shadow-sm);
+  transform: translateY(-1px);
+}
+.ingredient-card header {
+  display: flex;
+  min-width: 0;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+.ingredient-icon {
+  display: grid;
+  width: 42px;
+  min-width: 42px;
+  height: 42px;
+  place-items: center;
+  border-radius: 13px;
+  color: var(--p-primary-color);
+  background: color-mix(in srgb, var(--p-primary-color) 10%, transparent);
+}
+.ingredient-icon i {
+  font-size: 0.7rem;
+}
+.ingredient-heading {
+  display: grid;
+  min-width: 0;
+  flex: 1;
+  gap: 0.35rem;
+}
+.ingredient-heading h4 {
+  margin: 0;
+  font-size: 0.95rem;
+  overflow-wrap: anywhere;
+}
+.protected-badge {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.35rem 0.5rem;
+  border-radius: var(--cheof-radius-pill);
+  color: var(--cheof-warning);
+  background: color-mix(in srgb, var(--cheof-warning) 11%, transparent);
+  font-size: 0.62rem;
+  font-weight: 750;
+}
+.ingredient-stats {
+  display: grid;
+  gap: 0.65rem;
+}
+.ingredient-stats > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 1px dashed var(--cheof-card-border);
+}
+.ingredient-stats > div:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+.ingredient-stats span {
+  color: var(--cheof-text-secondary);
+  font-size: 0.68rem;
+}
+.ingredient-stats strong {
+  overflow-wrap: anywhere;
+  text-align: right;
+  font-size: 0.72rem;
+}
+.ingredient-card footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.45rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--cheof-card-border);
+}
+@media (max-width: 560px) {
+  .ingredient-card footer {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ingredient-card {
+    transition: none;
+  }
+  .ingredient-card:hover {
+    transform: none;
+  }
+}

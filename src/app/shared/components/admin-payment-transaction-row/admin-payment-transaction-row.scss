@@ -1,0 +1,103 @@
+:host {
+  color: var(--cheof-text);
+}
+.transaction-method {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  min-width: 0;
+}
+.transaction-method__icon {
+  display: grid;
+  width: 2.25rem;
+  min-width: 2.25rem;
+  height: 2.25rem;
+  place-items: center;
+  border: 1px solid var(--cheof-card-border);
+  border-radius: 0.7rem;
+  background: var(--cheof-muted-background);
+  color: var(--cheof-text-secondary);
+}
+.transaction-method--cash .transaction-method__icon {
+  color: var(--cheof-success);
+}
+.transaction-method--transfer .transaction-method__icon {
+  color: var(--cheof-info);
+}
+.transaction-method--paypal .transaction-method__icon {
+  color: var(--cheof-text);
+}
+.transaction-method > div,
+.transaction-identity,
+.transaction-identity__primary,
+.transaction-identity__secondary,
+.transaction-effective-date,
+.transaction-amount {
+  display: grid;
+  min-width: 0;
+  gap: 0.12rem;
+}
+.transaction-method strong,
+.transaction-identity__primary strong,
+.transaction-effective-date strong,
+.transaction-amount strong {
+  color: var(--cheof-text);
+  font-size: 0.76rem;
+  font-weight: 720;
+}
+.transaction-method small,
+.transaction-identity__primary span,
+.transaction-identity__secondary span,
+.transaction-effective-date small,
+.transaction-amount small {
+  color: var(--cheof-text-secondary);
+  font-size: 0.63rem;
+}
+.transaction-identity__primary strong,
+.transaction-reference-inline {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.transaction-reference-inline {
+  max-width: 20rem;
+}
+.transaction-amount {
+  justify-items: end;
+}
+.transaction-amount strong {
+  font-size: 0.8rem;
+  font-variant-numeric: tabular-nums;
+}
+.transactions-column-amount {
+  text-align: right;
+}
+.transactions-column-action {
+  width: 3.5rem;
+  text-align: center;
+}
+.transaction-view-button {
+  display: grid;
+  width: 2.25rem;
+  height: 2.25rem;
+  margin-inline: auto;
+  place-items: center;
+  border: 1px solid transparent;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--cheof-text-secondary);
+  cursor: pointer;
+  transition:
+    background-color 0.18s ease,
+    color 0.18s ease,
+    border-color 0.18s ease;
+}
+.transaction-view-button:hover {
+  border-color: var(--cheof-card-border);
+  background: var(--cheof-muted-background);
+  color: var(--cheof-text);
+}
+.transaction-view-button:focus-visible {
+  outline: 2px solid var(--p-primary-color);
+  outline-offset: 2px;
+}

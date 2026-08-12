@@ -4,24 +4,68 @@
   <div class="checkout-shell">
     @if (configLoading()) {
       <div class="checkout-loading">
-        <p-skeleton height="112px" borderRadius="24px" />
+        <p-skeleton
+          height="112px"
+          borderRadius="24px"
+        />
+
         <div class="checkout-loading__grid">
-          <p-skeleton height="560px" borderRadius="24px" />
-          <p-skeleton height="360px" borderRadius="24px" />
+          <p-skeleton
+            height="560px"
+            borderRadius="24px"
+          />
+
+          <p-skeleton
+            height="360px"
+            borderRadius="24px"
+          />
         </div>
       </div>
     } @else if (!checkoutConfig()) {
-      <article class="state-card state-card--error">
-        <span class="state-card__icon"><i class="pi pi-wifi"></i></span>
-        <h1>No pudimos cargar el checkout</h1>
-        <p>Comprueba tu conexión e inténtalo nuevamente.</p>
-        <p-button label="Volver al menú" icon="pi pi-arrow-left" routerLink="/" />
+      <article
+        class="
+          state-card
+          state-card--error
+        "
+      >
+        <span class="state-card__icon">
+          <i
+            class="pi pi-wifi"
+            aria-hidden="true"
+          ></i>
+        </span>
+
+        <h1>
+          No pudimos cargar el checkout
+        </h1>
+
+        <p>
+          Comprueba tu conexión e inténtalo nuevamente.
+        </p>
+
+        <p-button
+          label="Volver al menú"
+          icon="pi pi-arrow-left"
+          routerLink="/"
+        />
       </article>
     } @else if (!hasItems()) {
       <article class="state-card">
-        <span class="state-card__icon"><i class="pi pi-shopping-cart"></i></span>
-        <h1>Tu carrito está vacío</h1>
-        <p>Agrega pizzas o promociones antes de iniciar el checkout.</p>
+        <span class="state-card__icon">
+          <i
+            class="pi pi-shopping-cart"
+            aria-hidden="true"
+          ></i>
+        </span>
+
+        <h1>
+          Tu carrito está vacío
+        </h1>
+
+        <p>
+          Agrega pizzas o promociones antes de iniciar el checkout.
+        </p>
+
         <p-button
           label="Explorar el menú"
           icon="pi pi-arrow-right"
@@ -30,124 +74,314 @@
         />
       </article>
     } @else if (!storeAcceptsOrders()) {
-      <article class="state-card state-card--closed">
-        <span class="state-card__icon"><i class="pi pi-clock"></i></span>
-        <span class="state-card__eyebrow">Tienda temporalmente cerrada</span>
-        <h1>Ahora no estamos recibiendo pedidos</h1>
+      <article
+        class="
+          state-card
+          state-card--closed
+        "
+      >
+        <span class="state-card__icon">
+          <i
+            class="pi pi-clock"
+            aria-hidden="true"
+          ></i>
+        </span>
+
+        <span class="state-card__eyebrow">
+          Tienda temporalmente cerrada
+        </span>
+
+        <h1>
+          Ahora no estamos recibiendo pedidos
+        </h1>
+
         <p>
-          {{ store()?.closed_message || 'Regresa más tarde para completar tu pedido.' }}
+          {{
+            store()?.closed_message ||
+              'Regresa más tarde para completar tu pedido.'
+          }}
         </p>
+
         <div class="state-card__actions">
-          <p-button label="Volver al menú" icon="pi pi-arrow-left" routerLink="/" />
+          <p-button
+            label="Volver al menú"
+            icon="pi pi-arrow-left"
+            routerLink="/"
+          />
         </div>
       </article>
     } @else {
+      <!-- ==================================================
+           HEADER
+           ================================================== -->
+
       <header class="checkout-header">
         <div>
-          <span class="checkout-header__eyebrow">Compra segura</span>
-          <h1>Finaliza tu pedido</h1>
-          <p>Revisa cada detalle antes de confirmar y pagar.</p>
+          <span class="checkout-header__eyebrow">
+            Compra segura
+          </span>
+
+          <h1>
+            Finaliza tu pedido
+          </h1>
+
+          <p>
+            Revisa cada detalle antes de confirmar y pagar.
+          </p>
         </div>
 
         <div class="checkout-header__meta">
-          <span><i class="pi pi-clock"></i> {{ store()?.estimated_minutes }} min aprox.</span>
-          <span><i class="pi pi-lock"></i> Pago protegido</span>
+          <span>
+            <i
+              class="pi pi-clock"
+              aria-hidden="true"
+            ></i>
+
+            {{ store()?.estimated_minutes }}
+            min aprox.
+          </span>
+
+          <span>
+            <i
+              class="pi pi-lock"
+              aria-hidden="true"
+            ></i>
+
+            Pago protegido
+          </span>
         </div>
       </header>
 
-      <nav class="checkout-steps" aria-label="Progreso del checkout">
-        @for (step of steps(); track step.id) {
+      <!-- ==================================================
+           STEPPER
+           ================================================== -->
+
+      <nav
+        class="checkout-steps"
+        aria-label="Progreso del checkout"
+      >
+        @for (
+          step of steps();
+          track step.id
+        ) {
           <button
             type="button"
             class="checkout-step"
-            [class.checkout-step--active]="step.active"
-            [class.checkout-step--done]="step.done"
-            [disabled]="step.id > activeStep()"
-            (click)="goTo(step.id)"
+            [class.checkout-step--active]="
+              step.active
+            "
+            [class.checkout-step--done]="
+              step.done
+            "
+            [attr.aria-current]="
+              step.active
+                ? 'step'
+                : null
+            "
+            [disabled]="
+              step.id >
+              activeStep()
+            "
+            (click)="
+              goTo(
+                step.id
+              )
+            "
           >
             <span class="checkout-step__number">
               @if (step.done) {
-                <i class="pi pi-check"></i>
+                <i
+                  class="pi pi-check"
+                  aria-hidden="true"
+                ></i>
               } @else {
                 {{ step.id + 1 }}
               }
             </span>
 
             <span class="checkout-step__copy">
-              <strong>{{ step.title }}</strong>
-              <small>{{ step.description }}</small>
+              <strong>
+                {{ step.title }}
+              </strong>
+
+              <small>
+                {{ step.description }}
+              </small>
             </span>
           </button>
         }
       </nav>
 
+      <!-- ==================================================
+           CONTENT
+           ================================================== -->
+
       <div class="checkout-layout">
         <main class="checkout-main">
-          <form [formGroup]="form" novalidate>
+          <form
+            [formGroup]="form"
+            novalidate
+          >
+            <!-- ============================================
+                 STEP 1 — DELIVERY
+                 ============================================ -->
+
             @if (activeStep() === 0) {
-              <section class="checkout-card checkout-section">
+              <section
+                class="
+                  checkout-card
+                  checkout-section
+                "
+              >
                 <div class="section-heading">
-                  <span class="section-heading__icon"><i class="pi pi-map-marker"></i></span>
+                  <span class="section-heading__icon">
+                    <i
+                      class="pi pi-map-marker"
+                      aria-hidden="true"
+                    ></i>
+                  </span>
+
                   <div>
-                    <span>Paso 1</span>
-                    <h2>¿Cómo recibirás tu pedido?</h2>
-                    <p>Selecciona una modalidad disponible.</p>
+                    <span>
+                      Paso 1
+                    </span>
+
+                    <h2>
+                      ¿Cómo recibirás tu pedido?
+                    </h2>
+
+                    <p>
+                      Selecciona una modalidad disponible.
+                    </p>
                   </div>
                 </div>
 
-                <div class="option-grid option-grid--delivery">
+                <div
+                  class="
+                    option-grid
+                    option-grid--delivery
+                  "
+                >
                   <button
                     type="button"
                     class="choice-card"
-                    [class.choice-card--selected]="deliveryType() === 'pickup'"
-                    [class.choice-card--disabled]="!pickupEnabled()"
-                    [disabled]="!pickupEnabled()"
-                    (click)="selectDelivery('pickup')"
+                    [attr.aria-pressed]="
+                      deliveryType() ===
+                      'pickup'
+                    "
+                    [class.choice-card--selected]="
+                      deliveryType() ===
+                      'pickup'
+                    "
+                    [class.choice-card--disabled]="
+                      !pickupEnabled()
+                    "
+                    [disabled]="
+                      !pickupEnabled()
+                    "
+                    (click)="
+                      selectDelivery(
+                        'pickup'
+                      )
+                    "
                   >
-                    <span class="choice-card__icon"><i class="pi pi-shop"></i></span>
+                    <span class="choice-card__icon">
+                      <i
+                        class="pi pi-shop"
+                        aria-hidden="true"
+                      ></i>
+                    </span>
+
                     <span class="choice-card__content">
-                      <strong>Retiro en el local</strong>
-                      <small>Recoge tu pedido sin costo de envío.</small>
+                      <strong>
+                        Retiro en el local
+                      </strong>
+
+                      <small>
+                        Recoge tu pedido sin costo de envío.
+                      </small>
+
                       @if (!pickupEnabled()) {
-                        <em>No disponible</em>
+                        <em>
+                          No disponible
+                        </em>
                       }
                     </span>
-                    <span class="choice-card__radio">
-                      <p-radioButton
-                        name="deliveryType"
-                        value="pickup"
-                        formControlName="delivery_type"
-                        [disabled]="!pickupEnabled()"
-                      />
+
+                    <span
+                      class="choice-card__indicator"
+                      [class.choice-card__indicator--selected]="
+                        deliveryType() ===
+                        'pickup'
+                      "
+                      aria-hidden="true"
+                    >
+                      <span></span>
                     </span>
                   </button>
 
                   <button
                     type="button"
                     class="choice-card"
-                    [class.choice-card--selected]="deliveryType() === 'delivery'"
-                    [class.choice-card--disabled]="!deliveryEnabled()"
-                    [disabled]="!deliveryEnabled()"
-                    (click)="selectDelivery('delivery')"
+                    [attr.aria-pressed]="
+                      deliveryType() ===
+                      'delivery'
+                    "
+                    [class.choice-card--selected]="
+                      deliveryType() ===
+                      'delivery'
+                    "
+                    [class.choice-card--disabled]="
+                      !deliveryEnabled()
+                    "
+                    [disabled]="
+                      !deliveryEnabled()
+                    "
+                    (click)="
+                      selectDelivery(
+                        'delivery'
+                      )
+                    "
                   >
-                    <span class="choice-card__icon"><i class="pi pi-truck"></i></span>
+                    <span class="choice-card__icon">
+                      <i
+                        class="pi pi-truck"
+                        aria-hidden="true"
+                      ></i>
+                    </span>
+
                     <span class="choice-card__content">
-                      <strong>Entrega a domicilio</strong>
+                      <strong>
+                        Entrega a domicilio
+                      </strong>
+
                       <small>
                         Recíbelo en tu ubicación por
-                        {{ delivery()?.delivery_fee | currency: 'USD' : 'symbol' : '1.2-2' }}.
+                        {{
+                          delivery()?.delivery_fee
+                            | currency:
+                                'USD':
+                                'symbol':
+                                '1.2-2'
+                        }}.
                       </small>
+
                       @if (!deliveryEnabled()) {
-                        <em>No disponible</em>
+                        <em>
+                          No disponible
+                        </em>
                       }
                     </span>
-                    <span class="choice-card__radio">
-                      <p-radioButton
-                        name="deliveryType"
-                        value="delivery"
-                        formControlName="delivery_type"
-                        [disabled]="!deliveryEnabled()"
-                      />
+
+                    <span
+                      class="choice-card__indicator"
+                      [class.choice-card__indicator--selected]="
+                        deliveryType() ===
+                        'delivery'
+                      "
+                      aria-hidden="true"
+                    >
+                      <span></span>
                     </span>
                   </button>
                 </div>
@@ -156,41 +390,81 @@
                   <div class="delivery-location">
                     <div class="delivery-location__heading">
                       <div>
-                        <h3>Ubicación de entrega</h3>
-                        <p>Marca el punto exacto y agrega una referencia clara.</p>
+                        <h3>
+                          Ubicación de entrega
+                        </h3>
+
+                        <p>
+                          Marca el punto exacto y agrega una referencia clara.
+                        </p>
                       </div>
-                      <p-tag value="Obligatorio" severity="warn" [rounded]="true" />
+
+                      <p-tag
+                        value="Obligatorio"
+                        severity="warn"
+                        [rounded]="true"
+                      />
                     </div>
 
-                    @defer (when isDelivery()) {
-                      <app-location-picker formControlName="delivery_location" />
+                    @defer (
+                      when isDelivery()
+                    ) {
+                      <app-location-picker
+                        formControlName="delivery_location"
+                      />
                     } @placeholder {
-                      <div class="checkout-deferred-placeholder" aria-hidden="true">
-                        <p-skeleton width="100%" height="18rem" borderRadius="0.85rem" />
+                      <div
+                        class="checkout-deferred-placeholder"
+                        aria-hidden="true"
+                      >
+                        <p-skeleton
+                          width="100%"
+                          height="18rem"
+                          borderRadius="0.85rem"
+                        />
                       </div>
                     } @loading {
                       <div
                         class="checkout-deferred-placeholder"
                         aria-label="Cargando mapa de entrega"
                       >
-                        <p-skeleton width="100%" height="18rem" borderRadius="0.85rem" />
+                        <p-skeleton
+                          width="100%"
+                          height="18rem"
+                          borderRadius="0.85rem"
+                        />
                       </div>
                     }
 
-                    @if (!isLocationOk() && form.controls.delivery_location.touched) {
-                      <small class="field-error">Selecciona una ubicación válida en el mapa.</small>
+                    @if (
+                      !isLocationOk() &&
+                      form.controls
+                        .delivery_location
+                        .touched
+                    ) {
+                      <small class="field-error">
+                        Selecciona una ubicación válida en el mapa.
+                      </small>
                     }
 
                     <button
                       type="button"
                       class="manual-address-toggle"
-                      (click)="toggleManualAddress()"
+                      (click)="
+                        toggleManualAddress()
+                      "
                     >
                       <i
                         class="pi"
-                        [class.pi-plus]="!showManualAddress()"
-                        [class.pi-minus]="showManualAddress()"
+                        [class.pi-plus]="
+                          !showManualAddress()
+                        "
+                        [class.pi-minus]="
+                          showManualAddress()
+                        "
+                        aria-hidden="true"
                       ></i>
+
                       {{
                         showManualAddress()
                           ? 'Ocultar dirección adicional'
@@ -200,18 +474,30 @@
 
                     @if (showManualAddress()) {
                       <label class="form-field">
-                        <span>Dirección escrita <small>Opcional</small></span>
+                        <span>
+                          Dirección escrita
+                          <small>
+                            Opcional
+                          </small>
+                        </span>
+
                         <textarea
                           pTextarea
                           formControlName="address"
                           rows="3"
                           placeholder="Ej. Calle principal, edificio o número de casa"
                         ></textarea>
-                        <small>Entre 10 y 500 caracteres cuando se completa.</small>
-                        @if (!isOptionalAddressOk()) {
-                          <em class="field-error"
-                            >La dirección debe tener entre 10 y 500 caracteres.</em
-                          >
+
+                        <small>
+                          Entre 10 y 500 caracteres cuando se completa.
+                        </small>
+
+                        @if (
+                          !isOptionalAddressOk()
+                        ) {
+                          <em class="field-error">
+                            La dirección debe tener entre 10 y 500 caracteres.
+                          </em>
                         }
                       </label>
                     }
@@ -220,83 +506,178 @@
               </section>
             }
 
+            <!-- ============================================
+                 STEP 2 — REVIEW
+                 ============================================ -->
+
             @if (activeStep() === 1) {
-              <section class="checkout-card checkout-section">
+              <section
+                class="
+                  checkout-card
+                  checkout-section
+                "
+              >
                 <div class="section-heading">
-                  <span class="section-heading__icon"><i class="pi pi-shopping-bag"></i></span>
+                  <span class="section-heading__icon">
+                    <i
+                      class="pi pi-shopping-bag"
+                      aria-hidden="true"
+                    ></i>
+                  </span>
+
                   <div>
-                    <span>Paso 2</span>
-                    <h2>Revisa tu pedido</h2>
-                    <p>Confirma productos, cantidades y observaciones.</p>
+                    <span>
+                      Paso 2
+                    </span>
+
+                    <h2>
+                      Revisa tu pedido
+                    </h2>
+
+                    <p>
+                      Confirma productos, cantidades y observaciones.
+                    </p>
                   </div>
                 </div>
 
                 <div class="review-delivery">
                   <div>
-                    <span>Modalidad</span>
-                    <strong>{{ selectedDeliveryLabel() }}</strong>
+                    <span>
+                      Modalidad
+                    </span>
+
+                    <strong>
+                      {{ selectedDeliveryLabel() }}
+                    </strong>
                   </div>
+
                   @if (isDelivery()) {
                     <div>
-                      <span>Referencia</span>
-                      <strong>{{
-                        deliveryLocation()?.reference || 'Sin referencia adicional'
-                      }}</strong>
+                      <span>
+                        Referencia
+                      </span>
+
+                      <strong>
+                        {{
+                          deliveryLocation()
+                            ?.reference ||
+                            'Sin referencia adicional'
+                        }}
+                      </strong>
                     </div>
                   }
                 </div>
 
                 <div class="review-items">
-                  @for (item of cart.items(); track item.id) {
+                  @for (
+                    item of cart.items();
+                    track item.id
+                  ) {
                     <article class="review-item">
                       <div class="review-item__media">
                         @if (
-                          item.promotion?.banner_image_url ||
-                          item.pizza?.image_url ||
-                          item.pizza_second?.image_url
+                          item.promotion
+                            ?.banner_image_url ||
+                          item.pizza
+                            ?.image_url ||
+                          item.pizza_second
+                            ?.image_url
                         ) {
-                          <img [src]="itemImage(item)" [alt]="itemTitle(item)" />
+                          <img
+                            [src]="itemImage(item)"
+                            [alt]="itemTitle(item)"
+                            loading="lazy"
+                            decoding="async"
+                          />
                         } @else {
-                          <i class="pi pi-image"></i>
+                          <i
+                            class="pi pi-image"
+                            aria-hidden="true"
+                          ></i>
                         }
                       </div>
 
                       <div class="review-item__content">
                         <div class="review-item__heading">
                           <div>
-                            <strong>{{ itemTitle(item) }}</strong>
-                            <span>{{ item.size?.name || 'Tamaño incluido' }}</span>
+                            <strong>
+                              {{ itemTitle(item) }}
+                            </strong>
+
+                            <span>
+                              {{
+                                item.size?.name ||
+                                  'Tamaño incluido'
+                              }}
+                            </span>
                           </div>
-                          <strong>{{
-                            item.subtotal | currency: 'USD' : 'symbol' : '1.2-2'
-                          }}</strong>
+
+                          <strong>
+                            {{
+                              item.subtotal
+                                | currency:
+                                    'USD':
+                                    'symbol':
+                                    '1.2-2'
+                            }}
+                          </strong>
                         </div>
 
-                        @if (item.selected_pizzas?.length) {
+                        @if (
+                          item.selected_pizzas
+                            ?.length
+                        ) {
                           <div class="review-item__details">
-                            @for (pizza of item.selected_pizzas; track pizza.id) {
-                              <span>{{ pizza.name }}</span>
+                            @for (
+                              pizza of item.selected_pizzas;
+                              track pizza.id
+                            ) {
+                              <span>
+                                {{ pizza.name }}
+                              </span>
                             }
                           </div>
                         }
 
-                        @if (item.extras?.length) {
+                        @if (
+                          item.extras?.length
+                        ) {
                           <div class="review-item__details">
-                            @for (extra of item.extras; track extra.id) {
-                              <span>{{ extra.action.name }} {{ extra.ingredient.name }}</span>
+                            @for (
+                              extra of item.extras;
+                              track extra.id
+                            ) {
+                              <span>
+                                {{ extra.action.name }}
+                                {{ extra.ingredient.name }}
+                              </span>
                             }
                           </div>
                         }
 
                         <div class="review-item__footer">
                           <span>
-                            {{ item.unit_price | currency: 'USD' : 'symbol' : '1.2-2' }} por unidad
+                            {{
+                              item.unit_price
+                                | currency:
+                                    'USD':
+                                    'symbol':
+                                    '1.2-2'
+                            }}
+                            por unidad
                           </span>
 
                           <p-inputNumber
                             [ngModel]="item.quantity"
-                            [ngModelOptions]="{ standalone: true }"
-                            (ngModelChange)="cart.setQuantity(item.id, $event ?? 1)"
+                            [ngModelOptions]="{
+                              standalone: true
+                            }"
+                            (ngModelChange)="
+                              cart.setQuantity(
+                                item.id,
+                                $event ?? 1
+                              )
+                            "
                             [min]="1"
                             [max]="10"
                             [allowEmpty]="false"
@@ -312,8 +693,19 @@
                   }
                 </div>
 
-                <label class="form-field form-field--notes">
-                  <span>Observaciones para el pedido <small>Opcional</small></span>
+                <label
+                  class="
+                    form-field
+                    form-field--notes
+                  "
+                >
+                  <span>
+                    Observaciones para el pedido
+                    <small>
+                      Opcional
+                    </small>
+                  </span>
+
                   <textarea
                     pTextarea
                     formControlName="notes"
@@ -321,20 +713,43 @@
                     maxlength="500"
                     placeholder="Ej. Sin cebolla, llamar al llegar o indicaciones generales"
                   ></textarea>
-                  <small>{{ form.controls.notes.value.length }}/500 caracteres</small>
+
+                  <small>
+                    {{
+                      form.controls
+                        .notes
+                        .value
+                        .length
+                    }}/500 caracteres
+                  </small>
                 </label>
 
                 @if (!meetsMinimumOrder()) {
                   <div class="minimum-alert">
-                    <i class="pi pi-exclamation-circle"></i>
+                    <i
+                      class="pi pi-exclamation-circle"
+                      aria-hidden="true"
+                    ></i>
+
                     <div>
-                      <strong>Pedido mínimo no alcanzado</strong>
+                      <strong>
+                        Pedido mínimo no alcanzado
+                      </strong>
+
                       <span>
                         Faltan
-                        {{ minimumOrder() - subtotal() | currency: 'USD' : 'symbol' : '1.2-2' }}
+                        {{
+                          minimumOrder() -
+                            subtotal()
+                            | currency:
+                                'USD':
+                                'symbol':
+                                '1.2-2'
+                        }}
                         para continuar.
                       </span>
                     </div>
+
                     <p-button
                       label="Agregar productos"
                       severity="secondary"
@@ -346,87 +761,226 @@
               </section>
             }
 
+            <!-- ============================================
+                 STEP 3 — PAYMENT
+                 ============================================ -->
+
             @if (activeStep() === 2) {
-              <section class="checkout-card checkout-section">
+              <section
+                class="
+                  checkout-card
+                  checkout-section
+                "
+              >
                 <div class="section-heading">
-                  <span class="section-heading__icon"><i class="pi pi-credit-card"></i></span>
+                  <span class="section-heading__icon">
+                    <i
+                      class="pi pi-credit-card"
+                      aria-hidden="true"
+                    ></i>
+                  </span>
+
                   <div>
-                    <span>Paso 3</span>
-                    <h2>Pago y confirmación</h2>
-                    <p>Selecciona cómo pagarás el pedido revisado.</p>
+                    <span>
+                      Paso 3
+                    </span>
+
+                    <h2>
+                      Pago y confirmación
+                    </h2>
+
+                    <p>
+                      Selecciona cómo pagarás el pedido revisado.
+                    </p>
                   </div>
                 </div>
 
-                <div class="option-grid option-grid--payment">
+                <div
+                  class="
+                    option-grid
+                    option-grid--payment
+                  "
+                >
                   <button
                     type="button"
                     class="payment-card"
-                    [class.payment-card--selected]="paymentMethod() === 'cash'"
-                    [class.payment-card--disabled]="!cashEnabled()"
-                    [disabled]="!cashEnabled()"
-                    (click)="selectPayment('cash')"
+                    [attr.aria-pressed]="
+                      paymentMethod() ===
+                      'cash'
+                    "
+                    [class.payment-card--selected]="
+                      paymentMethod() ===
+                      'cash'
+                    "
+                    [class.payment-card--disabled]="
+                      !cashEnabled()
+                    "
+                    [disabled]="
+                      !cashEnabled()
+                    "
+                    (click)="
+                      selectPayment(
+                        'cash'
+                      )
+                    "
                   >
-                    <span class="payment-card__icon"><i class="pi pi-money-bill"></i></span>
-                    <span><strong>Efectivo</strong><small>Paga al recibir o retirar.</small></span>
-                    <p-radioButton
-                      name="paymentMethod"
-                      value="cash"
-                      formControlName="payment_method"
-                      [disabled]="!cashEnabled()"
-                    />
+                    <span class="payment-card__icon">
+                      <i
+                        class="pi pi-money-bill"
+                        aria-hidden="true"
+                      ></i>
+                    </span>
+
+                    <span>
+                      <strong>
+                        Efectivo
+                      </strong>
+
+                      <small>
+                        Paga al recibir o retirar.
+                      </small>
+                    </span>
+
+                    <span
+                      class="payment-card__indicator"
+                      [class.payment-card__indicator--selected]="
+                        paymentMethod() ===
+                        'cash'
+                      "
+                      aria-hidden="true"
+                    >
+                      <span></span>
+                    </span>
                   </button>
 
                   <button
                     type="button"
                     class="payment-card"
-                    [class.payment-card--selected]="paymentMethod() === 'transfer'"
-                    [class.payment-card--disabled]="!transferEnabled()"
-                    [disabled]="!transferEnabled()"
-                    (click)="selectPayment('transfer')"
+                    [attr.aria-pressed]="
+                      paymentMethod() ===
+                      'transfer'
+                    "
+                    [class.payment-card--selected]="
+                      paymentMethod() ===
+                      'transfer'
+                    "
+                    [class.payment-card--disabled]="
+                      !transferEnabled()
+                    "
+                    [disabled]="
+                      !transferEnabled()
+                    "
+                    (click)="
+                      selectPayment(
+                        'transfer'
+                      )
+                    "
                   >
-                    <span class="payment-card__icon"><i class="pi pi-building-columns"></i></span>
+                    <span class="payment-card__icon">
+                      <i
+                        class="pi pi-building-columns"
+                        aria-hidden="true"
+                      ></i>
+                    </span>
+
+                    <span>
+                      <strong>
+                        Transferencia
+                      </strong>
+
+                      <small>
+                        Recibirás los datos bancarios.
+                      </small>
+                    </span>
+
                     <span
-                      ><strong>Transferencia</strong
-                      ><small>Recibirás los datos bancarios.</small></span
+                      class="payment-card__indicator"
+                      [class.payment-card__indicator--selected]="
+                        paymentMethod() ===
+                        'transfer'
+                      "
+                      aria-hidden="true"
                     >
-                    <p-radioButton
-                      name="paymentMethod"
-                      value="transfer"
-                      formControlName="payment_method"
-                      [disabled]="!transferEnabled()"
-                    />
+                      <span></span>
+                    </span>
                   </button>
 
                   <button
                     type="button"
                     class="payment-card"
-                    [class.payment-card--selected]="paymentMethod() === 'card'"
-                    [class.payment-card--disabled]="!paypalEnabled()"
-                    [disabled]="!paypalEnabled()"
-                    (click)="selectPayment('card')"
+                    [attr.aria-pressed]="
+                      paymentMethod() ===
+                      'card'
+                    "
+                    [class.payment-card--selected]="
+                      paymentMethod() ===
+                      'card'
+                    "
+                    [class.payment-card--disabled]="
+                      !paypalEnabled()
+                    "
+                    [disabled]="
+                      !paypalEnabled()
+                    "
+                    (click)="
+                      selectPayment(
+                        'card'
+                      )
+                    "
                   >
-                    <span class="payment-card__icon"><i class="pi pi-credit-card"></i></span>
+                    <span class="payment-card__icon">
+                      <i
+                        class="pi pi-credit-card"
+                        aria-hidden="true"
+                      ></i>
+                    </span>
+
+                    <span>
+                      <strong>
+                        Tarjeta o PayPal
+                      </strong>
+
+                      <small>
+                        Pago cifrado procesado por PayPal.
+                      </small>
+                    </span>
+
                     <span
-                      ><strong>Tarjeta o PayPal</strong
-                      ><small>Pago cifrado procesado por PayPal.</small></span
+                      class="payment-card__indicator"
+                      [class.payment-card__indicator--selected]="
+                        paymentMethod() ===
+                        'card'
+                      "
+                      aria-hidden="true"
                     >
-                    <p-radioButton
-                      name="paymentMethod"
-                      value="card"
-                      formControlName="payment_method"
-                      [disabled]="!paypalEnabled()"
-                    />
+                      <span></span>
+                    </span>
                   </button>
                 </div>
 
-                @if (isTransfer() && transferConfig(); as transfer) {
+                @if (
+                  isTransfer() &&
+                  transferConfig();
+                  as transfer
+                ) {
                   <div class="payment-information">
-                    <span class="payment-information__icon"><i class="pi pi-info-circle"></i></span>
+                    <span class="payment-information__icon">
+                      <i
+                        class="pi pi-info-circle"
+                        aria-hidden="true"
+                      ></i>
+                    </span>
+
                     <div>
-                      <strong>Transferencia bancaria</strong>
+                      <strong>
+                        Transferencia bancaria
+                      </strong>
+
                       <p>
-                        Al confirmar verás los datos de {{ transfer.bank_name }}. Después de
-                        realizar la transferencia podrás cargar el comprobante directamente desde el
+                        Al confirmar verás los datos de
+                        {{ transfer.bank_name }}.
+                        Después de realizar la transferencia podrás
+                        cargar el comprobante directamente desde el
                         detalle de tu pedido.
                       </p>
                     </div>
@@ -435,27 +989,54 @@
 
                 @if (!auth.isAuthenticated()) {
                   <div class="login-notice">
-                    <i class="pi pi-user"></i>
+                    <i
+                      class="pi pi-user"
+                      aria-hidden="true"
+                    ></i>
+
                     <div>
-                      <strong>Inicia sesión para confirmar</strong>
-                      <span>Tu pedido quedará asociado a tu cuenta y podrás seguir su estado.</span>
+                      <strong>
+                        Inicia sesión para confirmar
+                      </strong>
+
+                      <span>
+                        Tu pedido quedará asociado a tu cuenta
+                        y podrás seguir su estado.
+                      </span>
                     </div>
-                    <p-button label="Iniciar sesión" icon="pi pi-sign-in" (onClick)="openLogin()" />
+
+                    <p-button
+                      label="Iniciar sesión"
+                      icon="pi pi-sign-in"
+                      (onClick)="openLogin()"
+                    />
                   </div>
                 }
 
                 @if (isCard()) {
                   <div class="paypal-final-step">
                     <div class="paypal-final-step__heading">
-                      <i class="pi pi-shield"></i>
+                      <i
+                        class="pi pi-shield"
+                        aria-hidden="true"
+                      ></i>
+
                       <div>
-                        <strong
-                          >Pago seguro por
-                          {{ total() | currency: 'USD' : 'symbol' : '1.2-2' }}</strong
-                        >
-                        <span
-                          >PayPal permite pagar con una cuenta o con una tarjeta compatible.</span
-                        >
+                        <strong>
+                          Pago seguro por
+                          {{
+                            total()
+                              | currency:
+                                  'USD':
+                                  'symbol':
+                                  '1.2-2'
+                          }}
+                        </strong>
+
+                        <span>
+                          PayPal permite pagar con una cuenta
+                          o con una tarjeta compatible.
+                        </span>
                       </div>
                     </div>
 
@@ -466,28 +1047,55 @@
                         class="paypal-login-button"
                         (onClick)="openLogin()"
                       />
-                    } @else if (paypalConfig(); as paypal) {
-                      @defer (when isCard()) {
+                    } @else if (
+                      paypalConfig();
+                      as paypal
+                    ) {
+                      @defer (
+                        when isCard()
+                      ) {
                         <app-paypal-button
                           [config]="paypal"
                           [payload]="paypalPayload()"
-                          [cartFingerprint]="paypalCartFingerprint()"
-                          [disabled]="!canProceed()"
-                          (paymentCompleted)="handlePayPalCompleted($event)"
+                          [cartFingerprint]="
+                            paypalCartFingerprint()
+                          "
+                          [disabled]="
+                            !canProceed()
+                          "
+                          (paymentCompleted)="
+                            handlePayPalCompleted(
+                              $event
+                            )
+                          "
                         />
                       } @placeholder {
                         <div
-                          class="checkout-deferred-placeholder checkout-deferred-placeholder--paypal"
+                          class="
+                            checkout-deferred-placeholder
+                            checkout-deferred-placeholder--paypal
+                          "
                           aria-hidden="true"
                         >
-                          <p-skeleton width="100%" height="3.5rem" borderRadius="0.75rem" />
+                          <p-skeleton
+                            width="100%"
+                            height="3.5rem"
+                            borderRadius="0.75rem"
+                          />
                         </div>
                       } @loading {
                         <div
-                          class="checkout-deferred-placeholder checkout-deferred-placeholder--paypal"
+                          class="
+                            checkout-deferred-placeholder
+                            checkout-deferred-placeholder--paypal
+                          "
                           aria-label="Cargando PayPal"
                         >
-                          <p-skeleton width="100%" height="3.5rem" borderRadius="0.75rem" />
+                          <p-skeleton
+                            width="100%"
+                            height="3.5rem"
+                            borderRadius="0.75rem"
+                          />
                         </div>
                       }
                     }
@@ -496,13 +1104,20 @@
               </section>
             }
 
+            <!-- ============================================
+                 NAVIGATION
+                 ============================================ -->
+
             <footer class="checkout-navigation">
               <p-button
                 label="Atrás"
                 icon="pi pi-arrow-left"
                 severity="secondary"
                 [outlined]="true"
-                [disabled]="activeStep() === 0 || placing()"
+                [disabled]="
+                  activeStep() === 0 ||
+                  placing()
+                "
                 (onClick)="prev()"
               />
 
@@ -511,7 +1126,10 @@
                   label="Continuar"
                   icon="pi pi-arrow-right"
                   iconPos="right"
-                  [disabled]="!canProceed() || placing()"
+                  [disabled]="
+                    !canProceed() ||
+                    placing()
+                  "
                   (onClick)="next()"
                 />
               } @else if (!isCard()) {
@@ -519,7 +1137,9 @@
                   label="Confirmar pedido"
                   icon="pi pi-check"
                   [loading]="placing()"
-                  [disabled]="!canProceed()"
+                  [disabled]="
+                    !canProceed()
+                  "
                   (onClick)="confirm()"
                 />
               }
@@ -527,66 +1147,200 @@
           </form>
         </main>
 
-        <aside class="checkout-summary checkout-card">
+        <!-- =================================================
+             SUMMARY
+             ================================================= -->
+
+        <aside
+          class="
+            checkout-summary
+            checkout-card
+          "
+        >
           <div class="checkout-summary__heading">
             <div>
-              <span>Resumen</span>
-              <h2>Tu pedido</h2>
+              <span>
+                Resumen
+              </span>
+
+              <h2>
+                Tu pedido
+              </h2>
             </div>
+
             <p-tag
-              [value]="cart.totalUnits() + ' productos'"
+              [value]="
+                cart.totalUnits() +
+                ' productos'
+              "
               severity="secondary"
               [rounded]="true"
             />
           </div>
 
           <div class="checkout-summary__products">
-            @for (item of cart.items(); track item.id) {
+            @for (
+              item of cart.items();
+              track item.id
+            ) {
               <div class="summary-product">
-                <span class="summary-product__quantity">{{ item.quantity }}</span>
+                <span class="summary-product__quantity">
+                  {{ item.quantity }}
+                </span>
+
                 <div>
-                  <strong>{{ itemTitle(item) }}</strong>
-                  <small>{{ item.size?.name || 'Combo' }}</small>
+                  <strong>
+                    {{ itemTitle(item) }}
+                  </strong>
+
+                  <small>
+                    {{
+                      item.size?.name ||
+                        'Combo'
+                    }}
+                  </small>
                 </div>
-                <span>{{ item.subtotal | currency: 'USD' : 'symbol' : '1.2-2' }}</span>
+
+                <span>
+                  {{
+                    item.subtotal
+                      | currency:
+                          'USD':
+                          'symbol':
+                          '1.2-2'
+                  }}
+                </span>
               </div>
             }
           </div>
 
           <div class="checkout-summary__delivery">
             <div>
-              <i class="pi" [class.pi-shop]="!isDelivery()" [class.pi-truck]="isDelivery()"></i>
-              <span>{{ selectedDeliveryLabel() }}</span>
+              <i
+                class="pi"
+                [class.pi-shop]="
+                  !isDelivery()
+                "
+                [class.pi-truck]="
+                  isDelivery()
+                "
+                aria-hidden="true"
+              ></i>
+
+              <span>
+                {{ selectedDeliveryLabel() }}
+              </span>
             </div>
-            <strong>{{ deliveryFee() | currency: 'USD' : 'symbol' : '1.2-2' }}</strong>
+
+            <strong>
+              {{
+                deliveryFee()
+                  | currency:
+                      'USD':
+                      'symbol':
+                      '1.2-2'
+              }}
+            </strong>
           </div>
 
           <div class="checkout-summary__totals">
             <div>
-              <span>Subtotal</span
-              ><strong>{{ subtotal() | currency: 'USD' : 'symbol' : '1.2-2' }}</strong>
+              <span>
+                Subtotal
+              </span>
+
+              <strong>
+                {{
+                  subtotal()
+                    | currency:
+                        'USD':
+                        'symbol':
+                        '1.2-2'
+                }}
+              </strong>
             </div>
+
             <div>
-              <span>Envío</span
-              ><strong>{{ deliveryFee() | currency: 'USD' : 'symbol' : '1.2-2' }}</strong>
+              <span>
+                Envío
+              </span>
+
+              <strong>
+                {{
+                  deliveryFee()
+                    | currency:
+                        'USD':
+                        'symbol':
+                        '1.2-2'
+                }}
+              </strong>
             </div>
+
             <div class="checkout-summary__total">
-              <span>Total</span
-              ><strong>{{ total() | currency: 'USD' : 'symbol' : '1.2-2' }}</strong>
+              <span>
+                Total
+              </span>
+
+              <strong>
+                {{
+                  total()
+                    | currency:
+                        'USD':
+                        'symbol':
+                        '1.2-2'
+                }}
+              </strong>
             </div>
           </div>
 
           <div class="checkout-summary__facts">
-            <span><i class="pi pi-clock"></i> {{ store()?.estimated_minutes }} min aprox.</span>
-            <span
-              ><i class="pi pi-wallet"></i> Pedido mínimo
-              {{ minimumOrder() | currency: 'USD' : 'symbol' : '1.2-2' }}</span
-            >
-            <span><i class="pi pi-shield"></i> Total validado por el servidor</span>
+            <span>
+              <i
+                class="pi pi-clock"
+                aria-hidden="true"
+              ></i>
+
+              {{ store()?.estimated_minutes }}
+              min aprox.
+            </span>
+
+            <span>
+              <i
+                class="pi pi-wallet"
+                aria-hidden="true"
+              ></i>
+
+              Pedido mínimo
+              {{
+                minimumOrder()
+                  | currency:
+                      'USD':
+                      'symbol':
+                      '1.2-2'
+              }}
+            </span>
+
+            <span>
+              <i
+                class="pi pi-shield"
+                aria-hidden="true"
+              ></i>
+
+              Total validado por el servidor
+            </span>
           </div>
 
-          <button type="button" class="continue-shopping" (click)="continueShopping()">
-            <i class="pi pi-plus"></i> Agregar más productos
+          <button
+            type="button"
+            class="continue-shopping"
+            (click)="continueShopping()"
+          >
+            <i
+              class="pi pi-plus"
+              aria-hidden="true"
+            ></i>
+
+            Agregar más productos
           </button>
         </aside>
       </div>

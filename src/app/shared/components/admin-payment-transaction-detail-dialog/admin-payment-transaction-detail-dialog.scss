@@ -1,0 +1,259 @@
+:host {
+  display: contents;
+}
+.transaction-detail {
+  display: grid;
+  gap: 1rem;
+}
+.transaction-detail__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.transaction-method {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  min-width: 0;
+}
+.transaction-method__icon {
+  display: grid;
+  width: 2.4rem;
+  min-width: 2.4rem;
+  height: 2.4rem;
+  place-items: center;
+  border: 1px solid var(--cheof-card-border);
+  border-radius: 0.75rem;
+  background: var(--cheof-muted-background);
+  color: var(--cheof-text-secondary);
+}
+.transaction-method--cash .transaction-method__icon {
+  color: var(--cheof-success);
+}
+.transaction-method--transfer .transaction-method__icon {
+  color: var(--cheof-info);
+}
+.transaction-method > div {
+  display: grid;
+  gap: 0.12rem;
+}
+.transaction-method strong {
+  color: var(--cheof-text);
+  font-size: 0.8rem;
+  font-weight: 740;
+}
+.transaction-method small {
+  color: var(--cheof-text-secondary);
+  font-size: 0.63rem;
+}
+.transaction-detail__amount {
+  display: grid;
+  justify-items: center;
+  gap: 0.1rem;
+  padding: 1rem;
+  border: 1px solid var(--cheof-card-border);
+  border-radius: var(--cheof-radius-lg);
+  background: var(--cheof-card-background-muted);
+  text-align: center;
+}
+.transaction-detail__amount span,
+.transaction-detail__amount small {
+  color: var(--cheof-text-secondary);
+  font-size: 0.62rem;
+}
+.transaction-detail__amount strong {
+  color: var(--p-primary-color);
+  font-size: 1.55rem;
+  font-weight: 820;
+  letter-spacing: -0.035em;
+  font-variant-numeric: tabular-nums;
+}
+.transaction-detail__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.65rem;
+}
+.transaction-detail-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  min-width: 0;
+  padding: 0.75rem;
+  border: 1px solid var(--cheof-card-border);
+  border-radius: var(--cheof-radius-md);
+  background: var(--cheof-card-background);
+}
+.transaction-detail-card__icon {
+  display: grid;
+  width: 2rem;
+  min-width: 2rem;
+  height: 2rem;
+  place-items: center;
+  border-radius: 0.6rem;
+  background: var(--cheof-muted-background);
+  color: var(--p-primary-color);
+}
+.transaction-detail-card > div {
+  display: grid;
+  min-width: 0;
+  gap: 0.12rem;
+}
+.transaction-detail-card span {
+  color: var(--cheof-text-secondary);
+  font-size: 0.59rem;
+}
+.transaction-detail-card strong,
+.transaction-detail-card__link {
+  overflow: hidden;
+  color: var(--cheof-text);
+  font-size: 0.68rem;
+  font-weight: 700;
+  line-height: 1.4;
+  text-overflow: ellipsis;
+}
+.transaction-detail-card__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  color: var(--p-primary-color);
+  text-decoration: none;
+}
+.transaction-detail-card__link:focus-visible {
+  outline: 2px solid var(--p-primary-color);
+  outline-offset: 2px;
+}
+.transaction-detail__technical {
+  overflow: hidden;
+  border: 1px solid var(--cheof-card-border);
+  border-radius: var(--cheof-radius-lg);
+  background: var(--cheof-card-background);
+}
+.transaction-detail__technical-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.75rem 0.85rem;
+  border-bottom: 1px solid var(--cheof-card-border);
+  background: var(--cheof-card-background-muted);
+}
+.transaction-detail__technical-header > div {
+  display: grid;
+  gap: 0.1rem;
+}
+.transaction-detail__technical-header span,
+.transaction-technical-row span {
+  color: var(--cheof-text-secondary);
+  font-size: 0.58rem;
+}
+.transaction-detail__technical-header strong {
+  color: var(--cheof-text);
+  font-size: 0.7rem;
+  font-weight: 720;
+}
+.transaction-detail__technical-header > i {
+  color: var(--p-primary-color);
+}
+.transaction-technical-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.7rem 0.85rem;
+  border-bottom: 1px solid var(--cheof-card-border);
+}
+.transaction-technical-row:last-child {
+  border-bottom: 0;
+}
+.transaction-technical-row > div {
+  display: grid;
+  min-width: 0;
+  gap: 0.12rem;
+}
+.transaction-technical-row code {
+  overflow-wrap: anywhere;
+  color: var(--cheof-text);
+  font-size: 0.62rem;
+}
+.transaction-technical-row strong {
+  color: var(--cheof-text);
+  font-size: 0.66rem;
+}
+.transaction-copy-button {
+  display: grid;
+  width: 2rem;
+  min-width: 2rem;
+  height: 2rem;
+  place-items: center;
+  border: 1px solid var(--cheof-card-border);
+  border-radius: 0.55rem;
+  background: var(--cheof-muted-background);
+  color: var(--cheof-text-secondary);
+  cursor: pointer;
+}
+.transaction-copy-button:hover:not(:disabled) {
+  color: var(--p-primary-color);
+  border-color: color-mix(in srgb, var(--p-primary-color) 30%, var(--cheof-card-border));
+}
+.transaction-copy-button:focus-visible {
+  outline: 2px solid var(--p-primary-color);
+  outline-offset: 2px;
+}
+.transaction-copy-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+.transaction-technical-row__verified {
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  place-items: center;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--cheof-success) 12%, transparent);
+  color: var(--cheof-success) !important;
+}
+.transaction-technical-row--failure {
+  background: color-mix(in srgb, var(--cheof-danger) 5%, var(--cheof-card-background));
+}
+.transaction-technical-row--failure code {
+  color: var(--cheof-danger);
+}
+.transaction-detail__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.55rem;
+}
+:host ::ng-deep .transaction-detail-dialog {
+  border-radius: var(--cheof-radius-xl);
+}
+:host ::ng-deep .transaction-detail-dialog .p-dialog-header,
+:host ::ng-deep .transaction-detail-dialog .p-dialog-content,
+:host ::ng-deep .transaction-detail-dialog .p-dialog-footer {
+  background: var(--cheof-card-background);
+  color: var(--cheof-text);
+}
+@media (max-width: 40rem) {
+  .transaction-detail__header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .transaction-detail__grid {
+    grid-template-columns: 1fr;
+  }
+  .transaction-detail__actions {
+    flex-direction: column-reverse;
+  }
+  :host ::ng-deep .transaction-detail__actions .p-button {
+    width: 100%;
+    justify-content: center;
+  }
+}
+@media (max-width: 30rem) {
+  .transaction-detail__amount strong {
+    font-size: 1.3rem;
+  }
+  .transaction-technical-row {
+    align-items: flex-start;
+  }
+}

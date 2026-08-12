@@ -1,0 +1,153 @@
+<td>
+  <div class="user-cell">
+    <span class="user-avatar">
+      {{ initials(user()) }}
+    </span>
+
+    <div class="user-cell__content">
+      <strong>
+        {{ user().full_name }}
+      </strong>
+
+      <span>
+        ID #{{ user().id }}
+      </span>
+    </div>
+  </div>
+</td>
+
+<td>
+  <div class="contact-cell">
+    <span>
+      <i
+        class="pi pi-envelope"
+        aria-hidden="true"
+      ></i>
+
+      {{ user().email }}
+    </span>
+
+    <span>
+      <i
+        class="pi pi-phone"
+        aria-hidden="true"
+      ></i>
+
+      {{ user().phone }}
+    </span>
+  </div>
+</td>
+
+<td>
+  <div class="role-cell">
+    <p-tag
+      [value]="roleLabel(user().role.name)"
+      [severity]="roleSeverity(user().role.name)"
+      [rounded]="true"
+    />
+
+    <p-select
+      [options]="roleOptions()"
+      optionLabel="label"
+      optionValue="value"
+      [ngModel]="user().role.name"
+      (ngModelChange)="onRoleChange($event)"
+      [disabled]="roleUpdating() || actionsDisabled()"
+      [loading]="roleUpdating()"
+      appendTo="body"
+      styleClass="role-select"
+      ariaLabel="Cambiar rol"
+    />
+  </div>
+</td>
+
+<td>
+  <div class="status-cell">
+    <p-tag
+      [value]="statusLabel(user())"
+      [severity]="statusSeverity(user())"
+      [rounded]="true"
+    />
+
+    <button
+      type="button"
+      class="status-action"
+      [class.status-action--activate]="!user().is_active"
+      [class.status-action--block]="user().is_active"
+      [disabled]="statusUpdating() || actionsDisabled()"
+      (click)="onStatusChange()"
+    >
+      @if (statusUpdating()) {
+        <i
+          class="pi pi-spin pi-spinner"
+          aria-hidden="true"
+        ></i>
+      } @else {
+        <i
+          class="pi"
+          [class.pi-check-circle]="!user().is_active"
+          [class.pi-ban]="user().is_active"
+          aria-hidden="true"
+        ></i>
+      }
+
+      {{
+        user().is_active
+          ? 'Bloquear'
+          : 'Activar'
+      }}
+    </button>
+  </div>
+</td>
+
+<td>
+  <div class="usage-cell">
+    <span>
+      <strong>
+        {{ user().usage.orders }}
+      </strong>
+      pedidos
+    </span>
+
+    <span>
+      <strong>
+        {{ user().usage.payments }}
+      </strong>
+      pagos
+    </span>
+
+    <span>
+      <strong>
+        {{ user().usage.carts }}
+      </strong>
+      carritos
+    </span>
+  </div>
+</td>
+
+<td>
+  <div class="date-cell">
+    <strong>
+      {{ user().created_at | date: 'dd MMM yyyy' }}
+    </strong>
+
+    <span>
+      {{ user().created_at | date: 'HH:mm' }}
+    </span>
+  </div>
+</td>
+
+<td class="actions-column">
+  <div class="row-actions">
+    <p-button
+      icon="pi pi-pencil"
+      severity="secondary"
+      [outlined]="true"
+      [rounded]="true"
+      [disabled]="actionsDisabled()"
+      pTooltip="Editar usuario"
+      tooltipPosition="left"
+      (onClick)="onEdit()"
+    />
+  </div>
+</td>

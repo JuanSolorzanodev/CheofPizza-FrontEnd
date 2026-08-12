@@ -1,0 +1,33 @@
+<article [class]="cardClass()">
+  <header class="mobile-order__header">
+    <div class="mobile-order__status">
+      <span class="mobile-order__status-icon" [attr.data-status]="order().status">
+        <i [class]="statusIcon(order().status)" aria-hidden="true"></i>
+      </span>
+      <div><strong>{{ statusOperationalLabel(order().status) }}</strong><span>{{ formatDate(order().ordered_at) }}</span></div>
+    </div>
+    <p-tag [value]="prettyStatus(order().status)" [severity]="statusSeverity(order().status)" [rounded]="true" />
+  </header>
+  <div class="mobile-order__identity">
+    <span>Pedido</span><h3>#{{ order().order_number }}</h3>
+    <div class="mobile-order__customer">
+      <i class="pi pi-user" aria-hidden="true"></i>
+      <div><strong>{{ customerName(order()) }}</strong><span>{{ customerPhone(order()) }}</span></div>
+    </div>
+  </div>
+  <div class="mobile-order__preparation">
+    <span><i class="pi pi-list-check" aria-hidden="true"></i>Preparación</span>
+    <p>{{ order().kitchen_summary || 'Sin resumen disponible' }}</p>
+  </div>
+  <div class="mobile-order__logistics">
+    <div><i [class]="deliveryIcon(order())" aria-hidden="true"></i><span>{{ prettyDeliveryType(order().delivery_type) }}</span></div>
+    <div><i [class]="paymentIcon(order())" aria-hidden="true"></i><span>{{ prettyPaymentMethod(order().payment_method) }}</span></div>
+    <strong>{{ order().total | currency: 'USD' : 'symbol' : '1.2-2' }}</strong>
+  </div>
+  @if (isTransfer(order())) {
+    <div class="mobile-transfer-notice"><i class="pi pi-receipt" aria-hidden="true"></i>Revisar comprobante en el detalle</div>
+  }
+  <a class="mobile-open-order" [routerLink]="['/operator/orders', order().id]">
+    <span>Abrir pedido</span><i class="pi pi-arrow-right" aria-hidden="true"></i>
+  </a>
+</article>

@@ -1,0 +1,66 @@
+<td>
+  <div [class]="methodClass(transaction().method)">
+    <span class="transaction-method__icon">
+      <i [class]="methodIcon(transaction().method)" aria-hidden="true"></i>
+    </span>
+    <div>
+      <strong>{{ methodLabel(transaction().method) }}</strong>
+      <small>{{ sourceLabel(transaction().source) }}</small>
+    </div>
+  </div>
+</td>
+<td>
+  <div class="transaction-identity">
+    <div class="transaction-identity__primary">
+      <strong
+        [pTooltip]="transaction().order_number || 'Sin pedido relacionado'"
+        tooltipPosition="top"
+      >
+        {{ transaction().order_number || 'Sin pedido' }}
+      </strong>
+      <span>{{ transaction().customer.name || 'Cliente sin nombre' }}</span>
+    </div>
+    <div class="transaction-identity__secondary">
+      <span>{{ customerContact(transaction()) }}</span>
+      <span class="transaction-reference-inline">
+        {{ transaction().reference || transaction().transaction_key }}
+      </span>
+    </div>
+  </div>
+</td>
+<td>
+  <p-tag
+    [value]="statusLabel(transaction().status)"
+    [severity]="statusSeverity(transaction().status)"
+    [icon]="statusIcon(transaction().status)"
+  />
+</td>
+<td>
+  <div class="transaction-effective-date">
+    @if (transaction().effective_at) {
+      <strong>{{ transaction().effective_at | date: 'dd/MM/yyyy' }}</strong>
+      <small>{{ transaction().effective_at | date: 'HH:mm' }}</small>
+    } @else {
+      <strong>Sin fecha</strong>
+      <small>No disponible</small>
+    }
+  </div>
+</td>
+<td class="transactions-column-amount">
+  <div class="transaction-amount">
+    <strong>{{ transaction().amount | currency: transaction().currency }}</strong>
+    <small>{{ transaction().currency }}</small>
+  </div>
+</td>
+<td class="transactions-column-action">
+  <button
+    type="button"
+    class="transaction-view-button"
+    aria-label="Ver detalle de la transacción"
+    pTooltip="Ver detalle"
+    tooltipPosition="left"
+    (click)="view.emit(transaction())"
+  >
+    <i class="pi pi-eye" aria-hidden="true"></i>
+  </button>
+</td>

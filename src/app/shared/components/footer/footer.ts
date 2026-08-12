@@ -3,9 +3,18 @@ import {
   Component,
   inject,
 } from '@angular/core';
-import { Router } from '@angular/router';
 
-import { ScrollService } from '../../ui/scroll.service';
+import {
+  DOCUMENT,
+} from '@angular/common';
+
+import {
+  Router,
+} from '@angular/router';
+
+import {
+  ScrollService,
+} from '../../ui/scroll.service';
 
 @Component({
   selector: 'app-footer',
@@ -23,13 +32,19 @@ export class FooterComponent {
   private readonly scrollService =
     inject(ScrollService);
 
-  private readonly headerOffset = 82;
+  private readonly document =
+    inject(DOCUMENT);
+
+  private readonly headerOffset =
+    82;
 
   readonly currentYear =
     new Date().getFullYear();
 
   goToHome(): void {
-    void this.router.navigateByUrl('/');
+    void this.router.navigateByUrl(
+      '/',
+    );
   }
 
   goToSencillas(): void {
@@ -51,10 +66,12 @@ export class FooterComponent {
   }
 
   scrollToTop(): void {
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth',
-    });
+    this.document
+      .defaultView
+      ?.scrollTo({
+        top: 0,
+        behavior: 'smooth',
+      });
   }
 
   private navigateHomeAndScroll(
@@ -62,8 +79,12 @@ export class FooterComponent {
   ): void {
     const isHome =
       this.router.url === '/' ||
-      this.router.url.startsWith('/?') ||
-      this.router.url.startsWith('/#');
+      this.router.url.startsWith(
+        '/?',
+      ) ||
+      this.router.url.startsWith(
+        '/#',
+      );
 
     if (isHome) {
       this.scrollService.scrollToId(
@@ -81,12 +102,17 @@ export class FooterComponent {
           return;
         }
 
-        window.setTimeout(() => {
-          this.scrollService.scrollToId(
-            elementId,
-            this.headerOffset,
+        this.document
+          .defaultView
+          ?.setTimeout(
+            () => {
+              this.scrollService.scrollToId(
+                elementId,
+                this.headerOffset,
+              );
+            },
+            120,
           );
-        }, 120);
       });
   }
 }

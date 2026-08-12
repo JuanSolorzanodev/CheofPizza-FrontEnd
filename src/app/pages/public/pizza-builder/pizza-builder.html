@@ -25,23 +25,14 @@
           (onClick)="goBack()"
         />
 
-        <p-button
-          label="Reintentar"
-          icon="pi pi-refresh"
-          (onClick)="retryLoad()"
-        />
+        <p-button label="Reintentar" icon="pi pi-refresh" (onClick)="retryLoad()" />
       </div>
     </article>
   } @else if (pizzaA()) {
     @let pizza = pizzaA()!;
 
     <header class="builder-header">
-      <button
-        type="button"
-        class="builder-back"
-        aria-label="Volver al menú"
-        (click)="goBack()"
-      >
+      <button type="button" class="builder-back" aria-label="Volver al menú" (click)="goBack()">
         <i class="pi pi-arrow-left" aria-hidden="true"></i>
       </button>
 
@@ -49,8 +40,8 @@
         <span class="builder-eyebrow">Personalización</span>
         <h1>Personaliza tu pizza</h1>
         <p>
-          Elige tamaño, ingredientes extra y cantidad.
-          El precio de tu pedido se valida en tiempo real.
+          Elige tamaño, ingredientes extra y cantidad. El precio de tu pedido se valida en tiempo
+          real.
         </p>
       </div>
     </header>
@@ -86,8 +77,8 @@
             <p>{{ pizza.description }}</p>
           } @else {
             <p>
-              Ajusta el tamaño, los ingredientes y la cantidad
-              para dejar tu pedido exactamente como lo quieres.
+              Ajusta el tamaño, los ingredientes y la cantidad para dejar tu pedido exactamente como
+              lo quieres.
             </p>
           }
 
@@ -133,8 +124,8 @@
             <span class="config-kicker">{{ pizza.category.name }}</span>
             <h2>{{ pizza.name }}</h2>
             <p class="intro-text">
-              Arma tu pedido como más te guste.
-              Nosotros calculamos el precio actualizado en cada cambio.
+              Arma tu pedido como más te guste. Nosotros calculamos el precio actualizado en cada
+              cambio.
             </p>
           </div>
 
@@ -249,6 +240,7 @@
             </div>
 
             <p-select
+              ariaLabel="Segunda pizza"
               [options]="pizzaOptions()"
               [ngModel]="secondPizzaId()"
               (ngModelChange)="setSecondPizzaId($event)"
@@ -296,7 +288,11 @@
                   <p-chip
                     [label]="ingredient"
                     [removable]="!isBaseIngredientLocked(ingredient)"
-                    [styleClass]="isBaseIngredientLocked(ingredient) ? 'ingredient-chip is-locked' : 'ingredient-chip'"
+                    [styleClass]="
+                      isBaseIngredientLocked(ingredient)
+                        ? 'ingredient-chip is-locked'
+                        : 'ingredient-chip'
+                    "
                     (onRemove)="removeBaseIngredientA(ingredient)"
                   />
                 }
@@ -327,7 +323,11 @@
                     <p-chip
                       [label]="ingredient"
                       [removable]="!isBaseIngredientLocked(ingredient)"
-                      [styleClass]="isBaseIngredientLocked(ingredient) ? 'ingredient-chip is-locked' : 'ingredient-chip'"
+                      [styleClass]="
+                        isBaseIngredientLocked(ingredient)
+                          ? 'ingredient-chip is-locked'
+                          : 'ingredient-chip'
+                      "
                       (onRemove)="removeBaseIngredientA(ingredient)"
                     />
                   }
@@ -358,7 +358,11 @@
                       <p-chip
                         [label]="ingredient"
                         [removable]="!isBaseIngredientLocked(ingredient)"
-                        [styleClass]="isBaseIngredientLocked(ingredient) ? 'ingredient-chip is-locked' : 'ingredient-chip'"
+                        [styleClass]="
+                          isBaseIngredientLocked(ingredient)
+                            ? 'ingredient-chip is-locked'
+                            : 'ingredient-chip'
+                        "
                         (onRemove)="removeBaseIngredientB(ingredient)"
                       />
                     }
@@ -400,9 +404,7 @@
                     Selecciona primero un tamaño para ver el precio de los extras.
                   </div>
                 } @else if (extrasCatalog().length === 0) {
-                  <div class="inline-notice">
-                    No hay ingredientes extra disponibles.
-                  </div>
+                  <div class="inline-notice">No hay ingredientes extra disponibles.</div>
                 } @else {
                   <div class="extras-grid">
                     @for (extra of extrasCatalog(); track extra.id) {

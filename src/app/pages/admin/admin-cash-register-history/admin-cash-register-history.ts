@@ -53,18 +53,6 @@ import {
 } from 'primeng/skeleton';
 
 import {
-  TableModule,
-} from 'primeng/table';
-
-import {
-  TagModule,
-} from 'primeng/tag';
-
-import {
-  TooltipModule,
-} from 'primeng/tooltip';
-
-import {
   AdminCashRegisterApiService,
 } from '../../../core/api/admin/cash-register/admin-cash-register-api.service';
 
@@ -74,20 +62,14 @@ import {
   CashSessionStatus,
 } from '../../../core/api/admin/cash-register/admin-cash-register.models';
 
+import {
+  AdminCashRegisterHistoryTableComponent,
+} from '../../../shared/components/admin-cash-register-history-table/admin-cash-register-history-table';
+
 interface StatusOption {
   label: string;
   value: CashSessionStatus | null;
 }
-
-type TagSeverity =
-  | 'success'
-  | 'secondary'
-  | 'info'
-  | 'warn'
-  | 'danger'
-  | 'contrast'
-  | null
-  | undefined;
 
 @Component({
   selector:
@@ -105,9 +87,7 @@ type TagSeverity =
     PaginatorModule,
     SelectModule,
     SkeletonModule,
-    TableModule,
-    TagModule,
-    TooltipModule,
+    AdminCashRegisterHistoryTableComponent,
   ],
 
   templateUrl:
@@ -364,37 +344,6 @@ export class AdminCashRegisterHistory {
     );
 
     this.load();
-  }
-
-  statusLabel(
-    status: CashSessionStatus,
-  ): string {
-    return status === 'open'
-      ? 'Abierta'
-      : 'Cerrada';
-  }
-
-  statusSeverity(
-    status: CashSessionStatus,
-  ): TagSeverity {
-    return status === 'open'
-      ? 'success'
-      : 'secondary';
-  }
-
-  differenceClass(
-    difference: number | null,
-  ): string {
-    if (
-      difference === null
-      || difference === 0
-    ) {
-      return 'cash-history-difference--neutral';
-    }
-
-    return difference > 0
-      ? 'cash-history-difference--positive'
-      : 'cash-history-difference--negative';
   }
 
   private formatDate(

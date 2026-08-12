@@ -1,0 +1,198 @@
+:host {
+  display: contents;
+}
+.cash-register-form {
+  display: grid;
+  gap: 1.15rem;
+  padding-top: 0.35rem;
+}
+
+.cash-register-dialog-copy {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+
+  padding: 1rem;
+
+  border: 1px solid var(--cheof-card-border);
+
+  border-radius: var(--cheof-radius-lg);
+
+  background: color-mix(in srgb, var(--p-primary-color) 5%, var(--cheof-card-background));
+}
+
+.cash-register-dialog-copy__icon {
+  display: grid;
+  width: 46px;
+  min-width: 46px;
+  height: 46px;
+  place-items: center;
+
+  border-radius: 14px;
+
+  background: color-mix(in srgb, var(--p-primary-color) 13%, var(--cheof-card-background));
+
+  color: var(--p-primary-color);
+}
+
+.cash-register-dialog-copy div {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.cash-register-dialog-copy strong {
+  color: var(--cheof-text);
+}
+
+.cash-register-dialog-copy p {
+  margin: 0;
+
+  color: var(--cheof-text-secondary);
+
+  font-size: 0.77rem;
+  line-height: 1.5;
+}
+
+.cash-register-field {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.cash-register-field label,
+.cash-register-field__label {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+
+  color: var(--cheof-text);
+
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.cash-register-field label > span,
+.cash-register-field__label > span {
+  color: var(--cheof-danger);
+}
+
+.cash-register-field label > small,
+.cash-register-field__label > small {
+  margin-left: auto;
+
+  color: var(--cheof-text-secondary);
+
+  font-size: 0.65rem;
+  font-weight: 500;
+}
+
+.cash-register-field__help {
+  color: var(--cheof-text-secondary);
+
+  font-size: 0.68rem;
+}
+
+.cash-register-field__error {
+  color: var(--cheof-danger);
+
+  font-size: 0.7rem;
+}
+
+.cash-register-dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.65rem;
+
+  padding-top: 0.8rem;
+
+  border-top: 1px solid var(--cheof-card-border);
+}
+
+.cash-movement-option {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.cash-closing-summary {
+  padding: 1.15rem;
+
+  border: 1px solid color-mix(in srgb, var(--p-primary-color) 25%, var(--cheof-card-border));
+
+  border-radius: var(--cheof-radius-lg);
+
+  background: color-mix(in srgb, var(--p-primary-color) 7%, var(--cheof-card-background));
+
+  text-align: center;
+}
+
+.cash-closing-summary span {
+  color: var(--cheof-text-secondary);
+
+  font-size: 0.72rem;
+}
+
+.cash-closing-summary strong {
+  display: block;
+  margin-top: 0.25rem;
+
+  color: var(--p-primary-color);
+
+  font-size: 2rem;
+}
+
+.cash-closing-summary p {
+  margin: 0.55rem 0 0;
+
+  color: var(--cheof-text-secondary);
+
+  font-size: 0.74rem;
+  line-height: 1.5;
+}
+
+.cash-closing-difference {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+
+  padding: 0.85rem 1rem;
+
+  border: 1px solid var(--cheof-card-border);
+
+  border-radius: var(--cheof-radius-md);
+
+  background: var(--cheof-card-background);
+}
+
+.cash-closing-difference span {
+  color: var(--cheof-text-secondary);
+
+  font-size: 0.75rem;
+}
+
+.cash-closing-difference strong {
+  color: var(--cheof-text);
+}
+
+.cash-closing-difference--positive {
+  color: var(--cheof-success) !important;
+}
+
+.cash-closing-difference--negative {
+  color: var(--cheof-danger) !important;
+}
+
+.cash-register-dialog-actions :is(button, a):focus-visible {
+  outline: 0.16rem solid color-mix(in srgb, var(--p-primary-color) 38%, transparent);
+  outline-offset: 0.14rem;
+}
+
+@media (max-width: 600px) {
+  .cash-register-dialog-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+  .cash-register-dialog-actions :is(.p-button, p-button) {
+    width: 100%;
+  }
+}

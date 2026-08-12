@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, DOCUMENT } from '@angular/common';
 import { Component, DestroyRef, OnDestroy, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
@@ -14,29 +14,18 @@ import { TagModule } from 'primeng/tag';
 import { TextareaModule } from 'primeng/textarea';
 
 import { OperatorOrdersApiService } from '../../../core/api/operator/operator-orders-api.service';
-import { OperatorPaymentReceiptsApiService } from '../../../core/api/operator/operator-payment-receipts-api.service';
-import {
-  KitchenItemDto,
-  KitchenPersonalizationDto,
-  KitchenPromotionPizzaDto,
-  OperatorOrderDetailDto,
-} from '../../../core/api/operator/operator-orders.models';
-import {
-  PaymentReceiptDto,
-  PaymentReceiptStatus,
-  paymentReceiptFileSize,
-  paymentReceiptStatusLabel,
-} from '../../../core/api/payments/payment-receipts/payment-receipt.models';
+import { OperatorOrderDetailDto } from '../../../core/api/operator/operator-orders.models';
 import { OperatorRealtimeService } from '../../../core/realtime/operator-realtime.service';
 import { OperatorOrderRealtimeEvent } from '../../../core/realtime/realtime.models';
-import { OperatorOrderHistory } from '../components/operator-order-history/operator-order-history';
-import { OperatorPaymentReceiptDialogs } from '../components/operator-payment-receipt-dialogs/operator-payment-receipt-dialogs';
+import { OperatorOrderHistory } from '../../../shared/components/operator-order-history/operator-order-history';
+import { OperatorKitchenTicket } from '../../../shared/components/operator-kitchen-ticket/operator-kitchen-ticket';
+import { OperatorPaymentReceiptReview } from '../../../shared/components/operator-payment-receipt-review/operator-payment-receipt-review';
 import {
   formatOperatorDate,
   prettyDeliveryType,
   prettyOperatorStatus,
   prettyPaymentMethod,
-} from '../operator-order-ui.utils';
+} from '../../../shared/ui/operator-order-ui.utils';
 
 type TagSeverity =
   | 'success'
@@ -72,15 +61,14 @@ type ButtonSeverity =
     SkeletonModule,
     MessageModule,
     OperatorOrderHistory,
-    OperatorPaymentReceiptDialogs,
+    OperatorKitchenTicket,
+    OperatorPaymentReceiptReview,
   ],
   templateUrl: './operator-order-detail-page.html',
   styleUrl: './operator-order-detail-page.scss',
 })
 export class OperatorOrderDetailPage implements OnDestroy {
   private readonly api = inject(OperatorOrdersApiService);
-
-  private readonly receiptApi = inject(OperatorPaymentReceiptsApiService);
 
   private readonly route = inject(ActivatedRoute);
 
@@ -90,6 +78,8 @@ export class OperatorOrderDetailPage implements OnDestroy {
 
   private readonly documentTitle = inject(Title);
 
+  private readonly document = inject(DOCUMENT);
+
   readonly loading = signal(true);
   readonly saving = signal(false);
   readonly errorMessage = signal<string | null>(null);
@@ -97,22 +87,6 @@ export class OperatorOrderDetailPage implements OnDestroy {
   readonly successMessage = signal<string | null>(null);
 
   readonly order = signal<OperatorOrderDetailDto | null>(null);
-
-  readonly receiptLoading = signal(false);
-
-  readonly receiptReviewing = signal(false);
-
-  readonly receiptPreviewVisible = signal(false);
-
-  readonly rejectionDialogVisible = signal(false);
-
-  readonly receiptPreviewUrl = signal<string | null>(null);
-
-  readonly receiptPreviewMime = signal<string | null>(null);
-
-  readonly receiptError = signal<string | null>(null);
-
-  readonly receiptSuccess = signal<string | null>(null);
 
   readonly orderId = computed(() => Number(this.route.snapshot.paramMap.get('orderId') ?? '0'));
 
@@ -124,22 +98,9 @@ export class OperatorOrderDetailPage implements OnDestroy {
       : '/operator/orders';
   });
 
-  readonly allowedTransitions = computed(() => {
-    return this.order()?.allowed_transitions ?? [];
-  });
+  readonly allowedTransitions = computed(() => this.order()?.allowed_transitions ?? []);
 
   readonly hasAvailableTransitions = computed(() => this.allowedTransitions().length > 0);
-
-  readonly paymentReceipt = computed(() => this.order()?.payment_receipt ?? null);
-
-  readonly isTransferOrder = computed(() => this.order()?.payment_method === 'transfer');
-
-  readonly hasReceipt = computed(() => this.paymentReceipt() !== null);
-
-  readonly canReviewReceipt = computed(
-    () =>
-      this.paymentReceipt()?.status === 'pending' && this.paymentReceipt()?.file_available === true,
-  );
 
   note = '';
 
@@ -264,198 +225,12 @@ export class OperatorOrderDetailPage implements OnDestroy {
       });
   }
 
-  openReceiptPreview(): void {
-    const receipt = this.paymentReceipt();
-
-    if (receipt === null || !receipt.file_available || this.receiptLoading()) {
-      return;
-    }
-
-    this.receiptLoading.set(true);
-    this.receiptError.set(null);
-    this.receiptSuccess.set(null);
-
-    this.closeReceiptObjectUrl();
-
-    this.receiptApi
-      .file(receipt.uuid)
-      .pipe(
-        takeUntilDestroyed(this.destroyRef),
-        finalize(() => {
-          this.receiptLoading.set(false);
-        }),
-      )
-      .subscribe({
-        next: (response) => {
-          const blob = response.body;
-
-          if (!blob || blob.size === 0) {
-            this.receiptError.set('El archivo del comprobante está vacío o no está disponible.');
-
-            return;
-          }
-
-          const mimeType = blob.type || receipt.mime_type || 'application/octet-stream';
-
-          const objectUrl = URL.createObjectURL(blob);
-
-          this.receiptPreviewUrl.set(objectUrl);
-
-          this.receiptPreviewMime.set(mimeType);
-
-          this.receiptPreviewVisible.set(true);
-        },
-
-        error: (error) => {
-          this.receiptError.set(
-            this.resolveReceiptErrorMessage(error, 'No fue posible abrir el comprobante.'),
-          );
-        },
-      });
-  }
-
-  closeReceiptPreview(): void {
-    this.receiptPreviewVisible.set(false);
-
-    this.closeReceiptObjectUrl();
-  }
-
-  approveReceipt(): void {
-    const receipt = this.paymentReceipt();
-
-    if (receipt === null || receipt.status !== 'pending' || this.receiptReviewing()) {
-      return;
-    }
-
-    this.receiptReviewing.set(true);
-    this.receiptError.set(null);
-    this.receiptSuccess.set(null);
-
-    this.receiptApi
-      .approve(receipt.uuid)
-      .pipe(
-        takeUntilDestroyed(this.destroyRef),
-        finalize(() => {
-          this.receiptReviewing.set(false);
-        }),
-      )
-      .subscribe({
-        next: (response) => {
-          this.replacePaymentReceipt(response.data);
-
-          this.receiptSuccess.set('El comprobante fue aprobado correctamente.');
-        },
-
-        error: (error) => {
-          this.receiptError.set(
-            this.resolveReceiptErrorMessage(error, 'No fue posible aprobar el comprobante.'),
-          );
-        },
-      });
-  }
-
-  openRejectReceiptDialog(): void {
-    const receipt = this.paymentReceipt();
-
-    if (receipt === null || receipt.status !== 'pending' || this.receiptReviewing()) {
-      return;
-    }
-
-    this.receiptError.set(null);
-    this.receiptSuccess.set(null);
-
-    this.rejectionDialogVisible.set(true);
-  }
-
-  closeRejectReceiptDialog(): void {
-    if (this.receiptReviewing()) {
-      return;
-    }
-
-    this.rejectionDialogVisible.set(false);
-
-  }
-
-  rejectReceipt(reason: string): void {
-    const receipt = this.paymentReceipt();
-
-    reason = reason.trim();
-
-    if (receipt === null || receipt.status !== 'pending' || this.receiptReviewing()) {
-      return;
-    }
-
-    if (reason.length < 5) {
-      this.receiptError.set('El motivo debe tener al menos 5 caracteres.');
-
-      return;
-    }
-
-    if (reason.length > 500) {
-      this.receiptError.set('El motivo no puede superar los 500 caracteres.');
-
-      return;
-    }
-
-    this.receiptReviewing.set(true);
-    this.receiptError.set(null);
-    this.receiptSuccess.set(null);
-
-    this.receiptApi
-      .reject(receipt.uuid, reason)
-      .pipe(
-        takeUntilDestroyed(this.destroyRef),
-        finalize(() => {
-          this.receiptReviewing.set(false);
-        }),
-      )
-      .subscribe({
-        next: (response) => {
-          this.replacePaymentReceipt(response.data);
-
-          this.rejectionDialogVisible.set(false);
-
-          this.receiptSuccess.set('El comprobante fue rechazado y el motivo quedó registrado.');
-        },
-
-        error: (error) => {
-          this.receiptError.set(
-            this.resolveReceiptErrorMessage(error, 'No fue posible rechazar el comprobante.'),
-          );
-        },
-      });
-  }
-
-  receiptStatusLabel(status: PaymentReceiptStatus | string | null | undefined): string {
-    return paymentReceiptStatusLabel(status);
-  }
-
-  receiptFileSize(bytes: number | null | undefined): string {
-    return paymentReceiptFileSize(bytes);
-  }
-
-  receiptStatusSeverity(status: PaymentReceiptStatus | string): TagSeverity {
-    switch (status) {
-      case 'pending':
-        return 'warn';
-
-      case 'approved':
-        return 'success';
-
-      case 'rejected':
-        return 'danger';
-
-      default:
-        return 'secondary';
-    }
-  }
-
-  isReceiptImage(receipt: PaymentReceiptDto): boolean {
-    return receipt.mime_type.startsWith('image/');
-  }
-
-  isReceiptPdf(receipt: PaymentReceiptDto): boolean {
-    return receipt.mime_type === 'application/pdf';
+  onReceiptChange(
+    receipt: import('../../../core/api/payments/payment-receipts/payment-receipt.models').PaymentReceiptDto,
+  ): void {
+    this.order.update((currentOrder) =>
+      currentOrder ? { ...currentOrder, payment_receipt: receipt } : null,
+    );
   }
 
   transitionLabel(status: string): string {
@@ -528,39 +303,26 @@ export class OperatorOrderDetailPage implements OnDestroy {
   }
 
   openCustomerConfirmationWhatsApp(): void {
-    const url = this.order()?.customer_confirmation_whatsapp_url?.trim();
-
-    if (!url || typeof window === 'undefined') {
-      return;
-    }
-
-    window.open(url, '_blank', 'noopener,noreferrer');
+    this.openExternalUrl(this.order()?.customer_confirmation_whatsapp_url);
   }
 
   openDeliveryWhatsApp(): void {
-    const url = this.order()?.delivery_whatsapp_url?.trim();
-
-    if (!url || typeof window === 'undefined') {
-      return;
-    }
-
-    window.open(url, '_blank', 'noopener,noreferrer');
+    this.openExternalUrl(this.order()?.delivery_whatsapp_url);
   }
 
   openMaps(): void {
-    const url = this.order()?.delivery?.maps_url?.trim();
+    this.openExternalUrl(this.order()?.delivery?.maps_url);
+  }
 
-    if (!url || typeof window === 'undefined') {
+  private openExternalUrl(url: string | null | undefined): void {
+    const normalizedUrl = url?.trim();
+    const windowRef = this.document.defaultView;
+
+    if (!normalizedUrl || !windowRef) {
       return;
     }
 
-    window.open(url, '_blank', 'noopener,noreferrer');
-  }
-
-  itemMeta(item: KitchenItemDto): string {
-    return [item.size_name, item.category_name]
-      .filter((value): value is string => typeof value === 'string' && value.trim().length > 0)
-      .join(' · ');
+    windowRef.open(normalizedUrl, '_blank', 'noopener,noreferrer');
   }
 
   prettyStatus(status: string): string {
@@ -611,137 +373,8 @@ export class OperatorOrderDetailPage implements OnDestroy {
     return 'secondary';
   }
 
-  trackItem = (_: number, item: KitchenItemDto): number => item.id;
-
-  ingredientsLabel(list?: unknown): string {
-    if (!list) {
-      return '—';
-    }
-
-    if (typeof list === 'string') {
-      const value = list.trim();
-
-      return value.length > 0 ? value : '—';
-    }
-
-    if (Array.isArray(list)) {
-      if (list.length === 0) {
-        return '—';
-      }
-
-      if (typeof list[0] === 'string') {
-        return (list as string[]).filter(Boolean).join(', ') || '—';
-      }
-
-      const names = (list as Array<Record<string, unknown>>)
-        .map((item) => {
-          return item['name'] ?? item['ingredient_name'] ?? item['title'] ?? item['label'] ?? '';
-        })
-        .filter((value): value is string => typeof value === 'string' && value.trim().length > 0);
-
-      return names.length > 0 ? names.join(', ') : '—';
-    }
-
-    return '—';
-  }
-
-  promotionPizzaPersonalizations(
-    item: KitchenItemDto,
-    pizza: KitchenPromotionPizzaDto,
-  ): KitchenPersonalizationDto[] {
-    return (item.personalizations ?? []).filter(
-      (personalization) => Number(personalization.order_promotion_item_id) === Number(pizza.id),
-    );
-  }
-
-  unassignedPromotionPersonalizations(item: KitchenItemDto): KitchenPersonalizationDto[] {
-    if (item.type !== 'promotion' || !item.promotion) {
-      return [];
-    }
-
-    const promotionItemIds = new Set(item.promotion.pizzas.map((pizza) => Number(pizza.id)));
-
-    return (item.personalizations ?? []).filter((personalization) => {
-      const promotionItemId = personalization.order_promotion_item_id;
-
-      if (promotionItemId === null || promotionItemId === undefined) {
-        return true;
-      }
-
-      return !promotionItemIds.has(Number(promotionItemId));
-    });
-  }
-
-  personalizationText(personalization: {
-    applies_to?: string;
-    extra_price?: number;
-    action?: string;
-    ingredient_name?: string;
-  }): string {
-    const side =
-      personalization.applies_to && personalization.applies_to !== 'ALL'
-        ? ` (${personalization.applies_to})`
-        : '';
-
-    const price = personalization.extra_price
-      ? ` +$${Number(personalization.extra_price).toFixed(2)}`
-      : '';
-
-    return `${personalization.action ?? ''}: ${
-      personalization.ingredient_name ?? ''
-    }${side}${price}`.trim();
-  }
-
   ngOnDestroy(): void {
     this.realtime.stopOrder(this.orderId());
-
-    this.closeReceiptObjectUrl();
-  }
-
-  private replacePaymentReceipt(receipt: PaymentReceiptDto): void {
-    this.order.update((currentOrder) => {
-      if (currentOrder === null) {
-        return null;
-      }
-
-      return {
-        ...currentOrder,
-        payment_receipt: receipt,
-      };
-    });
-  }
-
-  private closeReceiptObjectUrl(): void {
-    const currentUrl = this.receiptPreviewUrl();
-
-    if (currentUrl && typeof URL !== 'undefined') {
-      URL.revokeObjectURL(currentUrl);
-    }
-
-    this.receiptPreviewUrl.set(null);
-    this.receiptPreviewMime.set(null);
-  }
-
-  private resolveReceiptErrorMessage(error: unknown, fallback: string): string {
-    const response = error as {
-      error?:
-        | {
-            message?: string;
-            errors?: Record<string, string[]>;
-          }
-        | Blob
-        | string;
-    };
-
-    const body = response?.error;
-
-    if (body && typeof body === 'object' && !(body instanceof Blob)) {
-      const validation = body.errors?.['reason']?.[0];
-
-      return validation ?? body.message ?? fallback;
-    }
-
-    return fallback;
   }
 
   private resolveErrorMessage(error: unknown, fallback: string): string {

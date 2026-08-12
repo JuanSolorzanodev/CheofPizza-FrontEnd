@@ -1,0 +1,127 @@
+<article
+  class="pizza-card"
+  [class.is-hidden]="!pizza().is_visible"
+>
+  <div class="pizza-image">
+    @if (pizza().image_url) {
+      <img
+        [src]="pizza().image_url"
+        [alt]="pizza().name"
+        loading="lazy"
+        decoding="async"
+      />
+    } @else {
+      <div class="image-placeholder">
+        <i class="pi pi-image" aria-hidden="true"></i>
+        <span>Sin imagen</span>
+      </div>
+    }
+
+    <span
+      class="visibility-badge"
+      [class.is-visible]="pizza().is_visible"
+    >
+      <i
+        [class]="
+          pizza().is_visible
+            ? 'pi pi-eye'
+            : 'pi pi-eye-slash'
+        "
+        aria-hidden="true"
+      ></i>
+
+      {{ pizza().is_visible ? 'Visible' : 'Oculta' }}
+    </span>
+  </div>
+
+  <div class="pizza-content">
+    <div class="pizza-title-row">
+      <div>
+        <h4>{{ pizza().name }}</h4>
+
+        <p-tag
+          [value]="pizza().category.name"
+          severity="secondary"
+          [rounded]="true"
+        />
+      </div>
+
+      @if (!pizza().can_delete) {
+        <span
+          class="protected-badge"
+          pTooltip="Esta pizza tiene carritos, pedidos, promociones o historial asociado."
+          tooltipPosition="top"
+        >
+          <i class="pi pi-lock" aria-hidden="true"></i>
+          Protegida
+        </span>
+      }
+    </div>
+
+    <p class="pizza-description">
+      {{ pizza().description || 'Sin descripción registrada.' }}
+    </p>
+
+    <div class="ingredients">
+      @for (ingredient of pizza().ingredients; track ingredient.id) {
+        <span>{{ ingredient.name }}</span>
+      }
+    </div>
+
+    <div class="pizza-meta">
+      <span>
+        <i class="pi pi-list" aria-hidden="true"></i>
+        {{ pizza().ingredients_count }} ingredientes
+      </span>
+
+      <span>
+        <i class="pi pi-database" aria-hidden="true"></i>
+        {{ usageLabel() }}
+      </span>
+
+      @if (pizza().usage.order_items_total > 0) {
+        <span>
+          <i class="pi pi-shopping-bag" aria-hidden="true"></i>
+          {{ pizza().usage.order_items_total }} pedidos
+        </span>
+      }
+    </div>
+  </div>
+
+  <div class="pizza-actions">
+    <p-button
+      label="Editar"
+      icon="pi pi-pencil"
+      severity="secondary"
+      [outlined]="true"
+      [disabled]="actionsDisabled()"
+      (onClick)="edit.emit(pizza())"
+    />
+
+    <p-button
+      [label]="pizza().is_visible ? 'Ocultar' : 'Mostrar'"
+      [icon]="pizza().is_visible ? 'pi pi-eye-slash' : 'pi pi-eye'"
+      [severity]="pizza().is_visible ? 'warn' : 'success'"
+      [outlined]="true"
+      [loading]="changingVisibility()"
+      [disabled]="actionsDisabled()"
+      (onClick)="visibilityChange.emit(pizza())"
+    />
+
+    <p-button
+      icon="pi pi-trash"
+      severity="danger"
+      [text]="true"
+      [rounded]="true"
+      [loading]="deleting()"
+      [disabled]="actionsDisabled()"
+      [pTooltip]="
+        pizza().can_delete
+          ? 'Eliminar pizza'
+          : 'La pizza tiene registros asociados'
+      "
+      tooltipPosition="top"
+      (onClick)="delete.emit(pizza())"
+    />
+  </div>
+</article>

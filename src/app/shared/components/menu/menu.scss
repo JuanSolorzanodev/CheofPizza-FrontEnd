@@ -587,8 +587,8 @@
   display:
     grid;
 
-  aspect-ratio:
-    16 / 10;
+  min-height:
+    305px;
 
   place-items:
     center;
@@ -596,13 +596,16 @@
   overflow:
     hidden;
 
+  padding:
+    1.5rem;
+
   background:
     radial-gradient(
-      circle at 50% 48%,
+      circle at 50% 46%,
       var(--cheof-product-media-glow)
       0%,
       transparent
-      55%
+      58%
     ),
     linear-gradient(
       145deg,
@@ -654,17 +657,16 @@
     block;
 
   width:
-    100%;
+    auto;
 
   height:
-    100%;
+    auto;
 
-  padding:
-    clamp(
-      0.85rem,
-      1.3vw,
-      1.2rem
-    );
+  max-width:
+    min(68%, 285px);
+
+  max-height:
+    285px;
 
   object-fit:
     contain;
@@ -674,12 +676,12 @@
 
   filter:
     drop-shadow(
-      0 16px 16px
+      0 14px 18px
       rgb(0 0 0 / 14%)
     );
 
   transform:
-    scale(0.94);
+    none;
 
   transition:
     filter
@@ -692,12 +694,12 @@
 .pizza-card__image {
   filter:
     drop-shadow(
-      0 21px 20px
+      0 18px 22px
       rgb(0 0 0 / 18%)
     );
 
   transform:
-    scale(0.99);
+    translateY(-2px) scale(1.025);
 }
 
 .pizza-card__image-shade {
@@ -1262,8 +1264,19 @@ strong {
   }
 
   .pizza-card__media {
-    aspect-ratio:
-      16 / 9;
+    min-height:
+      250px;
+
+    padding:
+      1rem;
+  }
+
+  .pizza-card__image {
+    max-width:
+      min(84%, 280px);
+
+    max-height:
+      280px;
   }
 
   .pizza-card__body {

@@ -1,0 +1,19 @@
+<article class="type-row">
+  <div class="type-symbol" aria-hidden="true"><i class="pi pi-tag"></i></div>
+
+  <div class="type-copy">
+    <h4>{{ type().name }}</h4>
+    <p>{{ type().ingredients_count }} {{ type().ingredients_count === 1 ? 'ingrediente' : 'ingredientes' }}</p>
+  </div>
+
+  <p-tag
+    [value]="type().can_delete ? 'Disponible' : 'En uso'"
+    [severity]="type().can_delete ? 'success' : 'warn'"
+    [rounded]="true"
+  />
+
+  <div class="row-actions">
+    <p-button label="Editar" icon="pi pi-pencil" severity="secondary" [outlined]="true" [disabled]="actionsDisabled()" (onClick)="edit.emit(type())" />
+    <p-button icon="pi pi-trash" severity="danger" [text]="true" [rounded]="true" [loading]="deleting()" [disabled]="actionsDisabled()" [pTooltip]="type().can_delete ? 'Eliminar tipo' : 'Contiene ingredientes'" (onClick)="delete.emit(type())" />
+  </div>
+</article>

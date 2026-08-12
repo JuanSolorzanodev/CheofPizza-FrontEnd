@@ -1,0 +1,134 @@
+:host {
+  display: table-row-group;
+}
+
+.order-row {
+  transition: background-color 150ms ease;
+}
+
+.order-row:hover {
+  background: color-mix(in srgb, var(--p-primary-color) 3%, var(--cheof-card-background));
+}
+
+.order-row > td,
+.kitchen-row > td {
+  padding: 0.9rem 1rem;
+  border-bottom: 1px solid var(--cheof-card-border);
+  vertical-align: middle;
+}
+
+.order-number,
+.customer-cell > div {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.order-number strong {
+  font-size: 0.85rem;
+}
+
+.order-number span,
+.customer-cell span {
+  color: var(--cheof-text-secondary);
+  font-size: 0.7rem;
+}
+
+.customer-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.customer-avatar {
+  display: grid;
+  width: 34px;
+  min-width: 34px;
+  height: 34px;
+  place-items: center;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--p-primary-color) 12%, var(--cheof-card-background));
+  color: var(--p-primary-color);
+  font-weight: 800;
+}
+
+.customer-cell strong {
+  font-size: 0.8rem;
+}
+
+.table-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.38rem 0.6rem;
+  border: 1px solid var(--cheof-card-border);
+  border-radius: var(--cheof-radius-pill);
+  background: var(--cheof-muted-background);
+  font-size: 0.72rem;
+  white-space: nowrap;
+}
+
+.order-total {
+  color: var(--p-primary-color);
+  white-space: nowrap;
+}
+
+.order-actions-cell {
+  width: 1%;
+  white-space: nowrap;
+}
+
+.order-action {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border: 1px solid var(--cheof-card-border);
+  border-radius: var(--cheof-radius-md);
+  background: var(--cheof-card-background);
+  color: var(--cheof-text-secondary);
+  text-decoration: none;
+  transition:
+    border-color 150ms ease,
+    color 150ms ease,
+    transform 150ms ease;
+}
+
+.order-action:hover {
+  transform: translateX(2px);
+  border-color: var(--p-primary-color);
+  color: var(--p-primary-color);
+}
+
+.order-action:focus-visible {
+  outline: 0.16rem solid color-mix(in srgb, var(--p-primary-color) 38%, transparent);
+  outline-offset: 0.14rem;
+}
+
+.kitchen-row > td {
+  padding-top: 0;
+  background: color-mix(in srgb, var(--p-primary-color) 2%, var(--cheof-card-background));
+}
+
+.kitchen-summary {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.55rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: var(--cheof-radius-md);
+  background: var(--cheof-muted-background);
+  color: var(--cheof-text-secondary);
+  font-size: 0.72rem;
+  line-height: 1.5;
+}
+
+.kitchen-summary i,
+.kitchen-summary strong {
+  color: var(--p-primary-color);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .order-row,
+  .order-action {
+    transition: none;
+  }
+}

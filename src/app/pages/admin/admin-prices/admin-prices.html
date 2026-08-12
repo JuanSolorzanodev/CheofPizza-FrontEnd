@@ -1,17 +1,10 @@
 <section class="prices-page">
   <header class="prices-hero">
     <div>
-      <span class="eyebrow">
-        Catálogo
-      </span>
-
-      <h2>
-        Precios por categoría
-      </h2>
-
+      <span class="eyebrow">Catálogo</span>
+      <h2>Precios por categoría</h2>
       <p>
-        Configura el precio y la disponibilidad de cada
-        combinación entre categoría y tamaño.
+        Configura el precio y la disponibilidad de cada combinación entre categoría y tamaño.
       </p>
     </div>
 
@@ -31,10 +24,7 @@
         icon="pi pi-save"
         severity="success"
         [loading]="saving()"
-        [disabled]="
-          !hasChanges() ||
-          loading()
-        "
+        [disabled]="!hasChanges() || loading()"
         (onClick)="confirmSave()"
       />
     </div>
@@ -42,414 +32,80 @@
 
   <section class="summary-grid">
     <article class="summary-card">
-      <span class="summary-icon is-primary">
-        <i class="pi pi-th-large"></i>
-      </span>
-
+      <span class="summary-icon is-primary"><i class="pi pi-th-large" aria-hidden="true"></i></span>
       <div>
         <span>Combinaciones</span>
-
         @if (loading()) {
-          <p-skeleton
-            width="48px"
-            height="28px"
-          />
+          <p-skeleton width="48px" height="28px" />
         } @else {
-          <strong>
-            {{ totalCombinations() }}
-          </strong>
+          <strong>{{ totalCombinations() }}</strong>
         }
-
-        <small>
-          Categorías por tamaños
-        </small>
+        <small>Categorías por tamaños</small>
       </div>
     </article>
 
     <article class="summary-card">
-      <span class="summary-icon is-success">
-        <i class="pi pi-check-circle"></i>
-      </span>
-
+      <span class="summary-icon is-success"><i class="pi pi-check-circle" aria-hidden="true"></i></span>
       <div>
         <span>Disponibles</span>
-
         @if (loading()) {
-          <p-skeleton
-            width="48px"
-            height="28px"
-          />
+          <p-skeleton width="48px" height="28px" />
         } @else {
-          <strong>
-            {{ activePricesCount() }}
-          </strong>
+          <strong>{{ activePricesCount() }}</strong>
         }
-
-        <small>
-          Precios mayores a cero
-        </small>
+        <small>Precios mayores a cero</small>
       </div>
     </article>
 
     <article class="summary-card">
-      <span class="summary-icon is-muted">
-        <i class="pi pi-ban"></i>
-      </span>
-
+      <span class="summary-icon is-muted"><i class="pi pi-ban" aria-hidden="true"></i></span>
       <div>
         <span>No disponibles</span>
-
         @if (loading()) {
-          <p-skeleton
-            width="48px"
-            height="28px"
-          />
+          <p-skeleton width="48px" height="28px" />
         } @else {
-          <strong>
-            {{ unavailableCount() }}
-          </strong>
+          <strong>{{ unavailableCount() }}</strong>
         }
-
-        <small>
-          Combinaciones sin precio
-        </small>
+        <small>Combinaciones sin precio</small>
       </div>
     </article>
 
-    <article
-      class="summary-card"
-      [class.has-pending]="
-        hasChanges()
-      "
-    >
-      <span class="summary-icon is-warning">
-        <i class="pi pi-pencil"></i>
-      </span>
-
+    <article class="summary-card" [class.has-pending]="hasChanges()">
+      <span class="summary-icon is-warning"><i class="pi pi-pencil" aria-hidden="true"></i></span>
       <div>
         <span>Cambios pendientes</span>
-
         @if (loading()) {
-          <p-skeleton
-            width="48px"
-            height="28px"
-          />
+          <p-skeleton width="48px" height="28px" />
         } @else {
-          <strong>
-            {{ changedCount() }}
-          </strong>
+          <strong>{{ changedCount() }}</strong>
         }
-
-        <small>
-          Aún no guardados
-        </small>
+        <small>Aún no guardados</small>
       </div>
     </article>
   </section>
 
-  <p-message
-    severity="info"
-    styleClass="prices-notice"
-  >
+  <p-message severity="info" styleClass="prices-notice">
     <div class="notice-content">
-      <i class="pi pi-info-circle"></i>
-
+      <i class="pi pi-info-circle" aria-hidden="true"></i>
       <span>
-        Un precio mayor a
-        <strong>$0,00</strong>
-        habilita el tamaño para la categoría.
-        Un precio igual a
-        <strong>$0,00</strong>
-        elimina la relación y lo marca como no disponible.
+        Un precio mayor a <strong>$0,00</strong> habilita el tamaño para la categoría.
+        Un precio igual a <strong>$0,00</strong> elimina la relación y lo marca como no disponible.
       </span>
     </div>
   </p-message>
 
-  <section class="matrix-panel">
-    <header class="panel-header">
-      <div>
-        <span class="eyebrow">
-          Matriz de precios
-        </span>
-
-        <h3>
-          Categorías y tamaños
-        </h3>
-
-        <p>
-          Edita directamente cada celda y guarda todos los
-          cambios en una sola operación.
-        </p>
-      </div>
-
-      @if (hasChanges()) {
-        <div class="pending-actions">
-          <p-tag
-            [value]="
-              changedCount() +
-              ' cambios'
-            "
-            severity="warn"
-            [rounded]="true"
-          />
-
-          <p-button
-            label="Restaurar"
-            icon="pi pi-undo"
-            severity="secondary"
-            [text]="true"
-            [disabled]="saving()"
-            (onClick)="resetAll()"
-          />
-        </div>
-      }
-    </header>
-
-    @if (loading()) {
-      <div class="matrix-loading">
-        <p-skeleton
-          height="56px"
-          borderRadius="12px"
-        />
-
-        @for (
-          item of [1, 2, 3];
-          track item
-        ) {
-          <p-skeleton
-            height="94px"
-            borderRadius="12px"
-          />
-        }
-      </div>
-    } @else if (
-      categories().length === 0 ||
-      sizes().length === 0
-    ) {
-      <div class="empty-state">
-        <span>
-          <i class="pi pi-table"></i>
-        </span>
-
-        <h3>
-          No se puede construir la matriz
-        </h3>
-
-        <p>
-          Debes tener al menos una categoría y un tamaño
-          registrados.
-        </p>
-      </div>
-    } @else {
-      <div class="matrix-wrapper">
-        <table class="price-matrix">
-          <thead>
-            <tr>
-              <th class="category-column">
-                Categoría
-              </th>
-
-              @for (
-                size of sizes();
-                track size.id
-              ) {
-                <th>
-                  <div class="size-heading">
-                    <strong>
-                      {{ size.name }}
-                    </strong>
-
-                    <span>
-                      {{ size.portion }}
-                      porciones
-                    </span>
-                  </div>
-                </th>
-              }
-            </tr>
-          </thead>
-
-          <tbody>
-            @for (
-              category of categories();
-              track category.id
-            ) {
-              <tr>
-                <th
-                  scope="row"
-                  class="category-cell"
-                >
-                  <div class="category-heading">
-                    <span class="category-avatar">
-                      {{
-                        category.name
-                          .slice(0, 1)
-                          .toUpperCase()
-                      }}
-                    </span>
-
-                    <div>
-                      <strong>
-                        {{ category.name }}
-                      </strong>
-
-                      <span>
-                        {{ category.pizzas_count }}
-                        pizzas
-                      </span>
-                    </div>
-                  </div>
-                </th>
-
-                @for (
-                  size of sizes();
-                  track size.id
-                ) {
-                  <td
-                    class="price-cell"
-                    [class.is-changed]="
-                      isChanged(
-                        category.id,
-                        size.id
-                      )
-                    "
-                    [class.is-unavailable]="
-                      !isAvailable(
-                        category.id,
-                        size.id
-                      )
-                    "
-                  >
-                    <div class="price-control">
-                      <p-inputnumber
-                        mode="currency"
-                        currency="USD"
-                        locale="es-EC"
-                        [min]="0"
-                        [max]="999999.99"
-                        [minFractionDigits]="2"
-                        [maxFractionDigits]="2"
-                        [useGrouping]="false"
-                        [disabled]="saving()"
-                        [ngModel]="
-                          priceValue(
-                            category.id,
-                            size.id
-                          )
-                        "
-                        (ngModelChange)="
-                          updatePrice(
-                            category.id,
-                            size.id,
-                            $event
-                          )
-                        "
-                      />
-
-                      <div class="cell-footer">
-                        @if (
-                          isAvailable(
-                            category.id,
-                            size.id
-                          )
-                        ) {
-                          <span class="availability is-active">
-                            <i class="pi pi-check-circle"></i>
-                            Disponible
-                          </span>
-                        } @else {
-                          <span class="availability">
-                            <i class="pi pi-ban"></i>
-                            No disponible
-                          </span>
-                        }
-
-                        @if (
-                          isChanged(
-                            category.id,
-                            size.id
-                          )
-                        ) {
-                          <button
-                            type="button"
-                            class="reset-cell"
-                            pTooltip="Restaurar valor anterior"
-                            tooltipPosition="top"
-                            [disabled]="saving()"
-                            (click)="
-                              resetCell(
-                                category.id,
-                                size.id
-                              )
-                            "
-                          >
-                            <i class="pi pi-undo"></i>
-                          </button>
-                        }
-                      </div>
-
-                      @if (
-                        isChanged(
-                          category.id,
-                          size.id
-                        )
-                      ) {
-                        <small class="previous-value">
-                          Antes:
-                          {{
-                            money(
-                              originalPrice(
-                                category.id,
-                                size.id
-                              )
-                            )
-                          }}
-                        </small>
-                      }
-                    </div>
-                  </td>
-                }
-              </tr>
-            }
-          </tbody>
-        </table>
-      </div>
-
-      <footer class="matrix-footer">
-        <div>
-          @if (hasChanges()) {
-            <strong>
-              {{ changedCount() }}
-              cambios pendientes
-            </strong>
-
-            <span>
-              Guarda para actualizar el catálogo público.
-            </span>
-          } @else {
-            <strong>
-              Todos los precios están guardados
-            </strong>
-
-            <span>
-              No existen modificaciones pendientes.
-            </span>
-          }
-        </div>
-
-        <p-button
-          label="Guardar cambios"
-          icon="pi pi-save"
-          severity="success"
-          [loading]="saving()"
-          [disabled]="!hasChanges()"
-          (onClick)="confirmSave()"
-        />
-      </footer>
-    }
-  </section>
+  <app-admin-price-matrix
+    [loading]="loading()"
+    [saving]="saving()"
+    [categories]="categories()"
+    [sizes]="sizes()"
+    [cells]="cells()"
+    [changedKeys]="changedKeys()"
+    (priceChange)="updatePrice($event.categoryId, $event.sizeId, $event.value)"
+    (resetCell)="resetCell($event.categoryId, $event.sizeId)"
+    (resetAll)="resetAll()"
+    (save)="confirmSave()"
+  />
 </section>
 
-<p-confirmdialog
-  appendTo="body"
-/>
+<p-confirmdialog appendTo="body" />

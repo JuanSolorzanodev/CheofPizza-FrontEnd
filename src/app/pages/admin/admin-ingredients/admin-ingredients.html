@@ -1,13 +1,10 @@
 <section class="ingredients-page">
   <header class="ingredients-hero">
     <div>
-      <span class="eyebrow"> Catálogo </span>
-
+      <span class="eyebrow">Catálogo</span>
       <h2>Ingredientes y extras</h2>
-
       <p>Administra ingredientes, clasificaciones y precios adicionales por tamaño.</p>
     </div>
-
     <div class="hero-actions">
       <p-button
         label="Actualizar"
@@ -17,7 +14,6 @@
         [loading]="refreshing()"
         (onClick)="refresh()"
       />
-
       @if (activeTab() === 'types') {
         <p-button label="Nuevo tipo" icon="pi pi-plus" (onClick)="openNewType()" />
       } @else {
@@ -28,60 +24,31 @@
 
   <section class="summary-grid" aria-label="Resumen del catálogo de ingredientes">
     <article class="summary-card">
-      <span class="summary-icon primary">
-        <i class="pi pi-list"></i>
-      </span>
-
+      <span class="summary-icon primary"><i class="pi pi-list"></i></span>
       <div>
-        <span>Ingredientes</span>
-        <strong>
-          {{ totalIngredients() }}
-        </strong>
-        <small>Registrados</small>
+        <span>Ingredientes</span><strong>{{ totalIngredients() }}</strong
+        ><small>Registrados</small>
       </div>
     </article>
-
     <article class="summary-card">
-      <span class="summary-icon info">
-        <i class="pi pi-tags"></i>
-      </span>
-
+      <span class="summary-icon info"><i class="pi pi-tags"></i></span>
       <div>
-        <span>Tipos</span>
-        <strong>
-          {{ totalTypes() }}
-        </strong>
-        <small>Clasificaciones</small>
+        <span>Tipos</span><strong>{{ totalTypes() }}</strong
+        ><small>Clasificaciones</small>
       </div>
     </article>
-
     <article class="summary-card">
-      <span class="summary-icon warning">
-        <i class="pi pi-lock"></i>
-      </span>
-
+      <span class="summary-icon warning"><i class="pi pi-lock"></i></span>
       <div>
-        <span>Protegidos</span>
-        <strong>
-          {{ protectedIngredients() }}
-        </strong>
-        <small>Con uso asociado</small>
+        <span>Protegidos</span><strong>{{ protectedIngredients() }}</strong
+        ><small>Con uso asociado</small>
       </div>
     </article>
-
     <article class="summary-card">
-      <span class="summary-icon success">
-        <i class="pi pi-dollar"></i>
-      </span>
-
+      <span class="summary-icon success"><i class="pi pi-dollar"></i></span>
       <div>
-        <span>Recargos configurados</span>
-
-        <strong>
-          {{ configuredPrices() }}
-        </strong>
-
-        <small> Ingredientes por tamaño </small>
+        <span>Recargos configurados</span><strong>{{ configuredPrices() }}</strong
+        ><small>Ingredientes por tamaño</small>
       </div>
     </article>
   </section>
@@ -92,45 +59,29 @@
       [class.active]="activeTab() === 'ingredients'"
       (click)="setTab('ingredients')"
     >
-      <i class="pi pi-list"></i>
-      <span>Ingredientes</span>
-      <small>
-        {{ totalIngredients() }}
-      </small>
+      <i class="pi pi-list"></i><span>Ingredientes</span><small>{{ totalIngredients() }}</small>
     </button>
-
     <button type="button" [class.active]="activeTab() === 'types'" (click)="setTab('types')">
-      <i class="pi pi-tags"></i>
-      <span>Tipos</span>
-      <small>
-        {{ totalTypes() }}
-      </small>
+      <i class="pi pi-tags"></i><span>Tipos</span><small>{{ totalTypes() }}</small>
     </button>
-
     <button type="button" [class.active]="activeTab() === 'prices'" (click)="setTab('prices')">
-      <i class="pi pi-dollar"></i>
-      <span>Recargos</span>
-      <small>
-        {{ configuredPrices() }}
-      </small>
+      <i class="pi pi-dollar"></i><span>Recargos</span><small>{{ configuredPrices() }}</small>
     </button>
   </nav>
 
   @if (activeTab() === 'ingredients') {
     <section class="filters-panel">
-      <label class="search-box">
-        <i class="pi pi-search"></i>
-
-        <input
+      <label class="search-box"
+        ><i class="pi pi-search"></i
+        ><input
           pInputText
           type="search"
           placeholder="Buscar ingrediente o tipo..."
           [value]="search()"
           (input)="search.set($any($event.target).value)"
-        />
-      </label>
-
+      /></label>
       <p-select
+        ariaLabel="Filtrar ingredientes por tipo"
         [options]="typeFilterOptions()"
         optionLabel="label"
         optionValue="value"
@@ -138,8 +89,8 @@
         [ngModel]="selectedTypeId()"
         (ngModelChange)="selectedTypeId.set($event)"
       />
-
       <p-select
+        ariaLabel="Filtrar ingredientes por estado"
         [options]="usageOptions"
         optionLabel="label"
         optionValue="value"
@@ -147,7 +98,6 @@
         [ngModel]="usageFilter()"
         (ngModelChange)="usageFilter.set($event)"
       />
-
       <p-button
         label="Limpiar"
         icon="pi pi-filter-slash"
@@ -160,17 +110,11 @@
     <section class="content-panel">
       <header class="panel-header">
         <div>
-          <span class="eyebrow"> Inventario </span>
-
+          <span class="eyebrow">Inventario</span>
           <h3>Ingredientes registrados</h3>
-
-          <p>
-            {{ filteredIngredients().length }}
-            resultados encontrados.
-          </p>
+          <p>{{ filteredIngredients().length }} resultados encontrados.</p>
         </div>
       </header>
-
       @if (loading()) {
         <div class="cards-grid">
           @for (item of [1, 2, 3, 4, 5, 6]; track item) {
@@ -179,14 +123,9 @@
         </div>
       } @else if (filteredIngredients().length === 0) {
         <div class="empty-state">
-          <span>
-            <i class="pi pi-search"></i>
-          </span>
-
+          <span><i class="pi pi-search"></i></span>
           <h3>Sin resultados</h3>
-
           <p>No hay ingredientes que coincidan con los filtros.</p>
-
           <p-button
             label="Limpiar filtros"
             severity="secondary"
@@ -197,77 +136,14 @@
       } @else {
         <div class="cards-grid">
           @for (ingredient of filteredIngredients(); track ingredient.id) {
-            <article class="ingredient-card">
-              <header>
-                <div class="ingredient-icon">
-                  <i class="pi pi-circle-fill"></i>
-                </div>
-
-                <div class="ingredient-heading">
-                  <h4>
-                    {{ ingredient.name }}
-                  </h4>
-
-                  <p-tag [value]="ingredient.type.name" severity="secondary" [rounded]="true" />
-                </div>
-
-                @if (!ingredient.can_delete) {
-                  <span class="protected-badge" pTooltip="Tiene registros asociados">
-                    <i class="pi pi-lock"></i>
-                    Protegido
-                  </span>
-                }
-              </header>
-
-              <div class="ingredient-stats">
-                <div>
-                  <span>Asociado a</span>
-
-                  <strong>
-                    {{ usageText(ingredient) }}
-                  </strong>
-                </div>
-
-                <div>
-                  <span> Recargo según tamaño </span>
-
-                  <strong>
-                    {{ priceRange(ingredient) }}
-                  </strong>
-                </div>
-              </div>
-
-              <footer>
-                <p-button
-                  label="Editar"
-                  icon="pi pi-pencil"
-                  severity="secondary"
-                  [outlined]="true"
-                  (onClick)="openEditIngredient(ingredient)"
-                />
-
-                <p-button
-                  label="Recargos"
-                  icon="pi pi-dollar"
-                  [outlined]="true"
-                  pTooltip="Administrar precios extra por tamaño"
-                  (onClick)="openPrices(ingredient)"
-                />
-
-                <p-button
-                  icon="pi pi-trash"
-                  severity="danger"
-                  [text]="true"
-                  [rounded]="true"
-                  [loading]="deletingIngredientId() === ingredient.id"
-                  [disabled]="deletingIngredientId() !== null"
-                  [pTooltip]="
-                    ingredient.can_delete ? 'Eliminar ingrediente' : 'Tiene registros asociados'
-                  "
-                  (onClick)="confirmDeleteIngredient(ingredient)"
-                />
-              </footer>
-            </article>
+            <app-admin-ingredient-card
+              [ingredient]="ingredient"
+              [deleting]="deletingIngredientId() === ingredient.id"
+              [actionsDisabled]="actionsBusy()"
+              (edit)="openEditIngredient($event)"
+              (prices)="openPrices($event)"
+              (delete)="confirmDeleteIngredient($event)"
+            />
           }
         </div>
       }
@@ -278,16 +154,12 @@
     <section class="content-panel">
       <header class="panel-header split">
         <div>
-          <span class="eyebrow"> Clasificación </span>
-
+          <span class="eyebrow">Clasificación</span>
           <h3>Tipos de ingredientes</h3>
-
           <p>Organiza el catálogo en grupos claros para la operación.</p>
         </div>
-
         <p-button label="Nuevo tipo" icon="pi pi-plus" (onClick)="openNewType()" />
       </header>
-
       @if (loading()) {
         <div class="types-list">
           @for (item of [1, 2, 3, 4]; track item) {
@@ -297,49 +169,13 @@
       } @else {
         <div class="types-list">
           @for (type of ingredientTypes(); track type.id) {
-            <article class="type-row">
-              <div class="type-symbol">
-                <i class="pi pi-tag"></i>
-              </div>
-
-              <div>
-                <h4>
-                  {{ type.name }}
-                </h4>
-
-                <p>
-                  {{ type.ingredients_count }}
-                  {{ type.ingredients_count === 1 ? 'ingrediente' : 'ingredientes' }}
-                </p>
-              </div>
-
-              <p-tag
-                [value]="type.can_delete ? 'Disponible' : 'En uso'"
-                [severity]="type.can_delete ? 'success' : 'warn'"
-                [rounded]="true"
-              />
-
-              <div class="row-actions">
-                <p-button
-                  label="Editar"
-                  icon="pi pi-pencil"
-                  severity="secondary"
-                  [outlined]="true"
-                  (onClick)="openEditType(type)"
-                />
-
-                <p-button
-                  icon="pi pi-trash"
-                  severity="danger"
-                  [text]="true"
-                  [rounded]="true"
-                  [loading]="deletingTypeId() === type.id"
-                  [disabled]="deletingTypeId() !== null"
-                  [pTooltip]="type.can_delete ? 'Eliminar tipo' : 'Contiene ingredientes'"
-                  (onClick)="confirmDeleteType(type)"
-                />
-              </div>
-            </article>
+            <app-admin-ingredient-type-row
+              [type]="type"
+              [deleting]="deletingTypeId() === type.id"
+              [actionsDisabled]="actionsBusy()"
+              (edit)="openEditType($event)"
+              (delete)="confirmDeleteType($event)"
+            />
           }
         </div>
       }
@@ -350,18 +186,13 @@
     <section class="content-panel">
       <header class="panel-header">
         <div>
-          <span class="eyebrow"> Configuración comercial </span>
-
+          <span class="eyebrow">Configuración comercial</span>
           <h3>Recargos por tamaño</h3>
-
           <p>Configura cuánto se cobra adicionalmente al agregar cada ingrediente.</p>
         </div>
       </header>
-
       @if (loading()) {
-        <div class="price-loading">
-          <p-skeleton height="360px" borderRadius="18px" />
-        </div>
+        <div class="price-loading"><p-skeleton height="360px" borderRadius="18px" /></div>
       } @else {
         <div class="price-table-wrap">
           <table class="price-table">
@@ -369,48 +200,35 @@
               <tr>
                 <th>Ingrediente</th>
                 <th>Tipo</th>
-
                 @for (size of sizes(); track size.id) {
                   <th>
-                    {{ size.name }}
-
-                    <small>
-                      {{ size.portion }}
-                      porciones
-                    </small>
+                    {{ size.name }}<small>{{ size.portion }} porciones</small>
                   </th>
                 }
-
                 <th>Acciones</th>
               </tr>
             </thead>
-
             <tbody>
               @for (ingredient of ingredients(); track ingredient.id) {
                 <tr>
                   <td>
-                    <strong>
-                      {{ ingredient.name }}
-                    </strong>
+                    <strong>{{ ingredient.name }}</strong>
                   </td>
-
                   <td>
                     <p-tag [value]="ingredient.type.name" severity="secondary" [rounded]="true" />
                   </td>
-
                   @for (size of sizes(); track size.id) {
                     <td>
                       {{ priceForSize(ingredient, size.id) | currency: 'USD' : 'symbol' : '1.2-2' }}
                     </td>
                   }
-
                   <td>
                     <p-button
                       icon="pi pi-pencil"
                       severity="secondary"
                       [outlined]="true"
                       [rounded]="true"
-                      pTooltip="Editar precios"
+                      [disabled]="actionsBusy()"
                       (onClick)="openPrices(ingredient)"
                     />
                   </td>
@@ -424,219 +242,27 @@
   }
 </section>
 
-<p-dialog
+<app-admin-ingredient-form-dialog
   [visible]="ingredientDialogVisible()"
-  (visibleChange)="$event ? ingredientDialogVisible.set(true) : closeIngredientDialog()"
-  [modal]="true"
-  [draggable]="false"
-  [resizable]="false"
-  [closable]="!savingIngredient()"
-  [closeOnEscape]="!savingIngredient()"
-  [style]="{
-    width: 'min(94vw, 560px)',
-  }"
-  appendTo="body"
->
-  <ng-template pTemplate="header">
-    <div class="dialog-title">
-      <span>
-        <i class="pi pi-list"></i>
-      </span>
-
-      <div>
-        <small>Catálogo</small>
-
-        <strong>
-          {{ editingIngredient() ? 'Editar ingrediente' : 'Nuevo ingrediente' }}
-        </strong>
-      </div>
-    </div>
-  </ng-template>
-
-  <form class="dialog-form" [formGroup]="ingredientForm" (ngSubmit)="saveIngredient()">
-    <label class="field">
-      <span> Nombre <em>*</em> </span>
-
-      <input pInputText formControlName="name" placeholder="Ej. Jamón" maxlength="150" />
-
-      @if (ingredientForm.controls.name.touched && ingredientForm.controls.name.invalid) {
-        <small class="field-error"> Ingresa un nombre válido de al menos 2 caracteres. </small>
-      }
-    </label>
-
-    <label class="field">
-      <span> Tipo <em>*</em> </span>
-
-      <p-select
-        formControlName="ingredient_type_id"
-        [options]="ingredientTypes()"
-        optionLabel="name"
-        optionValue="id"
-        placeholder="Selecciona un tipo"
-        appendTo="body"
-      />
-
-      @if (
-        ingredientForm.controls.ingredient_type_id.touched &&
-        ingredientForm.controls.ingredient_type_id.invalid
-      ) {
-        <small class="field-error"> Selecciona un tipo. </small>
-      }
-    </label>
-  </form>
-
-  <ng-template pTemplate="footer">
-    <p-button
-      label="Cancelar"
-      severity="secondary"
-      [text]="true"
-      [disabled]="savingIngredient()"
-      (onClick)="closeIngredientDialog()"
-    />
-
-    <p-button
-      [label]="editingIngredient() ? 'Guardar cambios' : 'Crear ingrediente'"
-      icon="pi pi-check"
-      [loading]="savingIngredient()"
-      (onClick)="saveIngredient()"
-    />
-  </ng-template>
-</p-dialog>
-
-<p-dialog
+  [ingredient]="editingIngredient()"
+  [ingredientTypes]="ingredientTypes()"
+  (visibleChange)="onIngredientDialogVisibleChange($event)"
+  (saved)="onIngredientSaved($event)"
+  (savingChange)="dialogSaving.set($event)"
+/>
+<app-admin-ingredient-type-dialog
   [visible]="typeDialogVisible()"
-  (visibleChange)="$event ? typeDialogVisible.set(true) : closeTypeDialog()"
-  [modal]="true"
-  [draggable]="false"
-  [resizable]="false"
-  [closable]="!savingType()"
-  [closeOnEscape]="!savingType()"
-  [style]="{
-    width: 'min(94vw, 500px)',
-  }"
-  appendTo="body"
->
-  <ng-template pTemplate="header">
-    <div class="dialog-title">
-      <span>
-        <i class="pi pi-tag"></i>
-      </span>
-
-      <div>
-        <small> Clasificación </small>
-
-        <strong>
-          {{ editingType() ? 'Editar tipo' : 'Nuevo tipo' }}
-        </strong>
-      </div>
-    </div>
-  </ng-template>
-
-  <form class="dialog-form" [formGroup]="typeForm" (ngSubmit)="saveType()">
-    <label class="field">
-      <span> Nombre <em>*</em> </span>
-
-      <input pInputText formControlName="name" placeholder="Ej. Quesos" maxlength="100" />
-
-      @if (typeForm.controls.name.touched && typeForm.controls.name.invalid) {
-        <small class="field-error"> Ingresa un nombre de al menos 2 caracteres. </small>
-      }
-    </label>
-  </form>
-
-  <ng-template pTemplate="footer">
-    <p-button
-      label="Cancelar"
-      severity="secondary"
-      [text]="true"
-      [disabled]="savingType()"
-      (onClick)="closeTypeDialog()"
-    />
-
-    <p-button
-      [label]="editingType() ? 'Guardar cambios' : 'Crear tipo'"
-      icon="pi pi-check"
-      [loading]="savingType()"
-      (onClick)="saveType()"
-    />
-  </ng-template>
-</p-dialog>
-
-<p-dialog
+  [type]="editingType()"
+  (visibleChange)="onTypeDialogVisibleChange($event)"
+  (saved)="onTypeSaved($event)"
+  (savingChange)="dialogSaving.set($event)"
+/>
+<app-admin-ingredient-prices-dialog
   [visible]="pricesDialogVisible()"
-  (visibleChange)="$event ? pricesDialogVisible.set(true) : closePricesDialog()"
-  [modal]="true"
-  [draggable]="false"
-  [resizable]="false"
-  [closable]="!savingPrices()"
-  [closeOnEscape]="!savingPrices()"
-  [style]="{
-    width: 'min(96vw, 720px)',
-  }"
-  appendTo="body"
->
-  <ng-template pTemplate="header">
-    <div class="dialog-title">
-      <span>
-        <i class="pi pi-dollar"></i>
-      </span>
-
-      <div>
-        <small> Recargos por tamaño </small>
-
-        <strong>
-          {{ pricingIngredient()?.name }}
-        </strong>
-      </div>
-    </div>
-  </ng-template>
-
-  <form class="prices-form" [formGroup]="pricesForm" (ngSubmit)="savePrices()">
-    <div formArrayName="prices">
-      @for (row of priceRows.controls; track row.value.size_id; let index = $index) {
-        <div class="price-row" [formGroupName]="index">
-          <div>
-            <strong>
-              {{ row.value.size_name }}
-            </strong>
-
-            <span>
-              {{ row.value.portion }}
-              porciones
-            </span>
-          </div>
-
-          <p-inputnumber
-            formControlName="extra_price"
-            mode="currency"
-            currency="USD"
-            locale="en-US"
-            [min]="0"
-            [max]="999999.99"
-            [minFractionDigits]="2"
-            [maxFractionDigits]="2"
-          />
-        </div>
-      }
-    </div>
-  </form>
-
-  <ng-template pTemplate="footer">
-    <p-button
-      label="Cancelar"
-      severity="secondary"
-      [text]="true"
-      [disabled]="savingPrices()"
-      (onClick)="closePricesDialog()"
-    />
-
-    <p-button
-      label="Guardar recargos"
-      icon="pi pi-check"
-      [loading]="savingPrices()"
-      (onClick)="savePrices()"
-    />
-  </ng-template>
-</p-dialog>
-
+  [ingredient]="pricingIngredient()"
+  [sizes]="sizes()"
+  (visibleChange)="onPricesDialogVisibleChange($event)"
+  (saved)="onPricesSaved($event)"
+  (savingChange)="dialogSaving.set($event)"
+/>
 <p-confirmdialog appendTo="body" />

@@ -1,0 +1,547 @@
+@if (loading()) {
+<section class="loading-layout">
+  <p-skeleton height="78px" borderRadius="18px" />
+
+  <div class="summary-grid">
+    @for (item of [1, 2, 3, 4]; track item) {
+    <p-skeleton height="145px" borderRadius="18px" />
+    }
+  </div>
+
+  <div class="chart-grid">
+    <p-skeleton height="390px" borderRadius="18px" />
+
+    <p-skeleton height="390px" borderRadius="18px" />
+  </div>
+</section>
+} @else if (!activeRun()) {
+<article class="empty-state surface-card">
+  <span class="empty-state-icon">
+    <i class="pi pi-chart-line"></i>
+  </span>
+
+  <h2>Todavía no existe un pronóstico activo</h2>
+
+  <p>
+    Genera el primer pronóstico para empezar a planificar producción, inventario y personal.
+  </p>
+
+  <p-button label="Generar primer pronóstico" icon="pi pi-sparkles" severity="success"
+    (onClick)="openGenerateDialog()" />
+</article>
+} @else {
+@let run = activeRun()!;
+
+<section class="model-strip surface-card">
+  <div class="model-status">
+    <span class="status-dot" aria-hidden="true"></span>
+
+    <div class="model-status-copy">
+      <strong> Modelo activo </strong>
+
+      <span>
+        {{ run.model.algorithm }}
+        · versión {{ run.model.version }}
+      </span>
+    </div>
+  </div>
+
+  <div class="model-period">
+    <span> Periodo pronosticado </span>
+
+    <strong>
+      {{ formatDate(run.forecast.from) }}
+      —
+      {{ formatDate(run.forecast.until) }}
+    </strong>
+  </div>
+</section>
+
+<section class="summary-grid">
+  <article class="summary-card surface-card">
+    <div class="summary-copy">
+      <span class="summary-label"> Demanda total </span>
+
+      <strong class="summary-value">
+        {{ run.summary.forecast_total_units }}
+      </strong>
+
+      <small> pizzas estimadas </small>
+    </div>
+
+    <span class="summary-icon">
+      <i class="pi pi-shopping-bag"></i>
+    </span>
+  </article>
+
+  <article class="summary-card surface-card">
+    <div class="summary-copy">
+      <span class="summary-label"> Promedio diario </span>
+
+      <strong class="summary-value">
+        {{ formatMetric(run.summary.forecast_daily_average) }}
+      </strong>
+
+      <small> pizzas por día </small>
+    </div>
+
+    <span class="summary-icon">
+      <i class="pi pi-chart-bar"></i>
+    </span>
+  </article>
+
+  <article class="summary-card surface-card">
+    <div class="summary-copy">
+      <span class="summary-label"> Mayor demanda </span>
+
+      <strong class="summary-value">
+        {{ run.summary.highest_demand_units }}
+      </strong>
+
+      <small>
+        {{ run.summary.highest_demand_day }}
+        ·
+        {{ formatDate(run.summary.highest_demand_date) }}
+      </small>
+    </div>
+
+    <span class="summary-icon">
+      <i class="pi pi-arrow-up-right"></i>
+    </span>
+  </article>
+
+  <article class="summary-card surface-card">
+    <div class="summary-copy">
+      <span class="summary-label"> Tamaño dominante </span>
+
+      <strong class="summary-value summary-value-text">
+        {{ sizeLabel(run.summary.highest_demand_size) }}
+      </strong>
+
+      <small> mayor demanda proyectada </small>
+    </div>
+
+    <span class="summary-icon">
+      <i class="pi pi-star"></i>
+    </span>
+  </article>
+</section>
+
+<app-operational-tomorrow-forecast [run]="run" (generateRequested)="openGenerateDialog()" />
+
+<section class="chart-grid">
+  <article class="panel-card surface-card">
+    <header class="panel-header">
+      <div>
+        <h2>Demanda diaria</h2>
+
+        <p>Unidades estimadas por día</p>
+      </div>
+    </header>
+
+    <div class="chart-container">
+      <p-chart type="line" [data]="demandChartData()" [options]="demandChartOptions()" />
+    </div>
+  </article>
+
+  <article class="panel-card surface-card">
+    <header class="panel-header">
+      <div>
+        <h2>Distribución por tamaño</h2>
+
+        <p>Acumulado del periodo</p>
+      </div>
+    </header>
+
+    <div class="chart-container size-chart-container">
+      <p-chart type="doughnut" [data]="sizeChartData()" [options]="sizeChartOptions()" />
+    </div>
+
+    <div class="size-summary">
+      @for (item of visibleSizeTotals(); track item.key) {
+      <div class="size-summary-item">
+        <span>
+          {{ item.label }}
+        </span>
+
+        <strong>
+          {{ item.value }}
+        </strong>
+      </div>
+      }
+    </div>
+  </article>
+</section>
+
+<article class="panel-card surface-card forecast-section">
+  <header class="panel-header">
+    <div>
+      <h2>Pronóstico diario</h2>
+
+      <p>Detalle operativo para preparación y abastecimiento</p>
+    </div>
+  </header>
+
+  <div class="table-wrapper desktop-only">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Día</th>
+          <th>Total</th>
+          <th>Mini</th>
+          <th>Pequeña</th>
+          <th>Mediana</th>
+          <th>Familiar</th>
+          <th>Gigante</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        @for (prediction of run.predictions ?? []; track prediction.id) {
+        <tr>
+          <td>
+            {{ formatDate(prediction.date) }}
+          </td>
+
+          <td>
+            {{ prediction.day_of_week }}
+          </td>
+
+          <td>
+            <strong>
+              {{ prediction.total_units }}
+            </strong>
+          </td>
+
+          <td>
+            {{ prediction.sizes.mini }}
+          </td>
+
+          <td>
+            {{ prediction.sizes.small }}
+          </td>
+
+          <td>
+            {{ prediction.sizes.medium }}
+          </td>
+
+          <td>
+            {{ prediction.sizes.family }}
+          </td>
+
+          <td>
+            {{ prediction.sizes.giant }}
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <div class="mobile-only forecast-mobile-list">
+    @for (prediction of run.predictions ?? []; track prediction.id) {
+    <article class="mobile-data-card">
+      <header>
+        <div>
+          <strong>
+            {{ prediction.day_of_week }}
+          </strong>
+
+          <span>
+            {{ formatDate(prediction.date) }}
+          </span>
+        </div>
+
+        <span class="mobile-total">
+          {{ prediction.total_units }}
+        </span>
+      </header>
+
+      <div class="mobile-metrics-grid">
+        <span>
+          Mini
+          <strong>
+            {{ prediction.sizes.mini }}
+          </strong>
+        </span>
+
+        <span>
+          Pequeña
+          <strong>
+            {{ prediction.sizes.small }}
+          </strong>
+        </span>
+
+        <span>
+          Mediana
+          <strong>
+            {{ prediction.sizes.medium }}
+          </strong>
+        </span>
+
+        <span>
+          Familiar
+          <strong>
+            {{ prediction.sizes.family }}
+          </strong>
+        </span>
+
+        <span>
+          Gigante
+          <strong>
+            {{ prediction.sizes.giant }}
+          </strong>
+        </span>
+      </div>
+    </article>
+    }
+  </div>
+</article>
+
+<section class="insights-grid">
+  <article class="panel-card surface-card">
+    <header class="panel-header">
+      <div>
+        <h2>Recomendaciones</h2>
+
+        <p>Sugerencias generadas a partir del pronóstico</p>
+      </div>
+    </header>
+
+    @if (run.recommendations.length > 0) {
+    <ul class="recommendations-list">
+      @for (recommendation of run.recommendations; track recommendation) {
+      <li>
+        <i class="pi pi-check-circle"></i>
+        <span>
+          {{ recommendation }}
+        </span>
+      </li>
+      }
+    </ul>
+    } @else {
+    <p class="muted-message">No existen recomendaciones adicionales.</p>
+    }
+  </article>
+
+  <article class="panel-card surface-card">
+    <header class="panel-header">
+      <div>
+        <h2>Información del modelo</h2>
+
+        <p>Configuración del servicio activo</p>
+      </div>
+    </header>
+
+    @if (modelLoading()) {
+    <p-skeleton height="170px" borderRadius="14px" />
+    } @else if (remoteModel(); as model) {
+    <dl class="detail-list">
+      <div>
+        <dt>Tipo</dt>
+        <dd>{{ model.type }}</dd>
+      </div>
+
+      <div>
+        <dt>Versión</dt>
+        <dd>{{ model.version }}</dd>
+      </div>
+
+      <div>
+        <dt>Entrenamiento</dt>
+        <dd>
+          {{ formatDate(model.trained_from) }}
+          —
+          {{ formatDate(model.trained_until) }}
+        </dd>
+      </div>
+
+      <div>
+        <dt>Registros</dt>
+        <dd>
+          {{ model.training_records }}
+        </dd>
+      </div>
+    </dl>
+    } @else {
+    <p class="muted-message">El servicio remoto no está disponible.</p>
+    }
+  </article>
+</section>
+
+<article class="panel-card surface-card">
+  <header class="panel-header">
+    <div>
+      <h2>Historial de pronósticos</h2>
+
+      <p>Ejecuciones generadas anteriormente</p>
+    </div>
+  </header>
+
+  @if (historyLoading()) {
+  <p-skeleton height="220px" borderRadius="14px" />
+  } @else if (history().length === 0) {
+  <p class="muted-message">Todavía no existen pronósticos históricos.</p>
+  } @else {
+  <div class="table-wrapper desktop-only">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Generado</th>
+          <th>Periodo</th>
+          <th>Modelo</th>
+          <th>Fuente</th>
+          <th>Estado</th>
+          <th class="actions-column">Acciones</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        @for (item of history(); track item.uuid) {
+        <tr>
+          <td>
+            {{ formatDateTime(item.created_at) }}
+          </td>
+
+          <td>
+            {{ formatDate(item.forecast.from) }}
+            —
+            {{ formatDate(item.forecast.until) }}
+          </td>
+
+          <td>
+            {{ item.model.algorithm }}
+          </td>
+
+          <td>
+            <p-tag [value]="sourceLabel(item.source)" [severity]="sourceSeverity(item.source)" />
+          </td>
+
+          <td>
+            <p-tag [value]="runStatusLabel(item)" [severity]="runStatusSeverity(item)" />
+          </td>
+
+          <td class="actions-column">
+            <p-button icon="pi pi-eye" severity="secondary" [text]="true" [rounded]="true" pTooltip="Ver detalle"
+              (onClick)="openRunDetail(item)" />
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <div class="mobile-only mobile-run-list">
+    @for (item of history(); track item.uuid) {
+    <article class="mobile-data-card">
+      <header>
+        <div>
+          <strong>
+            {{ item.model.algorithm }}
+          </strong>
+
+          <span>
+            {{ formatDateTime(item.created_at) }}
+          </span>
+        </div>
+
+        <p-tag [value]="runStatusLabel(item)" [severity]="runStatusSeverity(item)" />
+      </header>
+
+      <div class="mobile-card-actions">
+        <p-button label="Ver detalle" icon="pi pi-eye" severity="secondary" [outlined]="true" size="small"
+          (onClick)="openRunDetail(item)" />
+      </div>
+    </article>
+    }
+  </div>
+
+  <p-paginator [first]="(historyPage() - 1) * historyPerPage()" [rows]="historyPerPage()"
+    [totalRecords]="historyTotal()" [rowsPerPageOptions]="[5, 10, 15]" (onPageChange)="onHistoryPageChange($event)" />
+  }
+</article>
+}
+
+<p-dialog header="Generar pronóstico" [visible]="generateDialogVisible()" [modal]="true" [closable]="!generating()"
+  [closeOnEscape]="!generating()" [draggable]="false" [resizable]="false" [style]="{
+    width: 'min(520px, calc(100vw - 2rem))',
+  }" (visibleChange)="onGenerateDialogVisibleChange($event)">
+  <form class="dialog-form" [formGroup]="generateForm" (ngSubmit)="generateForecast()">
+    <div class="field">
+      <label for="forecast-start-date"> Fecha inicial </label>
+
+      <p-datepicker inputId="forecast-start-date" formControlName="startDate" [minDate]="minimumForecastDate"
+        [showIcon]="true" [showButtonBar]="true" dateFormat="dd/mm/yy" appendTo="body" />
+    </div>
+
+    <div class="field">
+      <label for="forecast-days"> Días a pronosticar </label>
+
+      <p-inputnumber inputId="forecast-days" formControlName="days" [min]="1" [max]="31" [showButtons]="true" />
+    </div>
+
+    <div class="dialog-actions">
+      <p-button type="button" label="Cancelar" severity="secondary" [outlined]="true" [disabled]="generating()"
+        (onClick)="closeGenerateDialog()" />
+
+      <p-button type="submit" label="Generar pronóstico" icon="pi pi-sparkles" severity="success"
+        [loading]="generating()" />
+    </div>
+  </form>
+</p-dialog>
+
+<p-dialog header="Detalle del pronóstico" [visible]="detailDialogVisible()" [modal]="true" [draggable]="false"
+  [resizable]="false" [style]="{
+    width: 'min(820px, calc(100vw - 2rem))',
+  }" (visibleChange)="onDetailDialogVisibleChange($event)">
+  @if (detailLoading()) {
+  <p-skeleton height="360px" borderRadius="14px" />
+  } @else if (selectedRun(); as detail) {
+  <div class="dialog-detail-grid">
+    <div>
+      <span>Modelo</span>
+      <strong>
+        {{ detail.model.algorithm }}
+      </strong>
+    </div>
+
+    <div>
+      <span>Versión</span>
+      <strong>
+        {{ detail.model.version }}
+      </strong>
+    </div>
+
+    <div>
+      <span>Periodo</span>
+      <strong>
+        {{ formatDate(detail.forecast.from) }}
+        —
+        {{ formatDate(detail.forecast.until) }}
+      </strong>
+    </div>
+
+    <div>
+      <span>Total estimado</span>
+      <strong>
+        {{ detail.summary.forecast_total_units }}
+      </strong>
+    </div>
+
+    <div>
+      <span>MAE</span>
+      <strong>
+        {{ formatMetric(detail.metrics.mae, 4) }}
+      </strong>
+    </div>
+
+    <div>
+      <span>RMSE</span>
+      <strong>
+        {{ formatMetric(detail.metrics.rmse, 4) }}
+      </strong>
+    </div>
+  </div>
+  }
+</p-dialog>

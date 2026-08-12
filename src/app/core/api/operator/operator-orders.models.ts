@@ -79,7 +79,7 @@ export interface OperatorOrderDetailDto {
 
   status: OrderStatusName | string;
 
-  allowed_transitions: Array<OrderStatusName | string>;
+  allowed_transitions: (OrderStatusName | string)[];
 
   delivery_type: DeliveryType;
   payment_method: PaymentMethod;
@@ -156,11 +156,7 @@ export interface KitchenPersonalizationDto {
   ingredient_name: string;
   action: string;
 
-  applies_to:
-    | 'ALL'
-    | 'A'
-    | 'B'
-    | string;
+  applies_to: 'ALL' | 'A' | 'B' | string;
 
   extra_price: number;
 }
@@ -202,9 +198,7 @@ export interface KitchenItemDto {
   personalizations?: KitchenPersonalizationDto[];
 }
 
-export interface QueueCountsDto {
-  [statusName: string]: number;
-}
+export type QueueCountsDto = Record<string, number>;
 
 export interface OperatorQueueResponse {
   data: QueueCountsDto;

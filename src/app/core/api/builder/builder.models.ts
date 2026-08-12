@@ -18,10 +18,10 @@ export interface BuilderQuoteRequestDto {
   customizations: CustomizationDto[];
 
   // compatibilidad opcional
-  extras?: Array<{
+  extras?: {
     ingredient_id: number;
     applies_to: AppliesTo;
-  }>;
+  }[];
 }
 
 export interface BuilderQuoteBreakdownDto {

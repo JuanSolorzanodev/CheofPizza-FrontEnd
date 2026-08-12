@@ -1,0 +1,60 @@
+@if (comparison(); as result) {
+  <article class="chart-card surface-card">
+    <header class="panel-header">
+      <div>
+        <span class="panel-eyebrow"> Tendencia diaria </span>
+
+        <h2>Demanda estimada frente a ventas reales</h2>
+
+        <p>
+          La fecha actual se presenta como un resultado parcial. Las fechas futuras permanecen
+          pendientes hasta que finalice el correspondiente día comercial.
+        </p>
+      </div>
+
+      <div class="chart-status" aria-label="Estado de fechas">
+        <span class="status-chip completed">
+          <i class="pi pi-check-circle" aria-hidden="true"></i>
+
+          {{ result.summary.days_compared }}
+          finalizados
+        </span>
+
+        <span class="status-chip progress">
+          <i class="pi pi-clock" aria-hidden="true"></i>
+
+          {{ result.summary.days_in_progress }}
+          en curso
+        </span>
+
+        <span class="status-chip pending">
+          <i class="pi pi-hourglass" aria-hidden="true"></i>
+
+          {{ result.summary.days_pending }}
+          pendientes
+        </span>
+      </div>
+    </header>
+
+    @if (hasResults()) {
+      <div class="chart-container">
+        <p-chart
+          type="line"
+          [data]="chartData()"
+          [options]="chartOptions()"
+          aria-label="Gráfica de predicción y ventas reales"
+        />
+      </div>
+    } @else {
+      <div class="chart-empty">
+        <i class="pi pi-chart-line" aria-hidden="true"></i>
+
+        <strong> No hay pronósticos dentro del periodo </strong>
+
+        <span>
+          Selecciona fechas que coincidan con el rango generado por el modelo predictivo activo.
+        </span>
+      </div>
+    }
+  </article>
+}

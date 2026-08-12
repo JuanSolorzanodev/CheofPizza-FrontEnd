@@ -2,56 +2,29 @@
   display: block;
 }
 
-/* =========================================================
-   PÁGINA
-   ========================================================= */
-
 .admin-settings-page {
   display: grid;
   gap: var(--cheof-space-6);
-
-  width: min(
-    100%,
-    var(--cheof-page-max-width)
-  );
-
+  width: min(100%, var(--cheof-page-max-width));
   margin-inline: auto;
 }
-
-/* =========================================================
-   CABECERA
-   ========================================================= */
 
 .page-header {
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
   gap: var(--cheof-space-6);
-
-  padding:
-    clamp(1.15rem, 2vw, 1.55rem);
-
-  border:
-    1px solid
-    var(--cheof-card-border);
-
-  border-radius:
-    var(--cheof-radius-2xl);
-
+  padding: clamp(1.15rem, 2vw, 1.55rem);
+  border: 1px solid var(--cheof-card-border);
+  border-radius: var(--cheof-radius-2xl);
   background:
     radial-gradient(
       circle at top right,
-      color-mix(
-        in srgb,
-        var(--p-primary-color) 10%,
-        transparent
-      ),
+      color-mix(in srgb, var(--p-primary-color) 10%, transparent),
       transparent 36%
     ),
     var(--cheof-card-background);
-
-  box-shadow:
-    var(--cheof-shadow-sm);
+  box-shadow: var(--cheof-shadow-sm);
 }
 
 .page-header__content {
@@ -59,21 +32,9 @@
 }
 
 .page-header__content h1 {
-  margin:
-    0.35rem
-    0
-    0.45rem;
-
-  color:
-    var(--cheof-text);
-
-  font-size:
-    clamp(
-      1.8rem,
-      3vw,
-      2.45rem
-    );
-
+  margin: 0.35rem 0 0.45rem;
+  color: var(--cheof-text);
+  font-size: clamp(1.8rem, 3vw, 2.45rem);
   font-weight: 800;
   line-height: 1.08;
   letter-spacing: -0.035em;
@@ -82,10 +43,7 @@
 .page-header__content p {
   max-width: 50rem;
   margin: 0;
-
-  color:
-    var(--cheof-text-secondary);
-
+  color: var(--cheof-text-secondary);
   font-size: 0.92rem;
   line-height: 1.6;
 }
@@ -93,661 +51,51 @@
 .page-header__eyebrow {
   display: inline-flex;
   align-items: center;
-
-  padding:
-    0.38rem
-    0.72rem;
-
-  border-radius:
-    var(--cheof-radius-pill);
-
-  background:
-    var(--cheof-primary-soft);
-
-  color:
-    var(--p-primary-color);
-
+  padding: 0.38rem 0.72rem;
+  border-radius: var(--cheof-radius-pill);
+  background: var(--cheof-primary-soft);
+  color: var(--p-primary-color);
   font-size: 0.76rem;
   font-weight: 800;
   letter-spacing: 0.055em;
   text-transform: uppercase;
 }
 
-.page-header__actions,
-.form-actions__buttons {
+.page-header__actions {
   display: flex;
   flex: 0 0 auto;
   align-items: center;
   gap: var(--cheof-space-3);
 }
 
-/* =========================================================
-   RESUMEN
-   ========================================================= */
-
-.summary-grid {
-  display: grid;
-  grid-template-columns:
-    repeat(
-      4,
-      minmax(0, 1fr)
-    );
-
-  gap: var(--cheof-space-4);
-}
-
-.summary-card {
-  display: flex;
-  min-width: 0;
-  min-height: 7.875rem;
-  align-items: center;
-  gap: var(--cheof-space-4);
-
-  padding: 1.15rem;
-
-  border:
-    1px solid
-    var(--cheof-card-border);
-
-  border-radius:
-    var(--cheof-radius-xl);
-
-  background:
-    var(--cheof-card-background);
-
-  box-shadow:
-    var(--cheof-shadow-sm);
-
-  transition:
-    transform
-      var(--cheof-transition),
-    border-color
-      var(--cheof-transition),
-    box-shadow
-      var(--cheof-transition);
-}
-
-.summary-card:hover {
-  transform:
-    translateY(-2px);
-
-  border-color:
-    color-mix(
-      in srgb,
-      var(--p-primary-color) 18%,
-      var(--cheof-card-border)
-    );
-
-  box-shadow:
-    var(--cheof-shadow-md);
-}
-
-.summary-card__icon {
-  display: grid;
-  width: 3.375rem;
-  height: 3.375rem;
-  flex: 0 0 3.375rem;
-  place-items: center;
-
-  border-radius:
-    var(--cheof-radius-lg);
-
-  background:
-    var(--cheof-primary-soft);
-
-  color:
-    var(--p-primary-color);
-
-  font-size: 1.35rem;
-}
-
-.summary-card__content {
-  display: grid;
-  min-width: 0;
-  gap: 0.18rem;
-}
-
-.summary-card__content > span {
-  color:
-    var(--cheof-text-secondary);
-
-  font-size: 0.82rem;
-  font-weight: 700;
-}
-
-.summary-card__content strong {
-  overflow: hidden;
-
-  color:
-    var(--cheof-text);
-
-  font-size: 1.35rem;
-  font-weight: 800;
-  line-height: 1.1;
-  letter-spacing: -0.025em;
-  text-overflow: ellipsis;
-
-  white-space: nowrap;
-}
-
-.summary-card__content small {
-  color:
-    var(--cheof-text-soft);
-
-  font-size: 0.78rem;
-}
-
-.summary-card--success
-  .summary-card__icon {
-  background:
-    var(--cheof-success-soft);
-
-  color:
-    var(--cheof-success-strong);
-}
-
-.summary-card--warning
-  .summary-card__icon {
-  background:
-    var(--cheof-warning-soft);
-
-  color:
-    var(--cheof-warning-strong);
-}
-
-.summary-card--danger
-  .summary-card__icon {
-  background:
-    var(--cheof-danger-soft);
-
-  color:
-    var(--cheof-danger-strong);
-}
-
-.summary-card--muted
-  .summary-card__icon {
-  background:
-    var(--cheof-muted-background);
-
-  color:
-    var(--cheof-text-secondary);
-}
-
-/* =========================================================
-   SKELETON / FORMULARIO
-   ========================================================= */
-
-.settings-skeleton,
-.settings-grid {
-  display: grid;
-  grid-template-columns:
-    repeat(
-      2,
-      minmax(0, 1fr)
-    );
-
-  gap: var(--cheof-space-4);
-}
-
-.settings-form {
+.loading-summary-grid,
+.loading-settings-grid {
   display: grid;
   gap: var(--cheof-space-4);
 }
 
-/* =========================================================
-   TARJETAS
-   ========================================================= */
-
-.settings-card {
-  display: grid;
-  min-width: 0;
-  align-content: start;
-  gap: 1.2rem;
-
-  padding: 1.35rem;
-
-  border:
-    1px solid
-    var(--cheof-card-border);
-
-  border-radius:
-    var(--cheof-radius-xl);
-
-  background:
-    var(--cheof-card-background);
-
-  box-shadow:
-    var(--cheof-shadow-sm);
-
-  transition:
-    border-color
-      var(--cheof-transition),
-    box-shadow
-      var(--cheof-transition);
+.loading-summary-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
-.settings-card:hover {
-  border-color:
-    color-mix(
-      in srgb,
-      var(--p-primary-color) 14%,
-      var(--cheof-card-border)
-    );
-
-  box-shadow:
-    var(--cheof-shadow-md);
+.loading-settings-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
-.settings-card--wide {
-  grid-column: 1 / -1;
+.page-header__actions :is(button, a):focus-visible {
+  outline: 0.16rem solid color-mix(in srgb, var(--p-primary-color) 35%, transparent);
+  outline-offset: 0.14rem;
 }
-
-.settings-card__header {
-  display: flex;
-  align-items: center;
-  gap: 0.9rem;
-
-  padding-bottom: 1rem;
-
-  border-bottom:
-    1px solid
-    var(--cheof-divider);
-}
-
-.settings-card__header h2 {
-  margin:
-    0
-    0
-    0.22rem;
-
-  color:
-    var(--cheof-text);
-
-  font-size: 1.16rem;
-  font-weight: 750;
-  letter-spacing: -0.02em;
-}
-
-.settings-card__header p {
-  margin: 0;
-
-  color:
-    var(--cheof-text-secondary);
-
-  font-size: 0.84rem;
-  line-height: 1.45;
-}
-
-.settings-card__icon {
-  display: grid;
-  width: 2.875rem;
-  height: 2.875rem;
-  flex: 0 0 2.875rem;
-  place-items: center;
-
-  border-radius:
-    var(--cheof-radius-lg);
-
-  background:
-    var(--cheof-primary-soft);
-
-  color:
-    var(--p-primary-color);
-
-  font-size: 1.08rem;
-}
-
-.settings-card__icon--whatsapp {
-  background:
-    color-mix(
-      in srgb,
-      var(--cheof-success) 9%,
-      var(--cheof-card-background)
-    );
-
-  color:
-    var(--cheof-success-strong);
-}
-
-/* =========================================================
-   CAMPOS
-   ========================================================= */
-
-.form-grid {
-  display: grid;
-  grid-template-columns:
-    repeat(
-      2,
-      minmax(0, 1fr)
-    );
-
-  gap: var(--cheof-space-4);
-}
-
-.form-field {
-  display: grid;
-  min-width: 0;
-  align-content: start;
-  gap: 0.45rem;
-}
-
-.form-field--full {
-  grid-column: 1 / -1;
-}
-
-.form-field > span {
-  color:
-    var(--cheof-text);
-
-  font-size: 0.8rem;
-  font-weight: 700;
-}
-
-.form-field input,
-.form-field textarea,
-:host ::ng-deep
-  .form-field
-  .p-inputnumber {
-  width: 100%;
-}
-
-.form-field input,
-.form-field textarea,
-:host ::ng-deep
-  .form-field
-  .p-inputnumber-input {
-  min-height:
-    var(--cheof-control-height);
-
-  border-radius:
-    var(--cheof-radius-sm);
-}
-
-.form-field textarea {
-  min-height: 6.5rem;
-  resize: vertical;
-}
-
-.field-error {
-  color:
-    var(--cheof-danger-strong);
-
-  font-size: 0.76rem;
-  line-height: 1.4;
-}
-
-.field-help {
-  color:
-    var(--cheof-text-soft);
-
-  font-size: 0.74rem;
-  line-height: 1.4;
-}
-
-/* =========================================================
-   TOGGLES
-   ========================================================= */
-
-.toggle-stack {
-  display: grid;
-  gap: var(--cheof-space-3);
-}
-
-.toggle-row {
-  display: flex;
-  min-height: 4.5rem;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--cheof-space-4);
-
-  padding:
-    0.9rem
-    1rem;
-
-  border:
-    1px solid
-    var(--cheof-card-border);
-
-  border-radius:
-    var(--cheof-radius-lg);
-
-  background:
-    var(
-      --cheof-card-background-muted
-    );
-
-  transition:
-    border-color
-      var(--cheof-transition),
-    background
-      var(--cheof-transition);
-}
-
-.toggle-row:hover {
-  border-color:
-    color-mix(
-      in srgb,
-      var(--p-primary-color) 20%,
-      var(--cheof-card-border)
-    );
-}
-
-.toggle-row--featured {
-  background:
-    linear-gradient(
-      135deg,
-      var(--cheof-primary-soft),
-      var(--cheof-card-background)
-    );
-}
-
-.toggle-row > div {
-  display: grid;
-  min-width: 0;
-  gap: 0.22rem;
-}
-
-.toggle-row strong {
-  color:
-    var(--cheof-text);
-
-  font-size: 0.88rem;
-  font-weight: 700;
-}
-
-.toggle-row span {
-  color:
-    var(--cheof-text-secondary);
-
-  font-size: 0.78rem;
-  line-height: 1.4;
-}
-
-.toggle-title {
-  display: flex !important;
-  grid-auto-flow: column;
-  justify-content: start;
-  align-items: center;
-  gap: 0.55rem !important;
-}
-
-/* =========================================================
-   WHATSAPP
-   ========================================================= */
-
-.whatsapp-layout {
-  display: grid;
-  grid-template-columns:
-    minmax(
-      17.5rem,
-      0.8fr
-    )
-    minmax(
-      17.5rem,
-      1fr
-    );
-
-  align-items: start;
-  gap: var(--cheof-space-4);
-}
-
-.whatsapp-layout
-  .form-field--full {
-  grid-column: 1 / -1;
-}
-
-/* =========================================================
-   ACCIONES DE GUARDADO
-   ========================================================= */
-
-.form-actions {
-  position: sticky;
-  bottom: 1rem;
-  z-index:
-    var(--cheof-z-floating);
-
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--cheof-space-4);
-
-  padding:
-    1rem
-    1.15rem;
-
-  border:
-    1px solid
-    var(--cheof-card-border);
-
-  border-radius:
-    var(--cheof-radius-xl);
-
-  background:
-    color-mix(
-      in srgb,
-      var(--cheof-card-background) 94%,
-      transparent
-    );
-
-  box-shadow:
-    var(--cheof-shadow-md);
-
-  backdrop-filter:
-    blur(14px);
-
-  -webkit-backdrop-filter:
-    blur(14px);
-}
-
-.save-state {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-
-  color:
-    var(--cheof-text-secondary);
-
-  font-size: 0.82rem;
-  font-weight: 700;
-}
-
-.save-state
-  .pi-circle-fill {
-  color:
-    var(--cheof-warning);
-
-  font-size: 0.55rem;
-}
-
-.save-state
-  .pi-check-circle {
-  color:
-    var(--cheof-success);
-}
-
-/* =========================================================
-   PRIMENG
-   ========================================================= */
-
-:host ::ng-deep {
-  .p-message.section-error {
-    width: 100%;
-
-    border-radius:
-      var(--cheof-radius-md);
-  }
-
-  .p-inputnumber-input {
-    width: 100%;
-  }
-
-  .p-tag {
-    white-space: nowrap;
-  }
-
-  .p-inputtext,
-  .p-inputnumber-input,
-  .p-textarea {
-    transition:
-      border-color
-        var(--cheof-transition-fast),
-      box-shadow
-        var(--cheof-transition-fast);
-  }
-}
-
-/* =========================================================
-   ACCESIBILIDAD
-   ========================================================= */
-
-.page-header__actions
-  :is(
-    button,
-    a
-  ):focus-visible,
-.form-actions__buttons
-  :is(
-    button,
-    a
-  ):focus-visible {
-  outline:
-    0.16rem solid
-    color-mix(
-      in srgb,
-      var(--p-primary-color) 35%,
-      transparent
-    );
-
-  outline-offset:
-    0.14rem;
-}
-
-/* =========================================================
-   RESPONSIVE — DESKTOP MEDIANO
-   ========================================================= */
 
 @media (max-width: 68.75rem) {
-  .summary-grid {
-    grid-template-columns:
-      repeat(
-        2,
-        minmax(0, 1fr)
-      );
+  .loading-summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .settings-grid {
-    grid-template-columns:
-      1fr;
-  }
-
-  .settings-card--wide {
-    grid-column: auto;
+  .loading-settings-grid {
+    grid-template-columns: 1fr;
   }
 }
-
-/* =========================================================
-   RESPONSIVE — TABLET / MÓVIL
-   ========================================================= */
 
 @media (max-width: 47.5rem) {
   .admin-settings-page {
@@ -757,104 +105,31 @@
   .page-header {
     align-items: stretch;
     flex-direction: column;
-
     padding: 1.15rem;
-
-    border-radius:
-      var(--cheof-radius-xl);
+    border-radius: var(--cheof-radius-xl);
   }
 
-  .page-header__actions,
-  .form-actions__buttons {
+  .page-header__actions {
     width: 100%;
     flex-wrap: wrap;
   }
 
-  .page-header__actions > *,
-  .form-actions__buttons > * {
-    flex:
-      1 1 10rem;
-  }
-
-  .summary-grid,
-  .form-grid,
-  .whatsapp-layout {
-    grid-template-columns:
-      1fr;
-  }
-
-  .form-field--full,
-  .whatsapp-layout
-    .form-field--full {
-    grid-column: auto;
-  }
-
-  .settings-card {
-    padding: 1.05rem;
-
-    border-radius:
-      var(--cheof-radius-xl);
-  }
-
-  .form-actions {
-    position: static;
-
-    align-items: stretch;
-    flex-direction: column;
+  .page-header__actions > * {
+    flex: 1 1 10rem;
   }
 }
-
-/* =========================================================
-   RESPONSIVE — MÓVIL PEQUEÑO
-   ========================================================= */
 
 @media (max-width: 30rem) {
-  .summary-grid {
-    grid-template-columns:
-      1fr;
+  .loading-summary-grid {
+    grid-template-columns: 1fr;
   }
 
-  .summary-card {
-    min-height: 6.75rem;
-  }
-
-  .page-header__actions,
-  .form-actions__buttons {
+  .page-header__actions {
     flex-direction: column;
   }
 
-  .page-header__actions > *,
-  .form-actions__buttons > * {
+  .page-header__actions > * {
     width: 100%;
     flex: none;
-  }
-
-  .settings-card__header {
-    align-items: flex-start;
-  }
-
-  .toggle-row {
-    align-items: flex-start;
-  }
-}
-
-/* =========================================================
-   REDUCCIÓN DE MOVIMIENTO
-   ========================================================= */
-
-@media (
-  prefers-reduced-motion:
-    reduce
-) {
-  .summary-card,
-  .settings-card,
-  .toggle-row,
-  :host ::ng-deep
-    .p-inputtext,
-  :host ::ng-deep
-    .p-inputnumber-input,
-  :host ::ng-deep
-    .p-textarea {
-    transition: none;
   }
 }

@@ -2,110 +2,80 @@
   display: block;
   min-width: 0;
 }
-
 .ingredients-page {
   display: grid;
   max-width: var(--cheof-page-max-width);
   margin-inline: auto;
   gap: 1.25rem;
 }
-
 .ingredients-hero,
 .summary-card,
 .catalog-tabs,
 .filters-panel,
 .content-panel {
-  border: 1px solid
-    var(--cheof-card-border);
-  background:
-    var(--cheof-card-background);
-  box-shadow:
-    var(--cheof-shadow-xs);
+  border: 1px solid var(--cheof-card-border);
+  background: var(--cheof-card-background);
+  box-shadow: var(--cheof-shadow-xs);
 }
-
 .ingredients-hero {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 1.5rem;
-  padding:
-    clamp(1.25rem, 3vw, 2rem);
-  border-radius:
-    var(--cheof-radius-xl);
-
+  padding: clamp(1.25rem, 3vw, 2rem);
+  border-radius: var(--cheof-radius-xl);
   background:
     radial-gradient(
       circle at 90% 12%,
-      color-mix(
-        in srgb,
-        var(--p-primary-color) 15%,
-        transparent
-      ),
+      color-mix(in srgb, var(--p-primary-color) 15%, transparent),
       transparent 38%
     ),
     linear-gradient(
       135deg,
-      color-mix(
-        in srgb,
-        var(--p-primary-color) 6%,
-        var(--cheof-card-background)
-      ),
+      color-mix(in srgb, var(--p-primary-color) 6%, var(--cheof-card-background)),
       var(--cheof-card-background)
     );
 }
-
 .eyebrow {
   display: block;
-  color:
-    var(--p-primary-color);
+  color: var(--p-primary-color);
   font-size: 0.7rem;
   font-weight: 850;
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
-
 .ingredients-hero h2,
 .panel-header h3 {
   margin: 0.35rem 0 0;
 }
-
 .ingredients-hero h2 {
-  font-size:
-    clamp(1.65rem, 4vw, 2.45rem);
+  font-size: clamp(1.65rem, 4vw, 2.45rem);
   line-height: 1.08;
 }
-
 .ingredients-hero p,
 .panel-header p {
   margin: 0.65rem 0 0;
-  color:
-    var(--cheof-text-secondary);
+  color: var(--cheof-text-secondary);
   line-height: 1.65;
 }
-
 .hero-actions {
   display: flex;
   align-items: center;
   gap: 0.75rem;
 }
-
 .summary-grid {
   display: grid;
-  grid-template-columns:
-    repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 1rem;
 }
-
 .summary-card {
   display: flex;
   min-width: 0;
   align-items: center;
   gap: 0.9rem;
   padding: 1rem;
-  border-radius:
-    var(--cheof-radius-lg);
+  border-radius: var(--cheof-radius-lg);
 }
-
 .summary-icon {
   display: grid;
   width: 46px;
@@ -114,87 +84,50 @@
   place-items: center;
   border-radius: var(--cheof-radius-lg);
 }
-
 .summary-icon.primary {
-  color:
-    var(--p-primary-color);
-  background:
-    color-mix(
-      in srgb,
-      var(--p-primary-color) 12%,
-      transparent
-    );
+  color: var(--p-primary-color);
+  background: color-mix(in srgb, var(--p-primary-color) 12%, transparent);
 }
-
 .summary-icon.info {
-  color:
-    var(--cheof-info);
-  background:
-    color-mix(
-      in srgb,
-      var(--cheof-info) 12%,
-      transparent
-    );
+  color: var(--cheof-info);
+  background: color-mix(in srgb, var(--cheof-info) 12%, transparent);
 }
-
 .summary-icon.warning {
-  color:
-    var(--cheof-warning);
-  background:
-    color-mix(
-      in srgb,
-      var(--cheof-warning) 12%,
-      transparent
-    );
+  color: var(--cheof-warning);
+  background: color-mix(in srgb, var(--cheof-warning) 12%, transparent);
 }
-
 .summary-icon.success {
-  color:
-    var(--cheof-success);
-  background:
-    color-mix(
-      in srgb,
-      var(--cheof-success) 12%,
-      transparent
-    );
+  color: var(--cheof-success);
+  background: color-mix(in srgb, var(--cheof-success) 12%, transparent);
 }
-
 .summary-card > div {
   display: grid;
   min-width: 0;
   gap: 0.1rem;
 }
-
 .summary-card span,
 .summary-card small {
-  color:
-    var(--cheof-text-secondary);
+  color: var(--cheof-text-secondary);
 }
-
 .summary-card > div > span {
   font-size: 0.75rem;
 }
-
 .summary-card strong {
   font-size: 1.4rem;
   line-height: 1.15;
 }
-
 .summary-card small {
   overflow: hidden;
   font-size: 0.7rem;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-
 .catalog-tabs {
   display: flex;
   gap: 0.45rem;
   padding: 0.45rem;
-  border-radius:
-    var(--cheof-radius-lg);
+  border-radius: var(--cheof-radius-lg);
 }
-
 .catalog-tabs button {
   display: flex;
   flex: 1;
@@ -206,363 +139,138 @@
   border: 0;
   border-radius: var(--cheof-radius-md);
   background: transparent;
-  color:
-    var(--cheof-text-secondary);
+  color: var(--cheof-text-secondary);
   font: inherit;
   font-size: 0.8rem;
   font-weight: 750;
   cursor: pointer;
-
   transition:
     color 160ms ease,
     background 160ms ease;
 }
-
 .catalog-tabs button:hover {
-  background:
-    var(--cheof-muted-background);
-  color:
-    var(--cheof-text);
+  background: var(--cheof-muted-background);
+  color: var(--cheof-text);
 }
-
 .catalog-tabs button.active {
-  background:
-    color-mix(
-      in srgb,
-      var(--p-primary-color) 12%,
-      transparent
-    );
-  color:
-    var(--p-primary-color);
+  background: color-mix(in srgb, var(--p-primary-color) 12%, transparent);
+  color: var(--p-primary-color);
 }
-
 .catalog-tabs small {
   display: inline-grid;
   min-width: 24px;
   height: 24px;
   place-items: center;
-  border-radius: 999px;
-  background:
-    var(--cheof-muted-background);
+  border-radius: var(--cheof-radius-pill);
+  background: var(--cheof-muted-background);
   font-size: 0.65rem;
 }
-
 .filters-panel {
   display: grid;
-  grid-template-columns:
-    minmax(260px, 1fr)
-    minmax(190px, 230px)
-    minmax(190px, 230px)
-    auto;
+  grid-template-columns: minmax(260px, 1fr) minmax(190px, 230px) minmax(190px, 230px) auto;
   align-items: center;
   gap: 0.75rem;
   padding: 1rem;
-  border-radius:
-    var(--cheof-radius-lg);
+  border-radius: var(--cheof-radius-lg);
 }
-
 .search-box {
   position: relative;
   min-width: 0;
 }
-
 .search-box i {
   position: absolute;
   z-index: 1;
   top: 50%;
   left: 0.9rem;
-  color:
-    var(--cheof-text-secondary);
-  transform:
-    translateY(-50%);
+  color: var(--cheof-text-secondary);
+  transform: translateY(-50%);
 }
-
 .search-box input {
   width: 100%;
   padding-left: 2.6rem;
 }
-
-:host ::ng-deep
-.filters-panel .p-select,
-:host ::ng-deep
-.field .p-select,
-:host ::ng-deep
-.price-row .p-inputnumber {
+:host ::ng-deep .filters-panel .p-select {
   width: 100%;
 }
-
 .content-panel {
   overflow: hidden;
-  border-radius:
-    var(--cheof-radius-xl);
+  border-radius: var(--cheof-radius-xl);
 }
-
 .panel-header {
-  padding:
-    clamp(1rem, 2.5vw, 1.5rem);
-  border-bottom:
-    1px solid
-    var(--cheof-card-border);
+  padding: clamp(1rem, 2.5vw, 1.5rem);
+  border-bottom: 1px solid var(--cheof-card-border);
 }
-
 .panel-header.split {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
 }
-
 .panel-header h3 {
   font-size: 1.25rem;
 }
-
 .panel-header p {
   font-size: 0.82rem;
 }
-
 .cards-grid {
   display: grid;
-  grid-template-columns:
-    repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1rem;
   padding: 1rem;
 }
-
-.ingredient-card {
-  display: grid;
-  min-width: 0;
-  gap: 1rem;
-  padding: 1rem;
-  border:
-    1px solid
-    var(--cheof-card-border);
-  border-radius:
-    var(--cheof-radius-lg);
-  background:
-    var(--cheof-card-background);
-
-  transition:
-    border-color 160ms ease,
-    box-shadow 160ms ease,
-    transform 160ms ease;
-}
-
-.ingredient-card:hover {
-  border-color:
-    color-mix(
-      in srgb,
-      var(--p-primary-color) 30%,
-      var(--cheof-card-border)
-    );
-  box-shadow:
-    var(--cheof-shadow-sm);
-  transform:
-    translateY(-1px);
-}
-
-.ingredient-card header {
-  display: flex;
-  min-width: 0;
-  align-items: flex-start;
-  gap: 0.75rem;
-}
-
-.ingredient-icon,
-.type-symbol {
-  display: grid;
-  width: 42px;
-  min-width: 42px;
-  height: 42px;
-  place-items: center;
-  border-radius: 13px;
-  color:
-    var(--p-primary-color);
-  background:
-    color-mix(
-      in srgb,
-      var(--p-primary-color) 10%,
-      transparent
-    );
-}
-
-.ingredient-icon i {
-  font-size: 0.7rem;
-}
-
-.ingredient-heading {
-  display: grid;
-  min-width: 0;
-  flex: 1;
-  gap: 0.35rem;
-}
-
-.ingredient-heading h4,
-.type-row h4 {
-  margin: 0;
-  font-size: 0.95rem;
-}
-
-.protected-badge {
-  display: inline-flex;
-  flex-shrink: 0;
-  align-items: center;
-  gap: 0.3rem;
-  padding:
-    0.35rem 0.5rem;
-  border-radius: 999px;
-  color:
-    var(--cheof-warning);
-  background:
-    color-mix(
-      in srgb,
-      var(--cheof-warning) 11%,
-      transparent
-    );
-  font-size: 0.62rem;
-  font-weight: 750;
-}
-
-.ingredient-stats {
-  display: grid;
-  gap: 0.65rem;
-}
-
-.ingredient-stats > div {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  padding-bottom: 0.6rem;
-  border-bottom:
-    1px dashed
-    var(--cheof-card-border);
-}
-
-.ingredient-stats > div:last-child {
-  padding-bottom: 0;
-  border-bottom: 0;
-}
-
-.ingredient-stats span {
-  color:
-    var(--cheof-text-secondary);
-  font-size: 0.68rem;
-}
-
-.ingredient-stats strong {
-  overflow-wrap: anywhere;
-  text-align: right;
-  font-size: 0.72rem;
-}
-
-.ingredient-card footer {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 0.45rem;
-  padding-top: 0.85rem;
-  border-top:
-    1px solid
-    var(--cheof-card-border);
-}
-
 .empty-state {
   display: grid;
   justify-items: center;
   padding: 4rem 1.25rem;
   text-align: center;
 }
-
 .empty-state > span {
   display: grid;
   width: 64px;
   height: 64px;
   place-items: center;
   border-radius: var(--cheof-radius-xl);
-  background:
-    var(--cheof-muted-background);
-  color:
-    var(--cheof-text-secondary);
+  background: var(--cheof-muted-background);
+  color: var(--cheof-text-secondary);
   font-size: 1.45rem;
 }
-
 .empty-state h3 {
   margin: 1rem 0 0;
 }
-
 .empty-state p {
   margin: 0.45rem 0 1rem;
-  color:
-    var(--cheof-text-secondary);
+  color: var(--cheof-text-secondary);
 }
-
 .types-list {
   display: grid;
   gap: 0.75rem;
   padding: 1rem;
 }
-
-.type-row {
-  display: grid;
-  grid-template-columns:
-    auto minmax(0, 1fr) auto auto;
-  align-items: center;
-  gap: 1rem;
-  padding: 1rem;
-  border:
-    1px solid
-    var(--cheof-card-border);
-  border-radius:
-    var(--cheof-radius-lg);
-}
-
-.type-row p {
-  margin: 0.3rem 0 0;
-  color:
-    var(--cheof-text-secondary);
-  font-size: 0.72rem;
-}
-
-.row-actions {
-  display: flex;
-  align-items: center;
-  gap: 0.45rem;
-}
-
 .price-loading {
   padding: 1rem;
 }
-
 .price-table-wrap {
   overflow-x: auto;
   padding: 1rem;
 }
-
 .price-table {
   width: 100%;
   min-width: 920px;
   border-collapse: collapse;
 }
-
 .price-table th,
 .price-table td {
-  padding:
-    0.85rem 0.75rem;
-  border-bottom:
-    1px solid
-    var(--cheof-card-border);
+  padding: 0.85rem 0.75rem;
+  border-bottom: 1px solid var(--cheof-card-border);
   text-align: left;
   white-space: nowrap;
 }
-
 .price-table th {
-  color:
-    var(--cheof-text-secondary);
+  color: var(--cheof-text-secondary);
   font-size: 0.68rem;
   font-weight: 800;
   text-transform: uppercase;
 }
-
 .price-table th small {
   display: block;
   margin-top: 0.2rem;
@@ -570,237 +278,62 @@
   font-weight: 500;
   text-transform: none;
 }
-
 .price-table td {
   font-size: 0.76rem;
 }
-
 .price-table tbody tr {
-  transition:
-    background 150ms ease;
+  transition: background 150ms ease;
 }
-
 .price-table tbody tr:hover {
-  background:
-    color-mix(
-      in srgb,
-      var(--p-primary-color) 3%,
-      transparent
-    );
+  background: color-mix(in srgb, var(--p-primary-color) 3%, transparent);
 }
-
-.dialog-title {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.dialog-title > span {
-  display: grid;
-  width: 40px;
-  height: 40px;
-  place-items: center;
-  border-radius: var(--cheof-radius-md);
-  color:
-    var(--p-primary-color);
-  background:
-    color-mix(
-      in srgb,
-      var(--p-primary-color) 12%,
-      transparent
-    );
-}
-
-.dialog-title > div {
-  display: grid;
-  gap: 0.15rem;
-}
-
-.dialog-title small {
-  color:
-    var(--cheof-text-secondary);
-  font-size: 0.68rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.dialog-title strong {
-  font-size: 1rem;
-}
-
-.dialog-form,
-.prices-form {
-  display: grid;
-  gap: 1rem;
-  padding-top: 0.25rem;
-}
-
-.field {
-  display: grid;
-  min-width: 0;
-  gap: 0.42rem;
-}
-
-.field > span {
-  font-size: 0.78rem;
-  font-weight: 750;
-}
-
-.field em {
-  color:
-    var(--cheof-danger);
-  font-style: normal;
-}
-
-.field input {
-  width: 100%;
-}
-
-.field-error {
-  color:
-    var(--cheof-danger);
-  font-size: 0.7rem;
-}
-
-.prices-form > div {
-  display: grid;
-  gap: 0.65rem;
-}
-
-.price-row {
-  display: grid;
-  grid-template-columns:
-    minmax(0, 1fr)
-    minmax(180px, 220px);
-  align-items: center;
-  gap: 1rem;
-  padding: 0.85rem;
-  border:
-    1px solid
-    var(--cheof-card-border);
-  border-radius: var(--cheof-radius-lg);
-  background:
-    var(--cheof-muted-background);
-}
-
-.price-row > div {
-  display: grid;
-  gap: 0.2rem;
-}
-
-.price-row strong {
-  font-size: 0.8rem;
-}
-
-.price-row span {
-  color:
-    var(--cheof-text-secondary);
-  font-size: 0.68rem;
-}
-
-/* =========================================================
-   ACCESIBILIDAD
-   ========================================================= */
-
 .ingredients-page :is(button, a):focus-visible,
 .ingredients-page input:focus-visible {
-  outline: 0.16rem solid
-    color-mix(
-      in srgb,
-      var(--p-primary-color) 38%,
-      transparent
-    );
-
+  outline: 0.16rem solid color-mix(in srgb, var(--p-primary-color) 38%, transparent);
   outline-offset: 0.14rem;
 }
-
-/* =========================================================
-   RESPONSIVE
-   ========================================================= */
-
 @media (max-width: 1180px) {
-  .cards-grid {
-    grid-template-columns:
-      repeat(2, minmax(0, 1fr));
-  }
-
+  .cards-grid,
   .summary-grid {
-    grid-template-columns:
-      repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-
   .filters-panel {
-    grid-template-columns:
-      minmax(0, 1fr)
-      minmax(190px, 230px);
+    grid-template-columns: minmax(0, 1fr) minmax(190px, 230px);
   }
 }
-
 @media (max-width: 760px) {
   .ingredients-hero,
   .panel-header.split {
     align-items: flex-start;
     flex-direction: column;
   }
-
   .hero-actions {
     width: 100%;
   }
-
   .catalog-tabs {
     overflow-x: auto;
   }
-
   .catalog-tabs button {
     min-width: 150px;
   }
-
   .cards-grid,
   .filters-panel {
-    grid-template-columns:
-      minmax(0, 1fr);
-  }
-
-  .type-row {
-    grid-template-columns:
-      auto minmax(0, 1fr);
-  }
-
-  .type-row > .p-tag,
-  .row-actions {
-    grid-column: 2;
+    grid-template-columns: minmax(0, 1fr);
   }
 }
-
 @media (max-width: 560px) {
   .summary-grid,
   .cards-grid {
-    grid-template-columns:
-      minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr);
   }
-
-  .hero-actions,
-  .ingredient-card footer,
-  .row-actions {
+  .hero-actions {
     align-items: stretch;
     flex-direction: column;
   }
-
-  .price-row {
-    grid-template-columns:
-      minmax(0, 1fr);
-  }
 }
-
-
-/* =========================================================
-   REDUCCIÓN DE MOVIMIENTO
-   ========================================================= */
-
 @media (prefers-reduced-motion: reduce) {
-  .ingredient-card,
-  .ingredient-row {
+  .catalog-tabs button,
+  .price-table tbody tr {
     transition: none;
   }
 }

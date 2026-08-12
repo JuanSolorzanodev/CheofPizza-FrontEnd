@@ -1,0 +1,77 @@
+@for (order of orders(); track order.id) {
+  <tr class="order-row">
+    <td>
+      <div class="order-number">
+        <strong>#{{ order.order_number }}</strong>
+        <span>{{ formatDate(order.ordered_at) }}</span>
+      </div>
+    </td>
+
+    <td>
+      <div class="customer-cell">
+        <span class="customer-avatar" aria-hidden="true">
+          {{ customerInitial(order) }}
+        </span>
+
+        <div>
+          <strong>{{ order.customer?.name ?? 'Cliente' }}</strong>
+          <span>{{ order.customer?.phone ?? 'Sin teléfono' }}</span>
+        </div>
+      </div>
+    </td>
+
+    <td>
+      <span class="table-chip">
+        <i [class]="deliveryIcon(order)" aria-hidden="true"></i>
+        {{ prettyDeliveryType(order.delivery_type) }}
+      </span>
+    </td>
+
+    <td>
+      <span class="table-chip">
+        <i class="pi pi-wallet" aria-hidden="true"></i>
+        {{ prettyPaymentMethod(order.payment_method) }}
+      </span>
+    </td>
+
+    <td>
+      <p-tag
+        [value]="prettyStatus(order.status)"
+        [severity]="statusSeverity(order.status)"
+        [rounded]="true"
+      />
+    </td>
+
+    <td>
+      <strong class="order-total">
+        {{ order.total | currency: 'USD' : 'symbol' : '1.2-2' }}
+      </strong>
+    </td>
+
+    <td class="order-actions-cell">
+      <a
+        class="order-action"
+        [routerLink]="['/admin/orders', order.id]"
+        [attr.aria-label]="'Abrir detalle del pedido ' + order.order_number"
+        pTooltip="Abrir detalle del pedido"
+        tooltipPosition="left"
+      >
+        <i class="pi pi-arrow-right" aria-hidden="true"></i>
+      </a>
+    </td>
+  </tr>
+
+  @if (order.kitchen_summary) {
+    <tr class="kitchen-row">
+      <td colspan="7">
+        <div class="kitchen-summary">
+          <i class="pi pi-list-check" aria-hidden="true"></i>
+          <span>
+            <strong>Preparación:</strong>
+            {{ order.kitchen_summary }}
+          </span>
+        </div>
+      </td>
+    </tr>
+  }
+}

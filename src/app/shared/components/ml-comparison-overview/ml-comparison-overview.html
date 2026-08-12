@@ -1,0 +1,220 @@
+@if (comparison(); as result) {
+  <article class="model-strip surface-card">
+    <div class="model-status">
+      <span class="status-dot" aria-hidden="true"></span>
+
+      <div>
+        <span> Modelo utilizado </span>
+
+        <strong>
+          {{ result.model?.algorithm }}
+          · versión
+          {{ result.model?.version }}
+        </strong>
+      </div>
+    </div>
+
+    <div class="model-period">
+      <span> Periodo consultado </span>
+
+      <strong>
+        {{ formatDate(result.period.date_from) }}
+        —
+        {{ formatDate(result.period.date_to) }}
+      </strong>
+    </div>
+
+    <div class="model-period">
+      <span> Días con pronóstico </span>
+
+      <strong>
+        {{ result.summary.days_with_prediction }}
+      </strong>
+    </div>
+  </article>
+
+  <!--
+    |--------------------------------------------------------------------------
+    | Resumen general
+    |--------------------------------------------------------------------------
+    -->
+
+  <section class="summary-grid" aria-label="Resumen de comparación">
+    <article class="summary-card surface-card">
+      <div class="summary-card-top">
+        <span class="summary-icon predicted">
+          <i class="pi pi-sparkles" aria-hidden="true"></i>
+        </span>
+
+        <span class="summary-label"> Pronosticadas </span>
+      </div>
+
+      <strong class="summary-value">
+        {{ formatNumber(result.summary.predicted_total) }}
+      </strong>
+
+      <small> pizzas previstas en los días completamente finalizados </small>
+    </article>
+
+    <article class="summary-card surface-card">
+      <div class="summary-card-top">
+        <span class="summary-icon actual">
+          <i class="pi pi-shopping-bag" aria-hidden="true"></i>
+        </span>
+
+        <span class="summary-label"> Vendidas </span>
+      </div>
+
+      <strong class="summary-value">
+        {{ formatNumber(result.summary.actual_total) }}
+      </strong>
+
+      <small> pizzas registradas realmente en pedidos entregados </small>
+    </article>
+
+    <article class="summary-card surface-card">
+      <div class="summary-card-top">
+        <span class="summary-icon difference">
+          <i class="pi pi-arrows-h" aria-hidden="true"></i>
+        </span>
+
+        <span class="summary-label"> Diferencia </span>
+      </div>
+
+      <strong class="summary-value" [class]="differenceClass(result.summary.difference)">
+        {{ formatSignedNumber(result.summary.difference) }}
+      </strong>
+
+      <small> resultado real menos cantidad pronosticada </small>
+    </article>
+
+    <article class="summary-card surface-card">
+      <div class="summary-card-top">
+        <span class="summary-icon error">
+          <i class="pi pi-wave-pulse" aria-hidden="true"></i>
+        </span>
+
+        <span class="summary-label"> Error medio </span>
+      </div>
+
+      <strong class="summary-value">
+        {{ formatNumber(result.summary.mae, 2) }}
+      </strong>
+
+      <small> MAE expresado en cantidad promedio de pizzas </small>
+    </article>
+
+    <article class="summary-card surface-card">
+      <div class="summary-card-top">
+        <span class="summary-icon accuracy">
+          <i class="pi pi-percentage" aria-hidden="true"></i>
+        </span>
+
+        <span class="summary-label"> Precisión promedio </span>
+      </div>
+
+      <strong
+        class="summary-value"
+        [class]="accuracyClass(result.summary.average_accuracy_percentage)"
+      >
+        {{ formatPercentage(result.summary.average_accuracy_percentage) }}
+      </strong>
+
+      <small>
+        calculada con
+        {{ result.summary.days_compared }}
+        días finalizados
+      </small>
+    </article>
+  </section>
+
+  <!--
+    |--------------------------------------------------------------------------
+    | Indicadores adicionales
+    |--------------------------------------------------------------------------
+    -->
+
+  <section class="insights-grid">
+    @if (bestDay(); as best) {
+      <article class="insight-card surface-card insight-positive">
+        <span class="insight-icon">
+          <i class="pi pi-bolt" aria-hidden="true"></i>
+        </span>
+
+        <div>
+          <span> Mejor coincidencia </span>
+
+          <strong>
+            {{ best.day_of_week }},
+            {{ formatDate(best.date) }}
+          </strong>
+
+          <small>
+            {{ formatPercentage(best.accuracy_percentage) }}
+            de precisión
+          </small>
+        </div>
+      </article>
+    }
+
+    @if (worstDay(); as worst) {
+      <article class="insight-card surface-card insight-warning">
+        <span class="insight-icon">
+          <i class="pi pi-exclamation-triangle" aria-hidden="true"></i>
+        </span>
+
+        <div>
+          <span> Mayor desviación </span>
+
+          <strong>
+            {{ worst.day_of_week }},
+            {{ formatDate(worst.date) }}
+          </strong>
+
+          <small>
+            {{ formatPercentage(worst.accuracy_percentage) }}
+            de precisión
+          </small>
+        </div>
+      </article>
+    }
+
+    <article class="insight-card surface-card insight-neutral">
+      <span class="insight-icon">
+        <i class="pi pi-receipt" aria-hidden="true"></i>
+      </span>
+
+      <div>
+        <span> Pedidos entregados </span>
+
+        <strong>
+          {{ formatNumber(totalDeliveredOrders()) }}
+        </strong>
+
+        <small> pedidos considerados en el periodo </small>
+      </div>
+    </article>
+
+    <article class="insight-card surface-card insight-sales">
+      <span class="insight-icon">
+        <i class="pi pi-dollar" aria-hidden="true"></i>
+      </span>
+
+      <div>
+        <span> Venta neta acumulada </span>
+
+        <strong>
+          {{ formatCurrency(totalNetSales()) }}
+        </strong>
+
+        <small> ingresos reales del periodo consultado </small>
+      </div>
+    </article>
+  </section>
+
+  <!--
+    |--------------------------------------------------------------------------
+    | Gráfica comparativa
+    |--------------------------------------------------------------------------
+    -->
+}

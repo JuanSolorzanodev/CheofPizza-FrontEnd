@@ -1,0 +1,159 @@
+<section class="matrix-panel">
+  <header class="panel-header">
+    <div>
+      <span class="eyebrow">Matriz de precios</span>
+      <h3>Categorías y tamaños</h3>
+      <p>
+        Edita directamente cada celda y guarda todos los cambios en una sola operación.
+      </p>
+    </div>
+
+    @if (hasChanges()) {
+      <div class="pending-actions">
+        <p-tag
+          [value]="changedCount() + ' cambios'"
+          severity="warn"
+          [rounded]="true"
+        />
+
+        <p-button
+          label="Restaurar"
+          icon="pi pi-undo"
+          severity="secondary"
+          [text]="true"
+          [disabled]="saving()"
+          (onClick)="resetAll.emit()"
+        />
+      </div>
+    }
+  </header>
+
+  @if (loading()) {
+    <div class="matrix-loading" aria-label="Cargando matriz de precios" aria-busy="true">
+      <p-skeleton height="56px" borderRadius="12px" />
+      @for (item of [1, 2, 3]; track item) {
+        <p-skeleton height="94px" borderRadius="12px" />
+      }
+    </div>
+  } @else if (categories().length === 0 || sizes().length === 0) {
+    <div class="empty-state">
+      <span><i class="pi pi-table" aria-hidden="true"></i></span>
+      <h3>No se puede construir la matriz</h3>
+      <p>Debes tener al menos una categoría y un tamaño registrados.</p>
+    </div>
+  } @else {
+    <div class="matrix-wrapper">
+      <table class="price-matrix">
+        <thead>
+          <tr>
+            <th class="category-column">Categoría</th>
+            @for (size of sizes(); track size.id) {
+              <th>
+                <div class="size-heading">
+                  <strong>{{ size.name }}</strong>
+                  <span>{{ size.portion }} porciones</span>
+                </div>
+              </th>
+            }
+          </tr>
+        </thead>
+
+        <tbody>
+          @for (category of categories(); track category.id) {
+            <tr>
+              <th scope="row" class="category-cell">
+                <div class="category-heading">
+                  <span class="category-avatar">
+                    {{ category.name.slice(0, 1).toUpperCase() }}
+                  </span>
+                  <div>
+                    <strong>{{ category.name }}</strong>
+                    <span>{{ category.pizzas_count }} pizzas</span>
+                  </div>
+                </div>
+              </th>
+
+              @for (size of sizes(); track size.id) {
+                <td
+                  class="price-cell"
+                  [class.is-changed]="isChanged(category.id, size.id)"
+                  [class.is-unavailable]="!isAvailable(category.id, size.id)"
+                >
+                  <div class="price-control">
+                    <p-inputnumber
+                      mode="currency"
+                      currency="USD"
+                      locale="es-EC"
+                      [min]="0"
+                      [max]="999999.99"
+                      [minFractionDigits]="2"
+                      [maxFractionDigits]="2"
+                      [useGrouping]="false"
+                      [disabled]="saving()"
+                      [ngModel]="priceValue(category.id, size.id)"
+                      (ngModelChange)="onPriceChange(category.id, size.id, $event)"
+                    />
+
+                    <div class="cell-footer">
+                      @if (isAvailable(category.id, size.id)) {
+                        <span class="availability is-active">
+                          <i class="pi pi-check-circle" aria-hidden="true"></i>
+                          Disponible
+                        </span>
+                      } @else {
+                        <span class="availability">
+                          <i class="pi pi-ban" aria-hidden="true"></i>
+                          No disponible
+                        </span>
+                      }
+
+                      @if (isChanged(category.id, size.id)) {
+                        <button
+                          type="button"
+                          class="reset-cell"
+                          pTooltip="Restaurar valor anterior"
+                          tooltipPosition="top"
+                          [disabled]="saving()"
+                          (click)="onResetCell(category.id, size.id)"
+                        >
+                          <i class="pi pi-undo" aria-hidden="true"></i>
+                        </button>
+                      }
+                    </div>
+
+                    @if (isChanged(category.id, size.id)) {
+                      <small class="previous-value">
+                        Antes: {{ money(originalPrice(category.id, size.id)) }}
+                      </small>
+                    }
+                  </div>
+                </td>
+              }
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <footer class="matrix-footer">
+      <div>
+        @if (hasChanges()) {
+          <strong>{{ changedCount() }} cambios pendientes</strong>
+          <span>Guarda para actualizar el catálogo público.</span>
+        } @else {
+          <strong>Todos los precios están guardados</strong>
+          <span>No existen modificaciones pendientes.</span>
+        }
+      </div>
+
+      <p-button
+        label="Guardar cambios"
+        icon="pi pi-save"
+        severity="success"
+        [loading]="saving()"
+        [disabled]="!hasChanges()"
+        (onClick)="save.emit()"
+      />
+    </footer>
+  }
+</section>

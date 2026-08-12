@@ -1,0 +1,55 @@
+<td>
+  <div class="priority-cell">
+    <span class="priority-cell__icon" [attr.data-status]="order().status">
+      <i [class]="statusIcon(order().status)" aria-hidden="true"></i>
+    </span>
+    <div>
+      <strong>{{ statusOperationalLabel(order().status) }}</strong>
+      <p-tag [value]="prettyStatus(order().status)" [severity]="statusSeverity(order().status)" [rounded]="true" class="priority-tag" />
+    </div>
+  </div>
+</td>
+<td>
+  <div class="identity-cell">
+    <div class="identity-cell__order">
+      <strong>#{{ order().order_number }}</strong>
+      <span>{{ formatDate(order().ordered_at) }}</span>
+    </div>
+    <div class="identity-cell__customer">
+      <span class="customer-avatar"><i class="pi pi-user" aria-hidden="true"></i></span>
+      <div>
+        <strong>{{ customerName(order()) }}</strong>
+        <span><i class="pi pi-phone" aria-hidden="true"></i>{{ customerPhone(order()) }}</span>
+      </div>
+    </div>
+  </div>
+</td>
+<td>
+  <div class="preparation-cell">
+    <span><i class="pi pi-list-check" aria-hidden="true"></i>Preparación</span>
+    <p>{{ order().kitchen_summary || 'Sin resumen disponible' }}</p>
+  </div>
+</td>
+<td>
+  <div class="logistics-cell">
+    <div class="logistics-cell__row">
+      <span class="logistics-cell__icon"><i [class]="deliveryIcon(order())" aria-hidden="true"></i></span>
+      <div><span>Entrega</span><strong>{{ prettyDeliveryType(order().delivery_type) }}</strong></div>
+    </div>
+    <div class="logistics-cell__row">
+      <span class="logistics-cell__icon"><i [class]="paymentIcon(order())" aria-hidden="true"></i></span>
+      <div>
+        <span>Pago</span>
+        <strong>{{ prettyPaymentMethod(order().payment_method) }} · {{ order().total | currency: 'USD' : 'symbol' : '1.2-2' }}</strong>
+      </div>
+    </div>
+    @if (isTransfer(order())) {
+      <span class="transfer-badge"><i class="pi pi-receipt" aria-hidden="true"></i>Revisar comprobante en el detalle</span>
+    }
+  </div>
+</td>
+<td class="orders-table__action">
+  <a class="open-order" [routerLink]="['/operator/orders', order().id]" [attr.aria-label]="'Abrir pedido ' + order().order_number">
+    <span>Abrir pedido</span><i class="pi pi-arrow-right" aria-hidden="true"></i>
+  </a>
+</td>

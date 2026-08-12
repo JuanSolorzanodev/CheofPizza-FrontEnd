@@ -1,8 +1,6 @@
-import { CommonModule } from '@angular/common';
 import { Component, DestroyRef, OnDestroy, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
 import { Subject, auditTime, debounceTime, finalize } from 'rxjs';
 
 import { ButtonModule } from 'primeng/button';
@@ -10,7 +8,6 @@ import { InputTextModule } from 'primeng/inputtext';
 import { PaginatorModule } from 'primeng/paginator';
 import { SelectModule } from 'primeng/select';
 import { SkeletonModule } from 'primeng/skeleton';
-import { TagModule } from 'primeng/tag';
 
 import { OperatorOrdersApiService } from '../../../core/api/operator/operator-orders-api.service';
 import {
@@ -24,24 +21,11 @@ import {
   OperatorOrderCreatedRealtimeEvent,
   OperatorOrderStatusChangedRealtimeEvent,
 } from '../../../core/realtime/realtime.models';
-import { OperatorStatusBoard } from '../components/operator-status-board/operator-status-board';
+import { prettyOperatorStatus } from '../../../shared/ui/operator-order-ui.utils';
+import { OperatorStatusBoard } from '../../../shared/components/operator-status-board/operator-status-board';
+import { OperatorOrderTableRow } from '../../../shared/components/operator-order-table-row/operator-order-table-row';
+import { OperatorOrderMobileCard } from '../../../shared/components/operator-order-mobile-card/operator-order-mobile-card';
 
-import {
-  formatOperatorDate,
-  prettyDeliveryType,
-  prettyOperatorStatus,
-  prettyPaymentMethod,
-} from '../operator-order-ui.utils';
-
-type TagSeverity =
-  | 'success'
-  | 'secondary'
-  | 'info'
-  | 'warn'
-  | 'danger'
-  | 'contrast'
-  | null
-  | undefined;
 
 interface SelectOption {
   label: string;
@@ -58,16 +42,15 @@ interface OperatorPaginatorEvent {
   selector: 'app-operator-orders-page',
   standalone: true,
   imports: [
-    CommonModule,
-    RouterModule,
     FormsModule,
     ButtonModule,
     InputTextModule,
-    TagModule,
     PaginatorModule,
     SkeletonModule,
     SelectModule,
     OperatorStatusBoard,
+    OperatorOrderTableRow,
+    OperatorOrderMobileCard,
   ],
   templateUrl: './operator-orders-page.html',
   styleUrl: './operator-orders-page.scss',
@@ -99,12 +82,6 @@ export class OperatorOrdersPage implements OnDestroy {
   readonly deliveryType = signal<string | null>(null);
   readonly paymentMethod = signal<string | null>(null);
 
-  readonly statusOptions = signal<SelectOption[]>([
-    {
-      label: 'Todos los estados',
-      value: '',
-    },
-  ]);
 
   readonly deliveryTypeOptions: SelectOption[] = [
     {
@@ -168,7 +145,7 @@ export class OperatorOrdersPage implements OnDestroy {
   readonly currentStatusLabel = computed(() => {
     const selectedStatus = this.status();
 
-    return selectedStatus ? this.prettyStatus(selectedStatus) : 'Todos los pedidos';
+    return selectedStatus ? prettyOperatorStatus(selectedStatus) : 'Todos los pedidos';
   });
 
   readonly hasFilters = computed(() => {
@@ -204,7 +181,6 @@ export class OperatorOrdersPage implements OnDestroy {
     this.configureSearch();
     this.configureRealtimeRefresh();
 
-    this.loadStatuses();
     this.load();
     this.loadQueue();
     this.setupRealtime();
@@ -356,168 +332,6 @@ export class OperatorOrdersPage implements OnDestroy {
       });
   }
 
-  loadStatuses(): void {
-    this.api
-      .statuses()
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: (response) => {
-          const statuses = Array.isArray(response.data) ? response.data : [];
-
-          this.statusOptions.set([
-            {
-              label: 'Todos los estados',
-              value: '',
-            },
-            ...statuses.map((statusName) => ({
-              label: this.prettyStatus(statusName),
-              value: statusName,
-            })),
-          ]);
-        },
-
-        error: () => {
-          this.statusOptions.set([
-            {
-              label: 'Todos los estados',
-              value: '',
-            },
-          ]);
-        },
-      });
-  }
-
-  prettyStatus(value: string): string {
-    return prettyOperatorStatus(value);
-  }
-
-  prettyDeliveryType(value: string): string {
-    return prettyDeliveryType(value);
-  }
-
-  prettyPaymentMethod(value: string): string {
-    return prettyPaymentMethod(value);
-  }
-
-  formatDate(value: string | null): string {
-    return formatOperatorDate(value);
-  }
-
-  statusSeverity(statusName: string): TagSeverity {
-    switch (statusName) {
-      case 'pending':
-        return 'warn';
-
-      case 'confirmed':
-        return 'info';
-
-      case 'preparing':
-        return 'warn';
-
-      case 'ready':
-        return 'success';
-
-      case 'on_the_way':
-        return 'info';
-
-      case 'delivered':
-        return 'success';
-
-      case 'cancelled':
-        return 'danger';
-
-      default:
-        return 'secondary';
-    }
-  }
-
-  statusIcon(statusName: string): string {
-    const icons: Record<string, string> = {
-      pending: 'pi pi-bell',
-      confirmed: 'pi pi-check',
-      preparing: 'pi pi-hourglass',
-      ready: 'pi pi-check-circle',
-      on_the_way: 'pi pi-truck',
-      delivered: 'pi pi-verified',
-      cancelled: 'pi pi-times-circle',
-    };
-
-    return icons[statusName] ?? 'pi pi-circle';
-  }
-
-  statusOperationalLabel(statusName: string): string {
-    const labels: Record<string, string> = {
-      pending: 'Nueva orden',
-      confirmed: 'Confirmada',
-      preparing: 'En cocina',
-      ready: 'Lista para salir',
-      on_the_way: 'En reparto',
-      delivered: 'Entregada',
-      cancelled: 'Cancelada',
-    };
-
-    return labels[statusName] ?? this.prettyStatus(statusName);
-  }
-
-  rowClass(order: OperatorOrderListDto): string {
-    return [
-      'order-row',
-      `order-row--${order.status}`,
-      this.isHistoricalOrder(order) ? 'order-row--historical' : '',
-    ]
-      .filter(Boolean)
-      .join(' ');
-  }
-
-  mobileCardClass(order: OperatorOrderListDto): string {
-    return [
-      'mobile-order',
-      `mobile-order--${order.status}`,
-      this.isHistoricalOrder(order) ? 'mobile-order--historical' : '',
-    ]
-      .filter(Boolean)
-      .join(' ');
-  }
-
-  customerName(order: OperatorOrderListDto): string {
-    return order.customer?.name?.trim() || 'Cliente no identificado';
-  }
-
-  customerPhone(order: OperatorOrderListDto): string {
-    return order.customer?.phone?.trim() || 'Sin teléfono';
-  }
-
-  isTransfer(order: OperatorOrderListDto): boolean {
-    return order.payment_method === 'transfer';
-  }
-
-  isDelivery(order: OperatorOrderListDto): boolean {
-    return order.delivery_type === 'delivery';
-  }
-
-  isHistoricalOrder(order: OperatorOrderListDto): boolean {
-    return order.status === 'delivered' || order.status === 'cancelled';
-  }
-
-  deliveryIcon(order: OperatorOrderListDto): string {
-    return this.isDelivery(order) ? 'pi pi-truck' : 'pi pi-shop';
-  }
-
-  paymentIcon(order: OperatorOrderListDto): string {
-    switch (order.payment_method) {
-      case 'transfer':
-        return 'pi pi-building-columns';
-
-      case 'cash':
-        return 'pi pi-money-bill';
-
-      case 'paypal':
-        return 'pi pi-wallet';
-
-      default:
-        return 'pi pi-credit-card';
-    }
-  }
 
   private configureSearch(): void {
     this.searchInput$

@@ -1,7 +1,4 @@
-import {
-  CommonModule,
-} from '@angular/common';
-
+import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -9,235 +6,49 @@ import {
   inject,
   signal,
 } from '@angular/core';
-
-import {
-  FormBuilder,
-  FormControl,
-  FormGroup,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
-
-import {
-  RouterLink,
-} from '@angular/router';
-
-import {
-  ButtonModule,
-} from 'primeng/button';
-
-import {
-  DialogModule,
-} from 'primeng/dialog';
-
-import {
-  InputNumberModule,
-} from 'primeng/inputnumber';
-
-import {
-  InputTextModule,
-} from 'primeng/inputtext';
-
-import {
-  MessageModule,
-} from 'primeng/message';
-
-import {
-  SelectModule,
-} from 'primeng/select';
-
-import {
-  SkeletonModule,
-} from 'primeng/skeleton';
-
-import {
-  TableModule,
-} from 'primeng/table';
-
-import {
-  TagModule,
-} from 'primeng/tag';
-
-import {
-  TextareaModule,
-} from 'primeng/textarea';
-
-import {
-  TooltipModule,
-} from 'primeng/tooltip';
+import { RouterLink } from '@angular/router';
+import { ButtonModule } from 'primeng/button';
+import { SkeletonModule } from 'primeng/skeleton';
 
 import {
   CashMovementType,
+  CloseCashSessionPayload,
+  OpenCashSessionPayload,
+  StoreCashMovementPayload,
 } from '../../../core/api/admin/cash-register/admin-cash-register.models';
-
-import {
-  AdminCashRegisterStore,
-} from '../../../core/api/admin/cash-register/admin-cash-register.store';
-
-type OpenForm = FormGroup<{
-  opening_amount: FormControl<number>;
-  opening_note: FormControl<string>;
-}>;
-
-type MovementForm = FormGroup<{
-  type: FormControl<CashMovementType>;
-  amount: FormControl<number>;
-  reason: FormControl<string>;
-}>;
-
-type CloseForm = FormGroup<{
-  counted_cash: FormControl<number>;
-  closing_note: FormControl<string>;
-}>;
+import { AdminCashRegisterStore } from '../../../core/api/admin/cash-register/admin-cash-register.store';
+import { AdminCashMovementsTableComponent } from '../../../shared/components/admin-cash-movements-table/admin-cash-movements-table';
+import { AdminCashRegisterActionsDialogsComponent } from '../../../shared/components/admin-cash-register-actions-dialogs/admin-cash-register-actions-dialogs';
+import { AdminCashRegisterSummaryComponent } from '../../../shared/components/admin-cash-register-summary/admin-cash-register-summary';
 
 @Component({
-  selector:
-    'app-admin-cash-register',
-
-  standalone:
-    true,
-
+  selector: 'app-admin-cash-register',
+  standalone: true,
   imports: [
-    RouterLink,
     CommonModule,
-    ReactiveFormsModule,
+    RouterLink,
     ButtonModule,
-    DialogModule,
-    InputNumberModule,
-    InputTextModule,
-    MessageModule,
-    SelectModule,
     SkeletonModule,
-    TableModule,
-    TagModule,
-    TextareaModule,
-    TooltipModule,
+    AdminCashRegisterSummaryComponent,
+    AdminCashMovementsTableComponent,
+    AdminCashRegisterActionsDialogsComponent,
   ],
-
-  providers: [
-    AdminCashRegisterStore,
-  ],
-
-  templateUrl:
-    './admin-cash-register.html',
-
-  styleUrl:
-    './admin-cash-register.scss',
-
-  changeDetection:
-    ChangeDetectionStrategy.OnPush,
+  providers: [AdminCashRegisterStore],
+  templateUrl: './admin-cash-register.html',
+  styleUrl: './admin-cash-register.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AdminCashRegister {
-  readonly store =
-    inject(AdminCashRegisterStore);
+  readonly store = inject(AdminCashRegisterStore);
 
-  private readonly formBuilder =
-    inject(FormBuilder);
+  readonly openDialogVisible = signal(false);
+  readonly movementDialogVisible = signal(false);
+  readonly closeDialogVisible = signal(false);
+  readonly selectedMovementType = signal<CashMovementType>('income');
 
-  readonly openDialogVisible =
-    signal(false);
-
-  readonly movementDialogVisible =
-    signal(false);
-
-  readonly closeDialogVisible =
-    signal(false);
-
-  readonly submitted =
-    signal(false);
-
-  readonly movementTypes = [
-    {
-      label: 'Ingreso',
-      value: 'income' as const,
-      icon:
-        'pi pi-arrow-down-left',
-    },
-    {
-      label: 'Egreso',
-      value: 'expense' as const,
-      icon:
-        'pi pi-arrow-up-right',
-    },
-  ];
-
-  readonly openForm: OpenForm =
-    this.formBuilder.nonNullable.group({
-      opening_amount: [
-        0,
-        [
-          Validators.required,
-          Validators.min(0),
-        ],
-      ],
-
-      opening_note: [
-        '',
-        [
-          Validators.maxLength(255),
-        ],
-      ],
-    });
-
-  readonly movementForm: MovementForm =
-    this.formBuilder.nonNullable.group({
-      type: [
-        'income' as CashMovementType,
-        Validators.required,
-      ],
-
-      amount: [
-        0,
-        [
-          Validators.required,
-          Validators.min(0.01),
-        ],
-      ],
-
-      reason: [
-        '',
-        [
-          Validators.required,
-          Validators.minLength(3),
-          Validators.maxLength(150),
-        ],
-      ],
-    });
-
-  readonly closeForm: CloseForm =
-    this.formBuilder.nonNullable.group({
-      counted_cash: [
-        0,
-        [
-          Validators.required,
-          Validators.min(0),
-        ],
-      ],
-
-      closing_note: [
-        '',
-        [
-          Validators.maxLength(255),
-        ],
-      ],
-    });
-
-  readonly expectedCash =
-    computed(
-      () =>
-        this.store.summary()
-          ?.amounts.expected_cash
-        ?? 0,
-    );
-
-  readonly selectedMovementType =
-    computed(
-      () =>
-        this.movementForm
-          .controls
-          .type
-          .value,
-    );
+  readonly expectedCash = computed(
+    () => this.store.summary()?.amounts.expected_cash ?? 0,
+  );
 
   constructor() {
     this.store.load();
@@ -248,183 +59,30 @@ export class AdminCashRegister {
   }
 
   showOpenDialog(): void {
-    this.submitted.set(false);
     this.store.clearErrors();
-
-    this.openForm.reset({
-      opening_amount: 0,
-      opening_note: '',
-    });
-
     this.openDialogVisible.set(true);
   }
 
-  showMovementDialog(
-    type: CashMovementType,
-  ): void {
-    this.submitted.set(false);
+  showMovementDialog(type: CashMovementType): void {
     this.store.clearErrors();
-
-    this.movementForm.reset({
-      type,
-      amount: 0,
-      reason: '',
-    });
-
-    this.movementDialogVisible.set(
-      true,
-    );
+    this.selectedMovementType.set(type);
+    this.movementDialogVisible.set(true);
   }
 
   showCloseDialog(): void {
-    this.submitted.set(false);
     this.store.clearErrors();
-
-    this.closeForm.reset({
-      counted_cash:
-        this.expectedCash(),
-
-      closing_note:
-        '',
-    });
-
     this.closeDialogVisible.set(true);
   }
 
-  submitOpen(): void {
-    this.submitted.set(true);
-    this.openForm.markAllAsTouched();
-
-    if (this.openForm.invalid) {
-      return;
-    }
-
-    const value =
-      this.openForm.getRawValue();
-
-    this.store.open(
-      {
-        opening_amount:
-          value.opening_amount,
-
-        opening_note:
-          this.nullableText(
-            value.opening_note,
-          ),
-      },
-      () =>
-        this.openDialogVisible.set(
-          false,
-        ),
-    );
+  submitOpen(payload: OpenCashSessionPayload): void {
+    this.store.open(payload, () => this.openDialogVisible.set(false));
   }
 
-  submitMovement(): void {
-    this.submitted.set(true);
-
-    this.movementForm
-      .markAllAsTouched();
-
-    if (this.movementForm.invalid) {
-      return;
-    }
-
-    const value =
-      this.movementForm
-        .getRawValue();
-
-    this.store.addMovement(
-      {
-        type:
-          value.type,
-
-        amount:
-          value.amount,
-
-        reason:
-          value.reason.trim(),
-      },
-      () =>
-        this.movementDialogVisible.set(
-          false,
-        ),
-    );
+  submitMovement(payload: StoreCashMovementPayload): void {
+    this.store.addMovement(payload, () => this.movementDialogVisible.set(false));
   }
 
-  submitClose(): void {
-    this.submitted.set(true);
-
-    this.closeForm
-      .markAllAsTouched();
-
-    if (this.closeForm.invalid) {
-      return;
-    }
-
-    const value =
-      this.closeForm.getRawValue();
-
-    this.store.close(
-      {
-        counted_cash:
-          value.counted_cash,
-
-        closing_note:
-          this.nullableText(
-            value.closing_note,
-          ),
-      },
-      () =>
-        this.closeDialogVisible.set(
-          false,
-        ),
-    );
-  }
-
-  fieldInvalid(
-    control: FormControl<unknown>,
-  ): boolean {
-    return (
-      control.invalid
-      && (
-        control.touched
-        || this.submitted()
-      )
-    );
-  }
-
-  movementLabel(
-    type: CashMovementType,
-  ): string {
-    return type === 'income'
-      ? 'Ingreso'
-      : 'Egreso';
-  }
-
-  movementSeverity(
-    type: CashMovementType,
-  ): 'success' | 'danger' {
-    return type === 'income'
-      ? 'success'
-      : 'danger';
-  }
-
-  movementSign(
-    type: CashMovementType,
-  ): string {
-    return type === 'income'
-      ? '+'
-      : '-';
-  }
-
-  private nullableText(
-    value: string,
-  ): string | null {
-    const normalized =
-      value.trim();
-
-    return normalized.length > 0
-      ? normalized
-      : null;
+  submitClose(payload: CloseCashSessionPayload): void {
+    this.store.close(payload, () => this.closeDialogVisible.set(false));
   }
 }

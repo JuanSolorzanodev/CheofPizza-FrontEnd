@@ -1,18 +1,11 @@
 <section class="pizzas-page">
   <header class="pizzas-hero">
     <div>
-      <span class="eyebrow">
-        Catálogo
-      </span>
+      <span class="eyebrow"> Catálogo </span>
 
-      <h2>
-        Pizzas del menú
-      </h2>
+      <h2>Pizzas del menú</h2>
 
-      <p>
-        Administra los productos, imágenes,
-        ingredientes y visibilidad del catálogo.
-      </p>
+      <p>Administra los productos, imágenes, ingredientes y visibilidad del catálogo.</p>
     </div>
 
     <div class="hero-actions">
@@ -26,18 +19,11 @@
         (onClick)="refresh()"
       />
 
-      <p-button
-        label="Nueva pizza"
-        icon="pi pi-plus"
-        (onClick)="openNewPizza()"
-      />
+      <p-button label="Nueva pizza" icon="pi pi-plus" (onClick)="openNewPizza()" />
     </div>
   </header>
 
-  <section
-    class="summary-grid"
-    aria-label="Resumen de pizzas"
-  >
+  <section class="summary-grid" aria-label="Resumen de pizzas">
     <article class="summary-card">
       <span class="summary-icon is-primary">
         <i class="pi pi-box"></i>
@@ -47,19 +33,14 @@
         <span>Total de pizzas</span>
 
         @if (loading()) {
-          <p-skeleton
-            width="52px"
-            height="28px"
-          />
+          <p-skeleton width="52px" height="28px" />
         } @else {
           <strong>
             {{ totalPizzas() }}
           </strong>
         }
 
-        <small>
-          Productos registrados
-        </small>
+        <small> Productos registrados </small>
       </div>
     </article>
 
@@ -72,19 +53,14 @@
         <span>Visibles</span>
 
         @if (loading()) {
-          <p-skeleton
-            width="52px"
-            height="28px"
-          />
+          <p-skeleton width="52px" height="28px" />
         } @else {
           <strong>
             {{ visiblePizzas() }}
           </strong>
         }
 
-        <small>
-          Disponibles al cliente
-        </small>
+        <small> Disponibles al cliente </small>
       </div>
     </article>
 
@@ -97,19 +73,14 @@
         <span>Ocultas</span>
 
         @if (loading()) {
-          <p-skeleton
-            width="52px"
-            height="28px"
-          />
+          <p-skeleton width="52px" height="28px" />
         } @else {
           <strong>
             {{ hiddenPizzas() }}
           </strong>
         }
 
-        <small>
-          Fuera del catálogo público
-        </small>
+        <small> Fuera del catálogo público </small>
       </div>
     </article>
 
@@ -122,19 +93,14 @@
         <span>Protegidas</span>
 
         @if (loading()) {
-          <p-skeleton
-            width="52px"
-            height="28px"
-          />
+          <p-skeleton width="52px" height="28px" />
         } @else {
           <strong>
             {{ protectedPizzas() }}
           </strong>
         }
 
-        <small>
-          Con registros asociados
-        </small>
+        <small> Con registros asociados </small>
       </div>
     </article>
   </section>
@@ -148,34 +114,28 @@
         type="search"
         placeholder="Buscar por nombre, categoría o ingrediente..."
         [value]="search()"
-        (input)="
-          onSearch(
-            $any($event.target).value
-          )
-        "
+        (input)="onSearch($any($event.target).value)"
       />
     </label>
 
     <p-select
+      ariaLabel="Filtrar pizzas por categoría"
       [options]="categoryOptions()"
       optionLabel="label"
       optionValue="value"
       placeholder="Todas las categorías"
       [ngModel]="selectedCategoryId()"
-      (ngModelChange)="
-        selectedCategoryId.set($event)
-      "
+      (ngModelChange)="selectedCategoryId.set($event)"
     />
 
     <p-select
+      ariaLabel="Filtrar pizzas por visibilidad"
       [options]="visibilityOptions()"
       optionLabel="label"
       optionValue="value"
       placeholder="Toda visibilidad"
       [ngModel]="selectedVisibility()"
-      (ngModelChange)="
-        selectedVisibility.set($event)
-      "
+      (ngModelChange)="selectedVisibility.set($event)"
     />
 
     <p-button
@@ -190,18 +150,12 @@
   <section class="pizzas-panel">
     <header class="panel-header">
       <div>
-        <span class="eyebrow">
-          Productos
-        </span>
+        <span class="eyebrow"> Productos </span>
 
-        <h3>
-          Pizzas registradas
-        </h3>
+        <h3>Pizzas registradas</h3>
 
         <p>
-          {{
-            filteredPizzas().length
-          }}
+          {{ filteredPizzas().length }}
           resultados encontrados.
         </p>
       </div>
@@ -209,32 +163,19 @@
 
     @if (loading()) {
       <div class="pizza-list skeleton-list">
-        @for (
-          item of [1, 2, 3, 4];
-          track item
-        ) {
-          <p-skeleton
-            height="156px"
-            borderRadius="18px"
-          />
+        @for (item of [1, 2, 3, 4]; track item) {
+          <p-skeleton height="156px" borderRadius="18px" />
         }
       </div>
-    } @else if (
-      filteredPizzas().length === 0
-    ) {
+    } @else if (filteredPizzas().length === 0) {
       <div class="empty-state">
         <span>
           <i class="pi pi-box"></i>
         </span>
 
-        <h3>
-          No encontramos pizzas
-        </h3>
+        <h3>No encontramos pizzas</h3>
 
-        <p>
-          No existen coincidencias para los
-          filtros seleccionados.
-        </p>
+        <p>No existen coincidencias para los filtros seleccionados.</p>
 
         <p-button
           label="Limpiar filtros"
@@ -246,200 +187,16 @@
       </div>
     } @else {
       <div class="pizza-list">
-        @for (
-          pizza of filteredPizzas();
-          track pizza.id
-        ) {
-          <article
-            class="pizza-card"
-            [class.is-hidden]="
-              !pizza.is_visible
-            "
-          >
-            <div class="pizza-image">
-              @if (pizza.image_url) {
-                <img
-                  [src]="pizza.image_url"
-                  [alt]="pizza.name"
-                  loading="lazy"
-                />
-              } @else {
-                <div class="image-placeholder">
-                  <i class="pi pi-image"></i>
-
-                  <span>
-                    Sin imagen
-                  </span>
-                </div>
-              }
-
-              <span
-                class="visibility-badge"
-                [class.is-visible]="
-                  pizza.is_visible
-                "
-              >
-                <i
-                  [class]="
-                    pizza.is_visible
-                      ? 'pi pi-eye'
-                      : 'pi pi-eye-slash'
-                  "
-                ></i>
-
-                {{
-                  pizza.is_visible
-                    ? 'Visible'
-                    : 'Oculta'
-                }}
-              </span>
-            </div>
-
-            <div class="pizza-content">
-              <div class="pizza-title-row">
-                <div>
-                  <h4>
-                    {{ pizza.name }}
-                  </h4>
-
-                  <p-tag
-                    [value]="
-                      pizza.category.name
-                    "
-                    severity="secondary"
-                    [rounded]="true"
-                  />
-                </div>
-
-                @if (!pizza.can_delete) {
-                  <span
-                    class="protected-badge"
-                    pTooltip="Esta pizza tiene carritos, pedidos, promociones o historial asociado."
-                    tooltipPosition="top"
-                  >
-                    <i class="pi pi-lock"></i>
-                    Protegida
-                  </span>
-                }
-              </div>
-
-              <p class="pizza-description">
-                {{
-                  pizza.description ||
-                  'Sin descripción registrada.'
-                }}
-              </p>
-
-              <div class="ingredients">
-                @for (
-                  ingredient of pizza.ingredients;
-                  track ingredient.id
-                ) {
-                  <span>
-                    {{ ingredient.name }}
-                  </span>
-                }
-              </div>
-
-              <div class="pizza-meta">
-                <span>
-                  <i class="pi pi-list"></i>
-
-                  {{
-                    pizza.ingredients_count
-                  }}
-                  ingredientes
-                </span>
-
-                <span>
-                  <i class="pi pi-database"></i>
-
-                  {{
-                    usageLabel(pizza)
-                  }}
-                </span>
-
-                @if (
-                  pizza.usage.order_items_total > 0
-                ) {
-                  <span>
-                    <i class="pi pi-shopping-bag"></i>
-
-                    {{
-                      pizza.usage
-                        .order_items_total
-                    }}
-                    pedidos
-                  </span>
-                }
-              </div>
-            </div>
-
-            <div class="pizza-actions">
-              <p-button
-                label="Editar"
-                icon="pi pi-pencil"
-                severity="secondary"
-                [outlined]="true"
-                (onClick)="
-                  openEditPizza(pizza)
-                "
-              />
-
-              <p-button
-                [label]="
-                  pizza.is_visible
-                    ? 'Ocultar'
-                    : 'Mostrar'
-                "
-                [icon]="
-                  pizza.is_visible
-                    ? 'pi pi-eye-slash'
-                    : 'pi pi-eye'
-                "
-                [severity]="
-                  pizza.is_visible
-                    ? 'warn'
-                    : 'success'
-                "
-                [outlined]="true"
-                [loading]="
-                  changingVisibilityId() ===
-                  pizza.id
-                "
-                [disabled]="
-                  changingVisibilityId() !==
-                  null
-                "
-                (onClick)="
-                  confirmVisibility(pizza)
-                "
-              />
-
-              <p-button
-                icon="pi pi-trash"
-                severity="danger"
-                [text]="true"
-                [rounded]="true"
-                [loading]="
-                  deletingId() ===
-                  pizza.id
-                "
-                [disabled]="
-                  deletingId() !== null
-                "
-                [pTooltip]="
-                  pizza.can_delete
-                    ? 'Eliminar pizza'
-                    : 'La pizza tiene registros asociados'
-                "
-                tooltipPosition="top"
-                (onClick)="
-                  confirmDelete(pizza)
-                "
-              />
-            </div>
-          </article>
+        @for (pizza of filteredPizzas(); track pizza.id) {
+          <app-admin-pizza-card
+            [pizza]="pizza"
+            [changingVisibility]="changingVisibilityId() === pizza.id"
+            [deleting]="deletingId() === pizza.id"
+            [actionsDisabled]="changingVisibilityId() !== null || deletingId() !== null"
+            (edit)="openEditPizza($event)"
+            (visibilityChange)="confirmVisibility($event)"
+            (delete)="confirmDelete($event)"
+          />
         }
       </div>
     }
@@ -453,13 +210,9 @@
     [categories]="categories()"
     [ingredients]="ingredients()"
     (closed)="closeEditor()"
-    (savingChange)="
-      onEditorSavingChange($event)
-    "
+    (savingChange)="onEditorSavingChange($event)"
     (saved)="onPizzaSaved($event)"
   />
 }
 
-<p-confirmdialog
-  appendTo="body"
-/>
+<p-confirmdialog appendTo="body" />

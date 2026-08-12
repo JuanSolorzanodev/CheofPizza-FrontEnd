@@ -1,0 +1,161 @@
+<section class="panel tracking-panel">
+  <header class="panel-header">
+    <div>
+      <span class="panel-kicker">
+        Actualización del pedido
+      </span>
+
+      <h2>
+        Seguimiento
+      </h2>
+    </div>
+
+    <span
+      class="live-pill"
+      [class.live-pill--done]="
+        isFinalStatus()
+      "
+    >
+      <span
+        class="live-pill__dot"
+        aria-hidden="true"
+      ></span>
+
+      {{
+        isFinalStatus()
+          ? 'Finalizado'
+          : 'En curso'
+      }}
+    </span>
+  </header>
+
+  @if (timeline().length) {
+    <div class="timeline">
+      @for (
+        event of timeline();
+        track event.id;
+        let last = $last
+      ) {
+        <article
+          class="timeline-event"
+          [class.timeline-event--current]="
+            event.isCurrent
+          "
+          [class.timeline-event--final]="
+            event.isFinal
+          "
+        >
+          <div
+            class="timeline-event__rail"
+            aria-hidden="true"
+          >
+            <span class="timeline-event__icon">
+              <i
+                class="pi"
+                [class.pi-check]="
+                  event.isFinal
+                "
+                [class.pi-clock]="
+                  !event.isFinal
+                "
+              ></i>
+            </span>
+
+            @if (!last) {
+              <span class="timeline-event__line"></span>
+            }
+          </div>
+
+          <div class="timeline-event__content">
+            <div class="timeline-event__top">
+              <div class="timeline-event__title">
+                <strong>
+                  {{
+                    statusLabel(
+                      event.status
+                    )
+                  }}
+                </strong>
+
+                @if (event.isCurrent) {
+                  <span class="event-badge">
+                    Estado actual
+                  </span>
+                }
+
+                @if (event.isFinal) {
+                  <span
+                    class="
+                      event-badge
+                      event-badge--success
+                    "
+                  >
+                    Estado final
+                  </span>
+                }
+              </div>
+
+              <time
+                [attr.datetime]="
+                  event.changedAt
+                "
+              >
+                {{
+                  event.changedAt
+                    | date:
+                        'dd/MM/yyyy HH:mm'
+                }}
+              </time>
+            </div>
+
+            @if (
+              event.durationLabel
+            ) {
+              <p class="timeline-event__duration">
+                {{
+                  event.isCurrent
+                    ? 'Tiempo transcurrido'
+                    : 'Duración'
+                }}:
+
+                {{
+                  event.durationLabel
+                }}
+              </p>
+            }
+
+            @if (event.note) {
+              <p class="timeline-event__note">
+                {{ event.note }}
+              </p>
+            }
+
+            @if (
+              event.updatedByBusiness
+            ) {
+              <span class="timeline-event__author">
+                Actualizado por CHEO'F PIZZA
+              </span>
+            }
+          </div>
+        </article>
+      }
+    </div>
+  } @else {
+    <div class="empty-state">
+      <i
+        class="pi pi-clock"
+        aria-hidden="true"
+      ></i>
+
+      <strong>
+        El seguimiento todavía no tiene novedades
+      </strong>
+
+      <span>
+        La información aparecerá aquí cuando
+        el pedido cambie de estado.
+      </span>
+    </div>
+  }
+</section>

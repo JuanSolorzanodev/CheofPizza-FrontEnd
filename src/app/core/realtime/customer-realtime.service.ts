@@ -1,73 +1,49 @@
-import {
-  Injectable,
-  NgZone,
-  inject,
-} from '@angular/core';
+import { Injectable, NgZone, inject } from '@angular/core';
 
 import Echo from 'laravel-echo';
 
-import {
-  Subject,
-} from 'rxjs';
+import { Subject } from 'rxjs';
 
-import {
-  ReverbConnectionService,
-} from './reverb-connection.service';
+import { AppLoggerService } from '../logging/app-logger.service';
 
-import {
-  CustomerOrderUpdatedRealtimeEvent,
-} from './realtime.models';
+import { ReverbConnectionService } from './reverb-connection.service';
 
-import {
-  parseCustomerOrderUpdatedEvent,
-} from './realtime-payload.parser';
+import { CustomerOrderUpdatedRealtimeEvent } from './realtime.models';
+
+import { parseCustomerOrderUpdatedEvent } from './realtime-payload.parser';
 
 @Injectable({
   providedIn: 'root',
 })
 export class CustomerRealtimeService {
-  private readonly connection =
-    inject(ReverbConnectionService);
+  private readonly connection = inject(ReverbConnectionService);
 
-  private readonly zone =
-    inject(NgZone);
+  private readonly zone = inject(NgZone);
 
-  private echo: Echo<'reverb'> | null =
-    null;
+  private readonly logger = inject(AppLoggerService);
 
-  private currentOrdersChannel:
-    | string
-    | null = null;
+  private echo: Echo<'reverb'> | null = null;
 
-  private currentOrderChannel:
-    | string
-    | null = null;
+  private currentOrdersChannel: string | null = null;
 
-  readonly orderUpdated$ =
-    new Subject<CustomerOrderUpdatedRealtimeEvent>();
+  private currentOrderChannel: string | null = null;
+
+  readonly orderUpdated$ = new Subject<CustomerOrderUpdatedRealtimeEvent>();
 
   private connect(): void {
     if (this.echo) {
       return;
     }
 
-    this.echo =
-      this.connection.create();
+    this.echo = this.connection.create();
 
     if (!this.echo) {
-      console.warn(
-        '[customer-realtime] connection unavailable',
-      );
+      this.logger.warn('[customer-realtime] connection unavailable');
     }
   }
 
-  listenOrders(
-    userId: number,
-  ): void {
-    if (
-      !Number.isInteger(userId) ||
-      userId <= 0
-    ) {
+  listenOrders(userId: number): void {
+    if (!Number.isInteger(userId) || userId <= 0) {
       return;
     }
 
@@ -77,51 +53,34 @@ export class CustomerRealtimeService {
       return;
     }
 
-    const channelName =
-      `customer.orders.${userId}`;
+    const channelName = `customer.orders.${userId}`;
 
-    if (
-      this.currentOrdersChannel ===
-      channelName
-    ) {
+    if (this.currentOrdersChannel === channelName) {
       return;
     }
 
     if (this.currentOrdersChannel) {
-      this.echo.leave(
-        this.currentOrdersChannel,
-      );
+      this.echo.leave(this.currentOrdersChannel);
     }
 
     this.echo
       .private(channelName)
       .error((error: unknown) => {
-        console.error(
-          `[customer-realtime] ${channelName}`,
-          error,
-        );
+        this.logger.error(`[customer-realtime] ${channelName}`, error);
       })
       .listen(
         '.customer.order.updated',
 
         (payload: unknown) => {
-          this.handleOrderUpdated(
-            payload,
-          );
+          this.handleOrderUpdated(payload);
         },
       );
 
-    this.currentOrdersChannel =
-      channelName;
+    this.currentOrdersChannel = channelName;
   }
 
-  listenOrder(
-    orderId: number,
-  ): void {
-    if (
-      !Number.isInteger(orderId) ||
-      orderId <= 0
-    ) {
+  listenOrder(orderId: number): void {
+    if (!Number.isInteger(orderId) || orderId <= 0) {
       return;
     }
 
@@ -131,141 +90,89 @@ export class CustomerRealtimeService {
       return;
     }
 
-    const channelName =
-      `customer.order.${orderId}`;
+    const channelName = `customer.order.${orderId}`;
 
-    if (
-      this.currentOrderChannel ===
-      channelName
-    ) {
+    if (this.currentOrderChannel === channelName) {
       return;
     }
 
     if (this.currentOrderChannel) {
-      this.echo.leave(
-        this.currentOrderChannel,
-      );
+      this.echo.leave(this.currentOrderChannel);
     }
 
     this.echo
       .private(channelName)
       .error((error: unknown) => {
-        console.error(
-          `[customer-realtime] ${channelName}`,
-          error,
-        );
+        this.logger.error(`[customer-realtime] ${channelName}`, error);
       })
       .listen(
         '.customer.order.updated',
 
         (payload: unknown) => {
-          this.handleOrderUpdated(
-            payload,
-          );
+          this.handleOrderUpdated(payload);
         },
       );
 
-    this.currentOrderChannel =
-      channelName;
+    this.currentOrderChannel = channelName;
   }
 
-  stopOrders(
-    userId: number,
-  ): void {
+  stopOrders(userId: number): void {
     if (!this.echo) {
       return;
     }
 
-    const channelName =
-      `customer.orders.${userId}`;
+    const channelName = `customer.orders.${userId}`;
 
-    this.echo.leave(
-      channelName,
-    );
+    this.echo.leave(channelName);
 
-    if (
-      this.currentOrdersChannel ===
-      channelName
-    ) {
-      this.currentOrdersChannel =
-        null;
+    if (this.currentOrdersChannel === channelName) {
+      this.currentOrdersChannel = null;
     }
   }
 
-  stopOrder(
-    orderId: number,
-  ): void {
+  stopOrder(orderId: number): void {
     if (!this.echo) {
       return;
     }
 
-    const channelName =
-      `customer.order.${orderId}`;
+    const channelName = `customer.order.${orderId}`;
 
-    this.echo.leave(
-      channelName,
-    );
+    this.echo.leave(channelName);
 
-    if (
-      this.currentOrderChannel ===
-      channelName
-    ) {
-      this.currentOrderChannel =
-        null;
+    if (this.currentOrderChannel === channelName) {
+      this.currentOrderChannel = null;
     }
   }
 
   disconnect(): void {
-    if (
-      this.echo &&
-      this.currentOrdersChannel
-    ) {
-      this.echo.leave(
-        this.currentOrdersChannel,
-      );
+    if (this.echo && this.currentOrdersChannel) {
+      this.echo.leave(this.currentOrdersChannel);
     }
 
-    if (
-      this.echo &&
-      this.currentOrderChannel
-    ) {
-      this.echo.leave(
-        this.currentOrderChannel,
-      );
+    if (this.echo && this.currentOrderChannel) {
+      this.echo.leave(this.currentOrderChannel);
     }
 
     this.echo?.disconnect();
 
     this.echo = null;
 
-    this.currentOrdersChannel =
-      null;
+    this.currentOrdersChannel = null;
 
-    this.currentOrderChannel =
-      null;
+    this.currentOrderChannel = null;
   }
 
-  private handleOrderUpdated(
-    payload: unknown,
-  ): void {
-    const event =
-      parseCustomerOrderUpdatedEvent(
-        payload,
-      );
+  private handleOrderUpdated(payload: unknown): void {
+    const event = parseCustomerOrderUpdatedEvent(payload);
 
     if (!event) {
-      console.warn(
-        '[customer-realtime] invalid customer.order.updated payload',
-        payload,
-      );
+      this.logger.warn('[customer-realtime] invalid customer.order.updated payload', payload);
 
       return;
     }
 
     this.zone.run(() => {
-      this.orderUpdated$.next(
-        event,
-      );
+      this.orderUpdated$.next(event);
     });
   }
 }

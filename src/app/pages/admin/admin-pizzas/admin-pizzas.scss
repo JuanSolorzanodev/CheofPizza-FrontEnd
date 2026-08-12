@@ -242,225 +242,6 @@
   padding: 1rem;
 }
 
-.pizza-card {
-  display: grid;
-  grid-template-columns:
-    150px
-    minmax(0, 1fr)
-    auto;
-  min-width: 0;
-  overflow: hidden;
-  border:
-    1px solid
-    var(--cheof-card-border);
-  border-radius:
-    var(--cheof-radius-lg);
-  background:
-    var(--cheof-card-background);
-
-  transition:
-    border-color var(--cheof-transition),
-    transform var(--cheof-transition),
-    box-shadow var(--cheof-transition),
-    opacity var(--cheof-transition);
-}
-
-.pizza-card:hover {
-  border-color:
-    color-mix(
-      in srgb,
-      var(--p-primary-color) 30%,
-      var(--cheof-card-border)
-    );
-  box-shadow:
-    var(--cheof-shadow-sm);
-  transform:
-    translateY(-1px);
-}
-
-.pizza-card.is-hidden {
-  opacity: 0.78;
-}
-
-.pizza-image {
-  position: relative;
-  min-height: 150px;
-  overflow: hidden;
-  background:
-    var(--cheof-muted-background);
-}
-
-.pizza-image img {
-  width: 100%;
-  height: 100%;
-  min-height: 150px;
-  object-fit: cover;
-}
-
-.image-placeholder {
-  display: grid;
-  width: 100%;
-  height: 100%;
-  min-height: 150px;
-  place-items: center;
-  align-content: center;
-  gap: 0.45rem;
-  color:
-    var(--cheof-text-secondary);
-}
-
-.image-placeholder i {
-  font-size: 1.5rem;
-}
-
-.image-placeholder span {
-  font-size: 0.72rem;
-}
-
-.visibility-badge {
-  position: absolute;
-  top: 0.65rem;
-  left: 0.65rem;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  padding: 0.35rem 0.55rem;
-  border-radius: 999px;
-  background:
-    color-mix(
-      in srgb,
-      var(--cheof-text) 72%,
-      transparent
-    );
-  color: white;
-  font-size: 0.65rem;
-  font-weight: 750;
-  backdrop-filter:
-    blur(8px);
-}
-
-.visibility-badge.is-visible {
-  background:
-    color-mix(
-      in srgb,
-      var(--cheof-success-strong) 82%,
-      transparent
-    );
-}
-
-.pizza-content {
-  display: grid;
-  min-width: 0;
-  align-content: center;
-  gap: 0.7rem;
-  padding: 1rem;
-}
-
-.pizza-title-row {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 1rem;
-}
-
-.pizza-title-row > div {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.65rem;
-}
-
-.pizza-title-row h4 {
-  margin: 0;
-  font-size: 1.05rem;
-}
-
-.protected-badge {
-  display: inline-flex;
-  flex-shrink: 0;
-  align-items: center;
-  gap: 0.35rem;
-  padding: 0.38rem 0.55rem;
-  border-radius: 999px;
-  background:
-    var(--cheof-warning-soft);
-  color:
-    var(--cheof-warning);
-  font-size: 0.65rem;
-  font-weight: 750;
-}
-
-.pizza-description {
-  display: -webkit-box;
-  overflow: hidden;
-  margin: 0;
-  color: var(--cheof-text-secondary);
-  font-size: 0.8rem;
-  line-height: 1.55;
-  text-overflow: ellipsis;
-  line-clamp: 2;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-}
-
-.ingredients {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.35rem;
-}
-
-.ingredients span {
-  padding: 0.28rem 0.48rem;
-  border-radius: 999px;
-  background:
-    var(--cheof-muted-background);
-  color:
-    var(--cheof-text-secondary);
-  font-size: 0.64rem;
-  line-height: 1.25;
-}
-
-.pizza-meta {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.85rem;
-  color:
-    var(--cheof-text-secondary);
-}
-
-.pizza-meta span {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  font-size: 0.68rem;
-}
-
-.pizza-meta i {
-  color:
-    var(--p-primary-color);
-}
-
-.pizza-actions {
-  display: flex;
-  min-width: 145px;
-  align-content: center;
-  align-items: stretch;
-  justify-content: center;
-  flex-direction: column;
-  gap: 0.55rem;
-  padding: 1rem;
-  border-left:
-    1px solid
-    var(--cheof-card-border);
-  background:
-    color-mix(
-      in srgb,
-      var(--p-primary-color) 1.5%,
-      var(--cheof-card-background)
-    );
-}
-
 .skeleton-list {
   padding: 1rem;
 }
@@ -507,23 +288,7 @@
       minmax(180px, 220px);
   }
 
-  .pizza-card {
-    grid-template-columns:
-      140px
-      minmax(0, 1fr);
-  }
 
-  .pizza-actions {
-    grid-column: 1 / -1;
-    min-width: 0;
-    align-items: center;
-    flex-direction: row;
-    justify-content: flex-end;
-    border-top:
-      1px solid
-      var(--cheof-card-border);
-    border-left: 0;
-  }
 }
 
 @media (max-width: 760px) {
@@ -541,20 +306,8 @@
       minmax(0, 1fr);
   }
 
-  .pizza-card {
-    grid-template-columns:
-      minmax(0, 1fr);
-  }
 
-  .pizza-image,
-  .pizza-image img,
-  .image-placeholder {
-    min-height: 230px;
-  }
 
-  .pizza-actions {
-    grid-column: auto;
-  }
 }
 
 @media (max-width: 560px) {
@@ -564,14 +317,7 @@
   }
 
   .hero-actions,
-  .pizza-actions {
-    align-items: stretch;
-    flex-direction: column;
-  }
 
-  .pizza-title-row {
-    flex-direction: column;
-  }
 
   .pizzas-hero,
   .pizzas-panel {
@@ -580,17 +326,3 @@
   }
 }
 
-
-/* =========================================================
-   REDUCCIÓN DE MOVIMIENTO
-   ========================================================= */
-
-@media (prefers-reduced-motion: reduce) {
-  .pizza-card {
-    transition: none;
-  }
-
-  .pizza-card:hover {
-    transform: none;
-  }
-}

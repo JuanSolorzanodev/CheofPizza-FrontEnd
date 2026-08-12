@@ -1,0 +1,146 @@
+<p-dialog
+  header="Detalle de la transacción"
+  [modal]="true"
+  [visible]="visible()"
+  (visibleChange)="visibleChange.emit($event)"
+  [draggable]="false"
+  [resizable]="false"
+  [dismissableMask]="true"
+  [closeOnEscape]="true"
+  [breakpoints]="{ '960px': '72vw', '640px': '94vw' }"
+  [style]="{ width: '600px' }"
+  styleClass="transaction-detail-dialog"
+>
+  @if (transaction(); as current) {
+    <section class="transaction-detail">
+      <header class="transaction-detail__header">
+        <div [class]="methodClass(current.method)">
+          <span class="transaction-method__icon">
+            <i [class]="methodIcon(current.method)" aria-hidden="true"></i>
+          </span>
+          <div>
+            <strong>{{ methodLabel(current.method) }}</strong>
+            <small>{{ sourceLabel(current.source) }}</small>
+          </div>
+        </div>
+
+        <p-tag
+          [value]="statusLabel(current.status)"
+          [severity]="statusSeverity(current.status)"
+          [icon]="statusIcon(current.status)"
+        />
+      </header>
+
+      <section class="transaction-detail__amount">
+        <span>Importe de la transacción</span>
+        <strong>{{ current.amount | currency: current.currency }}</strong>
+        <small>{{ current.currency }}</small>
+      </section>
+
+      <section class="transaction-detail__grid">
+        <article class="transaction-detail-card">
+          <span class="transaction-detail-card__icon"><i class="pi pi-receipt" aria-hidden="true"></i></span>
+          <div>
+            <span>Pedido</span>
+            @if (current.order_id !== null) {
+              <a class="transaction-detail-card__link" [routerLink]="['/admin/orders', current.order_id]" (click)="close()">
+                {{ current.order_number || 'Abrir pedido' }}
+                <i class="pi pi-arrow-up-right" aria-hidden="true"></i>
+              </a>
+            } @else {
+              <strong>Sin pedido relacionado</strong>
+            }
+          </div>
+        </article>
+
+        <article class="transaction-detail-card">
+          <span class="transaction-detail-card__icon"><i class="pi pi-calendar" aria-hidden="true"></i></span>
+          <div>
+            <span>Fecha efectiva</span>
+            <strong>
+              @if (current.effective_at) {
+                {{ current.effective_at | date: 'dd/MM/yyyy HH:mm' }}
+              } @else {
+                Sin fecha registrada
+              }
+            </strong>
+          </div>
+        </article>
+
+        <article class="transaction-detail-card">
+          <span class="transaction-detail-card__icon"><i class="pi pi-user" aria-hidden="true"></i></span>
+          <div>
+            <span>Cliente</span>
+            <strong>{{ current.customer.name || 'Cliente sin nombre' }}</strong>
+          </div>
+        </article>
+
+        <article class="transaction-detail-card">
+          <span class="transaction-detail-card__icon"><i class="pi pi-phone" aria-hidden="true"></i></span>
+          <div>
+            <span>Contacto</span>
+            <strong>{{ customerContact(current) }}</strong>
+          </div>
+        </article>
+      </section>
+
+      <section class="transaction-detail__technical">
+        <header class="transaction-detail__technical-header">
+          <div>
+            <span>Información técnica</span>
+            <strong>Identificadores y referencias</strong>
+          </div>
+          <i class="pi pi-shield" aria-hidden="true"></i>
+        </header>
+
+        <div class="transaction-technical-row">
+          <div><span>Referencia</span><code>{{ current.reference || 'Sin referencia' }}</code></div>
+          <button type="button" class="transaction-copy-button" aria-label="Copiar referencia" pTooltip="Copiar referencia" tooltipPosition="left" [disabled]="!current.reference" (click)="copyToClipboard(current.reference, 'Referencia')">
+            <i class="pi pi-copy" aria-hidden="true"></i>
+          </button>
+        </div>
+
+        <div class="transaction-technical-row">
+          <div><span>Identificador interno</span><code>{{ current.transaction_key }}</code></div>
+          <button type="button" class="transaction-copy-button" aria-label="Copiar identificador interno" pTooltip="Copiar identificador" tooltipPosition="left" (click)="copyToClipboard(current.transaction_key, 'Identificador interno')">
+            <i class="pi pi-copy" aria-hidden="true"></i>
+          </button>
+        </div>
+
+        @if (current.receipt_uuid) {
+          <div class="transaction-technical-row">
+            <div><span>UUID del comprobante</span><code>{{ current.receipt_uuid }}</code></div>
+            <button type="button" class="transaction-copy-button" aria-label="Copiar UUID del comprobante" pTooltip="Copiar UUID" tooltipPosition="left" (click)="copyToClipboard(current.receipt_uuid, 'UUID del comprobante')">
+              <i class="pi pi-copy" aria-hidden="true"></i>
+            </button>
+          </div>
+        }
+
+        @if (current.reviewed_by) {
+          <div class="transaction-technical-row">
+            <div><span>Revisado por</span><strong>{{ current.reviewed_by }}</strong></div>
+            <span class="transaction-technical-row__verified"><i class="pi pi-verified" aria-hidden="true"></i></span>
+          </div>
+        }
+
+        @if (current.failure_code) {
+          <div class="transaction-technical-row transaction-technical-row--failure">
+            <div><span>Código de error</span><code>{{ current.failure_code }}</code></div>
+            <button type="button" class="transaction-copy-button" aria-label="Copiar código de error" pTooltip="Copiar código" tooltipPosition="left" (click)="copyToClipboard(current.failure_code, 'Código de error')">
+              <i class="pi pi-copy" aria-hidden="true"></i>
+            </button>
+          </div>
+        }
+      </section>
+    </section>
+  }
+
+  <ng-template pTemplate="footer">
+    <div class="transaction-detail__actions">
+      <p-button label="Cerrar" severity="secondary" [outlined]="true" (onClick)="close()" />
+      @if (transaction()?.order_id !== null && transaction()?.order_id !== undefined) {
+        <p-button icon="pi pi-arrow-up-right" label="Ver pedido" [routerLink]="['/admin/orders', transaction()!.order_id]" (onClick)="close()" />
+      }
+    </div>
+  </ng-template>
+</p-dialog>

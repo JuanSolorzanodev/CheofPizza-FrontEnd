@@ -35,7 +35,7 @@
 
   <div class="lp__field">
     <div class="lp__labelRow">
-      <label class="lp__label">Dirección detectada</label>
+      <span class="lp__label">Dirección detectada</span>
     </div>
 
     <div class="lp__addressBox">
@@ -56,9 +56,10 @@
   </div>
 
   <div class="lp__field">
-    <label class="lp__label">Referencia (opcional)</label>
+    <label class="lp__label" for="location-reference">Referencia (opcional)</label>
     <input
       #refInput
+      id="location-reference"
       pInputText
       type="text"
       [disabled]="disabled"
@@ -66,13 +67,10 @@
       (input)="onReferenceInput(refInput.value)"
       placeholder="Ej: Casa blanca, portón negro, timbre dañado"
     />
-
   </div>
 
   <div class="lp__mapWrap">
     <div #map class="lp__map"></div>
-    <div class="lp__attribution">
-      Map data © OpenStreetMap contributors · Rendered with Leaflet
-    </div>
+    <div class="lp__attribution">Map data © OpenStreetMap contributors · Rendered with Leaflet</div>
   </div>
 </div>

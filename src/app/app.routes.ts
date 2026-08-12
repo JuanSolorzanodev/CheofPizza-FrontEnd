@@ -16,12 +16,7 @@ export const routes: Routes = [
     title: 'CheofPizza',
 
     loadComponent: () =>
-      import(
-        './pages/public/home-page/home-page'
-      ).then(
-        (module) =>
-          module.HomePage,
-      ),
+      import('./pages/public/home-page/home-page').then((module) => module.HomePage),
   },
 
   /*
@@ -35,12 +30,7 @@ export const routes: Routes = [
     title: 'Arma tu pizza',
 
     loadComponent: () =>
-      import(
-        './pages/public/pizza-builder/pizza-builder'
-      ).then(
-        (module) =>
-          module.PizzaBuilder,
-      ),
+      import('./pages/public/pizza-builder/pizza-builder').then((module) => module.PizzaBuilder),
   },
 
   /*
@@ -54,11 +44,8 @@ export const routes: Routes = [
     title: 'Promoción',
 
     loadComponent: () =>
-      import(
-        './pages/public/promotion-detail-page/promotion-detail-page'
-      ).then(
-        (module) =>
-          module.PromotionDetailPage,
+      import('./pages/public/promotion-detail-page/promotion-detail-page').then(
+        (module) => module.PromotionDetailPage,
       ),
   },
 
@@ -73,12 +60,7 @@ export const routes: Routes = [
     title: 'Finalizar pedido',
 
     loadComponent: () =>
-      import(
-        './pages/public/checkout-page/checkout-page'
-      ).then(
-        (module) =>
-          module.CheckoutPage,
-      ),
+      import('./pages/public/checkout-page/checkout-page').then((module) => module.CheckoutPage),
   },
 
   /*
@@ -91,21 +73,11 @@ export const routes: Routes = [
     path: 'my/orders',
     title: 'Mis pedidos',
 
-    canActivate: [
-      authGuard,
-      roleGuard([
-        'customer',
-        'admin',
-        'operator',
-      ]),
-    ],
+    canActivate: [authGuard, roleGuard(['customer', 'admin', 'operator'])],
 
     loadComponent: () =>
-      import(
-        './pages/customer/my-orders-page/my-orders-page'
-      ).then(
-        (module) =>
-          module.MyOrdersPage,
+      import('./pages/customer/my-orders-page/my-orders-page').then(
+        (module) => module.MyOrdersPage,
       ),
   },
 
@@ -113,21 +85,11 @@ export const routes: Routes = [
     path: 'my/orders/:orderId',
     title: 'Detalle del pedido',
 
-    canActivate: [
-      authGuard,
-      roleGuard([
-        'customer',
-        'admin',
-        'operator',
-      ]),
-    ],
+    canActivate: [authGuard, roleGuard(['customer', 'admin', 'operator'])],
 
     loadComponent: () =>
-      import(
-        './pages/customer/my-order-detail-page/my-order-detail-page'
-      ).then(
-        (module) =>
-          module.MyOrderDetailPage,
+      import('./pages/customer/my-order-detail-page/my-order-detail-page').then(
+        (module) => module.MyOrderDetailPage,
       ),
   },
 
@@ -141,20 +103,11 @@ export const routes: Routes = [
     path: 'operator/orders',
     title: 'Pedidos',
 
-    canActivate: [
-      authGuard,
-      roleGuard([
-        'operator',
-        'admin',
-      ]),
-    ],
+    canActivate: [authGuard, roleGuard(['operator', 'admin'])],
 
     loadComponent: () =>
-      import(
-        './pages/operator/operator-orders-page/operator-orders-page'
-      ).then(
-        (module) =>
-          module.OperatorOrdersPage,
+      import('./pages/operator/operator-orders-page/operator-orders-page').then(
+        (module) => module.OperatorOrdersPage,
       ),
   },
 
@@ -162,20 +115,11 @@ export const routes: Routes = [
     path: 'operator/orders/:orderId',
     title: 'Detalle del pedido',
 
-    canActivate: [
-      authGuard,
-      roleGuard([
-        'operator',
-        'admin',
-      ]),
-    ],
+    canActivate: [authGuard, roleGuard(['operator', 'admin'])],
 
     loadComponent: () =>
-      import(
-        './pages/operator/operator-order-detail-page/operator-order-detail-page'
-      ).then(
-        (module) =>
-          module.OperatorOrderDetailPage,
+      import('./pages/operator/operator-order-detail-page/operator-order-detail-page').then(
+        (module) => module.OperatorOrderDetailPage,
       ),
   },
 
@@ -188,20 +132,10 @@ export const routes: Routes = [
   {
     path: 'admin',
 
-    canActivate: [
-      authGuard,
-      roleGuard([
-        'admin',
-      ]),
-    ],
+    canActivate: [authGuard, roleGuard(['admin'])],
 
     loadComponent: () =>
-      import(
-        './layouts/admin-layout/admin-layout'
-      ).then(
-        (module) =>
-          module.AdminLayout,
-      ),
+      import('./layouts/admin-layout/admin-layout').then((module) => module.AdminLayout),
 
     children: [
       /*
@@ -227,16 +161,12 @@ export const routes: Routes = [
         title: 'Resumen administrativo',
 
         data: {
-          breadcrumb:
-            'Resumen',
+          breadcrumb: 'Resumen',
         },
 
         loadComponent: () =>
-          import(
-            './pages/admin/admin-dashboard/admin-dashboard'
-          ).then(
-            (module) =>
-              module.AdminDashboard,
+          import('./pages/admin/admin-dashboard/admin-dashboard').then(
+            (module) => module.AdminDashboard,
           ),
       },
 
@@ -251,17 +181,11 @@ export const routes: Routes = [
         title: 'Gestión de pedidos',
 
         data: {
-          breadcrumb:
-            'Pedidos',
+          breadcrumb: 'Pedidos',
         },
 
         loadComponent: () =>
-          import(
-            './pages/admin/admin-orders/admin-orders'
-          ).then(
-            (module) =>
-              module.AdminOrders,
-          ),
+          import('./pages/admin/admin-orders/admin-orders').then((module) => module.AdminOrders),
       },
 
       {
@@ -269,19 +193,14 @@ export const routes: Routes = [
         title: 'Detalle del pedido',
 
         data: {
-          breadcrumb:
-            'Detalle del pedido',
+          breadcrumb: 'Detalle del pedido',
 
-          backUrl:
-            '/admin/orders',
+          backUrl: '/admin/orders',
         },
 
         loadComponent: () =>
-          import(
-            './pages/operator/operator-order-detail-page/operator-order-detail-page'
-          ).then(
-            (module) =>
-              module.OperatorOrderDetailPage,
+          import('./pages/operator/operator-order-detail-page/operator-order-detail-page').then(
+            (module) => module.OperatorOrderDetailPage,
           ),
       },
 
@@ -296,28 +215,20 @@ export const routes: Routes = [
         title: 'Caja administrativa',
 
         data: {
-          breadcrumb:
-            'Caja',
+          breadcrumb: 'Caja',
 
-          pageTitle:
-            'Caja administrativa',
+          pageTitle: 'Caja administrativa',
 
-          pageDescription:
-            'Controla el efectivo, movimientos y cierres de jornada.',
+          pageDescription: 'Controla el efectivo, movimientos y cierres de jornada.',
 
-          pageIcon:
-            'pi pi-wallet',
+          pageIcon: 'pi pi-wallet',
 
-          section:
-            'Principal',
+          section: 'Principal',
         },
 
         loadComponent: () =>
-          import(
-            './pages/admin/admin-cash-register/admin-cash-register'
-          ).then(
-            (module) =>
-              module.AdminCashRegister,
+          import('./pages/admin/admin-cash-register/admin-cash-register').then(
+            (module) => module.AdminCashRegister,
           ),
       },
 
@@ -326,19 +237,14 @@ export const routes: Routes = [
         title: 'Historial de cajas',
 
         data: {
-          breadcrumb:
-            'Historial de cajas',
+          breadcrumb: 'Historial de cajas',
 
-          backUrl:
-            '/admin/cash-register',
+          backUrl: '/admin/cash-register',
         },
 
         loadComponent: () =>
-          import(
-            './pages/admin/admin-cash-register-history/admin-cash-register-history'
-          ).then(
-            (module) =>
-              module.AdminCashRegisterHistory,
+          import('./pages/admin/admin-cash-register-history/admin-cash-register-history').then(
+            (module) => module.AdminCashRegisterHistory,
           ),
       },
 
@@ -347,19 +253,14 @@ export const routes: Routes = [
         title: 'Detalle de caja',
 
         data: {
-          breadcrumb:
-            'Detalle de caja',
+          breadcrumb: 'Detalle de caja',
 
-          backUrl:
-            '/admin/cash-register/history',
+          backUrl: '/admin/cash-register/history',
         },
 
         loadComponent: () =>
-          import(
-            './pages/admin/admin-cash-register-detail/admin-cash-register-detail'
-          ).then(
-            (module) =>
-              module.AdminCashRegisterDetail,
+          import('./pages/admin/admin-cash-register-detail/admin-cash-register-detail').then(
+            (module) => module.AdminCashRegisterDetail,
           ),
       },
 
@@ -374,28 +275,20 @@ export const routes: Routes = [
         title: 'Transacciones financieras',
 
         data: {
-          breadcrumb:
-            'Transacciones',
+          breadcrumb: 'Transacciones',
 
-          pageTitle:
-            'Transacciones financieras',
+          pageTitle: 'Transacciones financieras',
 
-          pageDescription:
-            'Consulta pagos, cobros, transferencias y movimientos PayPal.',
+          pageDescription: 'Consulta pagos, cobros, transferencias y movimientos PayPal.',
 
-          pageIcon:
-            'pi pi-credit-card',
+          pageIcon: 'pi pi-credit-card',
 
-          section:
-            'Principal',
+          section: 'Principal',
         },
 
         loadComponent: () =>
-          import(
-            './pages/admin/admin-payment-transactions/admin-payment-transactions'
-          ).then(
-            (module) =>
-              module.AdminPaymentTransactions,
+          import('./pages/admin/admin-payment-transactions/admin-payment-transactions').then(
+            (module) => module.AdminPaymentTransactions,
           ),
       },
 
@@ -410,16 +303,12 @@ export const routes: Routes = [
         title: 'Categorías',
 
         data: {
-          breadcrumb:
-            'Categorías',
+          breadcrumb: 'Categorías',
         },
 
         loadComponent: () =>
-          import(
-            './core/api/admin/admin-categories/admin-categories'
-          ).then(
-            (module) =>
-              module.AdminCategories,
+          import('./pages/admin/admin-categories/admin-categories').then(
+            (module) => module.AdminCategories,
           ),
       },
 
@@ -434,17 +323,11 @@ export const routes: Routes = [
         title: 'Precios por categoría',
 
         data: {
-          breadcrumb:
-            'Precios',
+          breadcrumb: 'Precios',
         },
 
         loadComponent: () =>
-          import(
-            './pages/admin/admin-prices/admin-prices'
-          ).then(
-            (module) =>
-              module.AdminPrices,
-          ),
+          import('./pages/admin/admin-prices/admin-prices').then((module) => module.AdminPrices),
       },
 
       /*
@@ -458,17 +341,11 @@ export const routes: Routes = [
         title: 'Pizzas',
 
         data: {
-          breadcrumb:
-            'Pizzas',
+          breadcrumb: 'Pizzas',
         },
 
         loadComponent: () =>
-          import(
-            './pages/admin/admin-pizzas/admin-pizzas'
-          ).then(
-            (module) =>
-              module.AdminPizzas,
-          ),
+          import('./pages/admin/admin-pizzas/admin-pizzas').then((module) => module.AdminPizzas),
       },
 
       /*
@@ -482,16 +359,12 @@ export const routes: Routes = [
         title: 'Ingredientes y extras',
 
         data: {
-          breadcrumb:
-            'Ingredientes',
+          breadcrumb: 'Ingredientes',
         },
 
         loadComponent: () =>
-          import(
-            './pages/admin/admin-ingredients/admin-ingredients'
-          ).then(
-            (module) =>
-              module.AdminIngredients,
+          import('./pages/admin/admin-ingredients/admin-ingredients').then(
+            (module) => module.AdminIngredients,
           ),
       },
 
@@ -506,16 +379,12 @@ export const routes: Routes = [
         title: 'Promociones',
 
         data: {
-          breadcrumb:
-            'Promociones',
+          breadcrumb: 'Promociones',
         },
 
         loadComponent: () =>
-          import(
-            './pages/admin/admin-promotions/admin-promotions'
-          ).then(
-            (module) =>
-              module.AdminPromotions,
+          import('./pages/admin/admin-promotions/admin-promotions').then(
+            (module) => module.AdminPromotions,
           ),
       },
 
@@ -530,17 +399,11 @@ export const routes: Routes = [
         title: 'Usuarios',
 
         data: {
-          breadcrumb:
-            'Usuarios',
+          breadcrumb: 'Usuarios',
         },
 
         loadComponent: () =>
-          import(
-            './pages/admin/admin-users/admin-users'
-          ).then(
-            (module) =>
-              module.AdminUsers,
-          ),
+          import('./pages/admin/admin-users/admin-users').then((module) => module.AdminUsers),
       },
 
       /*
@@ -554,28 +417,20 @@ export const routes: Routes = [
         title: 'Configuración',
 
         data: {
-          breadcrumb:
-            'Configuración',
+          breadcrumb: 'Configuración',
 
-          pageTitle:
-            'Configuración del negocio',
+          pageTitle: 'Configuración del negocio',
 
-          pageDescription:
-            'Administra pagos, datos bancarios, delivery y datos comerciales.',
+          pageDescription: 'Administra pagos, datos bancarios, delivery y datos comerciales.',
 
-          pageIcon:
-            'pi pi-cog',
+          pageIcon: 'pi pi-cog',
 
-          section:
-            'Administración',
+          section: 'Administración',
         },
 
         loadComponent: () =>
-          import(
-            './pages/admin/admin-settings/admin-settings'
-          ).then(
-            (module) =>
-              module.AdminSettings,
+          import('./pages/admin/admin-settings/admin-settings').then(
+            (module) => module.AdminSettings,
           ),
       },
 
@@ -590,16 +445,12 @@ export const routes: Routes = [
         title: 'Analítica predictiva',
 
         data: {
-          breadcrumb:
-            'Analítica predictiva',
+          breadcrumb: 'Analítica predictiva',
         },
 
         loadComponent: () =>
-          import(
-            './pages/admin/machine-learning-dashboard/machine-learning-dashboard'
-          ).then(
-            (module) =>
-              module.MachineLearningDashboard,
+          import('./pages/admin/machine-learning-dashboard/machine-learning-dashboard').then(
+            (module) => module.MachineLearningDashboard,
           ),
       },
 

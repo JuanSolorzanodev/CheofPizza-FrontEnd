@@ -1,16 +1,5 @@
-import {
-  Injectable,
-  computed,
-  inject,
-  signal,
-} from '@angular/core';
-import {
-  catchError,
-  finalize,
-  firstValueFrom,
-  map,
-  of,
-} from 'rxjs';
+import { Injectable, computed, inject, signal } from '@angular/core';
+import { catchError, firstValueFrom, map, of } from 'rxjs';
 
 import { AuthApiService } from './auth-api.service';
 import { AuthSessionService } from './auth-session.service';
@@ -38,11 +27,7 @@ export class AuthStore {
   readonly loggingOut = this._loggingOut.asReadonly();
 
   readonly isAuthenticated = computed(() => {
-    return (
-      this._initialized() &&
-      this._token() !== null &&
-      this._user() !== null
-    );
+    return this._initialized() && this._token() !== null && this._user() !== null;
   });
 
   readonly displayName = computed(() => {
@@ -55,9 +40,7 @@ export class AuthStore {
     return `${user.first_name} ${user.last_name}`.trim();
   });
 
-  readonly photoUrl = computed(
-    () => this._user()?.photo_url ?? null,
-  );
+  readonly photoUrl = computed(() => this._user()?.photo_url ?? null);
 
   constructor() {
     this.restoreLocalSession();
@@ -96,10 +79,7 @@ export class AuthStore {
              */
             const verifiedUser: AuthUser = {
               ...response.data,
-              photo_url:
-                currentUser?.photo_url ??
-                response.data.photo_url ??
-                null,
+              photo_url: currentUser?.photo_url ?? response.data.photo_url ?? null,
             };
 
             this._user.set(verifiedUser);

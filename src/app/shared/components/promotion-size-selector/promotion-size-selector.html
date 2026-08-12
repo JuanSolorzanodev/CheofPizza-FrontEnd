@@ -1,0 +1,59 @@
+<section class="size-card" aria-labelledby="promotion-size-title">
+  <header class="size-card__header">
+    <span class="step-number">
+      {{ stepNumber() }}
+    </span>
+
+    <div>
+      <span class="eyebrow"> Tamaño </span>
+
+      <h2 id="promotion-size-title">Elige el tamaño</h2>
+
+      <p>El tamaño define el precio promocional y el valor de los ingredientes adicionales.</p>
+    </div>
+  </header>
+
+  <div class="size-card__content">
+    <div class="size-field">
+      <span class="size-field__label"> Tamaño de las pizzas </span>
+
+      <p-select
+        ariaLabel="Tamaño de las pizzas"
+        [options]="options()"
+        optionLabel="label"
+        optionValue="value"
+        [ngModel]="selectedSizeId()"
+        (ngModelChange)="onSizeChange($event)"
+        placeholder="Selecciona un tamaño"
+        appendTo="body"
+        styleClass="promotion-size-select"
+      />
+
+      <small>
+        Al cambiar el tamaño se reinicia la selección actual para mantener precios y
+        personalizaciones consistentes.
+      </small>
+    </div>
+
+    @if (selectedSizePrice(); as selectedPrice) {
+      <aside class="size-result" aria-label="Tamaño seleccionado">
+        <div class="size-result__copy">
+          <span> Seleccionado </span>
+
+          <strong>
+            {{ selectedPrice.size?.name || 'Tamaño' }}
+          </strong>
+
+          <small>
+            {{ selectedPrice.size?.portion || 0 }}
+            porciones
+          </small>
+        </div>
+
+        <strong class="size-result__price">
+          {{ selectedPrice.price | currency: 'USD' : 'symbol' : '1.2-2' }}
+        </strong>
+      </aside>
+    }
+  </div>
+</section>

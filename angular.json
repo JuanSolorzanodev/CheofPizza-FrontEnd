@@ -2,7 +2,10 @@
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
   "version": 1,
   "cli": {
-    "packageManager": "npm"
+    "packageManager": "npm",
+    "schematicCollections": [
+      "angular-eslint"
+    ]
   },
   "newProjectRoot": "projects",
   "projects": {
@@ -33,7 +36,10 @@
               "node_modules/primeicons/primeicons.css",
               "src/styles.scss"
             ],
-            "allowedCommonJsDependencies": ["pusher-js", "leaflet"]
+            "allowedCommonJsDependencies": [
+              "pusher-js",
+              "leaflet"
+            ]
           },
           "configurations": {
             "production": {
@@ -88,6 +94,15 @@
         },
         "test": {
           "builder": "@angular/build:unit-test"
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "src/**/*.ts",
+              "src/**/*.html"
+            ]
+          }
         }
       }
     }

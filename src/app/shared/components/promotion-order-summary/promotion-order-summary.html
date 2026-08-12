@@ -1,0 +1,302 @@
+<aside
+  class="promotion-summary"
+  aria-labelledby="summary-title"
+>
+  <div
+    class="promotion-summary__inner"
+  >
+    <header
+      class="summary-header"
+    >
+      <span>
+        Tu promoción
+      </span>
+
+      <h2
+        id="summary-title"
+      >
+        Resumen del combo
+      </h2>
+
+      <p>
+        Revisa las pizzas y extras seleccionados.
+      </p>
+    </header>
+
+    <div
+      class="summary-selections"
+    >
+      @for (
+        item of items();
+        track item.key
+      ) {
+        <div
+          class="summary-pizza"
+          [class.summary-pizza--pending]="
+            !item.configured
+          "
+        >
+          <span
+            class="summary-pizza__number"
+          >
+            {{ item.index }}
+          </span>
+
+          <div
+            class="summary-pizza__copy"
+          >
+            <small>
+              {{ item.shortTitle }}
+            </small>
+
+            <strong>
+              {{ item.summary }}
+            </strong>
+
+            @if (
+              item.configured
+            ) {
+              <span>
+                {{ item.extrasCount }}
+                de
+                {{ item.maxExtras }}
+                extras
+              </span>
+            }
+          </div>
+
+          @if (
+            item.configured
+          ) {
+            <span
+              class="summary-pizza__status"
+              aria-label="Configurada"
+            >
+              <i
+                class="
+                  pi
+                  pi-check
+                "
+                aria-hidden="true"
+              ></i>
+            </span>
+          }
+        </div>
+      }
+    </div>
+
+    <div
+      class="summary-costs"
+    >
+      <div>
+        <span>
+          Promoción
+        </span>
+
+        <strong>
+          {{
+            promotionBasePrice()
+              | currency:
+                  'USD':
+                  'symbol':
+                  '1.2-2'
+          }}
+        </strong>
+      </div>
+
+      <div>
+        <span>
+          Ingredientes extra
+        </span>
+
+        <strong>
+          {{
+            extrasPerUnitTotal()
+              | currency:
+                  'USD':
+                  'symbol':
+                  '1.2-2'
+          }}
+        </strong>
+      </div>
+
+      <div>
+        <span>
+          Cantidad
+        </span>
+
+        <strong>
+          {{ quantity() }}
+        </strong>
+      </div>
+
+      <div
+        class="summary-total"
+      >
+        <span>
+          Total
+        </span>
+
+        <strong>
+          {{
+            total()
+              | currency:
+                  'USD':
+                  'symbol':
+                  '1.2-2'
+          }}
+        </strong>
+      </div>
+    </div>
+
+    <button
+      type="button"
+      class="primary-action"
+      [disabled]="
+        !canSubmit()
+      "
+      [attr.aria-busy]="
+        submitting()
+      "
+      (click)="
+        onAddToCart()
+      "
+    >
+      @if (
+        submitting()
+      ) {
+        <i
+          class="
+            pi
+            pi-spin
+            pi-spinner
+          "
+          aria-hidden="true"
+        ></i>
+
+        <span>
+          Agregando
+        </span>
+      } @else {
+        <i
+          class="
+            pi
+            pi-shopping-cart
+          "
+          aria-hidden="true"
+        ></i>
+
+        <span>
+          Agregar al carrito
+        </span>
+      }
+    </button>
+
+    <button
+      type="button"
+      class="checkout-action"
+      [disabled]="
+        cartUnits() <=
+        0
+      "
+      (click)="
+        onCheckout()
+      "
+    >
+      <span>
+        Ir al checkout
+      </span>
+
+      <i
+        class="pi pi-arrow-right"
+        aria-hidden="true"
+      ></i>
+    </button>
+
+    @if (
+      !canSubmit()
+    ) {
+      <p
+        class="summary-message"
+      >
+        <i
+          class="
+            pi
+            pi-info-circle
+          "
+          aria-hidden="true"
+        ></i>
+
+        <span>
+          {{ progressLabel() }}
+        </span>
+      </p>
+    }
+  </div>
+</aside>
+
+<div
+  class="mobile-purchase-bar"
+  aria-label="Resumen de compra"
+>
+  <div
+    class="mobile-purchase-bar__price"
+  >
+    <span>
+      Total
+    </span>
+
+    <strong>
+      {{
+        total()
+          | currency:
+              'USD':
+              'symbol':
+              '1.2-2'
+      }}
+    </strong>
+  </div>
+
+  <button
+    type="button"
+    class="primary-action"
+    [disabled]="
+      !canSubmit()
+    "
+    [attr.aria-busy]="
+      submitting()
+    "
+    (click)="
+      onAddToCart()
+    "
+  >
+    @if (
+      submitting()
+    ) {
+      <i
+        class="
+          pi
+          pi-spin
+          pi-spinner
+        "
+        aria-hidden="true"
+      ></i>
+
+      <span>
+        Agregando
+      </span>
+    } @else {
+      <span>
+        Agregar
+      </span>
+
+      <i
+        class="
+          pi
+          pi-shopping-cart
+        "
+        aria-hidden="true"
+      ></i>
+    }
+  </button>
+</div>

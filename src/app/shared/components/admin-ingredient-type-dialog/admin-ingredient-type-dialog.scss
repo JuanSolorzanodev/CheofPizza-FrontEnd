@@ -1,0 +1,54 @@
+.dialog-title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.dialog-title > span {
+  display: grid;
+  width: 40px;
+  height: 40px;
+  place-items: center;
+  border-radius: var(--cheof-radius-md);
+  color: var(--p-primary-color);
+  background: color-mix(in srgb, var(--p-primary-color) 12%, transparent);
+}
+.dialog-title > div {
+  display: grid;
+  gap: 0.15rem;
+}
+.dialog-title small {
+  color: var(--cheof-text-secondary);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.dialog-title strong {
+  font-size: 1rem;
+}
+.dialog-form {
+  display: grid;
+  gap: 1rem;
+  padding-top: 0.25rem;
+}
+.field {
+  display: grid;
+  min-width: 0;
+  gap: 0.42rem;
+}
+.field > span {
+  font-size: 0.78rem;
+  font-weight: 750;
+}
+.field em {
+  color: var(--cheof-danger);
+  font-style: normal;
+}
+.field input,
+:host ::ng-deep .field .p-select {
+  width: 100%;
+}
+.field-error {
+  color: var(--cheof-danger);
+  font-size: 0.7rem;
+}

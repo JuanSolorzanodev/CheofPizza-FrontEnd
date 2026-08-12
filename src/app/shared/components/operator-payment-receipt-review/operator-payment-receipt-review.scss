@@ -1,0 +1,588 @@
+:host { display:block; min-width:0; }
+.card {
+  min-width: 0;
+}
+
+:host ::ng-deep .card.p-card {
+  overflow: hidden;
+
+  border: 1px solid var(--cheof-card-border);
+  border-radius: 1rem;
+
+  background: var(--cheof-card-background);
+
+  box-shadow:
+    0 0.25rem 0.8rem rgba(15, 23, 42, 0.025),
+    0 0.8rem 2rem rgba(15, 23, 42, 0.035);
+}
+
+:host ::ng-deep .card .p-card-body {
+  padding: 0;
+}
+
+:host ::ng-deep .card .p-card-content {
+  padding: 1rem 1.1rem 1.1rem;
+}
+
+:host ::ng-deep .card .p-card-header {
+  border-bottom: 1px solid var(--cheof-card-border);
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+
+  padding: 0.95rem 1.1rem;
+
+  background: var(--cheof-card-background);
+}
+
+.card-header--kitchen {
+  align-items: flex-start;
+}
+
+.card-title {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  min-width: 0;
+}
+
+.card-icon {
+  display: grid;
+  width: 2.15rem;
+  height: 2.15rem;
+  flex-shrink: 0;
+  place-items: center;
+
+  border-radius: 0.65rem;
+
+  background: var(--cheof-muted-background);
+
+  color: var(--cheof-text-secondary);
+}
+
+.card-icon i {
+  font-size: 0.82rem;
+}
+
+.client-icon,
+.status-icon,
+.receipt-icon,
+.kitchen-icon,
+.history-icon {
+  background: color-mix(
+    in srgb,
+    var(--p-primary-color) 8%,
+    var(--cheof-card-background)
+  );
+
+  color: var(--p-primary-color);
+}
+
+.card-title > div {
+  display: grid;
+  min-width: 0;
+  gap: 0.08rem;
+}
+
+.card-kicker {
+  color: var(--cheof-text-secondary);
+
+  font-size: 0.58rem;
+  font-weight: 650;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.card-title strong {
+  color: var(--cheof-text);
+
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+/* =========================================================
+   COMPROBANTE DE TRANSFERENCIA
+   ========================================================= */
+
+:host ::ng-deep .receipt-card.p-card {
+  width: min(100%, 80rem);
+  margin: 1rem auto 0;
+}
+
+.receipt-card__header {
+  align-items: center;
+}
+
+.receipt-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(18rem, 0.85fr);
+  gap: 1rem;
+}
+
+.receipt-file {
+  display: grid;
+  grid-template-columns: minmax(12rem, 0.8fr) minmax(0, 1.2fr);
+  gap: 1rem;
+
+  padding: 0.9rem;
+
+  border: 1px solid var(--cheof-card-border);
+  border-radius: 0.85rem;
+
+  background: var(--cheof-card-background-muted);
+}
+
+.receipt-file__preview {
+  display: grid;
+  min-height: 12rem;
+  align-content: center;
+  justify-items: center;
+  gap: 0.5rem;
+
+  padding: 1rem;
+
+  border: 1px dashed var(--cheof-card-border);
+  border-radius: 0.75rem;
+
+  background: var(--cheof-card-background);
+
+  text-align: center;
+}
+
+.receipt-file__preview > i {
+  font-size: 2rem;
+  color: var(--cheof-text-secondary);
+}
+
+.receipt-file__preview--image > i {
+  color: var(--p-primary-color);
+}
+
+.receipt-file__preview--pdf > i {
+  color: var(--cheof-danger);
+}
+
+.receipt-file__preview strong {
+  color: var(--cheof-text);
+
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.receipt-file__preview span {
+  max-width: 14rem;
+
+  color: var(--cheof-text-secondary);
+
+  font-size: 0.62rem;
+  line-height: 1.45;
+}
+
+.receipt-file__information {
+  display: grid;
+  align-content: start;
+  gap: 0.85rem;
+}
+
+.receipt-file__name {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.receipt-file__name span {
+  color: var(--cheof-text-secondary);
+
+  font-size: 0.6rem;
+  font-weight: 500;
+}
+
+.receipt-file__name strong {
+  color: var(--cheof-text);
+
+  font-size: 0.76rem;
+  font-weight: 650;
+  line-height: 1.4;
+
+  overflow-wrap: anywhere;
+}
+
+.receipt-file__metadata {
+  display: grid;
+  gap: 0.45rem;
+
+  padding: 0.75rem;
+
+  border: 1px solid var(--cheof-card-border);
+  border-radius: 0.7rem;
+
+  background: var(--cheof-card-background);
+}
+
+.receipt-file__metadata span {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+
+  color: var(--cheof-text-secondary);
+
+  font-size: 0.63rem;
+  line-height: 1.4;
+}
+
+.receipt-file__metadata i {
+  width: 0.85rem;
+
+  color: var(--p-primary-color);
+
+  font-size: 0.65rem;
+  text-align: center;
+}
+
+:host ::ng-deep .receipt-view-button.p-button {
+  width: 100%;
+  justify-content: center;
+
+  min-height: 2.55rem;
+
+  border-radius: 0.7rem;
+
+  font-size: 0.7rem;
+  font-weight: 650;
+}
+
+.receipt-review {
+  display: grid;
+  align-content: start;
+  gap: 0.85rem;
+}
+
+.receipt-review__summary {
+  display: grid;
+  gap: 0.7rem;
+
+  padding: 0.9rem;
+
+  border: 1px solid var(--cheof-card-border);
+  border-radius: 0.85rem;
+
+  background: var(--cheof-card-background-muted);
+}
+
+.receipt-review__status {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 0.65rem;
+
+  padding-bottom: 0.7rem;
+
+  border-bottom: 1px solid var(--cheof-card-border);
+}
+
+.receipt-review__status-icon {
+  display: grid;
+  width: 2.2rem;
+  height: 2.2rem;
+  place-items: center;
+
+  border-radius: 999px;
+
+  background: var(--cheof-muted-background);
+
+  color: var(--cheof-text-secondary);
+}
+
+.receipt-review__status-icon.is-pending {
+  background: color-mix(
+    in srgb,
+    var(--cheof-warning) 10%,
+    var(--cheof-card-background)
+  );
+
+  color: var(--cheof-warning-strong);
+}
+
+.receipt-review__status-icon.is-approved {
+  background: color-mix(
+    in srgb,
+    var(--cheof-success) 10%,
+    var(--cheof-card-background)
+  );
+
+  color: var(--cheof-success-strong);
+}
+
+.receipt-review__status-icon.is-rejected {
+  background: color-mix(
+    in srgb,
+    var(--cheof-danger) 9%,
+    var(--cheof-card-background)
+  );
+
+  color: var(--cheof-danger-strong);
+}
+
+.receipt-review__status-icon i {
+  font-size: 0.8rem;
+}
+
+.receipt-review__status > div {
+  display: grid;
+  gap: 0.1rem;
+}
+
+.receipt-review__status span,
+.receipt-review__detail span,
+.receipt-rejection-reason > span {
+  color: var(--cheof-text-secondary);
+
+  font-size: 0.58rem;
+  font-weight: 500;
+}
+
+.receipt-review__status strong,
+.receipt-review__detail strong {
+  color: var(--cheof-text);
+
+  font-size: 0.72rem;
+  font-weight: 650;
+}
+
+.receipt-review__detail {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+
+  padding-bottom: 0.55rem;
+
+  border-bottom: 1px dashed var(--cheof-card-border);
+}
+
+.receipt-review__detail:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.receipt-review__detail strong {
+  text-align: right;
+}
+
+.receipt-rejection-reason {
+  padding: 0.7rem;
+
+  border: 1px solid
+    color-mix(
+      in srgb,
+      var(--cheof-danger) 18%,
+      var(--cheof-card-border)
+    );
+
+  border-radius: 0.65rem;
+
+  background: color-mix(
+    in srgb,
+    var(--cheof-danger) 4%,
+    var(--cheof-card-background)
+  );
+}
+
+.receipt-rejection-reason p {
+  margin: 0.3rem 0 0;
+
+  color: var(--cheof-text);
+
+  font-size: 0.67rem;
+  line-height: 1.5;
+}
+
+.receipt-review__notice {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: flex-start;
+  gap: 0.55rem;
+
+  padding: 0.75rem;
+
+  border: 1px solid
+    color-mix(
+      in srgb,
+      var(--p-primary-color) 18%,
+      var(--cheof-card-border)
+    );
+
+  border-radius: 0.7rem;
+
+  background: color-mix(
+    in srgb,
+    var(--p-primary-color) 4%,
+    var(--cheof-card-background)
+  );
+}
+
+.receipt-review__notice i {
+  margin-top: 0.1rem;
+
+  color: var(--p-primary-color);
+
+  font-size: 0.72rem;
+}
+
+.receipt-review__notice p {
+  margin: 0;
+
+  color: var(--cheof-text-secondary);
+
+  font-size: 0.65rem;
+  line-height: 1.45;
+}
+
+.receipt-review__actions {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+  gap: 0.6rem;
+}
+
+:host ::ng-deep .receipt-action-button.p-button {
+  width: 100%;
+  justify-content: center;
+
+  min-height: 2.65rem;
+
+  border-radius: 0.7rem;
+
+  font-size: 0.69rem;
+  font-weight: 650;
+}
+
+.receipt-result {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 0.7rem;
+
+  padding: 0.85rem;
+
+  border: 1px solid var(--cheof-card-border);
+  border-radius: 0.75rem;
+
+  background: var(--cheof-card-background-muted);
+}
+
+.receipt-result > i {
+  font-size: 1.15rem;
+}
+
+.receipt-result--approved {
+  border-color: color-mix(
+    in srgb,
+    var(--cheof-success) 18%,
+    var(--cheof-card-border)
+  );
+
+  background: color-mix(
+    in srgb,
+    var(--cheof-success) 4%,
+    var(--cheof-card-background)
+  );
+}
+
+.receipt-result--approved > i {
+  color: var(--cheof-success-strong);
+}
+
+.receipt-result--rejected {
+  border-color: color-mix(
+    in srgb,
+    var(--cheof-danger) 18%,
+    var(--cheof-card-border)
+  );
+
+  background: color-mix(
+    in srgb,
+    var(--cheof-danger) 4%,
+    var(--cheof-card-background)
+  );
+}
+
+.receipt-result--rejected > i {
+  color: var(--cheof-danger-strong);
+}
+
+.receipt-result--unavailable > i {
+  color: var(--cheof-text-secondary);
+}
+
+.receipt-result strong {
+  color: var(--cheof-text);
+
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.receipt-result p {
+  margin: 0.15rem 0 0;
+
+  color: var(--cheof-text-secondary);
+
+  font-size: 0.63rem;
+  line-height: 1.45;
+}
+
+.receipt-empty {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 0.8rem;
+
+  padding: 1rem;
+
+  border: 1px dashed var(--cheof-card-border);
+  border-radius: 0.8rem;
+
+  background: var(--cheof-card-background-muted);
+}
+
+.receipt-empty__icon {
+  display: grid;
+  width: 2.7rem;
+  height: 2.7rem;
+  place-items: center;
+
+  border-radius: 0.75rem;
+
+  background: var(--cheof-muted-background);
+
+  color: var(--cheof-text-secondary);
+}
+
+.receipt-empty__icon i {
+  font-size: 0.95rem;
+}
+
+.receipt-empty strong {
+  color: var(--cheof-text);
+
+  font-size: 0.74rem;
+  font-weight: 700;
+}
+
+.receipt-empty p {
+  margin: 0.2rem 0 0;
+
+  color: var(--cheof-text-secondary);
+
+  font-size: 0.65rem;
+  line-height: 1.45;
+}
+
+
+@media (max-width: 64rem) { .receipt-layout { grid-template-columns: 1fr; } .receipt-file { grid-template-columns: minmax(12rem, .65fr) minmax(0, 1.35fr); } }
+@media (max-width: 52rem) { .receipt-file { grid-template-columns: 1fr; } .receipt-file__preview { min-height: 10rem; } }
+@media (max-width: 42rem) { .card-header { padding: .85rem .9rem; } :host ::ng-deep .card .p-card-content { padding: .9rem; } .receipt-review__actions { grid-template-columns: 1fr; } }
+@media (max-width: 30rem) { .card-title { align-items: flex-start; } .receipt-card__header { align-items: flex-start; flex-direction: column; } .receipt-review__detail { align-items: flex-start; flex-direction: column; gap: .25rem; } .receipt-review__detail strong { text-align: left; } .receipt-empty { grid-template-columns: 1fr; justify-items: center; text-align: center; } }
+@media (prefers-reduced-motion: reduce) { .receipt-open-file-link { transition: none; } }

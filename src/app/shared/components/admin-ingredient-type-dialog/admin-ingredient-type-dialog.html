@@ -1,0 +1,41 @@
+<p-dialog
+  [visible]="visible()"
+  (visibleChange)="onVisibleChange($event)"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [closable]="!saving()"
+  [closeOnEscape]="!saving()"
+  [style]="{ width: 'min(94vw, 500px)' }"
+  appendTo="body"
+>
+  <ng-template pTemplate="header"
+    ><div class="dialog-title">
+      <span><i class="pi pi-tag"></i></span>
+      <div>
+        <small>Clasificación</small><strong>{{ type() ? 'Editar tipo' : 'Nuevo tipo' }}</strong>
+      </div>
+    </div></ng-template
+  >
+  <form class="dialog-form" [formGroup]="form" (ngSubmit)="save()">
+    <label class="field"
+      ><span>Nombre <em>*</em></span
+      ><input pInputText formControlName="name" placeholder="Ej. Quesos" maxlength="100" />
+      @if (form.controls.name.touched && form.controls.name.invalid) {
+        <small class="field-error">Ingresa un nombre de al menos 2 caracteres.</small>
+      }
+    </label>
+  </form>
+  <ng-template pTemplate="footer"
+    ><p-button
+      label="Cancelar"
+      severity="secondary"
+      [text]="true"
+      [disabled]="saving()"
+      (onClick)="close()" /><p-button
+      [label]="type() ? 'Guardar cambios' : 'Crear tipo'"
+      icon="pi pi-check"
+      [loading]="saving()"
+      (onClick)="save()"
+  /></ng-template>
+</p-dialog>

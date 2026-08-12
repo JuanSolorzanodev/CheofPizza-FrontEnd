@@ -1,0 +1,235 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+
+.promotion-card {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--cheof-card-border);
+  border-radius: var(--cheof-radius-lg);
+  background: var(--cheof-card-background);
+  transition:
+    opacity var(--cheof-transition-fast),
+    transform var(--cheof-transition-fast),
+    border-color var(--cheof-transition-fast),
+    box-shadow var(--cheof-transition-fast);
+}
+
+.promotion-card:hover {
+  border-color: color-mix(in srgb, var(--p-primary-color) 24%, var(--cheof-card-border));
+  box-shadow: var(--cheof-shadow-xs);
+  transform: translateY(-1px);
+}
+
+.promotion-card.is-inactive {
+  opacity: 0.82;
+}
+
+.promotion-image {
+  display: grid;
+  min-height: 210px;
+  place-items: center;
+  overflow: hidden;
+  padding: 0.75rem;
+  border-right: 1px solid var(--cheof-card-border);
+  background:
+    radial-gradient(circle at 50% 45%, var(--cheof-product-media-glow), transparent 68%),
+    linear-gradient(145deg, var(--cheof-product-media-background), var(--cheof-product-media-background-end));
+}
+
+.promotion-image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-height: 230px;
+  object-fit: contain;
+  object-position: center;
+}
+
+.image-placeholder {
+  display: grid;
+  place-items: center;
+  gap: 0.45rem;
+  color: var(--cheof-text-secondary);
+  text-align: center;
+}
+
+.image-placeholder i {
+  font-size: 1.7rem;
+}
+
+.image-placeholder span {
+  font-size: 0.75rem;
+}
+
+.promotion-content {
+  display: grid;
+  min-width: 0;
+  gap: 1rem;
+  padding: 1.15rem;
+}
+
+.promotion-heading {
+  display: flex;
+  min-width: 0;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.promotion-title-block {
+  min-width: 0;
+}
+
+.promotion-heading h3 {
+  margin: 0.6rem 0 0;
+  color: var(--cheof-text);
+  font-size: 1.2rem;
+  overflow-wrap: anywhere;
+}
+
+.promotion-heading code {
+  display: inline-block;
+  max-width: 100%;
+  margin-top: 0.45rem;
+  padding: 0.25rem 0.45rem;
+  overflow: hidden;
+  border-radius: 7px;
+  background: var(--cheof-muted-background);
+  color: var(--cheof-text-secondary);
+  font-size: 0.72rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.promotion-heading p {
+  margin: 0.45rem 0 0;
+  color: var(--cheof-text-secondary);
+  font-size: 0.85rem;
+  line-height: 1.55;
+}
+
+.promotion-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.promotion-price {
+  max-width: 280px;
+  flex-shrink: 0;
+  color: var(--p-primary-color);
+  font-size: 1rem;
+  line-height: 1.4;
+  text-align: right;
+}
+
+.promotion-meta {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.promotion-meta > div {
+  display: grid;
+  min-width: 0;
+  align-content: start;
+  gap: 0.2rem;
+  padding: 0.8rem;
+  border-radius: var(--cheof-radius-md);
+  background: var(--cheof-muted-background);
+}
+
+.promotion-meta span,
+.promotion-meta small {
+  color: var(--cheof-text-secondary);
+}
+
+.promotion-meta span {
+  font-size: 0.68rem;
+  font-weight: 750;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.promotion-meta strong {
+  color: var(--cheof-text);
+  font-size: 0.82rem;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.promotion-meta small {
+  font-size: 0.7rem;
+}
+
+.promotion-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--cheof-card-border);
+}
+
+@media (max-width: 1100px) {
+  .promotion-meta {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .promotion-card {
+    grid-template-columns: 1fr;
+  }
+
+  .promotion-image {
+    min-height: 180px;
+    max-height: 240px;
+    border-right: 0;
+    border-bottom: 1px solid var(--cheof-card-border);
+  }
+
+  .promotion-image img {
+    max-height: 220px;
+  }
+
+  .promotion-heading {
+    display: grid;
+  }
+
+  .promotion-price {
+    max-width: none;
+    text-align: left;
+  }
+}
+
+@media (max-width: 650px) {
+  .promotion-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  :host ::ng-deep .promotion-actions .p-button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 520px) {
+  .promotion-content {
+    padding: 0.95rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .promotion-card {
+    transition: none;
+  }
+
+  .promotion-card:hover {
+    transform: none;
+  }
+}

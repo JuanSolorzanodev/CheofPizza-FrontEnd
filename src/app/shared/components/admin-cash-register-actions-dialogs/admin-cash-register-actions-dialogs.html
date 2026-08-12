@@ -1,0 +1,384 @@
+<p-dialog
+  header="Abrir caja"
+  appendTo="body"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [closable]="!loading()"
+  [closeOnEscape]="!loading()"
+  [visible]="openVisible()"
+  [style]="{
+    width: 'min(94vw, 520px)',
+  }"
+  (visibleChange)="onOpenVisibleChange($event)"
+>
+  <form class="cash-register-form" [formGroup]="openForm" (ngSubmit)="submitOpen()">
+    <div class="cash-register-dialog-copy">
+      <span class="cash-register-dialog-copy__icon">
+        <i class="pi pi-lock-open"></i>
+      </span>
+
+      <div>
+        <strong> Inicio de jornada </strong>
+
+        <p>Registra el efectivo disponible al momento de comenzar la operación.</p>
+      </div>
+    </div>
+
+    <div class="cash-register-field">
+      <label for="opening_amount">
+        Monto inicial
+        <span>*</span>
+      </label>
+
+      <p-inputnumber
+        inputId="opening_amount"
+        formControlName="opening_amount"
+        mode="currency"
+        currency="USD"
+        locale="en-US"
+        [min]="0"
+        [maxFractionDigits]="2"
+        [minFractionDigits]="2"
+        [fluid]="true"
+        [invalid]="fieldInvalid(openForm.controls.opening_amount)"
+      />
+
+      @if (fieldInvalid(openForm.controls.opening_amount)) {
+        <small class="cash-register-field__error"> Ingresa un monto inicial válido. </small>
+      }
+
+      @if (serverErrors()['opening_amount']; as errors) {
+        @for (error of errors; track error) {
+          <small class="cash-register-field__error">
+            {{ error }}
+          </small>
+        }
+      }
+    </div>
+
+    <div class="cash-register-field">
+      <label for="opening_note">
+        Observación
+
+        <small> Opcional </small>
+      </label>
+
+      <textarea
+        id="opening_note"
+        pTextarea
+        formControlName="opening_note"
+        rows="4"
+        maxlength="255"
+        placeholder="Ejemplo: Inicio del turno de la tarde"
+        [fluid]="true"
+      ></textarea>
+
+      <small class="cash-register-field__help"> Máximo 255 caracteres. </small>
+    </div>
+
+    @if (serverErrors()['cash_session']; as errors) {
+      @for (error of errors; track error) {
+        <p-message severity="error" [text]="error" />
+      }
+    }
+
+    <footer class="cash-register-dialog-actions">
+      <p-button
+        type="button"
+        label="Cancelar"
+        severity="secondary"
+        [text]="true"
+        [disabled]="loading()"
+        (onClick)="onOpenVisibleChange(false)"
+      />
+
+      <p-button
+        type="submit"
+        icon="pi pi-lock-open"
+        label="Abrir caja"
+        [loading]="loading()"
+        [disabled]="loading()"
+      />
+    </footer>
+  </form>
+</p-dialog>
+
+<!-- Registrar movimiento -->
+
+<p-dialog
+  header="Registrar movimiento"
+  appendTo="body"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [closable]="!loading()"
+  [closeOnEscape]="!loading()"
+  [visible]="movementVisible()"
+  [style]="{
+    width: 'min(94vw, 540px)',
+  }"
+  (visibleChange)="onMovementVisibleChange($event)"
+>
+  <form class="cash-register-form" [formGroup]="movementForm" (ngSubmit)="submitMovement()">
+    <div class="cash-register-field">
+      <span id="movement-type-label" class="cash-register-field__label">
+        Tipo de movimiento
+        <span>*</span>
+      </span>
+
+      <p-select
+        inputId="movement_type"
+        ariaLabelledBy="movement-type-label"
+        formControlName="type"
+        [options]="movementTypes"
+        optionLabel="label"
+        optionValue="value"
+        placeholder="Selecciona el tipo"
+        appendTo="body"
+        [fluid]="true"
+      >
+        <ng-template pTemplate="selectedItem" let-selected>
+          @if (selected) {
+            <div class="cash-movement-option">
+              <i [class]="selected.icon"></i>
+              <span>
+                {{ selected.label }}
+              </span>
+            </div>
+          }
+        </ng-template>
+
+        <ng-template pTemplate="item" let-option>
+          <div class="cash-movement-option">
+            <i [class]="option.icon"></i>
+            <span>
+              {{ option.label }}
+            </span>
+          </div>
+        </ng-template>
+      </p-select>
+    </div>
+
+    <div class="cash-register-field">
+      <label for="movement_amount">
+        Monto
+        <span>*</span>
+      </label>
+
+      <p-inputnumber
+        inputId="movement_amount"
+        formControlName="amount"
+        mode="currency"
+        currency="USD"
+        locale="en-US"
+        [min]="0.01"
+        [minFractionDigits]="2"
+        [maxFractionDigits]="2"
+        [fluid]="true"
+        [invalid]="fieldInvalid(movementForm.controls.amount)"
+      />
+
+      @if (fieldInvalid(movementForm.controls.amount)) {
+        <small class="cash-register-field__error"> El monto debe ser mayor que cero. </small>
+      }
+
+      @if (serverErrors()['amount']; as errors) {
+        @for (error of errors; track error) {
+          <small class="cash-register-field__error">
+            {{ error }}
+          </small>
+        }
+      }
+    </div>
+
+    <div class="cash-register-field">
+      <label for="movement_reason">
+        Motivo
+        <span>*</span>
+      </label>
+
+      <textarea
+        id="movement_reason"
+        pTextarea
+        formControlName="reason"
+        rows="4"
+        maxlength="150"
+        placeholder="Describe el motivo del movimiento"
+        [fluid]="true"
+        [class.ng-invalid]="fieldInvalid(movementForm.controls.reason)"
+      ></textarea>
+
+      @if (fieldInvalid(movementForm.controls.reason)) {
+        <small class="cash-register-field__error">
+          El motivo debe tener entre 3 y 150 caracteres.
+        </small>
+      }
+
+      @if (serverErrors()['reason']; as errors) {
+        @for (error of errors; track error) {
+          <small class="cash-register-field__error">
+            {{ error }}
+          </small>
+        }
+      }
+    </div>
+
+    @if (serverErrors()['cash_session']; as errors) {
+      @for (error of errors; track error) {
+        <p-message severity="error" [text]="error" />
+      }
+    }
+
+    <footer class="cash-register-dialog-actions">
+      <p-button
+        type="button"
+        label="Cancelar"
+        severity="secondary"
+        [text]="true"
+        [disabled]="loading()"
+        (onClick)="onMovementVisibleChange(false)"
+      />
+
+      <p-button
+        type="submit"
+        icon="pi pi-check"
+        label="Registrar movimiento"
+        [severity]="movementForm.controls.type.value === 'income' ? 'success' : 'danger'"
+        [loading]="loading()"
+        [disabled]="loading()"
+      />
+    </footer>
+  </form>
+</p-dialog>
+
+<!-- Cerrar caja -->
+
+<p-dialog
+  header="Cerrar caja"
+  appendTo="body"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [closable]="!loading()"
+  [closeOnEscape]="!loading()"
+  [visible]="closeVisible()"
+  [style]="{
+    width: 'min(94vw, 560px)',
+  }"
+  (visibleChange)="onCloseVisibleChange($event)"
+>
+  <form class="cash-register-form" [formGroup]="closeForm" (ngSubmit)="submitClose()">
+    <div class="cash-closing-summary">
+      <span> Efectivo esperado </span>
+
+      <strong>
+        {{ expectedCash() | currency: 'USD' }}
+      </strong>
+
+      <p>
+        Cuenta físicamente el efectivo disponible e ingresa el resultado para calcular la
+        diferencia.
+      </p>
+    </div>
+
+    <div class="cash-register-field">
+      <label for="counted_cash">
+        Efectivo contado
+        <span>*</span>
+      </label>
+
+      <p-inputnumber
+        inputId="counted_cash"
+        formControlName="counted_cash"
+        mode="currency"
+        currency="USD"
+        locale="en-US"
+        [min]="0"
+        [minFractionDigits]="2"
+        [maxFractionDigits]="2"
+        [fluid]="true"
+        [invalid]="fieldInvalid(closeForm.controls.counted_cash)"
+      />
+
+      @if (fieldInvalid(closeForm.controls.counted_cash)) {
+        <small class="cash-register-field__error"> Ingresa el efectivo contado. </small>
+      }
+
+      @if (serverErrors()['counted_cash']; as errors) {
+        @for (error of errors; track error) {
+          <small class="cash-register-field__error">
+            {{ error }}
+          </small>
+        }
+      }
+    </div>
+
+    <div class="cash-closing-difference">
+      <span> Diferencia estimada </span>
+
+      <strong
+        [class.cash-closing-difference--positive]="
+          closeForm.controls.counted_cash.value - expectedCash() > 0
+        "
+        [class.cash-closing-difference--negative]="
+          closeForm.controls.counted_cash.value - expectedCash() < 0
+        "
+      >
+        {{ closeForm.controls.counted_cash.value - expectedCash() | currency: 'USD' }}
+      </strong>
+    </div>
+
+    <div class="cash-register-field">
+      <label for="closing_note">
+        Observación de cierre
+
+        <small> Opcional </small>
+      </label>
+
+      <textarea
+        id="closing_note"
+        pTextarea
+        formControlName="closing_note"
+        rows="4"
+        maxlength="255"
+        placeholder="Ejemplo: Faltante justificado por compra de insumos"
+        [fluid]="true"
+      ></textarea>
+
+      @if (serverErrors()['closing_note']; as errors) {
+        @for (error of errors; track error) {
+          <small class="cash-register-field__error">
+            {{ error }}
+          </small>
+        }
+      }
+    </div>
+
+    @if (serverErrors()['cash_session']; as errors) {
+      @for (error of errors; track error) {
+        <p-message severity="error" [text]="error" />
+      }
+    }
+
+    <footer class="cash-register-dialog-actions">
+      <p-button
+        type="button"
+        label="Cancelar"
+        severity="secondary"
+        [text]="true"
+        [disabled]="loading()"
+        (onClick)="onCloseVisibleChange(false)"
+      />
+
+      <p-button
+        type="submit"
+        icon="pi pi-lock"
+        label="Confirmar cierre"
+        severity="warn"
+        [loading]="loading()"
+        [disabled]="loading()"
+      />
+    </footer>
+  </form>
+</p-dialog>

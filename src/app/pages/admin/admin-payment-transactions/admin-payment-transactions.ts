@@ -1,4 +1,4 @@
-import { CurrencyPipe, DatePipe } from '@angular/common';
+import { CurrencyPipe } from '@angular/common';
 
 import {
   ChangeDetectionStrategy,
@@ -13,7 +13,6 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { FormsModule } from '@angular/forms';
 
-import { RouterLink } from '@angular/router';
 
 import { finalize } from 'rxjs';
 
@@ -23,7 +22,6 @@ import { ButtonModule } from 'primeng/button';
 
 import { DatePickerModule } from 'primeng/datepicker';
 
-import { DialogModule } from 'primeng/dialog';
 
 import { DrawerModule } from 'primeng/drawer';
 
@@ -37,7 +35,6 @@ import { SkeletonModule } from 'primeng/skeleton';
 
 import { TableModule } from 'primeng/table';
 
-import { TagModule } from 'primeng/tag';
 
 import { TooltipModule } from 'primeng/tooltip';
 
@@ -51,20 +48,14 @@ import {
   AdminPaymentTransactionSummary,
 } from '../../../core/api/admin/payment-transactions/admin-payment-transactions.models';
 
+import { AdminPaymentTransactionDetailDialogComponent } from '../../../shared/components/admin-payment-transaction-detail-dialog/admin-payment-transaction-detail-dialog';
+import { AdminPaymentTransactionMobileCardComponent } from '../../../shared/components/admin-payment-transaction-mobile-card/admin-payment-transaction-mobile-card';
+import { AdminPaymentTransactionRowComponent } from '../../../shared/components/admin-payment-transaction-row/admin-payment-transaction-row';
+
 interface SelectOption<T> {
   label: string;
   value: T;
 }
-
-type TagSeverity =
-  | 'success'
-  | 'secondary'
-  | 'info'
-  | 'warn'
-  | 'danger'
-  | 'contrast'
-  | null
-  | undefined;
 
 @Component({
   selector: 'app-admin-payment-transactions',
@@ -73,20 +64,19 @@ type TagSeverity =
 
   imports: [
     CurrencyPipe,
-    DatePipe,
     FormsModule,
-    RouterLink,
     ButtonModule,
     DatePickerModule,
-    DialogModule,
     DrawerModule,
     InputTextModule,
     PaginatorModule,
     SelectModule,
     SkeletonModule,
     TableModule,
-    TagModule,
     TooltipModule,
+    AdminPaymentTransactionDetailDialogComponent,
+    AdminPaymentTransactionMobileCardComponent,
+    AdminPaymentTransactionRowComponent,
   ],
 
   templateUrl: './admin-payment-transactions.html',
@@ -379,9 +369,12 @@ export class AdminPaymentTransactions {
     this.detailVisible.set(true);
   }
 
-  closeTransactionDetail(): void {
-    this.detailVisible.set(false);
-    this.selectedTransaction.set(null);
+  onDetailVisibleChange(visible: boolean): void {
+    this.detailVisible.set(visible);
+
+    if (!visible) {
+      this.selectedTransaction.set(null);
+    }
   }
 
   onPageChange(event: PaginatorState): void {
@@ -394,140 +387,6 @@ export class AdminPaymentTransactions {
     this.page.set(Math.floor(first / rows) + 1);
 
     this.load();
-  }
-
-  methodLabel(method: AdminPaymentMethod): string {
-    switch (method) {
-      case 'cash':
-        return 'Efectivo';
-
-      case 'transfer':
-        return 'Transferencia';
-
-      case 'paypal':
-        return 'PayPal';
-    }
-  }
-
-  methodIcon(method: AdminPaymentMethod): string {
-    switch (method) {
-      case 'cash':
-        return 'pi pi-wallet';
-
-      case 'transfer':
-        return 'pi pi-building-columns';
-
-      case 'paypal':
-        return 'pi pi-credit-card';
-    }
-  }
-
-  methodSeverity(method: AdminPaymentMethod): TagSeverity {
-    switch (method) {
-      case 'cash':
-        return 'success';
-
-      case 'transfer':
-        return 'info';
-
-      case 'paypal':
-        return 'contrast';
-    }
-  }
-
-  statusLabel(status: AdminPaymentTransactionStatus): string {
-    const labels: Record<AdminPaymentTransactionStatus, string> = {
-      collected: 'Cobrado',
-
-      pending: 'Pendiente',
-
-      approved: 'Aprobado',
-
-      rejected: 'Rechazado',
-
-      created: 'Creado',
-
-      completed: 'Completado',
-
-      denied: 'Denegado',
-
-      failed: 'Fallido',
-
-      cancelled: 'Cancelado',
-
-      refunded: 'Reembolsado',
-
-      partially_refunded: 'Reembolso parcial',
-    };
-
-    return labels[status];
-  }
-
-  statusSeverity(status: AdminPaymentTransactionStatus): TagSeverity {
-    switch (status) {
-      case 'collected':
-      case 'approved':
-      case 'completed':
-        return 'success';
-
-      case 'pending':
-      case 'created':
-        return 'warn';
-
-      case 'refunded':
-      case 'partially_refunded':
-        return 'info';
-
-      case 'rejected':
-      case 'denied':
-      case 'failed':
-      case 'cancelled':
-        return 'danger';
-    }
-  }
-
-  statusIcon(status: AdminPaymentTransactionStatus): string {
-    switch (status) {
-      case 'collected':
-      case 'approved':
-      case 'completed':
-        return 'pi pi-check-circle';
-
-      case 'pending':
-      case 'created':
-        return 'pi pi-clock';
-
-      case 'refunded':
-      case 'partially_refunded':
-        return 'pi pi-replay';
-
-      case 'rejected':
-      case 'denied':
-      case 'failed':
-      case 'cancelled':
-        return 'pi pi-times-circle';
-    }
-  }
-
-  isSuccessful(status: AdminPaymentTransactionStatus): boolean {
-    return ['collected', 'approved', 'completed'].includes(status);
-  }
-
-  transactionSourceLabel(source: AdminPaymentTransaction['source']): string {
-    switch (source) {
-      case 'order':
-        return 'Pedido en efectivo';
-
-      case 'payment_receipt':
-        return 'Comprobante de transferencia';
-
-      case 'payment':
-        return 'Transacción PayPal';
-    }
-  }
-
-  customerContact(transaction: AdminPaymentTransaction): string {
-    return transaction.customer.phone || transaction.customer.email || 'Sin contacto registrado';
   }
 
   private hasValidDateRange(): boolean {
@@ -566,67 +425,5 @@ export class AdminPaymentTransactions {
     return `${year}-${month}-${day}`;
   }
 
-  async copyToClipboard(value: string | null, label = 'Dato'): Promise<void> {
-    const normalizedValue = value?.trim();
 
-    if (!normalizedValue) {
-      this.messages.add({
-        severity: 'warn',
-        summary: 'No disponible',
-        detail: `${label} no contiene información para copiar.`,
-      });
-
-      return;
-    }
-
-    try {
-      await navigator.clipboard.writeText(normalizedValue);
-
-      this.messages.add({
-        severity: 'success',
-        summary: 'Copiado',
-        detail: `${label} copiado al portapapeles.`,
-      });
-    } catch {
-      const copied = this.copyWithFallback(normalizedValue);
-
-      this.messages.add({
-        severity: copied ? 'success' : 'error',
-
-        summary: copied ? 'Copiado' : 'No se pudo copiar',
-
-        detail: copied
-          ? `${label} copiado al portapapeles.`
-          : `No fue posible copiar ${label.toLowerCase()}.`,
-      });
-    }
-  }
-
-  private copyWithFallback(value: string): boolean {
-    const textarea = document.createElement('textarea');
-
-    textarea.value = value;
-
-    textarea.setAttribute('readonly', '');
-
-    textarea.style.position = 'fixed';
-
-    textarea.style.opacity = '0';
-
-    textarea.style.pointerEvents = 'none';
-
-    document.body.appendChild(textarea);
-
-    textarea.select();
-
-    let copied = false;
-
-    try {
-      copied = document.execCommand('copy');
-    } finally {
-      document.body.removeChild(textarea);
-    }
-
-    return copied;
-  }
 }

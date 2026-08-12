@@ -1,0 +1,195 @@
+:host { display: block; min-width: 0; }
+.cash-register-section {
+  min-width: 0;
+
+  padding: clamp(1rem, 2.5vw, 1.5rem);
+
+  border: 1px solid var(--cheof-card-border);
+
+  border-radius: var(--cheof-radius-xl);
+
+  background: var(--cheof-card-background);
+
+  box-shadow: var(--cheof-shadow-xs);
+}
+
+.cash-register-section__header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+
+  margin-bottom: 1.15rem;
+}
+
+.cash-register-section__header > div {
+  min-width: 0;
+}
+
+.cash-register-section__header span {
+  display: block;
+
+  color: var(--p-primary-color);
+
+  font-size: 0.7rem;
+  font-weight: 850;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.cash-register-section__header h3 {
+  margin: 0.3rem 0 0;
+
+  color: var(--cheof-text);
+
+  font-size: 1.15rem;
+}
+
+.cash-register-section__header p {
+  margin: 0.4rem 0 0;
+
+  color: var(--cheof-text-secondary);
+
+  font-size: 0.78rem;
+  line-height: 1.55;
+}
+
+.cash-movement-reason {
+  display: grid;
+  min-width: 190px;
+  gap: 0.2rem;
+}
+
+.cash-movement-reason strong {
+  color: var(--cheof-text);
+
+  font-size: 0.82rem;
+}
+
+.cash-movement-reason small {
+  max-width: 220px;
+  overflow: hidden;
+
+  color: var(--cheof-text-secondary);
+
+  font-size: 0.66rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cash-movement-user,
+.cash-movement-date {
+  color: var(--cheof-text-secondary);
+
+  font-size: 0.78rem;
+}
+
+.cash-movement-table__amount {
+  text-align: right;
+}
+
+.cash-movement-table__amount strong {
+  white-space: nowrap;
+}
+
+.cash-movement-amount--income {
+  color: var(--cheof-success);
+}
+
+.cash-movement-amount--expense {
+  color: var(--cheof-danger);
+}
+
+.cash-register-empty {
+  display: grid;
+  min-height: 390px;
+  place-items: center;
+  align-content: center;
+  gap: 0.75rem;
+
+  padding: 2rem;
+
+  border: 1px dashed var(--cheof-card-border);
+
+  border-radius: var(--cheof-radius-xl);
+
+  background: var(--cheof-card-background);
+
+  text-align: center;
+}
+
+.cash-register-empty--compact {
+  min-height: 250px;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.cash-register-empty__icon {
+  display: grid;
+  width: 72px;
+  height: 72px;
+  place-items: center;
+
+  border-radius: 22px;
+
+  background: color-mix(in srgb, var(--p-primary-color) 11%, var(--cheof-card-background));
+
+  color: var(--p-primary-color);
+
+  font-size: 1.55rem;
+}
+
+.cash-register-empty h3,
+.cash-register-empty h4 {
+  margin: 0;
+
+  color: var(--cheof-text);
+}
+
+.cash-register-empty h3 {
+  font-size: clamp(1.35rem, 3vw, 1.8rem);
+}
+
+.cash-register-empty h4 {
+  font-size: 1rem;
+}
+
+.cash-register-empty p {
+  max-width: 560px;
+  margin: 0;
+
+  color: var(--cheof-text-secondary);
+
+  font-size: 0.82rem;
+  line-height: 1.65;
+}
+
+:host ::ng-deep {
+  .cash-movement-table {
+    min-width: 760px;
+  }
+
+  .cash-movement-table .p-datatable-thead > tr > th {
+    padding-block: 0.8rem;
+
+    color: var(--cheof-text-secondary);
+
+    font-size: 0.7rem;
+    font-weight: 750;
+    text-transform: uppercase;
+  }
+
+  .cash-movement-table .p-datatable-tbody > tr > td {
+    padding-block: 0.85rem;
+  }
+}
+
+
+@media (max-width: 860px) {
+  .cash-register-section__header { align-items: stretch; flex-direction: column; }
+}
+
+@media (max-width: 600px) {
+  .cash-register-section { border-radius: var(--cheof-radius-lg); }
+}

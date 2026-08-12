@@ -1,0 +1,255 @@
+<section class="customization-card" aria-labelledby="promotion-customization-title">
+  <header class="customization-heading">
+    <span class="step-number">
+      {{ stepNumber() }}
+    </span>
+
+    <div>
+      <span class="eyebrow"> Personalización </span>
+
+      <h2 id="promotion-customization-title">Personaliza cada pizza</h2>
+
+      <p>Retira ingredientes permitidos y agrega hasta cuatro ingredientes extra en cada pizza.</p>
+    </div>
+  </header>
+
+  <div class="pizza-tabs" role="tablist" aria-label="Pizzas seleccionadas">
+    @for (item of items(); track item.slotKey) {
+      <button
+        type="button"
+        role="tab"
+        class="pizza-tab"
+        [class.pizza-tab--active]="isActive(item)"
+        [attr.aria-selected]="isActive(item)"
+        [attr.aria-controls]="'promotion-customizer-' + item.slotKey"
+        (click)="onActivate(item.slotKey)"
+      >
+        <span>
+          {{ item.shortTitle }}
+        </span>
+
+        <strong>
+          {{ item.summary }}
+        </strong>
+
+        <small>
+          {{ item.extrasCount }}
+          /
+          {{ item.maxExtras }}
+          extras
+        </small>
+      </button>
+    }
+  </div>
+
+  @for (item of items(); track item.slotKey) {
+    @if (isActive(item)) {
+      <article
+        class="pizza-customizer"
+        role="tabpanel"
+        [id]="'promotion-customizer-' + item.slotKey"
+      >
+        <header class="pizza-customizer__header">
+          <div class="customizer-pizza">
+            <div class="customizer-pizza__image">
+              @if (item.imageUrl) {
+                <img
+                  [src]="item.imageUrl"
+                  [alt]="'Pizza ' + item.pizzaName"
+                  loading="lazy"
+                  decoding="async"
+                />
+              } @else {
+                <i class="pi pi-image" aria-hidden="true"></i>
+              }
+            </div>
+
+            <div class="customizer-pizza__copy">
+              <span>
+                {{ item.shortTitle }}
+              </span>
+
+              <h3>
+                {{ item.pizzaName }}
+              </h3>
+
+              @if (item.sizeName) {
+                <p>
+                  {{ item.sizeName }}
+                </p>
+              }
+            </div>
+          </div>
+
+          <div class="customizer-status">
+            <div class="customizer-status__metric">
+              <span> Extras elegidos </span>
+
+              <strong>
+                {{ item.extrasCount }}
+                /
+                {{ item.maxExtras }}
+              </strong>
+            </div>
+
+            <div class="customizer-status__metric">
+              <span> Costo adicional </span>
+
+              <strong>
+                {{ item.extrasTotal | currency: 'USD' : 'symbol' : '1.2-2' }}
+              </strong>
+            </div>
+
+            <button type="button" class="reset-action" (click)="onReset(item.slotKey)">
+              <i class="pi pi-refresh" aria-hidden="true"></i>
+
+              <span> Restablecer </span>
+            </button>
+          </div>
+        </header>
+
+        <!-- ===============================================
+             INGREDIENTES BASE
+             =============================================== -->
+
+        <section
+          class="ingredients-section"
+          [attr.aria-labelledby]="'base-ingredients-' + item.slotKey"
+        >
+          <header class="ingredients-heading">
+            <span class="ingredients-heading__eyebrow"> Receta </span>
+
+            <h4 [id]="'base-ingredients-' + item.slotKey">Ingredientes incluidos</h4>
+
+            <p>Retira únicamente los ingredientes que permiten modificación.</p>
+          </header>
+
+          @if (item.visibleBaseIngredients.length > 0) {
+            <div class="base-ingredients">
+              @for (ingredient of item.visibleBaseIngredients; track ingredient.id) {
+                <p-chip
+                  [label]="ingredient.name"
+                  [removable]="ingredient.removable"
+                  [styleClass]="
+                    ingredient.removable ? 'base-chip' : 'base-chip base-chip--required'
+                  "
+                  (onRemove)="onRemoveBaseIngredient(item.slotKey, ingredient.id)"
+                />
+              }
+            </div>
+          } @else {
+            <p class="empty-message">No quedan ingredientes visibles en esta receta.</p>
+          }
+
+          @if (item.removedBaseIngredients.length > 0) {
+            <div class="removed-ingredients">
+              <span> Retirados </span>
+
+              <div>
+                @for (ingredient of item.removedBaseIngredients; track ingredient.id) {
+                  <p-chip
+                    [label]="'Sin ' + ingredient.name"
+                    [removable]="true"
+                    styleClass="removed-chip"
+                    (onRemove)="onRestoreBaseIngredient(item.slotKey, ingredient.id)"
+                  />
+                }
+              </div>
+            </div>
+          }
+        </section>
+
+        <!-- ===============================================
+             EXTRAS
+             =============================================== -->
+
+        <section
+          class="ingredients-section"
+          [attr.aria-labelledby]="'extras-title-' + item.slotKey"
+        >
+          <header class="ingredients-heading ingredients-heading--split">
+            <div>
+              <span class="ingredients-heading__eyebrow"> Personalización </span>
+
+              <h4 [id]="'extras-title-' + item.slotKey">Añade ingredientes extra</h4>
+
+              <p>
+                Elige hasta
+                {{ item.maxExtras }}
+                extras para esta pizza.
+
+                @if (item.sizeName) {
+                  Los precios corresponden al tamaño
+                  {{ item.sizeName }}.
+                }
+              </p>
+            </div>
+
+            <div
+              class="extras-limit"
+              [class.extras-limit--full]="item.extrasCount >= item.maxExtras"
+              aria-label="Cantidad de extras seleccionados"
+            >
+              <strong>
+                {{ item.extrasCount }}
+              </strong>
+
+              <span>
+                /
+                {{ item.maxExtras }}
+              </span>
+            </div>
+          </header>
+
+          @if (item.selectedExtras.length > 0) {
+            <div class="selected-extras">
+              <span> Seleccionados </span>
+
+              <div>
+                @for (ingredient of item.selectedExtras; track ingredient.id) {
+                  <p-chip
+                    [label]="ingredient.name + ' · ' + ingredient.priceLabel"
+                    [removable]="true"
+                    styleClass="extra-chip"
+                    (onRemove)="onRemoveExtra(item.slotKey, ingredient.id)"
+                  />
+                }
+              </div>
+            </div>
+          }
+
+          @if (item.extraOptions.length > 0) {
+            <div class="extras-grid">
+              @for (ingredient of item.extraOptions; track ingredient.id) {
+                <div
+                  class="extra-option"
+                  [class.extra-option--selected]="ingredient.selected"
+                  [class.extra-option--disabled]="ingredient.disabled"
+                  [attr.title]="ingredient.disabledReason"
+                >
+                  <p-checkbox
+                    [ariaLabel]="'Agregar ' + ingredient.name"
+                    [binary]="true"
+                    [ngModel]="ingredient.selected"
+                    [disabled]="ingredient.disabled"
+                    (ngModelChange)="onToggleExtra(item.slotKey, ingredient.id, $event)"
+                  />
+
+                  <span class="extra-option__name">
+                    {{ ingredient.name }}
+                  </span>
+
+                  <strong>
+                    {{ ingredient.priceLabel }}
+                  </strong>
+                </div>
+              }
+            </div>
+          } @else {
+            <p class="empty-message">No hay ingredientes extra disponibles para esta pizza.</p>
+          }
+        </section>
+      </article>
+    }
+  }
+</section>

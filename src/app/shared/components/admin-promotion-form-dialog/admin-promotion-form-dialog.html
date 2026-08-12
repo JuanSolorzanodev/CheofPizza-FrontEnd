@@ -1,0 +1,401 @@
+<p-dialog
+  [visible]="visible()"
+  (visibleChange)="onVisibleChange($event)"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [dismissableMask]="false"
+  [closeOnEscape]="!saving()"
+  [style]="{
+    width: 'min(920px, calc(100vw - 2rem))',
+  }"
+  [contentStyle]="{
+    padding: '0',
+  }"
+  [header]="promotion() ? 'Editar promoción' : 'Nueva promoción'"
+>
+  <form class="promotion-form" [formGroup]="promotionForm" (ngSubmit)="savePromotion()">
+    <section class="form-section">
+      <header class="form-section-header">
+        <span>
+          <i class="pi pi-info-circle"></i>
+        </span>
+
+        <div>
+          <h3>Información general</h3>
+
+          <p>Define el nombre, descripción, banner y tipo de promoción.</p>
+        </div>
+      </header>
+
+      <div class="form-grid">
+        <label class="field field-span-2">
+          <span> Nombre </span>
+
+          <input
+            pInputText
+            type="text"
+            formControlName="name"
+            placeholder="Ej. Hora Loca"
+            [class.ng-invalid]="isFieldInvalid('name')"
+          />
+
+          @if (isFieldInvalid('name')) {
+            <small class="field-error"> Ingresa un nombre de 3 a 150 caracteres. </small>
+          }
+        </label>
+
+        <label class="field field-span-2">
+          <span> Slug </span>
+
+          <div class="input-action">
+            <input
+              pInputText
+              type="text"
+              formControlName="slug"
+              placeholder="hora-loca"
+              [class.ng-invalid]="isFieldInvalid('slug')"
+            />
+
+            <p-button
+              type="button"
+              label="Generar"
+              icon="pi pi-sparkles"
+              severity="secondary"
+              [outlined]="true"
+              (onClick)="generateSlug()"
+            />
+          </div>
+
+          @if (isFieldInvalid('slug')) {
+            <small class="field-error"> Usa letras minúsculas, números y guiones. </small>
+          }
+        </label>
+
+        <label class="field field-span-2">
+          <span> Descripción </span>
+
+          <textarea
+            pTextarea
+            formControlName="description"
+            rows="3"
+            placeholder="Describe qué incluye la promoción..."
+            [autoResize]="true"
+          ></textarea>
+        </label>
+
+        <label class="field field-span-2">
+          <span> URL del banner </span>
+
+          <input
+            pInputText
+            type="url"
+            formControlName="banner_image_url"
+            placeholder="https://res.cloudinary.com/..."
+          />
+
+          @if (isFieldInvalid('banner_image_url')) {
+            <small class="field-error"> Ingresa una URL HTTP o HTTPS válida. </small>
+          }
+        </label>
+
+        <div class="field field-span-2">
+          <span> Tipo de promoción </span>
+
+          <p-select
+            ariaLabel="Tipo de promoción"
+            formControlName="type"
+            [options]="typeOptions"
+            optionLabel="label"
+            optionValue="value"
+            placeholder="Selecciona un tipo"
+            appendTo="body"
+          />
+
+          <small class="field-help">
+            Combo fijo aplica un precio total. Precio por tamaño permite configurar un valor
+            diferente para cada tamaño.
+          </small>
+        </div>
+      </div>
+    </section>
+
+    @if (currentFormType() === 'fixed_combo') {
+      <section class="form-section">
+        <header class="form-section-header">
+          <span>
+            <i class="pi pi-box"></i>
+          </span>
+
+          <div>
+            <h3>Configuración del combo</h3>
+
+            <p>Define el precio total y las pizzas que el cliente debe seleccionar.</p>
+          </div>
+        </header>
+
+        <div class="form-grid">
+          <div class="field">
+            <span> Precio total </span>
+
+            <p-inputnumber
+              ariaLabel="Precio total de la promoción"
+              formControlName="price"
+              mode="currency"
+              currency="USD"
+              locale="es-EC"
+              [min]="0.01"
+              [max]="999999.99"
+              [minFractionDigits]="2"
+              [maxFractionDigits]="2"
+            />
+          </div>
+
+          <div class="field">
+            <span> Pizzas a seleccionar </span>
+
+            <p-inputnumber
+              ariaLabel="Cantidad de pizzas a seleccionar"
+              formControlName="selection_quantity"
+              [min]="1"
+              [max]="10"
+              [readonly]="true"
+              [showButtons]="true"
+            />
+
+            <small class="field-help"> Se calcula con las reglas agregadas. </small>
+          </div>
+        </div>
+
+        <div class="rules-list" formArrayName="details">
+          @for (detail of details.controls; track $index; let index = $index) {
+            <article class="rule-row" [formGroupName]="index">
+              <div class="field">
+                <span> Categoría </span>
+
+                <p-select
+                  ariaLabel="Categoría de la promoción"
+                  formControlName="category_id"
+                  [options]="categoryOptions()"
+                  optionLabel="label"
+                  optionValue="value"
+                  placeholder="Categoría"
+                  appendTo="body"
+                />
+              </div>
+
+              <div class="field">
+                <span> Tamaño </span>
+
+                <p-select
+                  ariaLabel="Tamaño de la promoción"
+                  formControlName="size_id"
+                  [options]="sizeOptions()"
+                  optionLabel="label"
+                  optionValue="value"
+                  placeholder="Tamaño"
+                  appendTo="body"
+                />
+              </div>
+
+              <div class="field">
+                <span> Cantidad </span>
+
+                <p-inputnumber
+                  ariaLabel="Cantidad requerida"
+                  formControlName="required_quantity"
+                  [min]="1"
+                  [max]="10"
+                  [showButtons]="true"
+                  (onInput)="syncSelectionQuantity()"
+                />
+              </div>
+
+              <p-button
+                type="button"
+                icon="pi pi-trash"
+                severity="danger"
+                [text]="true"
+                pTooltip="Eliminar regla"
+                [disabled]="details.length <= 1"
+                (onClick)="removeDetail(index)"
+              />
+            </article>
+          }
+        </div>
+
+        @if (promotionForm.controls.details.hasError('sameSize')) {
+          <small class="section-error">
+            Todas las reglas del combo deben usar el mismo tamaño.
+          </small>
+        }
+
+        @if (promotionForm.controls.details.hasError('duplicate')) {
+          <small class="section-error"> No puedes repetir la misma categoría y tamaño. </small>
+        }
+
+        <p-button
+          type="button"
+          label="Agregar regla"
+          icon="pi pi-plus"
+          severity="secondary"
+          [outlined]="true"
+          (onClick)="addDetail()"
+        />
+      </section>
+    } @else {
+      <section class="form-section">
+        <header class="form-section-header">
+          <span>
+            <i class="pi pi-dollar"></i>
+          </span>
+
+          <div>
+            <h3>Precios por tamaño</h3>
+
+            <p>Configura el precio promocional para cada tamaño disponible.</p>
+          </div>
+        </header>
+
+        <div class="size-price-list" formArrayName="size_prices">
+          @for (sizePrice of sizePrices.controls; track $index; let index = $index) {
+            <article class="size-price-row" [formGroupName]="index">
+              <div class="field">
+                <span> Tamaño </span>
+
+                <p-select
+                  ariaLabel="Tamaño de la promoción"
+                  formControlName="size_id"
+                  [options]="sizeOptions()"
+                  optionLabel="label"
+                  optionValue="value"
+                  placeholder="Selecciona un tamaño"
+                  appendTo="body"
+                />
+              </div>
+
+              <div class="field">
+                <span> Precio promocional </span>
+
+                <p-inputnumber
+                  ariaLabel="Precio promocional por tamaño"
+                  formControlName="price"
+                  mode="currency"
+                  currency="USD"
+                  locale="es-EC"
+                  [min]="0.01"
+                  [max]="999999.99"
+                  [minFractionDigits]="2"
+                  [maxFractionDigits]="2"
+                />
+              </div>
+
+              <p-button
+                type="button"
+                icon="pi pi-trash"
+                severity="danger"
+                [text]="true"
+                pTooltip="Eliminar precio"
+                [disabled]="sizePrices.length <= 1"
+                (onClick)="removeSizePrice(index)"
+              />
+            </article>
+          }
+        </div>
+
+        @if (promotionForm.controls.size_prices.hasError('duplicate')) {
+          <small class="section-error"> No puedes repetir un mismo tamaño. </small>
+        }
+
+        <p-button
+          type="button"
+          label="Agregar tamaño"
+          icon="pi pi-plus"
+          severity="secondary"
+          [outlined]="true"
+          [disabled]="sizePrices.length >= sizes().length"
+          (onClick)="addSizePrice()"
+        />
+      </section>
+    }
+
+    <section class="form-section">
+      <header class="form-section-header">
+        <span>
+          <i class="pi pi-calendar"></i>
+        </span>
+
+        <div>
+          <h3>Vigencia y disponibilidad</h3>
+
+          <p>Programa cuándo comienza y termina la promoción.</p>
+        </div>
+      </header>
+
+      <div class="form-grid">
+        <div class="field">
+          <span> Fecha de inicio </span>
+
+          <p-datepicker
+            ariaLabel="Fecha de inicio"
+            formControlName="starts_at"
+            [showTime]="true"
+            hourFormat="24"
+            [showIcon]="true"
+            [showButtonBar]="true"
+            appendTo="body"
+            dateFormat="dd/mm/yy"
+          />
+        </div>
+
+        <div class="field">
+          <span> Fecha de finalización </span>
+
+          <p-datepicker
+            ariaLabel="Fecha de finalización"
+            formControlName="ends_at"
+            [showTime]="true"
+            hourFormat="24"
+            [showIcon]="true"
+            [showButtonBar]="true"
+            appendTo="body"
+            dateFormat="dd/mm/yy"
+          />
+
+          @if (promotionForm.controls.ends_at.hasError('afterStart')) {
+            <small class="field-error"> Debe ser posterior a la fecha de inicio. </small>
+          }
+        </div>
+
+        <div class="availability-card field-span-2">
+          <div>
+            <strong> Promoción activa </strong>
+
+            <span> Permite mostrarla al cliente mientras se encuentre dentro de su vigencia. </span>
+          </div>
+
+          <p-toggleswitch formControlName="is_active" />
+        </div>
+      </div>
+    </section>
+
+    <footer class="dialog-footer">
+      <p-button
+        type="button"
+        label="Cancelar"
+        icon="pi pi-times"
+        severity="secondary"
+        [outlined]="true"
+        [disabled]="saving()"
+        (onClick)="requestClose()"
+      />
+
+      <p-button
+        type="submit"
+        [label]="promotion() ? 'Guardar cambios' : 'Crear promoción'"
+        icon="pi pi-check"
+        [loading]="saving()"
+      />
+    </footer>
+  </form>
+</p-dialog>

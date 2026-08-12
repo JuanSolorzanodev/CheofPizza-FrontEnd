@@ -1,0 +1,1296 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+
+.surface-card {
+  border: 1px solid var(--cheof-card-border);
+
+  border-radius: var(--cheof-radius-xl);
+
+  background: var(--cheof-card-background);
+
+  color: var(--cheof-text);
+
+  box-shadow: var(--cheof-shadow-sm);
+}
+
+/*
+|--------------------------------------------------------------------------
+| Estado de carga
+|--------------------------------------------------------------------------
+*/
+
+.loading-layout,
+.training-loading {
+  display: grid;
+  gap: 1rem;
+}
+
+.panel-card {
+  min-width: 0;
+  margin-bottom: 1rem;
+  padding: 1.25rem;
+}
+
+.panel-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+
+  margin-bottom: 1rem;
+}
+
+.panel-header h2 {
+  margin: 0;
+
+  font-size: 1.3rem;
+  font-weight: 750;
+}
+
+.panel-header p {
+  margin: 0.35rem 0 0;
+
+  color: var(--cheof-text-secondary);
+
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.data-table {
+  width: 100%;
+
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+.data-table th,
+.data-table td {
+  padding: 0.9rem 0.85rem;
+
+  border-bottom: 1px solid var(--cheof-card-border);
+
+  text-align: left;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.data-table th {
+  color: var(--cheof-text-secondary);
+
+  font-size: 0.76rem;
+  font-weight: 800;
+
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.data-table tbody tr {
+  transition: background var(--cheof-transition-fast);
+}
+
+.data-table tbody tr:hover {
+  background: color-mix(in srgb, var(--p-primary-color) 4%, transparent);
+}
+
+.data-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.actions-column {
+  width: 90px;
+  text-align: right !important;
+}
+
+.row-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.15rem;
+}
+
+.table-secondary {
+  display: block;
+
+  margin-top: 0.25rem;
+
+  color: var(--cheof-text-secondary);
+
+  font-size: 0.76rem;
+}
+
+.detail-list,
+.dataset-period {
+  display: grid;
+  gap: 0;
+
+  margin: 0;
+}
+
+.detail-list div,
+.dataset-period div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+
+  padding: 0.8rem 0;
+
+  border-bottom: 1px solid var(--cheof-card-border);
+}
+
+.detail-list div:last-child,
+.dataset-period div:last-child {
+  border-bottom: 0;
+}
+
+.detail-list dt,
+.dataset-period dt {
+  color: var(--cheof-text-secondary);
+}
+
+.detail-list dd,
+.dataset-period dd {
+  margin: 0;
+
+  font-weight: 700;
+  text-align: right;
+}
+
+/*
+|--------------------------------------------------------------------------
+| Entrenamiento
+|--------------------------------------------------------------------------
+*/
+
+.active-model-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+
+  margin-bottom: 1rem;
+  padding: 1.25rem;
+}
+
+.active-model-main {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+
+  min-width: 0;
+}
+
+.active-model-icon {
+  display: grid;
+
+  width: 56px;
+  min-width: 56px;
+  height: 56px;
+
+  place-items: center;
+
+  border-radius: 16px;
+
+  background: color-mix(in srgb, var(--p-primary-color) 14%, var(--cheof-card-background));
+
+  color: var(--p-primary-color);
+
+  font-size: 1.35rem;
+}
+
+.active-model-title {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+
+  margin-bottom: 0.4rem;
+}
+
+.active-model-title > span {
+  color: var(--cheof-text-secondary);
+
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.active-model-main h2 {
+  margin: 0;
+
+  font-size: clamp(1.35rem, 2vw, 1.8rem);
+}
+
+.active-model-main p {
+  margin: 0.35rem 0 0;
+
+  color: var(--cheof-text-secondary);
+
+  overflow-wrap: anywhere;
+}
+
+.active-model-meta {
+  display: flex;
+  align-items: flex-end;
+  flex-direction: column;
+  gap: 0.3rem;
+
+  text-align: right;
+}
+
+.active-model-meta > span {
+  color: var(--cheof-text-secondary);
+
+  font-size: 0.8rem;
+}
+
+.active-model-meta .p-button {
+  margin-top: 0.5rem;
+}
+
+.training-overview-grid {
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1.1fr)
+    minmax(360px, 0.9fr);
+
+  gap: 1rem;
+
+  margin-bottom: 1rem;
+}
+
+.maturity-card,
+.dataset-summary-card {
+  min-width: 0;
+  padding: 1.25rem;
+}
+
+.maturity-value {
+  display: flex;
+  align-items: baseline;
+  gap: 0.55rem;
+
+  margin-bottom: 1rem;
+}
+
+.maturity-value strong {
+  font-size: 2.7rem;
+  font-weight: 850;
+  line-height: 1;
+}
+
+.maturity-value span {
+  color: var(--cheof-text-secondary);
+}
+
+:host ::ng-deep .maturity-card .p-progressbar {
+  height: 10px;
+
+  border-radius: 999px;
+}
+
+.milestone-list {
+  display: grid;
+  gap: 0.7rem;
+
+  margin-top: 1.1rem;
+}
+
+.milestone {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+
+  padding: 0.8rem;
+
+  border: 1px solid var(--cheof-card-border);
+
+  border-radius: 12px;
+
+  opacity: 0.72;
+}
+
+.milestone-reached {
+  border-color: color-mix(in srgb, var(--cheof-success) 35%, var(--cheof-card-border));
+
+  background: color-mix(in srgb, var(--cheof-success) 6%, transparent);
+
+  opacity: 1;
+}
+
+.milestone-icon {
+  display: grid;
+
+  width: 34px;
+  min-width: 34px;
+  height: 34px;
+
+  place-items: center;
+
+  border-radius: var(--cheof-radius-md);
+
+  background: color-mix(in srgb, var(--cheof-text) 7%, transparent);
+}
+
+.milestone-reached .milestone-icon {
+  background: color-mix(in srgb, var(--cheof-success) 16%, transparent);
+
+  color: var(--cheof-success);
+}
+
+.milestone div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.milestone span {
+  color: var(--cheof-text-secondary);
+
+  font-size: 0.82rem;
+}
+
+.training-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+
+  margin-top: 1rem;
+  padding: 0.85rem;
+
+  border-radius: 12px;
+
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+.training-notice i {
+  margin-top: 0.18rem;
+}
+
+.training-notice-info {
+  background: color-mix(in srgb, var(--cheof-info) 10%, transparent);
+
+  color: color-mix(in srgb, var(--cheof-info) 82%, var(--cheof-text));
+}
+
+.training-notice-warning {
+  background: color-mix(in srgb, var(--cheof-warning) 13%, transparent);
+
+  color: color-mix(in srgb, var(--cheof-warning) 72%, var(--cheof-text));
+}
+
+.training-notice-success {
+  background: color-mix(in srgb, var(--cheof-success) 11%, transparent);
+
+  color: color-mix(in srgb, var(--cheof-success) 80%, var(--cheof-text));
+}
+
+.dataset-stat-grid {
+  display: grid;
+
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  gap: 0.75rem;
+
+  margin-bottom: 1rem;
+}
+
+.dataset-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+
+  min-width: 0;
+  padding: 0.9rem;
+
+  border-radius: 12px;
+
+  background: color-mix(in srgb, var(--p-primary-color) 5%, transparent);
+}
+
+.dataset-stat span {
+  color: var(--cheof-text-secondary);
+
+  font-size: 0.78rem;
+}
+
+.dataset-stat strong {
+  font-size: 1.18rem;
+  font-weight: 800;
+}
+
+.evaluation-panel {
+  overflow: hidden;
+}
+
+.candidate-comparison {
+  display: grid;
+
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+
+  gap: 0.85rem;
+}
+
+.candidate-metric-card {
+  position: relative;
+
+  min-width: 0;
+  padding: 1rem;
+
+  border: 1px solid var(--cheof-card-border);
+
+  border-radius: var(--cheof-radius-lg);
+
+  background: color-mix(in srgb, var(--cheof-card-background) 97%, var(--cheof-text));
+}
+
+.candidate-winner {
+  border-color: color-mix(in srgb, var(--cheof-success) 45%, var(--cheof-card-border));
+
+  background:
+    linear-gradient(
+      145deg,
+      color-mix(in srgb, var(--cheof-success) 9%, transparent),
+      transparent 70%
+    ),
+    var(--cheof-card-background);
+}
+
+.candidate-metric-card header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.algorithm-icon {
+  display: grid;
+
+  width: 40px;
+  height: 40px;
+
+  place-items: center;
+
+  border-radius: 12px;
+
+  background: color-mix(in srgb, var(--p-primary-color) 12%, transparent);
+
+  color: var(--p-primary-color);
+}
+
+.candidate-metric-card h3 {
+  margin: 0.85rem 0;
+
+  font-size: 1.05rem;
+}
+
+.candidate-metric-card dl {
+  display: grid;
+  gap: 0.5rem;
+
+  margin: 0;
+}
+
+.candidate-metric-card dl div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.candidate-metric-card dt {
+  color: var(--cheof-text-secondary);
+
+  font-size: 0.78rem;
+}
+
+.candidate-metric-card dd {
+  margin: 0;
+
+  font-weight: 800;
+}
+
+.preview-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+
+  margin-top: 1rem;
+}
+
+.preview-meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+
+  padding: 0.55rem 0.7rem;
+
+  border-radius: var(--cheof-radius-md);
+
+  background: color-mix(in srgb, var(--cheof-text) 5%, transparent);
+
+  color: var(--cheof-text-secondary);
+
+  font-size: 0.8rem;
+}
+
+.evaluation-empty,
+.empty-candidates {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+
+  min-height: 180px;
+  padding: 1.5rem;
+
+  text-align: left;
+}
+
+.evaluation-empty > span,
+.empty-candidates > span {
+  display: grid;
+
+  width: 52px;
+  min-width: 52px;
+  height: 52px;
+
+  place-items: center;
+
+  border-radius: 16px;
+
+  background: color-mix(in srgb, var(--p-primary-color) 10%, transparent);
+
+  color: var(--p-primary-color);
+
+  font-size: 1.25rem;
+}
+
+.evaluation-empty h3,
+.empty-candidates h3 {
+  margin: 0;
+}
+
+.evaluation-empty p,
+.empty-candidates p {
+  max-width: 570px;
+  margin: 0.35rem 0 0;
+
+  color: var(--cheof-text-secondary);
+
+  line-height: 1.5;
+}
+
+.empty-candidates {
+  flex-direction: column;
+
+  text-align: center;
+}
+
+.warnings-list {
+  display: grid;
+  gap: 0.55rem;
+
+  margin-top: 1rem;
+}
+
+.warnings-list div {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+
+  padding: 0.75rem;
+
+  border-radius: var(--cheof-radius-md);
+
+  background: color-mix(in srgb, var(--cheof-warning) 10%, transparent);
+
+  font-size: 0.86rem;
+  line-height: 1.5;
+}
+
+.warnings-list i {
+  margin-top: 0.15rem;
+
+  color: var(--cheof-warning);
+}
+
+.active-training-row {
+  background: color-mix(in srgb, var(--cheof-success) 6%, transparent);
+}
+
+.mobile-only {
+  display: none;
+}
+
+.mobile-run-list,
+.mobile-training-list,
+.forecast-mobile-list {
+  gap: 0.75rem;
+}
+
+.mobile-data-card {
+  padding: 1rem;
+
+  border: 1px solid var(--cheof-card-border);
+
+  border-radius: var(--cheof-radius-lg);
+
+  background: var(--cheof-card-background);
+}
+
+.mobile-data-card header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.mobile-data-card header > div {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.mobile-data-card header span {
+  color: var(--cheof-text-secondary);
+
+  font-size: 0.78rem;
+}
+
+.mobile-metrics-grid {
+  display: grid;
+
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  gap: 0.6rem;
+
+  margin-top: 0.85rem;
+}
+
+.mobile-metrics-grid > span {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+
+  padding: 0.6rem;
+
+  border-radius: 9px;
+
+  background: color-mix(in srgb, var(--cheof-text) 4%, transparent);
+
+  color: var(--cheof-text-secondary);
+
+  font-size: 0.76rem;
+}
+
+.mobile-metrics-grid strong {
+  color: var(--cheof-text);
+}
+
+.mobile-card-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+
+  margin-top: 0.85rem;
+}
+
+.active-training-card {
+  border-color: color-mix(in srgb, var(--cheof-success) 45%, var(--cheof-card-border));
+
+  background: color-mix(in srgb, var(--cheof-success) 6%, var(--cheof-card-background));
+}
+
+.dialog-detail-grid {
+  display: grid;
+
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  gap: 0.8rem;
+}
+
+.dialog-detail-grid > div {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.3rem;
+
+  padding: 0.9rem;
+
+  border-radius: 12px;
+
+  background: color-mix(in srgb, var(--cheof-text) 4%, transparent);
+}
+
+.dialog-detail-grid span {
+  color: var(--cheof-text-secondary);
+
+  font-size: 0.78rem;
+}
+
+.dialog-detail-grid strong {
+  overflow-wrap: anywhere;
+}
+
+.training-detail-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+
+  margin-bottom: 1rem;
+}
+
+.training-detail-header h2 {
+  margin: 0.7rem 0 0;
+}
+
+.training-detail-header p {
+  margin: 0.25rem 0 0;
+
+  color: var(--cheof-text-secondary);
+}
+
+.training-error-box {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+
+  margin-top: 1rem;
+  padding: 0.9rem;
+
+  border-radius: 12px;
+
+  background: color-mix(in srgb, var(--cheof-danger) 10%, transparent);
+
+  color: var(--cheof-danger);
+}
+
+.training-error-box i {
+  margin-top: 0.15rem;
+}
+
+.training-error-box div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 1100px) {
+  .summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .chart-grid,
+  .insights-grid,
+  .training-overview-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .candidate-comparison {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .analytics-page {
+    width: min(100% - 1rem, 1480px);
+
+    padding-top: 1rem;
+  }
+
+  .analytics-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .header-actions {
+    width: 100%;
+  }
+
+  :host ::ng-deep .header-actions .p-button {
+    flex: 1;
+  }
+
+  .analytics-tabs {
+    display: grid;
+    width: 100%;
+
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .analytics-tab {
+    justify-content: center;
+
+    padding-inline: 0.65rem;
+
+    font-size: 0.78rem;
+  }
+
+  .model-strip,
+  .active-model-card {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .model-period,
+  .active-model-meta {
+    align-items: flex-start;
+
+    text-align: left;
+  }
+
+  .summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .summary-card {
+    min-height: 125px;
+  }
+
+  .candidate-comparison {
+    grid-template-columns: 1fr;
+  }
+
+  .candidate-history-header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .dataset-stat-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .desktop-only {
+    display: none !important;
+  }
+
+  .mobile-only {
+    display: grid;
+  }
+
+  .dialog-detail-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .training-detail-header {
+    flex-direction: column;
+  }
+
+  .dialog-actions {
+    flex-direction: column-reverse;
+  }
+
+  :host ::ng-deep .dialog-actions .p-button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .header-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .analytics-tabs {
+    grid-template-columns: 1fr;
+  }
+
+  .mobile-metrics-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .active-model-main {
+    align-items: flex-start;
+  }
+
+  .active-model-icon {
+    width: 46px;
+    min-width: 46px;
+    height: 46px;
+  }
+}
+
+/*
+|--------------------------------------------------------------------------
+| Seguimiento del aprendizaje continuo
+|--------------------------------------------------------------------------
+*/
+
+.maturity-progress-copy {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+
+  margin-bottom: 0.55rem;
+
+  color: var(--cheof-text-secondary);
+  font-size: 0.78rem;
+}
+
+.maturity-progress-copy strong {
+  color: var(--cheof-text);
+  font-size: 0.8rem;
+}
+
+.learning-freshness-card {
+  margin-bottom: 1rem;
+}
+
+.freshness-training-strip {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.75rem;
+
+  margin-bottom: 0.85rem;
+  padding: 0.9rem;
+
+  border: 1px solid var(--cheof-card-border);
+  border-radius: 14px;
+
+  background: color-mix(in srgb, var(--p-primary-color) 4%, transparent);
+}
+
+.freshness-training-strip > div {
+  display: grid;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.freshness-training-strip span,
+.freshness-stat span,
+.freshness-stat small {
+  color: var(--cheof-text-secondary);
+}
+
+.freshness-training-strip span {
+  font-size: 0.72rem;
+}
+
+.freshness-training-strip strong {
+  overflow-wrap: anywhere;
+  font-size: 0.88rem;
+}
+
+.freshness-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.freshness-stat {
+  display: grid;
+  gap: 0.25rem;
+
+  min-width: 0;
+  padding: 0.9rem;
+
+  border-radius: 14px;
+
+  background: color-mix(in srgb, var(--cheof-card-background) 96%, var(--cheof-text));
+}
+
+.freshness-stat span {
+  font-size: 0.75rem;
+}
+
+.freshness-stat strong {
+  font-size: 1.25rem;
+  font-weight: 850;
+}
+
+.freshness-stat small {
+  font-size: 0.7rem;
+  line-height: 1.35;
+}
+
+.freshness-empty,
+.freshness-recommendation {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+
+  padding: 0.95rem;
+
+  border-radius: 14px;
+}
+
+.freshness-empty {
+  border: 1px solid var(--cheof-card-border);
+
+  background: color-mix(in srgb, var(--cheof-info) 7%, transparent);
+}
+
+.freshness-empty > i,
+.freshness-recommendation > i {
+  margin-top: 0.15rem;
+  font-size: 1rem;
+}
+
+.freshness-empty > div,
+.freshness-recommendation > div {
+  display: grid;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.freshness-empty span,
+.freshness-recommendation span {
+  color: var(--cheof-text-secondary);
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
+.freshness-recommendation {
+  align-items: center;
+
+  margin-top: 0.85rem;
+
+  border: 1px solid color-mix(in srgb, var(--cheof-info) 22%, var(--cheof-card-border));
+
+  background: color-mix(in srgb, var(--cheof-info) 7%, transparent);
+}
+
+.freshness-recommendation > i {
+  color: var(--cheof-info);
+}
+
+.freshness-recommendation > div {
+  flex: 1;
+}
+
+.freshness-recommendation-action {
+  border-color: color-mix(in srgb, var(--cheof-warning) 32%, var(--cheof-card-border));
+
+  background: color-mix(in srgb, var(--cheof-warning) 9%, transparent);
+}
+
+.freshness-recommendation-action > i {
+  color: var(--cheof-warning);
+}
+
+@media (max-width: 1100px) {
+  .freshness-training-strip,
+  .freshness-stat-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .freshness-training-strip,
+  .freshness-stat-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .freshness-recommendation {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+/* =========================================================
+   DETALLE OPERACIONAL DEL CANDIDATO
+   ========================================================= */
+
+.operational-candidate-card {
+  display: grid;
+  gap: 1rem;
+
+  margin-top: 1rem;
+  padding: 1rem;
+
+  border: 1px solid var(--cheof-card-border);
+  border-radius: 16px;
+
+  background: color-mix(in srgb, var(--p-primary-color) 3%, var(--cheof-card-background));
+}
+
+.operational-candidate-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.operational-candidate-header > div {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.operational-candidate-eyebrow {
+  color: var(--p-primary-color);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.operational-candidate-header h3 {
+  margin: 0;
+  color: var(--cheof-text);
+  font-size: 1rem;
+  font-weight: 850;
+}
+
+.operational-capability-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.operational-capability-grid article {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+
+  min-width: 0;
+  padding: 0.85rem;
+
+  border: 1px solid var(--cheof-card-border);
+  border-radius: 14px;
+
+  background: var(--cheof-card-background);
+}
+
+.operational-capability-icon {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+
+  width: 2.25rem;
+  height: 2.25rem;
+
+  border-radius: 11px;
+
+  color: var(--p-primary-color);
+  background: color-mix(in srgb, var(--p-primary-color) 10%, transparent);
+}
+
+.operational-capability-grid article > div {
+  display: grid;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.operational-capability-grid article span:not(.operational-capability-icon) {
+  color: var(--cheof-text-secondary);
+  font-size: 0.74rem;
+}
+
+.operational-capability-grid article strong {
+  color: var(--cheof-text);
+  font-size: 1.15rem;
+  font-weight: 850;
+}
+
+.operational-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.operational-meta-grid > div {
+  display: grid;
+  gap: 0.3rem;
+  min-width: 0;
+}
+
+.operational-meta-grid span {
+  color: var(--cheof-text-secondary);
+  font-size: 0.72rem;
+}
+
+.operational-meta-grid strong {
+  overflow-wrap: anywhere;
+  color: var(--cheof-text);
+  font-size: 0.82rem;
+  line-height: 1.4;
+}
+
+.operational-info-box,
+.operational-warning-list > div {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+
+  padding: 0.85rem;
+  border-radius: 13px;
+}
+
+.operational-info-box {
+  border: 1px solid color-mix(in srgb, var(--cheof-info) 24%, var(--cheof-card-border));
+
+  background: color-mix(in srgb, var(--cheof-info) 7%, transparent);
+}
+
+.operational-info-box-neutral {
+  border-color: var(--cheof-card-border);
+  background: var(--cheof-card-background);
+}
+
+.operational-info-box > i {
+  margin-top: 0.1rem;
+  color: var(--cheof-info);
+}
+
+.operational-info-box-neutral > i {
+  color: var(--cheof-text-secondary);
+}
+
+.operational-info-box > div {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.operational-info-box strong {
+  color: var(--cheof-text);
+  font-size: 0.82rem;
+}
+
+.operational-info-box span,
+.operational-warning-list span {
+  color: var(--cheof-text-secondary);
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
+.operational-warning-list {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.operational-warning-list > div {
+  border: 1px solid color-mix(in srgb, var(--cheof-warning) 28%, var(--cheof-card-border));
+
+  background: color-mix(in srgb, var(--cheof-warning) 8%, transparent);
+}
+
+.operational-warning-list i {
+  margin-top: 0.1rem;
+  color: var(--cheof-warning);
+}
+
+@media (max-width: 760px) {
+  .operational-candidate-header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .operational-capability-grid,
+  .operational-meta-grid {
+    grid-template-columns: 1fr;
+  }
+}

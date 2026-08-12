@@ -1,0 +1,536 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+
+.history-card {
+  position: relative;
+
+  display: grid;
+
+  min-width: 0;
+
+  overflow: hidden;
+
+  border:
+    1px solid
+    var(--cheof-card-border);
+
+  border-radius:
+    var(--cheof-radius-xl);
+
+  background:
+    var(--cheof-card-background);
+
+  box-shadow:
+    var(--cheof-shadow-xs);
+
+  transition:
+    border-color
+      var(--cheof-transition-fast),
+    box-shadow
+      var(--cheof-transition-fast),
+    transform
+      var(--cheof-transition-fast);
+}
+
+.history-card::before {
+  position: absolute;
+
+  inset:
+    0 auto 0 0;
+
+  width: 3px;
+
+  content: '';
+}
+
+.history-card--delivered::before {
+  background:
+    var(--p-primary-color);
+}
+
+.history-card--cancelled::before {
+  background:
+    var(--cheof-danger);
+}
+
+.history-card:hover {
+  border-color:
+    var(--cheof-card-border-strong);
+
+  box-shadow:
+    var(--cheof-shadow-sm);
+
+  transform:
+    translateY(-2px);
+}
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+
+.history-card__header {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 1rem;
+
+  padding:
+    1rem;
+
+  border-bottom:
+    1px solid
+    var(--cheof-divider);
+
+  background:
+    var(--cheof-card-background-muted);
+}
+
+.history-card__status {
+  display: flex;
+
+  min-width: 0;
+
+  align-items: center;
+
+  gap: 0.6rem;
+}
+
+.history-card__status-icon {
+  display: grid;
+
+  width: 34px;
+
+  min-width: 34px;
+
+  height: 34px;
+
+  place-items: center;
+
+  border:
+    1px solid
+    color-mix(
+      in srgb,
+      var(--p-primary-color) 18%,
+      var(--cheof-card-border)
+    );
+
+  border-radius:
+    50%;
+
+  background:
+    var(--cheof-primary-soft);
+
+  color:
+    var(--p-primary-color);
+
+  font-size: 0.7rem;
+}
+
+.history-card--cancelled
+.history-card__status-icon {
+  border-color:
+    color-mix(
+      in srgb,
+      var(--cheof-danger) 22%,
+      var(--cheof-card-border)
+    );
+
+  background:
+    var(--cheof-danger-soft);
+
+  color:
+    var(--cheof-danger);
+}
+
+.history-card__status > div {
+  display: grid;
+
+  min-width: 0;
+
+  gap: 0.08rem;
+}
+
+.history-card__status strong {
+  color:
+    var(--p-primary-color);
+
+  font-size: 0.73rem;
+
+  font-weight: 740;
+}
+
+.history-card--cancelled
+.history-card__status strong {
+  color:
+    var(--cheof-danger);
+}
+
+.history-card__status span {
+  color:
+    var(--cheof-text-secondary);
+
+  font-size: 0.62rem;
+}
+
+/* =========================================================
+   TOTAL
+   ========================================================= */
+
+.history-card__total {
+  display: grid;
+
+  flex: 0 0 auto;
+
+  justify-items: end;
+
+  gap: 0.06rem;
+}
+
+.history-card__total span {
+  color:
+    var(--cheof-text-secondary);
+
+  font-size: 0.58rem;
+}
+
+.history-card__total strong {
+  color:
+    var(--cheof-text);
+
+  font-size: 0.82rem;
+
+  font-weight: 780;
+
+  font-variant-numeric:
+    tabular-nums;
+}
+
+/* =========================================================
+   BODY
+   ========================================================= */
+
+.history-card__body {
+  display: grid;
+
+  gap: 0.8rem;
+
+  padding:
+    1rem;
+}
+
+.history-card__body h3 {
+  margin: 0;
+
+  color:
+    var(--cheof-text);
+
+  font-size: 0.9rem;
+
+  font-weight: 720;
+
+  letter-spacing:
+    -0.02em;
+}
+
+.history-card__body h3 span {
+  color:
+    var(--p-primary-color);
+}
+
+/* =========================================================
+   META
+   ========================================================= */
+
+.history-card__meta {
+  display: flex;
+
+  flex-wrap: wrap;
+
+  align-items: center;
+
+  gap: 0.45rem;
+
+  color:
+    var(--cheof-text-secondary);
+
+  font-size: 0.66rem;
+}
+
+.history-card__meta > span {
+  display: inline-flex;
+
+  align-items: center;
+
+  gap: 0.35rem;
+}
+
+.history-card__meta i {
+  color:
+    var(--p-primary-color);
+}
+
+.history-card__dot {
+  color:
+    var(--cheof-text-soft) !important;
+}
+
+/* =========================================================
+   ADDRESS
+   ========================================================= */
+
+.history-card__address {
+  display: flex;
+
+  align-items: flex-start;
+
+  gap: 0.55rem;
+
+  padding:
+    0.65rem;
+
+  border:
+    1px solid
+    var(--cheof-card-border);
+
+  border-radius:
+    var(--cheof-radius-sm);
+
+  background:
+    var(--cheof-card-background-muted);
+}
+
+.history-card__address > i {
+  flex: 0 0 auto;
+
+  margin-top: 0.1rem;
+
+  color:
+    var(--p-primary-color);
+
+  font-size: 0.72rem;
+}
+
+.history-card__address > div {
+  display: grid;
+
+  min-width: 0;
+
+  gap: 0.1rem;
+}
+
+.history-card__address span {
+  color:
+    var(--cheof-text);
+
+  font-size: 0.65rem;
+
+  font-weight: 650;
+
+  line-height: 1.4;
+}
+
+.history-card__address small {
+  color:
+    var(--cheof-text-secondary);
+
+  font-size: 0.58rem;
+
+  line-height: 1.4;
+}
+
+/* =========================================================
+   CANCELLED
+   ========================================================= */
+
+.history-card__cancelled-message {
+  display: flex;
+
+  align-items: flex-start;
+
+  gap: 0.45rem;
+
+  padding:
+    0.65rem;
+
+  border:
+    1px solid
+    color-mix(
+      in srgb,
+      var(--cheof-danger) 20%,
+      var(--cheof-card-border)
+    );
+
+  border-radius:
+    var(--cheof-radius-sm);
+
+  background:
+    var(--cheof-danger-soft);
+
+  color:
+    var(--cheof-danger);
+}
+
+.history-card__cancelled-message i {
+  flex: 0 0 auto;
+
+  margin-top: 0.08rem;
+
+  font-size: 0.7rem;
+}
+
+.history-card__cancelled-message span {
+  color:
+    color-mix(
+      in srgb,
+      var(--cheof-danger) 78%,
+      var(--cheof-text)
+    );
+
+  font-size: 0.62rem;
+
+  line-height: 1.45;
+}
+
+/* =========================================================
+   FOOTER
+   ========================================================= */
+
+.history-card__footer {
+  padding:
+    0
+    1rem
+    1rem;
+}
+
+.history-detail-button {
+  display: flex;
+
+  width: 100%;
+
+  min-height: 39px;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 0.6rem;
+
+  padding:
+    0.5rem
+    0.65rem;
+
+  border:
+    1px solid
+    var(--cheof-secondary-action-border);
+
+  border-radius:
+    var(--cheof-radius-sm);
+
+  background:
+    var(--cheof-secondary-action-background);
+
+  color:
+    var(--cheof-secondary-action-text);
+
+  cursor: pointer;
+
+  font: inherit;
+
+  font-size: 0.66rem;
+
+  font-weight: 700;
+
+  transition:
+    border-color
+      var(--cheof-transition-fast),
+    background-color
+      var(--cheof-transition-fast),
+    color
+      var(--cheof-transition-fast),
+    box-shadow
+      var(--cheof-transition-fast),
+    transform
+      var(--cheof-transition-fast);
+}
+
+.history-detail-button:hover {
+  border-color:
+    var(--cheof-secondary-action-border-hover);
+
+  background:
+    var(--cheof-secondary-action-background-hover);
+
+  color:
+    var(--p-primary-color);
+
+  box-shadow:
+    var(--cheof-shadow-xs);
+
+  transform:
+    translateY(-1px);
+}
+
+.history-detail-button:focus-visible {
+  outline:
+    2px solid
+    var(--p-primary-color);
+
+  outline-offset:
+    3px;
+}
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (
+  max-width:
+  480px
+) {
+  .history-card__header {
+    align-items: flex-start;
+
+    flex-direction: column;
+  }
+
+  .history-card__total {
+    justify-items: start;
+  }
+
+  .history-card__body,
+  .history-card__header {
+    padding:
+      0.85rem;
+  }
+
+  .history-card__footer {
+    padding:
+      0
+      0.85rem
+      0.85rem;
+  }
+}
+
+/* =========================================================
+   REDUCED MOTION
+   ========================================================= */
+
+@media (
+  prefers-reduced-motion:
+  reduce
+) {
+  .history-card,
+  .history-detail-button {
+    transition: none;
+  }
+
+  .history-card:hover,
+  .history-detail-button:hover {
+    transform: none;
+  }
+}

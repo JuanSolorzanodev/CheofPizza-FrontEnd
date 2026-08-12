@@ -1,0 +1,222 @@
+:host {
+  display: contents;
+}
+
+.dialog-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.dialog-header__icon {
+  display: grid;
+  width: 42px;
+  min-width: 42px;
+  height: 42px;
+  place-items: center;
+  border:
+    1px solid
+    color-mix(
+      in srgb,
+      var(--p-primary-color) 18%,
+      var(--cheof-card-border)
+    );
+  border-radius:
+    var(--cheof-radius-md);
+  background:
+    var(--cheof-primary-soft);
+  color:
+    var(--p-primary-color);
+}
+
+.dialog-header > div {
+  min-width: 0;
+}
+
+.dialog-header h2 {
+  margin: 0;
+  color:
+    var(--cheof-text);
+  font-size: 1.05rem;
+  font-weight: 760;
+  letter-spacing: -0.025em;
+}
+
+.dialog-header p {
+  margin:
+    0.25rem
+    0
+    0;
+  color:
+    var(--cheof-text-secondary);
+  font-size: 0.7rem;
+  line-height: 1.45;
+}
+
+.user-form {
+  display: grid;
+  gap: 1rem;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(
+      2,
+      minmax(0, 1fr)
+    );
+  gap: 0.9rem;
+}
+
+.form-field {
+  display: grid;
+  align-content: start;
+  gap: 0.4rem;
+  min-width: 0;
+}
+
+.form-field > span {
+  color:
+    var(--cheof-text);
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.form-field input {
+  width: 100%;
+  min-height: 42px;
+  border-color:
+    var(--cheof-input-border);
+  background:
+    var(--cheof-input-background);
+  color:
+    var(--cheof-text);
+}
+
+.form-field input::placeholder {
+  color:
+    var(--cheof-input-placeholder);
+}
+
+:host ::ng-deep
+.form-select.p-select {
+  width: 100%;
+  min-height: 42px;
+  border-color:
+    var(--cheof-input-border);
+  background:
+    var(--cheof-input-background);
+}
+
+:host ::ng-deep
+.form-select .p-select-label {
+  color:
+    var(--cheof-text);
+}
+
+.field-help,
+.field-error {
+  font-size: 0.62rem;
+  line-height: 1.4;
+}
+
+.field-help {
+  color:
+    var(--cheof-text-secondary);
+}
+
+.field-error {
+  color:
+    var(--cheof-danger);
+}
+
+.status-switch-card {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  min-height: 54px;
+  padding:
+    0.65rem
+    0.75rem;
+  border:
+    1px solid
+    var(--cheof-card-border);
+  border-radius:
+    var(--cheof-radius-md);
+  background:
+    var(--cheof-card-background-muted);
+}
+
+.status-switch-card > div {
+  display: grid;
+  gap: 0.08rem;
+  min-width: 0;
+}
+
+.status-switch-card strong {
+  color:
+    var(--cheof-text);
+  font-size: 0.69rem;
+  font-weight: 720;
+}
+
+.status-switch-card small {
+  color:
+    var(--cheof-text-secondary);
+  font-size: 0.61rem;
+  line-height: 1.4;
+}
+
+.editing-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.55rem;
+  padding: 0.75rem;
+  border:
+    1px solid
+    color-mix(
+      in srgb,
+      var(--p-primary-color) 16%,
+      var(--cheof-card-border)
+    );
+  border-radius:
+    var(--cheof-radius-md);
+  background:
+    var(--cheof-primary-soft);
+  color:
+    var(--cheof-text-secondary);
+  font-size: 0.65rem;
+  line-height: 1.5;
+}
+
+.editing-notice i,
+.editing-notice strong {
+  color:
+    var(--p-primary-color);
+}
+
+.dialog-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  padding-top: 0.2rem;
+}
+
+@media (max-width: 620px) {
+  .form-grid {
+    grid-template-columns:
+      minmax(0, 1fr);
+  }
+
+  .dialog-actions {
+    align-items: stretch;
+    flex-direction: column-reverse;
+  }
+
+  :host ::ng-deep
+  .dialog-actions .p-button {
+    width: 100%;
+  }
+}

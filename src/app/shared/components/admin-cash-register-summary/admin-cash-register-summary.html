@@ -1,0 +1,297 @@
+@if (session(); as currentSession) {
+<section class="cash-register-status">
+  <div class="cash-register-status__main">
+    <span class="cash-register-status__indicator"></span>
+
+    <div>
+      <span> Estado actual </span>
+
+      <strong> Caja abierta </strong>
+
+      <small>
+        Abierta
+
+        @if (currentSession.opened_at) {
+          el
+          {{ currentSession.opened_at | date: 'dd/MM/yyyy HH:mm' }}
+        }
+
+        @if (currentSession.opened_by.name) {
+          por {{ currentSession.opened_by.name }}
+        }
+      </small>
+    </div>
+  </div>
+
+  <div class="cash-register-status__actions">
+    <p-button
+      icon="pi pi-arrow-down-left"
+      label="Registrar ingreso"
+      severity="success"
+      [outlined]="true"
+      (onClick)="movementRequested.emit('income')"
+    />
+
+    <p-button
+      icon="pi pi-arrow-up-right"
+      label="Registrar egreso"
+      severity="danger"
+      [outlined]="true"
+      (onClick)="movementRequested.emit('expense')"
+    />
+
+    <p-button
+      icon="pi pi-lock"
+      label="Cerrar caja"
+      severity="warn"
+      (onClick)="closeRequested.emit()"
+    />
+  </div>
+</section>
+}
+
+@if (summary(); as summary) {
+  <section class="cash-summary-grid">
+    <article class="cash-summary-card">
+      <span class="cash-summary-card__icon">
+        <i class="pi pi-wallet"></i>
+      </span>
+
+      <div>
+        <span> Monto inicial </span>
+
+        <strong>
+          {{ summary.amounts.opening_amount | currency: 'USD' }}
+        </strong>
+
+        <small> Efectivo registrado al abrir </small>
+      </div>
+    </article>
+
+    <article class="cash-summary-card">
+      <span class="cash-summary-card__icon">
+        <i class="pi pi-shopping-bag"></i>
+      </span>
+
+      <div>
+        <span> Ventas en efectivo </span>
+
+        <strong>
+          {{ summary.amounts.cash_sales | currency: 'USD' }}
+        </strong>
+
+        <small>
+          {{ summary.activity.cash_orders }}
+
+          {{ summary.activity.cash_orders === 1 ? 'pedido entregado' : 'pedidos entregados' }}
+        </small>
+      </div>
+    </article>
+
+    <article class="cash-summary-card cash-summary-card--income">
+      <span class="cash-summary-card__icon">
+        <i class="pi pi-arrow-down-left"></i>
+      </span>
+
+      <div>
+        <span> Ingresos manuales </span>
+
+        <strong>
+          {{ summary.amounts.manual_income | currency: 'USD' }}
+        </strong>
+
+        <small>
+          {{ summary.activity.income_movements }}
+
+          {{ summary.activity.income_movements === 1 ? 'movimiento' : 'movimientos' }}
+        </small>
+      </div>
+    </article>
+
+    <article class="cash-summary-card cash-summary-card--expense">
+      <span class="cash-summary-card__icon">
+        <i class="pi pi-arrow-up-right"></i>
+      </span>
+
+      <div>
+        <span> Egresos manuales </span>
+
+        <strong>
+          {{ summary.amounts.manual_expense | currency: 'USD' }}
+        </strong>
+
+        <small>
+          {{ summary.activity.expense_movements }}
+
+          {{ summary.activity.expense_movements === 1 ? 'movimiento' : 'movimientos' }}
+        </small>
+      </div>
+    </article>
+  </section>
+
+  <section class="cash-register-balance">
+    <div class="cash-register-balance__copy">
+      <span> Efectivo esperado </span>
+
+      <strong>
+        {{ summary.amounts.expected_cash | currency: 'USD' }}
+      </strong>
+
+      <p>Monto inicial más ventas e ingresos, menos egresos registrados.</p>
+    </div>
+
+    <div class="cash-register-balance__formula">
+      <div>
+        <span> Inicial </span>
+
+        <strong>
+          {{ summary.amounts.opening_amount | currency: 'USD' }}
+        </strong>
+      </div>
+
+      <i class="pi pi-plus"></i>
+
+      <div>
+        <span> Ventas </span>
+
+        <strong>
+          {{ summary.amounts.cash_sales | currency: 'USD' }}
+        </strong>
+      </div>
+
+      <i class="pi pi-plus"></i>
+
+      <div>
+        <span> Ingresos </span>
+
+        <strong>
+          {{ summary.amounts.manual_income | currency: 'USD' }}
+        </strong>
+      </div>
+
+      <i class="pi pi-minus"></i>
+
+      <div>
+        <span> Egresos </span>
+
+        <strong>
+          {{ summary.amounts.manual_expense | currency: 'USD' }}
+        </strong>
+      </div>
+    </div>
+  </section>
+  <section class="cash-register-collections">
+    <header class="cash-register-section__header">
+      <div>
+        <span> Recaudación comercial </span>
+
+        <h3>Cobros de la sesión</h3>
+
+        <p>
+          Total recibido mediante efectivo, transferencias aprobadas y pagos PayPal completados.
+        </p>
+      </div>
+
+      <div class="cash-register-collections__total">
+        <span> Total recaudado </span>
+
+        <strong>
+          {{ summary.collections.total_collected | currency: 'USD' }}
+        </strong>
+
+        <small>
+          {{ summary.activity.collected_transactions }}
+
+          {{
+            summary.activity.collected_transactions === 1
+              ? 'transacción reconocida'
+              : 'transacciones reconocidas'
+          }}
+        </small>
+      </div>
+    </header>
+
+    <div class="cash-register-collections__grid">
+      <article class="cash-collection-card">
+        <span class="cash-collection-card__icon cash-collection-card__icon--cash">
+          <i class="pi pi-wallet"></i>
+        </span>
+
+        <div>
+          <span> Efectivo </span>
+
+          <strong>
+            {{ summary.collections.cash.amount | currency: 'USD' }}
+          </strong>
+
+          <small>
+            {{ summary.collections.cash.transactions }}
+
+            {{
+              summary.collections.cash.transactions === 1
+                ? 'pedido entregado'
+                : 'pedidos entregados'
+            }}
+          </small>
+        </div>
+      </article>
+
+      <article class="cash-collection-card">
+        <span class="cash-collection-card__icon cash-collection-card__icon--transfer">
+          <i class="pi pi-building-columns"></i>
+        </span>
+
+        <div>
+          <span> Transferencias </span>
+
+          <strong>
+            {{ summary.collections.transfer.amount | currency: 'USD' }}
+          </strong>
+
+          <small>
+            {{ summary.collections.transfer.transactions }}
+
+            {{
+              summary.collections.transfer.transactions === 1
+                ? 'transferencia aprobada'
+                : 'transferencias aprobadas'
+            }}
+          </small>
+        </div>
+      </article>
+
+      <article class="cash-collection-card">
+        <span class="cash-collection-card__icon cash-collection-card__icon--paypal">
+          <i class="pi pi-credit-card"></i>
+        </span>
+
+        <div>
+          <span> PayPal </span>
+
+          <strong>
+            {{ summary.collections.paypal.amount | currency: 'USD' }}
+          </strong>
+
+          <small>
+            {{ summary.collections.paypal.transactions }}
+
+            {{
+              summary.collections.paypal.transactions === 1
+                ? 'pago completado'
+                : 'pagos completados'
+            }}
+          </small>
+        </div>
+      </article>
+    </div>
+
+    <div class="cash-register-collections__notice">
+      <i class="pi pi-info-circle"></i>
+
+      <p>
+        La recaudación total representa todos los cobros reconocidos. El efectivo esperado solo
+        representa el dinero físico que debería existir en caja.
+      </p>
+    </div>
+  </section>
+}

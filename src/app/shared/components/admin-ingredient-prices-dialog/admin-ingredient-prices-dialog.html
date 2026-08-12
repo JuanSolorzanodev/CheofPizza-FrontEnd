@@ -1,0 +1,54 @@
+<p-dialog
+  [visible]="visible()"
+  (visibleChange)="onVisibleChange($event)"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [closable]="!saving()"
+  [closeOnEscape]="!saving()"
+  [style]="{ width: 'min(96vw, 720px)' }"
+  appendTo="body"
+>
+  <ng-template pTemplate="header"
+    ><div class="dialog-title">
+      <span><i class="pi pi-dollar"></i></span>
+      <div>
+        <small>Recargos por tamaño</small><strong>{{ ingredient()?.name }}</strong>
+      </div>
+    </div></ng-template
+  >
+  <form class="prices-form" [formGroup]="form" (ngSubmit)="save()">
+    <div formArrayName="prices">
+      @for (row of priceRows.controls; track row.value.size_id; let index = $index) {
+        <div class="price-row" [formGroupName]="index">
+          <div>
+            <strong>{{ row.value.size_name }}</strong
+            ><span>{{ row.value.portion }} porciones</span>
+          </div>
+          <p-inputnumber
+            formControlName="extra_price"
+            mode="currency"
+            currency="USD"
+            locale="en-US"
+            [min]="0"
+            [max]="999999.99"
+            [minFractionDigits]="2"
+            [maxFractionDigits]="2"
+          />
+        </div>
+      }
+    </div>
+  </form>
+  <ng-template pTemplate="footer"
+    ><p-button
+      label="Cancelar"
+      severity="secondary"
+      [text]="true"
+      [disabled]="saving()"
+      (onClick)="close()" /><p-button
+      label="Guardar recargos"
+      icon="pi pi-check"
+      [loading]="saving()"
+      (onClick)="save()"
+  /></ng-template>
+</p-dialog>

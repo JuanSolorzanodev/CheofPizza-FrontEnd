@@ -1,0 +1,59 @@
+<p-dialog
+  [visible]="visible()"
+  (visibleChange)="onVisibleChange($event)"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [closable]="!saving()"
+  [closeOnEscape]="!saving()"
+  [style]="{ width: 'min(94vw, 560px)' }"
+  appendTo="body"
+>
+  <ng-template pTemplate="header">
+    <div class="dialog-title">
+      <span><i class="pi pi-list"></i></span>
+      <div>
+        <small>Catálogo</small
+        ><strong>{{ ingredient() ? 'Editar ingrediente' : 'Nuevo ingrediente' }}</strong>
+      </div>
+    </div>
+  </ng-template>
+
+  <form class="dialog-form" [formGroup]="form" (ngSubmit)="save()">
+    <label class="field"
+      ><span>Nombre <em>*</em></span
+      ><input pInputText formControlName="name" placeholder="Ej. Jamón" maxlength="150" />
+      @if (form.controls.name.touched && form.controls.name.invalid) {
+        <small class="field-error">Ingresa un nombre válido de al menos 2 caracteres.</small>
+      }
+    </label>
+    <div class="field">
+      <span>Tipo <em>*</em></span
+      ><p-select
+        ariaLabel="Tipo de ingrediente"
+        formControlName="ingredient_type_id"
+        [options]="ingredientTypes()"
+        optionLabel="name"
+        optionValue="id"
+        placeholder="Selecciona un tipo"
+        appendTo="body"
+      />
+      @if (form.controls.ingredient_type_id.touched && form.controls.ingredient_type_id.invalid) {
+        <small class="field-error">Selecciona un tipo.</small>
+      }
+    </div>
+  </form>
+
+  <ng-template pTemplate="footer"
+    ><p-button
+      label="Cancelar"
+      severity="secondary"
+      [text]="true"
+      [disabled]="saving()"
+      (onClick)="close()" /><p-button
+      [label]="ingredient() ? 'Guardar cambios' : 'Crear ingrediente'"
+      icon="pi pi-check"
+      [loading]="saving()"
+      (onClick)="save()"
+  /></ng-template>
+</p-dialog>

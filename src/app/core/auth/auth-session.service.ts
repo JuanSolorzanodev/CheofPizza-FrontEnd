@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { SafeStorageService } from '../state/safe-storage.service';
 import { AuthUser } from './auth.models';
 
@@ -7,7 +7,7 @@ const USER_KEY = 'cheof_auth_user';
 
 @Injectable({ providedIn: 'root' })
 export class AuthSessionService {
-  constructor(private readonly storage: SafeStorageService) {}
+  private readonly storage = inject(SafeStorageService);
 
   save(token: string, user: AuthUser): void {
     if (!token || !user) return;

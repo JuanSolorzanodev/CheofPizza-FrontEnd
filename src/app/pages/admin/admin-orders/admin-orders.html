@@ -107,42 +107,13 @@
     </article>
   </section>
 
-  <section class="queue-section">
-    <header class="section-header">
-      <div>
-        <span>Cola operativa</span>
-        <h3>Pedidos por estado</h3>
-      </div>
-
-      <small> Selecciona una tarjeta para filtrar </small>
-    </header>
-
-    <div class="queue-grid">
-      @for (item of queueCards(); track item.status) {
-        <button
-          type="button"
-          class="queue-card"
-          [class.is-active]="status() === item.status"
-          [attr.data-tone]="item.tone"
-          (click)="filterByStatus(item.status)"
-        >
-          <span class="queue-card__icon">
-            <i [class]="item.icon"></i>
-          </span>
-
-          <span class="queue-card__copy">
-            <span>{{ item.label }}</span>
-
-            @if (queueLoading()) {
-              <p-skeleton width="34px" height="24px" />
-            } @else {
-              <strong>{{ item.count }}</strong>
-            }
-          </span>
-        </button>
-      }
-    </div>
-  </section>
+  <app-operator-status-board
+    [queue]="queue()"
+    [selectedStatus]="status()"
+    [loading]="queueLoading()"
+    (statusSelected)="filterByStatus($event)"
+    (clearRequested)="clearStatusFilter()"
+  />
 
   <section class="filters-panel">
     <header class="section-header">
@@ -176,10 +147,11 @@
         </div>
       </label>
 
-      <label class="filter-control">
+      <div class="filter-control">
         <span>Estado</span>
 
         <p-select
+          ariaLabel="Filtrar pedidos por estado"
           [options]="statusOptions()"
           optionLabel="label"
           optionValue="value"
@@ -188,12 +160,13 @@
           [ngModel]="status() ?? ''"
           (ngModelChange)="status.set($event || null); onFilterChange()"
         />
-      </label>
+      </div>
 
-      <label class="filter-control">
+      <div class="filter-control">
         <span>Entrega</span>
 
         <p-select
+          ariaLabel="Filtrar pedidos por tipo de entrega"
           [options]="deliveryTypeOptions"
           optionLabel="label"
           optionValue="value"
@@ -202,12 +175,13 @@
           [ngModel]="deliveryType() ?? ''"
           (ngModelChange)="deliveryType.set($event || null); onFilterChange()"
         />
-      </label>
+      </div>
 
-      <label class="filter-control">
+      <div class="filter-control">
         <span>Método de pago</span>
 
         <p-select
+          ariaLabel="Filtrar pedidos por método de pago"
           [options]="paymentMethodOptions"
           optionLabel="label"
           optionValue="value"
@@ -216,7 +190,7 @@
           [ngModel]="paymentMethod() ?? ''"
           (ngModelChange)="paymentMethod.set($event || null); onFilterChange()"
         />
-      </label>
+      </div>
     </div>
   </section>
 
@@ -279,98 +253,7 @@
             </tr>
           </thead>
 
-          <tbody>
-            @for (order of orders(); track order.id) {
-              <tr>
-                <td>
-                  <div class="order-number">
-                    <strong> #{{ order.order_number }} </strong>
-
-                    <span>
-                      {{ formatDate(order.ordered_at) }}
-                    </span>
-                  </div>
-                </td>
-
-                <td>
-                  <div class="customer-cell">
-                    <span class="customer-avatar">
-                      {{ (order.customer?.name ?? 'C').slice(0, 1).toUpperCase() }}
-                    </span>
-
-                    <div>
-                      <strong>
-                        {{ order.customer?.name ?? 'Cliente' }}
-                      </strong>
-
-                      <span>
-                        {{ order.customer?.phone ?? 'Sin teléfono' }}
-                      </span>
-                    </div>
-                  </div>
-                </td>
-
-                <td>
-                  <span class="table-chip">
-                    <i
-                      [class]="order.delivery_type === 'delivery' ? 'pi pi-truck' : 'pi pi-shop'"
-                    ></i>
-
-                    {{ prettyDeliveryType(order.delivery_type) }}
-                  </span>
-                </td>
-
-                <td>
-                  <span class="table-chip">
-                    <i class="pi pi-wallet"></i>
-
-                    {{ prettyPaymentMethod(order.payment_method) }}
-                  </span>
-                </td>
-
-                <td>
-                  <p-tag
-                    [value]="prettyStatus(order.status)"
-                    [severity]="statusSeverity(order.status)"
-                    [rounded]="true"
-                  />
-                </td>
-
-                <td>
-                  <strong class="order-total">
-                    {{ formatMoney(order.total) }}
-                  </strong>
-                </td>
-
-                <td>
-                  <a
-                    class="order-action"
-                    [routerLink]="['/admin/orders', order.id]"
-                    pTooltip="Abrir detalle del pedido"
-                    tooltipPosition="left"
-                  >
-                    <i class="pi pi-arrow-right"></i>
-                  </a>
-                </td>
-              </tr>
-
-              @if (order.kitchen_summary) {
-                <tr class="kitchen-row">
-                  <td colspan="7">
-                    <div class="kitchen-summary">
-                      <i class="pi pi-list-check"></i>
-
-                      <span>
-                        <strong> Preparación: </strong>
-
-                        {{ order.kitchen_summary }}
-                      </span>
-                    </div>
-                  </td>
-                </tr>
-              }
-            }
-          </tbody>
+          <tbody appAdminOrdersTableBody [orders]="orders()"></tbody>
         </table>
       </div>
 

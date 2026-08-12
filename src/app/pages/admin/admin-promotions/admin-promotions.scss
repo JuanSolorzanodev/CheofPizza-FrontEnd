@@ -27,11 +27,7 @@
   background:
     radial-gradient(
       circle at 90% 12%,
-      color-mix(
-        in srgb,
-        var(--p-primary-color) 15%,
-        transparent
-      ),
+      color-mix(in srgb, var(--p-primary-color) 15%, transparent),
       transparent 38%
     ),
     linear-gradient(
@@ -61,6 +57,7 @@
 .promotions-hero h2,
 .panel-header h3 {
   margin: 0.35rem 0 0;
+  color: var(--cheof-text);
 }
 
 .promotions-hero h2 {
@@ -84,8 +81,7 @@
 
 .summary-grid {
   display: grid;
-  grid-template-columns:
-    repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 1rem;
 }
 
@@ -109,38 +105,22 @@
 }
 
 .summary-icon.is-primary {
-  background: color-mix(
-    in srgb,
-    var(--p-primary-color) 12%,
-    transparent
-  );
+  background: color-mix(in srgb, var(--p-primary-color) 12%, transparent);
   color: var(--p-primary-color);
 }
 
 .summary-icon.is-success {
-  background: color-mix(
-    in srgb,
-    var(--cheof-success) 12%,
-    transparent
-  );
+  background: color-mix(in srgb, var(--cheof-success) 12%, transparent);
   color: var(--cheof-success);
 }
 
 .summary-icon.is-info {
-  background: color-mix(
-    in srgb,
-    var(--cheof-info) 12%,
-    transparent
-  );
+  background: color-mix(in srgb, var(--cheof-info) 12%, transparent);
   color: var(--cheof-info);
 }
 
 .summary-icon.is-warning {
-  background: color-mix(
-    in srgb,
-    var(--cheof-warning) 12%,
-    transparent
-  );
+  background: color-mix(in srgb, var(--cheof-warning) 12%, transparent);
   color: var(--cheof-warning);
 }
 
@@ -160,6 +140,7 @@
 }
 
 .summary-card strong {
+  color: var(--cheof-text);
   font-size: 1.4rem;
   line-height: 1.15;
 }
@@ -230,174 +211,6 @@
   padding: 1rem;
 }
 
-.promotion-card {
-  display: grid;
-  grid-template-columns:
-    220px minmax(0, 1fr);
-  min-width: 0;
-  overflow: hidden;
-  border: 1px solid var(--cheof-card-border);
-  border-radius: var(--cheof-radius-lg);
-  background: var(--cheof-card-background);
-  transition:
-    opacity 160ms ease,
-    transform 160ms ease,
-    border-color 160ms ease;
-}
-
-.promotion-card:hover {
-  border-color: color-mix(
-    in srgb,
-    var(--p-primary-color) 24%,
-    var(--cheof-card-border)
-  );
-  transform: translateY(-1px);
-}
-
-.promotion-card.is-inactive {
-  opacity: 0.82;
-}
-
-.promotion-image {
-  display: grid;
-  min-height: 210px;
-  place-items: center;
-  overflow: hidden;
-  background: var(--cheof-muted-background);
-}
-
-.promotion-image img {
-  width: 100%;
-  height: 100%;
-  min-height: 210px;
-  object-fit: cover;
-}
-
-.image-placeholder {
-  display: grid;
-  place-items: center;
-  gap: 0.45rem;
-  color: var(--cheof-text-secondary);
-  text-align: center;
-}
-
-.image-placeholder i {
-  font-size: 1.7rem;
-}
-
-.image-placeholder span {
-  font-size: 0.75rem;
-}
-
-.promotion-content {
-  display: grid;
-  min-width: 0;
-  gap: 1rem;
-  padding: 1.15rem;
-}
-
-.promotion-heading {
-  display: flex;
-  min-width: 0;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 1rem;
-}
-
-.promotion-title-block {
-  min-width: 0;
-}
-
-.promotion-heading h3 {
-  margin: 0.6rem 0 0;
-  font-size: 1.2rem;
-  overflow-wrap: anywhere;
-}
-
-.promotion-heading code {
-  display: inline-block;
-  max-width: 100%;
-  margin-top: 0.45rem;
-  padding: 0.25rem 0.45rem;
-  overflow: hidden;
-  border-radius: 7px;
-  background: var(--cheof-muted-background);
-  color: var(--cheof-text-secondary);
-  font-size: 0.72rem;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.promotion-heading p {
-  margin: 0.45rem 0 0;
-  color: var(--cheof-text-secondary);
-  font-size: 0.85rem;
-  line-height: 1.55;
-}
-
-.promotion-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem;
-}
-
-.promotion-price {
-  max-width: 280px;
-  flex-shrink: 0;
-  color: var(--p-primary-color);
-  font-size: 1rem;
-  line-height: 1.4;
-  text-align: right;
-}
-
-.promotion-meta {
-  display: grid;
-  grid-template-columns:
-    repeat(3, minmax(0, 1fr));
-  gap: 0.75rem;
-}
-
-.promotion-meta > div {
-  display: grid;
-  min-width: 0;
-  align-content: start;
-  gap: 0.2rem;
-  padding: 0.8rem;
-  border-radius: var(--cheof-radius-md);
-  background: var(--cheof-muted-background);
-}
-
-.promotion-meta span,
-.promotion-meta small {
-  color: var(--cheof-text-secondary);
-}
-
-.promotion-meta span {
-  font-size: 0.68rem;
-  font-weight: 750;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-}
-
-.promotion-meta strong {
-  font-size: 0.82rem;
-  line-height: 1.45;
-  overflow-wrap: anywhere;
-}
-
-.promotion-meta small {
-  font-size: 0.7rem;
-}
-
-.promotion-actions {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 0.5rem;
-  padding-top: 0.85rem;
-  border-top: 1px solid var(--cheof-card-border);
-}
-
 .empty-state {
   display: grid;
   place-items: center;
@@ -411,17 +224,14 @@
   height: 68px;
   place-items: center;
   border-radius: 22px;
-  background: color-mix(
-    in srgb,
-    var(--p-primary-color) 12%,
-    transparent
-  );
+  background: color-mix(in srgb, var(--p-primary-color) 12%, transparent);
   color: var(--p-primary-color);
   font-size: 1.45rem;
 }
 
 .empty-state h3 {
   margin: 1rem 0 0;
+  color: var(--cheof-text);
 }
 
 .empty-state p {
@@ -429,242 +239,30 @@
   color: var(--cheof-text-secondary);
 }
 
-.promotion-form {
-  display: grid;
-  max-height: calc(100vh - 9rem);
-  overflow-y: auto;
-  background: var(--cheof-card-background);
-}
-
-.form-section {
-  display: grid;
-  gap: 1rem;
-  padding:
-    1.25rem clamp(1rem, 3vw, 1.5rem);
-  border-bottom: 1px solid var(--cheof-card-border);
-}
-
-.form-section-header {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.8rem;
-}
-
-.form-section-header > span {
-  display: grid;
-  width: 40px;
-  min-width: 40px;
-  height: 40px;
-  place-items: center;
-  border-radius: var(--cheof-radius-md);
-  background: color-mix(
-    in srgb,
-    var(--p-primary-color) 12%,
-    transparent
-  );
-  color: var(--p-primary-color);
-}
-
-.form-section-header h3 {
-  margin: 0;
-  font-size: 1rem;
-}
-
-.form-section-header p {
-  margin: 0.3rem 0 0;
-  color: var(--cheof-text-secondary);
-  font-size: 0.78rem;
-  line-height: 1.5;
-}
-
-.form-grid {
-  display: grid;
-  grid-template-columns:
-    repeat(2, minmax(0, 1fr));
-  gap: 1rem;
-}
-
-.field {
-  display: grid;
-  min-width: 0;
-  align-content: start;
-  gap: 0.4rem;
-}
-
-.field > span {
-  font-size: 0.75rem;
-  font-weight: 750;
-}
-
-.field-span-2 {
-  grid-column: 1 / -1;
-}
-
-.field input,
-.field textarea {
+:host ::ng-deep .filters-panel .p-select {
   width: 100%;
 }
-
-.field-help {
-  color: var(--cheof-text-secondary);
-  font-size: 0.7rem;
-  line-height: 1.45;
-}
-
-.field-error,
-.section-error {
-  color: var(--cheof-danger);
-  font-size: 0.72rem;
-  line-height: 1.45;
-}
-
-.input-action {
-  display: grid;
-  grid-template-columns:
-    minmax(0, 1fr) auto;
-  gap: 0.5rem;
-}
-
-.rules-list,
-.size-price-list {
-  display: grid;
-  gap: 0.75rem;
-}
-
-.rule-row {
-  display: grid;
-  grid-template-columns:
-    minmax(160px, 1fr)
-    minmax(170px, 1fr)
-    minmax(110px, 140px)
-    auto;
-  align-items: end;
-  gap: 0.75rem;
-  padding: 0.9rem;
-  border: 1px solid var(--cheof-card-border);
-  border-radius: var(--cheof-radius-md);
-  background: var(--cheof-muted-background);
-}
-
-.size-price-row {
-  display: grid;
-  grid-template-columns:
-    minmax(180px, 1fr)
-    minmax(180px, 1fr)
-    auto;
-  align-items: end;
-  gap: 0.75rem;
-  padding: 0.9rem;
-  border: 1px solid var(--cheof-card-border);
-  border-radius: var(--cheof-radius-md);
-  background: var(--cheof-muted-background);
-}
-
-.availability-card {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 1rem;
-  border: 1px solid var(--cheof-card-border);
-  border-radius: var(--cheof-radius-md);
-  background: var(--cheof-muted-background);
-}
-
-.availability-card > div {
-  display: grid;
-  gap: 0.25rem;
-}
-
-.availability-card strong {
-  font-size: 0.85rem;
-}
-
-.availability-card span {
-  color: var(--cheof-text-secondary);
-  font-size: 0.73rem;
-  line-height: 1.45;
-}
-
-.dialog-footer {
-  position: sticky;
-  z-index: 2;
-  bottom: 0;
-  display: flex;
-  justify-content: flex-end;
-  gap: 0.65rem;
-  padding:
-    1rem clamp(1rem, 3vw, 1.5rem);
-  border-top: 1px solid var(--cheof-card-border);
-  background: var(--cheof-card-background);
-}
-
-:host ::ng-deep {
-  .filters-panel .p-select,
-  .field .p-select,
-  .field .p-inputnumber,
-  .field .p-datepicker {
-    width: 100%;
-  }
-
-  .field .p-inputnumber-input,
-  .field .p-datepicker-input {
-    width: 100%;
-  }
-
-  .p-dialog-content {
-    overflow: hidden;
-  }
-}
-
-/* =========================================================
-   ACCESIBILIDAD
-   ========================================================= */
 
 .promotions-page :is(button, a):focus-visible,
 .promotions-page input:focus-visible {
   outline: 0.16rem solid
-    color-mix(
-      in srgb,
-      var(--p-primary-color) 38%,
-      transparent
-    );
-
+    color-mix(in srgb, var(--p-primary-color) 38%, transparent);
   outline-offset: 0.14rem;
 }
 
-/* =========================================================
-   RESPONSIVE
-   ========================================================= */
-
 @media (max-width: 1100px) {
   .summary-grid {
-    grid-template-columns:
-      repeat(2, minmax(0, 1fr));
-  }
-
-  .promotion-meta {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
 @media (max-width: 900px) {
   .filters-panel {
-    grid-template-columns:
-      1fr 1fr;
+    grid-template-columns: 1fr 1fr;
   }
 
   .search-box {
     grid-column: 1 / -1;
-  }
-
-  .rule-row {
-    grid-template-columns:
-      1fr 1fr;
-  }
-
-  .rule-row > p-button {
-    justify-self: end;
   }
 }
 
@@ -676,76 +274,21 @@
 
   .hero-actions {
     display: grid;
-    grid-template-columns:
-      1fr 1fr;
+    grid-template-columns: 1fr 1fr;
   }
 
-  .promotion-card {
-    grid-template-columns: 1fr;
-  }
-
-  .promotion-image {
-    min-height: 180px;
-    max-height: 240px;
-  }
-
-  .promotion-image img {
-    min-height: 180px;
-    max-height: 240px;
-  }
-
-  .promotion-heading {
-    display: grid;
-  }
-
-  .promotion-price {
-    max-width: none;
-    text-align: left;
-  }
-
-  :host ::ng-deep {
-    .hero-actions .p-button {
-      width: 100%;
-    }
+  :host ::ng-deep .hero-actions .p-button {
+    width: 100%;
   }
 }
 
 @media (max-width: 650px) {
-  .filters-panel,
-  .form-grid,
-  .rule-row,
-  .size-price-row {
+  .filters-panel {
     grid-template-columns: 1fr;
   }
 
-  .search-box,
-  .field-span-2 {
+  .search-box {
     grid-column: auto;
-  }
-
-  .promotion-actions {
-    display: grid;
-    grid-template-columns: 1fr;
-  }
-
-  .dialog-footer {
-    display: grid;
-    grid-template-columns: 1fr;
-  }
-
-  .input-action {
-    grid-template-columns: 1fr;
-  }
-
-  .availability-card {
-    align-items: flex-start;
-  }
-
-  :host ::ng-deep {
-    .promotion-actions .p-button,
-    .dialog-footer .p-button {
-      width: 100%;
-    }
   }
 }
 
@@ -766,21 +309,5 @@
   .promotion-list,
   .skeleton-list {
     padding: 0.75rem;
-  }
-
-  .promotion-content {
-    padding: 0.95rem;
-  }
-}
-
-
-/* =========================================================
-   REDUCCIÓN DE MOVIMIENTO
-   ========================================================= */
-
-@media (prefers-reduced-motion: reduce) {
-  .promotion-card,
-  .promotion-row {
-    transition: none;
   }
 }

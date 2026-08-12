@@ -1,7 +1,4 @@
 import {
-  CommonModule,
-} from '@angular/common';
-import {
   HttpErrorResponse,
 } from '@angular/common/http';
 import {
@@ -15,9 +12,6 @@ import {
 import {
   takeUntilDestroyed,
 } from '@angular/core/rxjs-interop';
-import {
-  FormsModule,
-} from '@angular/forms';
 import {
   finalize,
   forkJoin,
@@ -34,20 +28,16 @@ import {
   ConfirmDialogModule,
 } from 'primeng/confirmdialog';
 import {
-  InputNumberModule,
-} from 'primeng/inputnumber';
-import {
   MessageModule,
 } from 'primeng/message';
 import {
   SkeletonModule,
 } from 'primeng/skeleton';
+
 import {
-  TagModule,
-} from 'primeng/tag';
-import {
-  TooltipModule,
-} from 'primeng/tooltip';
+  AdminPriceMatrixCell,
+  AdminPriceMatrixComponent,
+} from '../../../shared/components/admin-price-matrix/admin-price-matrix';
 
 import {
   AdminCatalogApiService,
@@ -61,26 +51,16 @@ import {
   AdminValidationErrorResponse,
 } from '../../../core/api/admin/catalog/admin-catalog.models';
 
-interface PriceCell {
-  categoryId: number;
-  sizeId: number;
-  originalPrice: number;
-  currentPrice: number;
-}
 
 @Component({
   selector: 'app-admin-prices',
   standalone: true,
   imports: [
-    CommonModule,
-    FormsModule,
     ButtonModule,
     ConfirmDialogModule,
-    InputNumberModule,
     MessageModule,
     SkeletonModule,
-    TagModule,
-    TooltipModule,
+    AdminPriceMatrixComponent,
   ],
   providers: [
     ConfirmationService,
@@ -122,7 +102,7 @@ export class AdminPrices {
 
   readonly cells =
     signal<
-      Record<string, PriceCell>
+      Record<string, AdminPriceMatrixCell>
     >({});
 
   readonly changedKeys =
@@ -297,43 +277,11 @@ export class AdminPrices {
     this.loadData(false);
   }
 
-  cellKey(
+  private cellKey(
     categoryId: number,
     sizeId: number,
   ): string {
     return `${categoryId}:${sizeId}`;
-  }
-
-  priceValue(
-    categoryId: number,
-    sizeId: number,
-  ): number {
-    const key =
-      this.cellKey(
-        categoryId,
-        sizeId,
-      );
-
-    return (
-      this.cells()[key]
-        ?.currentPrice ?? 0
-    );
-  }
-
-  originalPrice(
-    categoryId: number,
-    sizeId: number,
-  ): number {
-    const key =
-      this.cellKey(
-        categoryId,
-        sizeId,
-      );
-
-    return (
-      this.cells()[key]
-        ?.originalPrice ?? 0
-    );
   }
 
   updatePrice(
@@ -361,7 +309,7 @@ export class AdminPrices {
       this.normalizePrice(value);
 
     const updatedCell:
-      PriceCell = {
+      AdminPriceMatrixCell = {
         ...currentCell,
         currentPrice:
           numericValue,
@@ -392,30 +340,6 @@ export class AdminPrices {
 
         return next;
       },
-    );
-  }
-
-  isChanged(
-    categoryId: number,
-    sizeId: number,
-  ): boolean {
-    return this.changedKeys().has(
-      this.cellKey(
-        categoryId,
-        sizeId,
-      ),
-    );
-  }
-
-  isAvailable(
-    categoryId: number,
-    sizeId: number,
-  ): boolean {
-    return (
-      this.priceValue(
-        categoryId,
-        sizeId,
-      ) > 0
     );
   }
 
@@ -495,7 +419,7 @@ export class AdminPrices {
             const restored:
               Record<
                 string,
-                PriceCell
+                AdminPriceMatrixCell
               > = {};
 
             for (
@@ -591,22 +515,6 @@ export class AdminPrices {
     });
   }
 
-  money(
-    value: number,
-  ): string {
-    return new Intl.NumberFormat(
-      'es-EC',
-      {
-        style: 'currency',
-        currency: 'USD',
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      },
-    ).format(
-      Number(value ?? 0),
-    );
-  }
-
   private saveChanges(): void {
     const changedKeys =
       Array.from(
@@ -622,7 +530,7 @@ export class AdminPrices {
         .filter(
           (
             cell,
-          ): cell is PriceCell =>
+          ): cell is AdminPriceMatrixCell =>
             !!cell,
         )
         .map(
@@ -733,7 +641,7 @@ export class AdminPrices {
     const cells:
       Record<
         string,
-        PriceCell
+        AdminPriceMatrixCell
       > = {};
 
     for (
@@ -807,7 +715,7 @@ export class AdminPrices {
         const updated:
           Record<
             string,
-            PriceCell
+            AdminPriceMatrixCell
           > = {};
 
         for (

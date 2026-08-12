@@ -1,0 +1,66 @@
+.dialog-title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.dialog-title > span {
+  display: grid;
+  width: 40px;
+  height: 40px;
+  place-items: center;
+  border-radius: var(--cheof-radius-md);
+  color: var(--p-primary-color);
+  background: color-mix(in srgb, var(--p-primary-color) 12%, transparent);
+}
+.dialog-title > div {
+  display: grid;
+  gap: 0.15rem;
+}
+.dialog-title small {
+  color: var(--cheof-text-secondary);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.dialog-title strong {
+  font-size: 1rem;
+}
+.prices-form {
+  display: grid;
+  gap: 1rem;
+  padding-top: 0.25rem;
+}
+.prices-form > div {
+  display: grid;
+  gap: 0.65rem;
+}
+.price-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(180px, 220px);
+  align-items: center;
+  gap: 1rem;
+  padding: 0.85rem;
+  border: 1px solid var(--cheof-card-border);
+  border-radius: var(--cheof-radius-lg);
+  background: var(--cheof-muted-background);
+}
+.price-row > div {
+  display: grid;
+  gap: 0.2rem;
+}
+.price-row strong {
+  font-size: 0.8rem;
+}
+.price-row span {
+  color: var(--cheof-text-secondary);
+  font-size: 0.68rem;
+}
+:host ::ng-deep .price-row .p-inputnumber {
+  width: 100%;
+}
+@media (max-width: 560px) {
+  .price-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

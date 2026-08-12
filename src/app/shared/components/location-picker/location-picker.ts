@@ -165,11 +165,11 @@ export class LocationPicker
   private onChange: (
     value:
       DeliveryLocationValue | null,
-  ) => void = () => {};
+  ) => void = () => undefined;
 
   private onTouched:
     () => void =
-    () => {};
+    () => undefined;
 
   // ========================================================
   // ESTADO DEL MAPA
@@ -1016,7 +1016,7 @@ export class LocationPicker
          * conservamos las coordenadas seleccionadas.
          */
         error:
-          () => {},
+          () => undefined,
       });
   }
 

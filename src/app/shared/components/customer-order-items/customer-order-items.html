@@ -1,0 +1,191 @@
+<section class="panel products-panel">
+  <header class="panel-header">
+    <div>
+      <span class="panel-kicker">
+        Contenido del pedido
+      </span>
+
+      <h2>
+        Productos
+      </h2>
+    </div>
+
+    <span class="count-pill">
+      {{ totalItems() }}
+
+      {{
+        totalItems() === 1
+          ? 'unidad'
+          : 'unidades'
+      }}
+    </span>
+  </header>
+
+  <div class="product-list">
+    @for (
+      item of order().items;
+      track item.id
+    ) {
+      <article class="product-item">
+        <div class="product-item__quantity">
+          {{ item.quantity }}×
+        </div>
+
+        <div class="product-item__content">
+          <div class="product-item__heading">
+            <div>
+              <strong>
+                {{ itemName(item) }}
+              </strong>
+
+              <div class="product-item__meta">
+                @if (item.size?.name) {
+                  <span>
+                    {{ item.size!.name }}
+                  </span>
+                }
+
+                @if (
+                  item.pizza?.category
+                ) {
+                  <span>
+                    {{
+                      item.pizza!.category
+                    }}
+                  </span>
+                }
+
+                @if (
+                  item.is_half_and_half
+                ) {
+                  <span>
+                    Mitad y mitad
+                  </span>
+                }
+              </div>
+            </div>
+
+            <div class="product-item__price">
+              <strong>
+                {{
+                  item.subtotal
+                    | currency:
+                        (order().currency ??
+                          'USD'):
+                        'symbol':
+                        '1.2-2'
+                }}
+              </strong>
+
+              <span>
+                {{
+                  item.unit_price
+                    | currency:
+                        (order().currency ??
+                          'USD'):
+                        'symbol':
+                        '1.2-2'
+                }}
+                c/u
+              </span>
+            </div>
+          </div>
+
+          @if (
+            selectedPizzaNames(
+              item
+            ).length
+          ) {
+            <div class="product-detail">
+              <span class="product-detail__label">
+                Pizzas seleccionadas
+              </span>
+
+              <div class="chip-list">
+                @for (
+                  name of selectedPizzaNames(
+                    item
+                  );
+                  track name
+                ) {
+                  <span class="detail-chip">
+                    {{ name }}
+                  </span>
+                }
+              </div>
+            </div>
+          }
+
+          @if (
+            item.personalizations
+              ?.length
+          ) {
+            <div class="product-detail">
+              <span class="product-detail__label">
+                Personalizaciones
+              </span>
+
+              <ul class="personalization-list">
+                @for (
+                  personalization of item.personalizations;
+                  track personalization.id
+                ) {
+                  <li>
+                    <span>
+                      {{
+                        personalizationLabel(
+                          personalization
+                        )
+                      }}
+
+                      @if (
+                        personalizationTarget(
+                          personalization
+                        );
+                        as target
+                      ) {
+                        <small>
+                          · {{ target }}
+                        </small>
+                      }
+                    </span>
+
+                    @if (
+                      (
+                        personalization.extra_price ??
+                        0
+                      ) >
+                      0
+                    ) {
+                      <strong>
+                        +{{
+                          personalization.extra_price
+                            | currency:
+                                (order().currency ??
+                                  'USD'):
+                                'symbol':
+                                '1.2-2'
+                        }}
+                      </strong>
+                    }
+                  </li>
+                }
+              </ul>
+            </div>
+          }
+        </div>
+      </article>
+    } @empty {
+      <div class="empty-state">
+        <i
+          class="pi pi-shopping-bag"
+          aria-hidden="true"
+        ></i>
+
+        <strong>
+          No hay productos registrados
+        </strong>
+      </div>
+    }
+  </div>
+</section>

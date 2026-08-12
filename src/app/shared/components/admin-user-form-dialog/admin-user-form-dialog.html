@@ -1,0 +1,198 @@
+<p-dialog
+  [visible]="visible()"
+  (visibleChange)="onVisibleChange($event)"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [closable]="!submitting()"
+  [closeOnEscape]="!submitting()"
+  [style]="{
+    width: 'min(94vw, 720px)',
+  }"
+  styleClass="user-dialog"
+>
+  <ng-template pTemplate="header">
+    <div class="dialog-header">
+      <span class="dialog-header__icon">
+        <i
+          class="pi"
+          [class.pi-user-edit]="isEditing()"
+          [class.pi-user-plus]="!isEditing()"
+          aria-hidden="true"
+        ></i>
+      </span>
+
+      <div>
+        <h2>
+          {{ dialogTitle() }}
+        </h2>
+
+        <p>
+          {{ dialogDescription() }}
+        </p>
+      </div>
+    </div>
+  </ng-template>
+
+  <form class="user-form" [formGroup]="userForm" (ngSubmit)="saveUser()" novalidate>
+    <div class="form-grid">
+      <label class="form-field">
+        <span> Nombre </span>
+
+        <input
+          type="text"
+          pInputText
+          formControlName="first_name"
+          placeholder="Ej. Juan"
+          autocomplete="given-name"
+          [class.ng-invalid]="controlInvalid('first_name')"
+        />
+
+        @if (fieldError('first_name'); as error) {
+          <small class="field-error">
+            {{ error }}
+          </small>
+        }
+      </label>
+
+      <label class="form-field">
+        <span> Apellido </span>
+
+        <input
+          type="text"
+          pInputText
+          formControlName="last_name"
+          placeholder="Ej. Pérez"
+          autocomplete="family-name"
+          [class.ng-invalid]="controlInvalid('last_name')"
+        />
+
+        @if (fieldError('last_name'); as error) {
+          <small class="field-error">
+            {{ error }}
+          </small>
+        }
+      </label>
+
+      <label class="form-field">
+        <span> Teléfono </span>
+
+        <input
+          type="tel"
+          pInputText
+          formControlName="phone"
+          placeholder="Ej. 0999999999"
+          autocomplete="tel"
+          [class.ng-invalid]="controlInvalid('phone')"
+        />
+
+        @if (fieldError('phone'); as error) {
+          <small class="field-error">
+            {{ error }}
+          </small>
+        }
+      </label>
+
+      <label class="form-field">
+        <span> Correo electrónico </span>
+
+        <input
+          type="email"
+          pInputText
+          formControlName="email"
+          placeholder="usuario@correo.com"
+          autocomplete="email"
+          [class.ng-invalid]="controlInvalid('email')"
+        />
+
+        @if (fieldError('email'); as error) {
+          <small class="field-error">
+            {{ error }}
+          </small>
+        }
+      </label>
+
+      <div class="form-field">
+        <span> Rol </span>
+
+        <p-select
+          ariaLabel="Rol del usuario"
+          formControlName="role"
+          [options]="roleOptions()"
+          optionLabel="label"
+          optionValue="value"
+          placeholder="Selecciona un rol"
+          appendTo="body"
+          styleClass="form-select"
+        />
+
+        @if (isEditing()) {
+          <small class="field-help">
+            El rol se modifica desde la tabla para aplicar las validaciones de seguridad.
+          </small>
+        } @else if (fieldError('role'); as error) {
+          <small class="field-error">
+            {{ error }}
+          </small>
+        }
+      </div>
+
+      <div class="form-field status-form-field">
+        <span> Estado inicial </span>
+
+        <div class="status-switch-card">
+          <p-toggleswitch formControlName="is_active" />
+
+          <div>
+            <strong>
+              {{ userForm.getRawValue().is_active ? 'Cuenta activa' : 'Cuenta bloqueada' }}
+            </strong>
+
+            <small>
+              {{
+                userForm.getRawValue().is_active
+                  ? 'El usuario podrá acceder al sistema.'
+                  : 'El usuario no podrá iniciar sesión.'
+              }}
+            </small>
+          </div>
+        </div>
+
+        @if (isEditing()) {
+          <small class="field-help"> El estado se modifica desde la acción de la tabla. </small>
+        }
+      </div>
+    </div>
+
+    @if (user(); as editing) {
+      <div class="editing-notice">
+        <i class="pi pi-info-circle" aria-hidden="true"></i>
+
+        <span>
+          Estás editando únicamente los datos personales de
+          <strong> {{ editing.full_name }} </strong>. El rol y el estado se administran por
+          separado.
+        </span>
+      </div>
+    }
+
+    <div class="dialog-actions">
+      <p-button
+        type="button"
+        label="Cancelar"
+        icon="pi pi-times"
+        severity="secondary"
+        [outlined]="true"
+        [disabled]="submitting()"
+        (onClick)="close()"
+      />
+
+      <p-button
+        type="submit"
+        [label]="isEditing() ? 'Guardar cambios' : 'Crear usuario'"
+        [icon]="isEditing() ? 'pi pi-save' : 'pi pi-user-plus'"
+        [loading]="submitting()"
+      />
+    </div>
+  </form>
+</p-dialog>

@@ -1,95 +1,47 @@
-import {
-  HttpErrorResponse,
-  HttpResponse,
-} from '@angular/common/http';
-import {
-  Injectable,
-  computed,
-  inject,
-  signal,
-} from '@angular/core';
-import {
-  Observable,
-  catchError,
-  finalize,
-  map,
-  of,
-  tap,
-  throwError,
-} from 'rxjs';
+import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
+import { Injectable, computed, inject, signal } from '@angular/core';
+import { Observable, catchError, finalize, map, of, tap, throwError } from 'rxjs';
 
-import {
-  CartApiService,
-} from './cart-api.service';
+import { AppLoggerService } from '../../logging/app-logger.service';
+
+import { CartApiService } from './cart-api.service';
 import {
   ApiResponse,
   CartAddPizzaRequestDto,
   CartAddPromotionRequestDto,
   CartDto,
 } from './cart.models';
-import {
-  CartSessionService,
-} from './cart-session.service';
+import { CartSessionService } from './cart-session.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class CartStore {
-  private readonly api =
-    inject(CartApiService);
+  private readonly api = inject(CartApiService);
 
-  private readonly session =
-    inject(CartSessionService);
+  private readonly session = inject(CartSessionService);
 
-  private readonly cartState =
-    signal<CartDto | null>(
-      null,
-    );
+  private readonly logger = inject(AppLoggerService);
 
-  private readonly loadingState =
-    signal(false);
+  private readonly cartState = signal<CartDto | null>(null);
 
-  private readonly errorState =
-    signal<string | null>(
-      null,
-    );
+  private readonly loadingState = signal(false);
 
-  readonly cart =
-    this.cartState.asReadonly();
+  private readonly errorState = signal<string | null>(null);
 
-  readonly loading =
-    this.loadingState.asReadonly();
+  readonly cart = this.cartState.asReadonly();
 
-  readonly error =
-    this.errorState.asReadonly();
+  readonly loading = this.loadingState.asReadonly();
 
-  readonly items =
-    computed(
-      () =>
-        this.cartState()?.items ??
-        [],
-    );
+  readonly error = this.errorState.asReadonly();
 
-  readonly totalUnits =
-    computed(
-      () =>
-        this.cartState()
-          ?.total_units ??
-        0,
-    );
+  readonly items = computed(() => this.cartState()?.items ?? []);
 
-  readonly total =
-    computed(
-      () =>
-        this.cartState()?.total ??
-        0,
-    );
+  readonly totalUnits = computed(() => this.cartState()?.total_units ?? 0);
 
-  readonly isEmpty =
-    computed(
-      () =>
-        this.items().length === 0,
-    );
+  readonly total = computed(() => this.cartState()?.total ?? 0);
+
+  readonly isEmpty = computed(() => this.items().length === 0);
 
   hydrate(): void {
     if (this.loadingState()) {
@@ -102,187 +54,125 @@ export class CartStore {
     this.api
       .getCart()
       .pipe(
-        tap(response => {
-          this.applyResponse(
-            response,
-          );
+        tap((response) => {
+          this.applyResponse(response);
         }),
 
-        catchError(
-          (error: unknown) => {
-            this.handleError(error);
+        catchError((error: unknown) => {
+          this.handleError(error);
 
-            /*
-             * Un fallo del carrito público no debe impedir
-             * que el resto de la aplicación cargue.
-             */
-            this.cartState.set(null);
+          /*
+           * Un fallo del carrito público no debe impedir
+           * que el resto de la aplicación cargue.
+           */
+          this.cartState.set(null);
 
-            return of(null);
-          },
-        ),
+          return of(null);
+        }),
 
         finalize(() => {
-          this.loadingState.set(
-            false,
-          );
+          this.loadingState.set(false);
         }),
       )
       .subscribe();
   }
 
-  addPizza(
-    payload: CartAddPizzaRequestDto,
-  ): Observable<CartDto | null> {
+  addPizza(payload: CartAddPizzaRequestDto): Observable<CartDto | null> {
     this.loadingState.set(true);
     this.errorState.set(null);
 
-    return this.api
-      .addPizza(payload)
-      .pipe(
-        tap(response => {
-          this.applyResponse(
-            response,
-          );
-        }),
+    return this.api.addPizza(payload).pipe(
+      tap((response) => {
+        this.applyResponse(response);
+      }),
 
-        map(
-          response =>
-            response.body?.data ??
-            null,
-        ),
+      map((response) => response.body?.data ?? null),
 
-        catchError(
-          (error: unknown) => {
-            this.handleError(error);
+      catchError((error: unknown) => {
+        this.handleError(error);
 
-            return throwError(
-              () => error,
-            );
-          },
-        ),
+        return throwError(() => error);
+      }),
 
-        finalize(() => {
-          this.loadingState.set(
-            false,
-          );
-        }),
-      );
+      finalize(() => {
+        this.loadingState.set(false);
+      }),
+    );
   }
 
-  addPromotion(
-    payload: CartAddPromotionRequestDto,
-  ): Observable<CartDto | null> {
+  addPromotion(payload: CartAddPromotionRequestDto): Observable<CartDto | null> {
     this.loadingState.set(true);
     this.errorState.set(null);
 
-    return this.api
-      .addPromotion(payload)
-      .pipe(
-        tap(response => {
-          this.applyResponse(
-            response,
-          );
-        }),
+    return this.api.addPromotion(payload).pipe(
+      tap((response) => {
+        this.applyResponse(response);
+      }),
 
-        map(
-          response =>
-            response.body?.data ??
-            null,
-        ),
+      map((response) => response.body?.data ?? null),
 
-        catchError(
-          (error: unknown) => {
-            this.handleError(error);
+      catchError((error: unknown) => {
+        this.handleError(error);
 
-            return throwError(
-              () => error,
-            );
-          },
-        ),
+        return throwError(() => error);
+      }),
 
-        finalize(() => {
-          this.loadingState.set(
-            false,
-          );
-        }),
-      );
+      finalize(() => {
+        this.loadingState.set(false);
+      }),
+    );
   }
 
-  setQuantity(
-    itemId: number,
-    quantity:
-      | number
-      | null
-      | undefined,
-  ): void {
+  setQuantity(itemId: number, quantity: number | null | undefined): void {
     if (this.loadingState()) {
       return;
     }
 
-    const numericQuantity =
-      Number(quantity);
+    const numericQuantity = Number(quantity);
 
-    if (
-      !Number.isFinite(
-        numericQuantity,
-      )
-    ) {
+    if (!Number.isFinite(numericQuantity)) {
       return;
     }
 
-    const safeQuantity =
-      Math.min(
-        10,
-        Math.max(
-          1,
-          Math.trunc(
-            numericQuantity,
-          ),
-        ),
-      );
+    const safeQuantity = Math.min(10, Math.max(1, Math.trunc(numericQuantity)));
+
+    let rehydrateAfterFailure = false;
 
     this.loadingState.set(true);
     this.errorState.set(null);
 
     this.api
-      .updateQuantity(
-        itemId,
-        safeQuantity,
-      )
+      .updateQuantity(itemId, safeQuantity)
       .pipe(
-        tap(response => {
-          this.applyResponse(
-            response,
-          );
+        tap((response) => {
+          this.applyResponse(response);
         }),
 
-        catchError(
-          (error: unknown) => {
-            this.handleError(error);
+        catchError((error: unknown) => {
+          this.handleError(error);
 
-            /*
-             * Recuperamos el estado remoto porque una actualización
-             * fallida podría dejar la interfaz desincronizada.
-             */
-            this.hydrate();
+          /*
+           * Marcamos la resincronización para ejecutarla después de liberar
+           * loadingState. Llamar hydrate() aquí no funcionaría porque hydrate()
+           * protege contra cargas concurrentes y saldría inmediatamente.
+           */
+          rehydrateAfterFailure = true;
 
-            return of(null);
-          },
-        ),
+          return of(null);
+        }),
 
         finalize(() => {
-          this.loadingState.set(
-            false,
-          );
+          this.loadingState.set(false);
+
+          if (rehydrateAfterFailure) {
+            this.hydrate();
+          }
         }),
       )
       .subscribe();
   }
 
-  remove(
-    itemId: number,
-  ): void {
+  remove(itemId: number): void {
     if (this.loadingState()) {
       return;
     }
@@ -293,34 +183,25 @@ export class CartStore {
     this.api
       .removeItem(itemId)
       .pipe(
-        tap(response => {
-          this.applyResponse(
-            response,
-          );
+        tap((response) => {
+          this.applyResponse(response);
         }),
 
-        catchError(
-          (error: unknown) => {
-            this.handleError(error);
+        catchError((error: unknown) => {
+          this.handleError(error);
 
-            return of(null);
-          },
-        ),
+          return of(null);
+        }),
 
         finalize(() => {
-          this.loadingState.set(
-            false,
-          );
+          this.loadingState.set(false);
         }),
       )
       .subscribe();
   }
 
   clear(): void {
-    if (
-      this.loadingState() ||
-      this.isEmpty()
-    ) {
+    if (this.loadingState() || this.isEmpty()) {
       return;
     }
 
@@ -330,42 +211,31 @@ export class CartStore {
     this.api
       .clear()
       .pipe(
-        tap(response => {
-          this.applyResponse(
-            response,
-          );
+        tap((response) => {
+          this.applyResponse(response);
         }),
 
-        catchError(
-          (error: unknown) => {
-            this.handleError(error);
+        catchError((error: unknown) => {
+          this.handleError(error);
 
-            return of(null);
-          },
-        ),
+          return of(null);
+        }),
 
         finalize(() => {
-          this.loadingState.set(
-            false,
-          );
+          this.loadingState.set(false);
         }),
       )
       .subscribe();
   }
 
-  replaceCart(
-    cart: CartDto | null,
-  ): void {
+  replaceCart(cart: CartDto | null): void {
     this.cartState.set(cart);
     this.errorState.set(null);
 
-    const sessionId =
-      cart?.session_id?.trim();
+    const sessionId = cart?.session_id?.trim();
 
     if (sessionId) {
-      this.session.set(
-        sessionId,
-      );
+      this.session.set(sessionId);
     }
   }
 
@@ -396,118 +266,66 @@ export class CartStore {
     this.loadingState.set(false);
   }
 
-  private applyResponse(
-    response:
-      HttpResponse<
-        ApiResponse<CartDto>
-      >,
-  ): void {
-    const cart =
-      response.body?.data ??
-      null;
+  private applyResponse(response: HttpResponse<ApiResponse<CartDto>>): void {
+    const cart = response.body?.data ?? null;
 
     this.cartState.set(cart);
     this.errorState.set(null);
 
-    this.persistSession(
-      response,
-      cart,
-    );
+    this.persistSession(response, cart);
   }
 
   private persistSession(
-    response:
-      HttpResponse<
-        ApiResponse<CartDto>
-      >,
+    response: HttpResponse<ApiResponse<CartDto>>,
 
     cart: CartDto | null,
   ): void {
-    const headerSession =
-      response.headers
-        .get('X-Cart-Session')
-        ?.trim();
+    const headerSession = response.headers.get('X-Cart-Session')?.trim();
 
-    const bodySession =
-      cart?.session_id?.trim();
+    const bodySession = cart?.session_id?.trim();
 
-    const sessionId =
-      headerSession ||
-      bodySession ||
-      null;
+    const sessionId = headerSession || bodySession || null;
 
     if (sessionId) {
-      this.session.set(
-        sessionId,
-      );
+      this.session.set(sessionId);
     }
   }
 
-  private handleError(
-    error: unknown,
-  ): void {
-    if (
-      !(
-        error instanceof
-        HttpErrorResponse
-      )
-    ) {
-      this.errorState.set(
-        'Ocurrió un error inesperado al procesar tu pedido.',
-      );
+  private handleError(error: unknown): void {
+    if (!(error instanceof HttpErrorResponse)) {
+      this.errorState.set('Ocurrió un error inesperado al procesar tu pedido.');
 
-      console.error(
-        'Error desconocido del carrito:',
-        error,
-      );
+      this.logger.error('Error desconocido del carrito:', error);
 
       return;
     }
 
     if (error.status === 200) {
-      this.errorState.set(
-        'El servidor devolvió una respuesta inválida para el carrito.',
-      );
+      this.errorState.set('El servidor devolvió una respuesta inválida para el carrito.');
 
-      console.error(
-        'Respuesta inválida del carrito.',
-        {
-          url: error.url,
-          body: error.error,
-          message:
-            error.message,
-        },
-      );
+      this.logger.error('Respuesta inválida del carrito.', {
+        url: error.url,
+        body: error.error,
+        message: error.message,
+      });
 
       return;
     }
 
     if (error.status === 0) {
-      this.errorState.set(
-        'No se pudo conectar con el servidor.',
-      );
+      this.errorState.set('No se pudo conectar con el servidor.');
 
       return;
     }
 
-    const backendMessage =
-      typeof error.error
-        ?.message === 'string'
-        ? error.error.message
-        : null;
+    const backendMessage = typeof error.error?.message === 'string' ? error.error.message : null;
 
-    this.errorState.set(
-      backendMessage ??
-        'No fue posible actualizar tu pedido.',
-    );
+    this.errorState.set(backendMessage ?? 'No fue posible actualizar tu pedido.');
 
-    console.error(
-      'Error HTTP del carrito:',
-      {
-        status: error.status,
-        url: error.url,
-        body: error.error,
-      },
-    );
+    this.logger.error('Error HTTP del carrito:', {
+      status: error.status,
+      url: error.url,
+      body: error.error,
+    });
   }
 }

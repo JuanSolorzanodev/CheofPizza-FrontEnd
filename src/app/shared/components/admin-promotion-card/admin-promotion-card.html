@@ -1,0 +1,115 @@
+<article
+  class="promotion-card"
+  [class.is-inactive]="!promotion().is_active"
+>
+  <div class="promotion-image">
+    @if (promotion().banner_image_url) {
+      <img
+        [src]="promotion().banner_image_url"
+        [alt]="promotion().name"
+        loading="lazy"
+        decoding="async"
+      />
+    } @else {
+      <div class="image-placeholder">
+        <i class="pi pi-percentage" aria-hidden="true"></i>
+        <span>Sin banner</span>
+      </div>
+    }
+  </div>
+
+  <div class="promotion-content">
+    <div class="promotion-heading">
+      <div class="promotion-title-block">
+        <div class="promotion-tags">
+          <p-tag
+            [value]="statusLabel(promotion().status)"
+            [severity]="statusSeverity(promotion().status)"
+            [rounded]="true"
+          />
+
+          <p-tag
+            [value]="typeLabel(promotion())"
+            severity="secondary"
+            [rounded]="true"
+          />
+
+          @if (!promotion().can_delete) {
+            <p-tag
+              value="Protegida"
+              icon="pi pi-lock"
+              severity="warn"
+              [rounded]="true"
+              pTooltip="Tiene carritos o pedidos asociados."
+            />
+          }
+        </div>
+
+        <h3>{{ promotion().name }}</h3>
+        <code>{{ promotion().slug }}</code>
+        <p>{{ promotion().description || 'Sin descripción registrada.' }}</p>
+      </div>
+
+      <strong class="promotion-price">
+        {{ promotionPrice(promotion()) }}
+      </strong>
+    </div>
+
+    <div class="promotion-meta">
+      <div>
+        <span>Configuración</span>
+        <strong>{{ promotionRules(promotion()) }}</strong>
+      </div>
+
+      <div>
+        <span>Vigencia</span>
+        <strong>{{ validityText(promotion()) }}</strong>
+      </div>
+
+      <div>
+        <span>Uso registrado</span>
+        <strong>{{ usageLabel(promotion()) }}</strong>
+        <small>
+          {{ promotion().usage.cart_items }} carritos ·
+          {{ promotion().usage.order_items }} pedidos
+        </small>
+      </div>
+    </div>
+
+    <footer class="promotion-actions">
+      <p-button
+        label="Editar"
+        icon="pi pi-pencil"
+        severity="secondary"
+        [outlined]="true"
+        [disabled]="actionsDisabled()"
+        (onClick)="edit.emit(promotion())"
+      />
+
+      <p-button
+        [label]="promotion().is_active ? 'Desactivar' : 'Activar'"
+        [icon]="promotion().is_active ? 'pi pi-pause' : 'pi pi-check'"
+        [severity]="promotion().is_active ? 'warn' : 'success'"
+        [outlined]="true"
+        [loading]="changingVisibility()"
+        [disabled]="actionsDisabled()"
+        (onClick)="visibilityChange.emit(promotion())"
+      />
+
+      <p-button
+        label="Eliminar"
+        icon="pi pi-trash"
+        severity="danger"
+        [text]="true"
+        [loading]="deleting()"
+        [disabled]="!promotion().can_delete || actionsDisabled()"
+        [pTooltip]="
+          promotion().can_delete
+            ? 'Eliminar promoción'
+            : 'No puede eliminarse porque tiene registros asociados'
+        "
+        (onClick)="delete.emit(promotion())"
+      />
+    </footer>
+  </div>
+</article>

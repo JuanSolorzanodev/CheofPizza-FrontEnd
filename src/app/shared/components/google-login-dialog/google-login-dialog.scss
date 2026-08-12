@@ -3,11 +3,17 @@
 }
 
 /* =========================================================
-   PRIME DIALOG MASK
+   OVERLAY
    ========================================================= */
 
-:host ::ng-deep .p-dialog-mask {
-  padding: 1.5rem;
+:host ::ng-deep
+.p-dialog-mask {
+  padding:
+    clamp(
+      0.75rem,
+      3vw,
+      1.5rem
+    );
 
   background:
     color-mix(
@@ -17,34 +23,44 @@
     );
 
   backdrop-filter:
-    blur(7px)
-    saturate(0.82);
+    blur(10px)
+    saturate(0.9);
+
+  -webkit-backdrop-filter:
+    blur(10px)
+    saturate(0.9);
 }
 
 /* =========================================================
-   DIALOG BASE
+   DIALOG
    ========================================================= */
 
 :host ::ng-deep
 .auth-dialog.p-dialog {
   width:
     min(
-      calc(100vw - 3rem),
-      520px
+      calc(
+        100vw -
+        2rem
+      ),
+      500px
     );
 
   max-height:
     calc(
-      100dvh - 3rem
+      100dvh -
+      2rem
     );
 
-  overflow: hidden;
+  overflow:
+    hidden;
 
   border:
     1px solid
     var(--cheof-card-border);
 
-  border-radius: 28px;
+  border-radius:
+    var(--cheof-radius-2xl);
 
   background:
     var(--cheof-card-background);
@@ -53,32 +69,17 @@
     var(--cheof-text);
 
   box-shadow:
-    0 34px 90px
-      rgb(0 0 0 / 26%),
-    0 12px 30px
-      rgb(0 0 0 / 10%);
-
-  animation:
-    auth-dialog-enter
-    180ms
-    cubic-bezier(
-      0.2,
-      0.8,
-      0.2,
-      1
-    );
+    var(--cheof-shadow-lg);
 }
 
-/*
- * Registro:
- * suficiente amplitud para dos columnas,
- * pero sin convertirse en una pantalla administrativa.
- */
 :host ::ng-deep
 .auth-dialog--register.p-dialog {
   width:
     min(
-      calc(100vw - 3rem),
+      calc(
+        100vw -
+        2rem
+      ),
       720px
     );
 }
@@ -88,166 +89,141 @@
 .p-dialog-content {
   max-height:
     calc(
-      100dvh - 3rem
+      100dvh -
+      2rem
     );
 
-  padding: 0;
+  overflow:
+    hidden;
 
-  overflow: hidden;
+  padding:
+    0;
 
-  border-radius: inherit;
+  border-radius:
+    inherit;
 
   background:
     transparent;
 }
 
-@keyframes auth-dialog-enter {
-  from {
-    opacity: 0;
-
-    transform:
-      translateY(12px)
-      scale(0.985);
-  }
-
-  to {
-    opacity: 1;
-
-    transform:
-      translateY(0)
-      scale(1);
-  }
-}
-
 /* =========================================================
-   AUTH SHELL
+   SHELL
    ========================================================= */
 
 .auth-shell {
-  position: relative;
+  position:
+    relative;
 
-  display: grid;
-
-  gap: 1rem;
+  display:
+    grid;
 
   max-height:
     calc(
-      100dvh - 3rem
+      100dvh -
+      2rem
     );
 
+  gap:
+    1.05rem;
+
+  overflow-y:
+    auto;
+
+  overscroll-behavior:
+    contain;
+
   padding:
-    1.5rem
-    1.7rem
-    1.2rem;
-
-  overflow-y: auto;
-
-  overscroll-behavior: contain;
-
-  scrollbar-gutter: stable;
-
-  scrollbar-width: thin;
-
-  scrollbar-color:
-    color-mix(
-      in srgb,
-      var(--p-primary-color) 38%,
-      transparent
-    )
-    transparent;
+    1.45rem
+    1.55rem
+    1.25rem;
 
   background:
     radial-gradient(
       circle at 100% 0%,
       color-mix(
         in srgb,
-        var(--p-primary-color) 10%,
+        var(--p-primary-color) 8%,
         transparent
-      ) 0,
-      transparent 29%
+      )
+      0%,
+      transparent
+      34%
     ),
     var(--cheof-card-background);
 
   color:
     var(--cheof-text);
 
-  isolation: isolate;
+  scrollbar-width:
+    thin;
+
+  scrollbar-color:
+    var(--cheof-card-border-strong)
+    transparent;
 }
 
-/*
- * Elemento de marca sutil.
- * No debe competir con el formulario.
- */
-.auth-shell::before {
-  position: absolute;
+/* =========================================================
+   SCROLLBAR
+   ========================================================= */
 
-  z-index: -1;
+.auth-shell::-webkit-scrollbar {
+  width:
+    7px;
+}
 
-  top: -132px;
-  right: -128px;
+.auth-shell::-webkit-scrollbar-track {
+  background:
+    transparent;
+}
 
-  width: 290px;
-  height: 290px;
-
+.auth-shell::-webkit-scrollbar-thumb {
   border:
-    1px solid
-    color-mix(
-      in srgb,
-      var(--p-primary-color) 13%,
-      transparent
-    );
+    2px solid
+    transparent;
 
-  border-radius: 50%;
-
-  pointer-events: none;
-
-  content: '';
-}
-
-.auth-shell::after {
-  position: absolute;
-
-  z-index: -1;
-
-  top: -98px;
-  right: -93px;
-
-  width: 220px;
-  height: 220px;
-
-  border-radius: 50%;
+  border-radius:
+    var(--cheof-radius-pill);
 
   background:
     color-mix(
       in srgb,
-      var(--p-primary-color) 4%,
+      var(--cheof-text-soft) 42%,
       transparent
     );
 
-  pointer-events: none;
+  background-clip:
+    padding-box;
+}
 
-  content: '';
+.auth-shell::-webkit-scrollbar-thumb:hover {
+  background:
+    color-mix(
+      in srgb,
+      var(--cheof-text-secondary) 58%,
+      transparent
+    );
+
+  background-clip:
+    padding-box;
 }
 
 /* =========================================================
-   LOGIN / REGISTER DENSITY
+   REGISTER DENSITY
    ========================================================= */
 
-.auth-shell--login {
-  gap: 1.05rem;
-}
-
 .auth-shell--register {
-  gap: 0.72rem;
+  gap:
+    0.8rem;
 
   padding:
-    1.25rem
+    1.35rem
     1.5rem
-    1rem;
+    1.2rem;
 }
 
 .auth-shell--google-profile {
-  gap: 0.95rem;
+  gap:
+    1rem;
 }
 
 /* =========================================================
@@ -255,98 +231,108 @@
    ========================================================= */
 
 .auth-header {
-  display: flex;
+  display:
+    flex;
 
-  min-height: 50px;
+  min-height:
+    54px;
 
-  align-items: center;
+  align-items:
+    center;
 
   justify-content:
     space-between;
 
-  gap: 1rem;
+  gap:
+    1rem;
 }
 
 .auth-brand {
-  display: inline-flex;
+  display:
+    inline-flex;
 
-  min-width: 0;
+  width:
+    fit-content;
 
-  align-items: center;
+  align-items:
+    center;
 
-  border-radius: 10px;
+  border-radius:
+    var(--cheof-radius-sm);
 
-  outline: none;
+  text-decoration:
+    none;
 }
 
 .auth-brand__logo {
-  display: block;
+  display:
+    block;
 
-  width: 138px;
-  height: 58px;
+  width:
+    132px;
 
-  object-fit: contain;
+  height:
+    52px;
+
+  object-fit:
+    contain;
 
   object-position:
     left center;
+
+  transition:
+    transform
+      var(--cheof-transition-fast);
 }
 
-/*
- * Registro ligeramente más compacto.
- */
-.auth-shell--register
+.auth-brand:hover
 .auth-brand__logo {
-  width: 124px;
-  height: 50px;
+  transform:
+    translateY(-1px);
 }
 
 /* =========================================================
-   ACCESSIBLE FOCUS
-   ========================================================= */
-
-.auth-brand:focus-visible,
-.icon-button:focus-visible,
-.password-toggle:focus-visible,
-.primary-button:focus-visible,
-.secondary-button:focus-visible,
-.google-button:focus-visible,
-.auth-switch button:focus-visible {
-  outline:
-    3px solid
-    color-mix(
-      in srgb,
-      var(--p-primary-color) 30%,
-      transparent
-    );
-
-  outline-offset: 3px;
-}
-
-/* =========================================================
-   CLOSE / ICON BUTTONS
+   ICON BUTTON
    ========================================================= */
 
 .icon-button,
 .password-toggle {
-  display: grid;
+  display:
+    inline-grid;
 
-  place-items: center;
+  width:
+    40px;
 
-  padding: 0;
+  height:
+    40px;
+
+  flex:
+    0 0 auto;
+
+  place-items:
+    center;
+
+  padding:
+    0;
 
   border:
     1px solid
-    transparent;
+    var(--cheof-secondary-action-border);
+
+  border-radius:
+    var(--cheof-radius-sm);
 
   background:
-    transparent;
+    var(--cheof-secondary-action-background);
 
   color:
-    var(--cheof-text-secondary);
+    var(--cheof-secondary-action-text);
 
-  cursor: pointer;
+  cursor:
+    pointer;
 
-  font: inherit;
+  font:
+    inherit;
 
   transition:
     border-color
@@ -359,57 +345,28 @@
       var(--cheof-transition-fast);
 }
 
-.icon-button {
-  width: 42px;
-  min-width: 42px;
-  height: 42px;
-
-  border-radius: 12px;
-
-  font-size: 0.95rem;
-}
-
-.icon-button:hover:not(:disabled) {
-  border-color:
-    var(--cheof-card-border);
-
-  background:
-    var(--cheof-hover-background);
-
-  color:
-    var(--cheof-text);
-}
-
-.password-toggle {
-  width: 38px;
-  min-width: 38px;
-  height: 38px;
-
-  margin-right: -0.4rem;
-
-  border-radius: 10px;
-
-  font-size: 0.92rem;
-}
-
+.icon-button:hover:not(:disabled),
 .password-toggle:hover:not(:disabled) {
+  border-color:
+    var(--cheof-secondary-action-border-hover);
+
   background:
-    var(--cheof-hover-background);
+    var(--cheof-secondary-action-background-hover);
 
   color:
-    var(--cheof-text);
-}
+    var(--p-primary-color);
 
-.icon-button:active:not(:disabled),
-.password-toggle:active:not(:disabled) {
-  transform: scale(0.96);
+  transform:
+    translateY(-1px);
 }
 
 .icon-button:disabled,
 .password-toggle:disabled {
-  cursor: not-allowed;
+  cursor:
+    not-allowed;
 
-  opacity: 0.45;
+  opacity:
+    0.5;
 }
 
 /* =========================================================
@@ -417,13 +374,16 @@
    ========================================================= */
 
 .auth-content {
-  display: grid;
+  display:
+    grid;
 
-  gap: 1rem;
+  gap:
+    1rem;
 }
 
 .auth-content--register {
-  gap: 0.7rem;
+  gap:
+    0.8rem;
 }
 
 /* =========================================================
@@ -431,96 +391,100 @@
    ========================================================= */
 
 .auth-heading {
-  display: grid;
+  display:
+    grid;
 
-  gap: 0.28rem;
+  max-width:
+    430px;
+
+  gap:
+    0.45rem;
 }
 
 .auth-heading__eyebrow {
   color:
     var(--p-primary-color);
 
-  font-size: 0.72rem;
+  font-size:
+    0.65rem;
 
-  font-weight: 800;
+  font-weight:
+    800;
 
   letter-spacing:
-    0.15em;
+    0.14em;
 
-  line-height: 1.2;
+  line-height:
+    1.3;
 
   text-transform:
     uppercase;
 }
 
 .auth-heading h2 {
-  margin: 0;
+  margin:
+    0;
 
   color:
     var(--cheof-text);
 
   font-size:
     clamp(
-      2rem,
-      4vw,
-      2.4rem
+      1.8rem,
+      5vw,
+      2.25rem
     );
 
-  font-weight: 800;
+  font-weight:
+    800;
 
   letter-spacing:
     -0.045em;
 
-  line-height: 1.04;
+  line-height:
+    1.05;
+
+  text-wrap:
+    balance;
 }
 
 .auth-heading p {
-  max-width: 600px;
+  max-width:
+    420px;
 
-  margin: 0;
+  margin:
+    0;
 
   color:
     var(--cheof-text-secondary);
 
-  font-size: 0.9rem;
+  font-size:
+    0.8rem;
 
-  line-height: 1.5;
-}
+  line-height:
+    1.6;
 
-/*
- * Registro:
- * jerarquía fuerte sin gastar demasiada altura.
- */
-.auth-shell--register
-.auth-heading {
-  gap: 0.2rem;
-}
-
-.auth-shell--register
-.auth-heading h2 {
-  font-size: 1.85rem;
-}
-
-.auth-shell--register
-.auth-heading p {
-  font-size: 0.82rem;
-
-  line-height: 1.42;
+  text-wrap:
+    pretty;
 }
 
 /* =========================================================
-   PRIME MESSAGE
+   MESSAGE
    ========================================================= */
 
 :host ::ng-deep
 .auth-message.p-message {
-  width: 100%;
+  width:
+    100%;
 
-  margin: 0;
+  margin:
+    0;
 
-  border-radius: 12px;
+  border-radius:
+    var(--cheof-radius-sm);
 
-  font-size: 0.8rem;
+  font-size:
+    0.75rem;
 }
 
 /* =========================================================
@@ -528,95 +492,103 @@
    ========================================================= */
 
 .auth-form {
-  display: grid;
+  display:
+    grid;
 
-  gap: 0.95rem;
+  gap:
+    0.9rem;
 }
 
 .auth-form--register {
-  gap: 0.62rem;
+  gap:
+    0.75rem;
 }
 
 .form-grid {
-  display: grid;
+  display:
+    grid;
 
   grid-template-columns:
     repeat(
       2,
-      minmax(0, 1fr)
+      minmax(
+        0,
+        1fr
+      )
     );
 
   gap:
-    0.58rem
-    0.85rem;
+    0.8rem;
 }
+
+/* =========================================================
+   FIELD
+   ========================================================= */
 
 .field {
-  display: grid;
+  display:
+    grid;
 
-  min-width: 0;
+  min-width:
+    0;
 
-  align-content: start;
-
-  gap: 0.32rem;
-}
-
-.field__header {
-  display: flex;
-
-  align-items: center;
-
-  justify-content:
-    space-between;
-
-  gap: 0.5rem;
+  gap:
+    0.38rem;
 }
 
 .field__label {
   color:
-    var(--cheof-text);
+    var(--cheof-text-secondary);
 
-  font-size: 0.79rem;
+  font-size:
+    0.7rem;
 
-  font-weight: 700;
+  font-weight:
+    680;
 
-  line-height: 1.35;
+  line-height:
+    1.3;
 }
 
 /* =========================================================
-   INPUT WRAPPER
+   INPUT SHELL
    ========================================================= */
 
 .input-shell {
-  display: grid;
+  display:
+    grid;
 
-  min-height: 54px;
+  min-height:
+    46px;
 
   grid-template-columns:
     auto
-    minmax(0, 1fr)
-    auto;
+    minmax(
+      0,
+      1fr
+    );
 
-  align-items: center;
+  align-items:
+    center;
 
-  gap: 0.72rem;
+  gap:
+    0.65rem;
 
-  padding:
-    0
-    0.92rem;
+  padding-inline:
+    0.85rem;
 
   border:
     1px solid
     var(--cheof-input-border);
 
-  border-radius: 14px;
+  border-radius:
+    var(--cheof-radius-sm);
 
   background:
     var(--cheof-input-background);
 
-  box-shadow:
-    0 1px 2px
-    rgb(0 0 0 / 2%);
+  color:
+    var(--cheof-text-secondary);
 
   transition:
     border-color
@@ -646,14 +618,175 @@
     0 0 0 3px
     color-mix(
       in srgb,
-      var(--p-primary-color) 15%,
+      var(--p-primary-color) 12%,
       transparent
     );
 }
 
+.input-shell > i {
+  color:
+    var(--cheof-text-soft);
+
+  font-size:
+    0.8rem;
+
+  transition:
+    color
+      var(--cheof-transition-fast);
+}
+
+.input-shell:focus-within
+> i {
+  color:
+    var(--p-primary-color);
+}
+
+/* =========================================================
+   INPUT
+   ========================================================= */
+
+:host ::ng-deep
+.input-shell
+input.p-inputtext {
+  width:
+    100%;
+
+  min-width:
+    0;
+
+  height:
+    44px;
+
+  padding:
+    0;
+
+  border:
+    0;
+
+  border-radius:
+    0;
+
+  outline:
+    0;
+
+  background:
+    transparent;
+
+  color:
+    var(--cheof-text);
+
+  box-shadow:
+    none;
+
+  font-size:
+    0.8rem;
+}
+
+:host ::ng-deep
+.input-shell
+input.p-inputtext:enabled:focus {
+  border:
+    0;
+
+  box-shadow:
+    none;
+}
+
+:host ::ng-deep
+.input-shell
+input.p-inputtext::placeholder {
+  color:
+    var(--cheof-input-placeholder);
+}
+
+/* =========================================================
+   PASSWORD INPUT
+   ========================================================= */
+
+.input-shell:has(
+  .password-toggle
+) {
+  grid-template-columns:
+    auto
+    minmax(
+      0,
+      1fr
+    )
+    auto;
+
+  padding-right:
+    0.35rem;
+}
+
+.password-toggle {
+  width:
+    34px;
+
+  height:
+    34px;
+
+  border-color:
+    transparent;
+
+  background:
+    transparent;
+
+  box-shadow:
+    none;
+}
+
+/* =========================================================
+   PHONE
+   ========================================================= */
+
+.input-shell--phone {
+  grid-template-columns:
+    auto
+    auto
+    minmax(
+      0,
+      1fr
+    );
+}
+
+.phone-prefix {
+  display:
+    inline-flex;
+
+  align-items:
+    center;
+
+  align-self:
+    stretch;
+
+  padding-right:
+    0.65rem;
+
+  border-right:
+    1px solid
+    var(--cheof-divider);
+
+  color:
+    var(--cheof-text-secondary);
+
+  font-size:
+    0.75rem;
+
+  font-weight:
+    650;
+}
+
+/* =========================================================
+   INVALID
+   ========================================================= */
+
 .input-shell--invalid {
   border-color:
-    var(--cheof-danger);
+    color-mix(
+      in srgb,
+      var(--cheof-danger) 68%,
+      var(--cheof-input-border)
+    );
 }
 
 .input-shell--invalid:focus-within {
@@ -664,197 +797,69 @@
     0 0 0 3px
     color-mix(
       in srgb,
-      var(--cheof-danger) 14%,
+      var(--cheof-danger) 10%,
       transparent
     );
-}
-
-/*
- * Registro un poco más denso,
- * pero sigue respetando una altura cómoda.
- */
-.auth-shell--register
-.input-shell {
-  min-height: 48px;
-
-  border-radius: 13px;
-}
-
-.input-shell > i {
-  color:
-    var(--cheof-text-secondary);
-
-  font-size: 0.95rem;
-}
-
-/* =========================================================
-   REAL INPUT
-   ========================================================= */
-
-.input-shell
-input.p-inputtext {
-  width: 100%;
-
-  min-width: 0;
-
-  min-height: 0;
-
-  padding: 0;
-
-  border: 0;
-
-  border-radius: 0;
-
-  background:
-    transparent;
-
-  box-shadow: none;
-
-  color:
-    var(--cheof-text);
-
-  font-size: 0.9rem;
-
-  line-height: 1.35;
-
-  caret-color:
-    var(--p-primary-color);
-}
-
-.input-shell
-input.p-inputtext:hover,
-.input-shell
-input.p-inputtext:focus,
-.input-shell
-input.p-inputtext:enabled:hover,
-.input-shell
-input.p-inputtext:enabled:focus {
-  border: 0;
-
-  background:
-    transparent;
-
-  box-shadow: none;
-}
-
-.input-shell
-input.p-inputtext::placeholder {
-  color:
-    var(--cheof-input-placeholder);
-
-  opacity: 1;
-}
-
-/* =========================================================
-   PHONE
-   ========================================================= */
-
-.input-shell--phone {
-  grid-template-columns:
-    auto
-    minmax(0, 1fr);
-
-  gap: 0.78rem;
-}
-
-.phone-prefix {
-  display: inline-flex;
-
-  min-height: 30px;
-
-  align-items: center;
-
-  padding-right: 0.8rem;
-
-  border-right:
-    1px solid
-    var(--cheof-input-border);
-
-  color:
-    var(--p-primary-color);
-
-  font-size: 0.82rem;
-
-  font-weight: 800;
-
-  letter-spacing:
-    0.01em;
-}
-
-/* =========================================================
-   FIELD HINT / ERROR
-   ========================================================= */
-
-.field__hint,
-.field__error {
-  font-size: 0.68rem;
-
-  line-height: 1.35;
-}
-
-.field__hint {
-  color:
-    var(--cheof-text-soft);
 }
 
 .field__error {
   color:
     var(--cheof-danger);
 
-  font-weight: 550;
+  font-size:
+    0.64rem;
+
+  font-weight:
+    580;
+
+  line-height:
+    1.4;
+}
+
+.field__hint {
+  color:
+    var(--cheof-text-soft);
+
+  font-size:
+    0.62rem;
+
+  line-height:
+    1.45;
 }
 
 /* =========================================================
-   PRIMARY / SECONDARY BUTTONS
+   PRIMARY BUTTON
    ========================================================= */
 
-.primary-button,
-.secondary-button {
-  display: inline-flex;
+.primary-button {
+  display:
+    inline-flex;
 
-  min-height: 52px;
+  width:
+    100%;
 
-  align-items: center;
+  min-height:
+    48px;
 
-  justify-content: center;
+  align-items:
+    center;
 
-  gap: 0.72rem;
+  justify-content:
+    center;
+
+  gap:
+    0.65rem;
 
   padding:
-    0.7rem
-    1.15rem;
-
-  border-radius: 14px;
-
-  cursor: pointer;
-
-  font: inherit;
-
-  font-size: 0.85rem;
-
-  font-weight: 750;
-
-  line-height: 1;
-
-  transition:
-    border-color
-      var(--cheof-transition-fast),
-    background-color
-      var(--cheof-transition-fast),
-    color
-      var(--cheof-transition-fast),
-    box-shadow
-      var(--cheof-transition-fast),
-    transform
-      var(--cheof-transition-fast);
-}
-
-.primary-button {
-  width: 100%;
+    0.72rem
+    1rem;
 
   border:
     1px solid
     var(--cheof-action-border);
+
+  border-radius:
+    var(--cheof-radius-sm);
 
   background:
     var(--cheof-action-background);
@@ -864,6 +869,28 @@ input.p-inputtext::placeholder {
 
   box-shadow:
     var(--cheof-action-shadow);
+
+  cursor:
+    pointer;
+
+  font:
+    inherit;
+
+  font-size:
+    0.8rem;
+
+  font-weight:
+    720;
+
+  transition:
+    border-color
+      var(--cheof-transition-fast),
+    background-color
+      var(--cheof-transition-fast),
+    box-shadow
+      var(--cheof-transition-fast),
+    transform
+      var(--cheof-transition-fast);
 }
 
 .primary-button:hover:not(:disabled) {
@@ -881,20 +908,83 @@ input.p-inputtext::placeholder {
 }
 
 .primary-button:active:not(:disabled) {
+  background:
+    var(--cheof-action-background-active);
+
+  box-shadow:
+    none;
+
   transform:
     translateY(0);
 }
 
+.primary-button:disabled {
+  cursor:
+    not-allowed;
+
+  opacity:
+    0.55;
+}
+
+/* =========================================================
+   SECONDARY BUTTON
+   ========================================================= */
+
 .secondary-button {
+  display:
+    inline-flex;
+
+  width:
+    100%;
+
+  min-height:
+    46px;
+
+  align-items:
+    center;
+
+  justify-content:
+    center;
+
+  gap:
+    0.55rem;
+
+  padding:
+    0.65rem
+    0.9rem;
+
   border:
     1px solid
     var(--cheof-secondary-action-border);
+
+  border-radius:
+    var(--cheof-radius-sm);
 
   background:
     var(--cheof-secondary-action-background);
 
   color:
     var(--cheof-secondary-action-text);
+
+  cursor:
+    pointer;
+
+  font:
+    inherit;
+
+  font-size:
+    0.77rem;
+
+  font-weight:
+    680;
+
+  transition:
+    border-color
+      var(--cheof-transition-fast),
+    background-color
+      var(--cheof-transition-fast),
+    transform
+      var(--cheof-transition-fast);
 }
 
 .secondary-button:hover:not(:disabled) {
@@ -908,25 +998,12 @@ input.p-inputtext::placeholder {
     translateY(-1px);
 }
 
-.primary-button:disabled,
-.secondary-button:disabled,
-.google-button:disabled {
-  cursor: not-allowed;
+.secondary-button:disabled {
+  cursor:
+    not-allowed;
 
-  opacity: 0.5;
-
-  box-shadow: none;
-
-  transform: none;
-}
-
-/*
- * Registro ahorra altura aquí,
- * manteniendo un target de 48 px.
- */
-.auth-shell--register
-.primary-button {
-  min-height: 48px;
+  opacity:
+    0.55;
 }
 
 /* =========================================================
@@ -934,30 +1011,49 @@ input.p-inputtext::placeholder {
    ========================================================= */
 
 .auth-separator {
-  display: flex;
+  position:
+    relative;
 
-  align-items: center;
+  display:
+    flex;
 
-  gap: 0.8rem;
+  min-height:
+    24px;
+
+  align-items:
+    center;
+
+  justify-content:
+    center;
 
   color:
     var(--cheof-text-soft);
 
-  font-size: 0.7rem;
+  font-size:
+    0.65rem;
 
-  line-height: 1;
+  text-align:
+    center;
 }
 
 .auth-separator::before,
 .auth-separator::after {
-  height: 1px;
+  flex:
+    1;
 
-  flex: 1;
+  height:
+    1px;
 
   background:
     var(--cheof-divider);
 
-  content: '';
+  content:
+    '';
+}
+
+.auth-separator span {
+  padding-inline:
+    0.8rem;
 }
 
 /* =========================================================
@@ -965,28 +1061,39 @@ input.p-inputtext::placeholder {
    ========================================================= */
 
 .google-button {
-  display: grid;
+  display:
+    grid;
 
-  width: 100%;
+  width:
+    100%;
 
-  min-height: 52px;
+  min-height:
+    48px;
 
   grid-template-columns:
-    40px
-    minmax(0, 1fr)
-    40px;
+    36px
+    minmax(
+      0,
+      1fr
+    )
+    36px;
 
-  align-items: center;
+  align-items:
+    center;
+
+  gap:
+    0.6rem;
 
   padding:
-    0.4rem
-    0.72rem;
+    0.5rem
+    0.65rem;
 
   border:
     1px solid
     var(--cheof-secondary-action-border);
 
-  border-radius: 14px;
+  border-radius:
+    var(--cheof-radius-sm);
 
   background:
     var(--cheof-secondary-action-background);
@@ -994,18 +1101,14 @@ input.p-inputtext::placeholder {
   color:
     var(--cheof-secondary-action-text);
 
-  cursor: pointer;
-
-  font: inherit;
-
-  font-size: 0.84rem;
-
-  font-weight: 700;
-
-  line-height: 1;
-
   box-shadow:
     var(--cheof-shadow-xs);
+
+  cursor:
+    pointer;
+
+  font:
+    inherit;
 
   transition:
     border-color
@@ -1032,99 +1135,113 @@ input.p-inputtext::placeholder {
     translateY(-1px);
 }
 
-.auth-shell--register
-.google-button {
-  min-height: 48px;
+.google-button:disabled {
+  cursor:
+    not-allowed;
+
+  opacity:
+    0.55;
 }
 
-.google-button__icon,
-.google-account__icon {
-  display: grid;
+.google-button__icon {
+  display:
+    grid;
 
-  width: 36px;
-  height: 36px;
+  width:
+    34px;
 
-  place-items: center;
+  height:
+    34px;
+
+  place-items:
+    center;
 
   border:
     1px solid
-    #dfe5e0;
+    var(--cheof-card-border);
 
-  border-radius: 10px;
+  border-radius:
+    10px;
 
-  /*
-   * Google mantiene su identidad sobre fondo
-   * blanco tanto en light como dark.
-   */
   background:
     #ffffff;
-
-  box-shadow:
-    0 1px 3px
-    rgb(0 0 0 / 5%);
 }
 
-.google-button__icon img,
-.google-account__icon img {
-  display: block;
+.google-button__icon img {
+  display:
+    block;
 
-  width: 21px;
-  height: 21px;
+  width:
+    19px;
 
-  object-fit: contain;
+  height:
+    19px;
 }
 
 .google-button__label {
-  min-width: 0;
+  overflow:
+    hidden;
 
-  overflow: hidden;
+  color:
+    var(--cheof-text);
 
-  text-align: center;
+  font-size:
+    0.78rem;
+
+  font-weight:
+    680;
+
+  text-align:
+    center;
 
   text-overflow:
     ellipsis;
 
-  white-space: nowrap;
+  white-space:
+    nowrap;
 }
 
 .google-button__balance {
-  width: 36px;
-  height: 36px;
+  width:
+    34px;
 }
 
 /* =========================================================
-   SWITCH LOGIN / REGISTER
+   AUTH SWITCH
    ========================================================= */
 
 .auth-switch {
-  display: flex;
+  display:
+    flex;
 
-  flex-wrap: wrap;
+  flex-wrap:
+    wrap;
 
-  align-items: center;
+  align-items:
+    center;
 
-  justify-content: center;
+  justify-content:
+    center;
 
-  gap: 0.32rem;
-
-  min-height: 25px;
+  gap:
+    0.35rem;
 
   color:
     var(--cheof-text-secondary);
 
-  font-size: 0.75rem;
+  font-size:
+    0.7rem;
 
-  line-height: 1.4;
+  text-align:
+    center;
 }
 
 .auth-switch button {
   padding:
-    0.14rem
-    0.2rem;
+    0;
 
-  border: 0;
-
-  border-radius: 6px;
+  border:
+    0;
 
   background:
     transparent;
@@ -1132,27 +1249,17 @@ input.p-inputtext::placeholder {
   color:
     var(--p-primary-color);
 
-  cursor: pointer;
+  cursor:
+    pointer;
 
-  font: inherit;
+  font:
+    inherit;
 
-  font-weight: 800;
-
-  transition:
-    background-color
-      var(--cheof-transition-fast),
-    color
-      var(--cheof-transition-fast);
+  font-weight:
+    720;
 }
 
 .auth-switch button:hover:not(:disabled) {
-  background:
-    color-mix(
-      in srgb,
-      var(--p-primary-color) 8%,
-      transparent
-    );
-
   text-decoration:
     underline;
 
@@ -1160,33 +1267,47 @@ input.p-inputtext::placeholder {
     3px;
 }
 
+.auth-switch button:disabled {
+  cursor:
+    not-allowed;
+
+  opacity:
+    0.55;
+}
+
 /* =========================================================
    TERMS
    ========================================================= */
 
 .terms-row {
-  display: flex;
+  display:
+    grid;
 
-  align-items: flex-start;
+  grid-template-columns:
+    auto
+    minmax(
+      0,
+      1fr
+    );
 
-  gap: 0.7rem;
+  align-items:
+    start;
+
+  gap:
+    0.7rem;
 
   padding:
-    0.68rem
     0.8rem;
 
   border:
     1px solid
     var(--cheof-card-border);
 
-  border-radius: 12px;
+  border-radius:
+    var(--cheof-radius-sm);
 
   background:
-    color-mix(
-      in srgb,
-      var(--cheof-muted-background) 72%,
-      transparent
-    );
+    var(--cheof-card-background-muted);
 
   transition:
     border-color
@@ -1196,119 +1317,187 @@ input.p-inputtext::placeholder {
 }
 
 .terms-row:hover {
+  border-color:
+    var(--cheof-card-border-strong);
+
   background:
-    var(--cheof-muted-background);
+    var(--cheof-hover-background);
 }
 
 .terms-row label {
   color:
     var(--cheof-text-secondary);
 
-  cursor: pointer;
+  cursor:
+    pointer;
 
-  font-size: 0.75rem;
+  font-size:
+    0.68rem;
 
-  line-height: 1.4;
+  line-height:
+    1.55;
 }
 
 :host ::ng-deep
 .terms-row
 .p-checkbox {
-  flex:
-    0
-    0
-    auto;
-
-  margin-top: 0.02rem;
+  margin-top:
+    0.08rem;
 }
 
 :host ::ng-deep
 .terms-row
 .p-checkbox-box {
-  width: 1.2rem;
-  height: 1.2rem;
+  border-color:
+    var(--cheof-input-border);
 
-  border-radius: 5px;
+  background:
+    var(--cheof-input-background);
 }
 
 .terms-error {
-  margin-top: -0.25rem;
+  margin-top:
+    -0.2rem;
 }
 
 /* =========================================================
-   GOOGLE VERIFIED ACCOUNT
+   GOOGLE ACCOUNT
    ========================================================= */
 
 .google-account {
-  display: grid;
+  display:
+    grid;
 
   grid-template-columns:
-    auto
-    minmax(0, 1fr)
+    42px
+    minmax(
+      0,
+      1fr
+    )
     auto;
 
-  align-items: center;
+  align-items:
+    center;
 
-  gap: 0.75rem;
+  gap:
+    0.8rem;
 
-  padding: 0.75rem;
+  padding:
+    0.85rem;
 
   border:
     1px solid
     var(--cheof-card-border);
 
-  border-radius: 14px;
+  border-radius:
+    var(--cheof-radius-md);
 
   background:
-    var(--cheof-muted-background);
+    var(--cheof-card-background-muted);
+}
+
+.google-account__icon {
+  display:
+    grid;
+
+  width:
+    42px;
+
+  height:
+    42px;
+
+  place-items:
+    center;
+
+  border:
+    1px solid
+    var(--cheof-card-border);
+
+  border-radius:
+    12px;
+
+  background:
+    #ffffff;
+}
+
+.google-account__icon img {
+  display:
+    block;
+
+  width:
+    21px;
+
+  height:
+    21px;
 }
 
 .google-account__content {
-  display: grid;
+  display:
+    grid;
 
-  min-width: 0;
+  min-width:
+    0;
 
-  gap: 0.14rem;
+  gap:
+    0.1rem;
 }
 
 .google-account__content span {
   color:
     var(--cheof-text-soft);
 
-  font-size: 0.68rem;
+  font-size:
+    0.62rem;
 }
 
 .google-account__content strong {
-  overflow: hidden;
+  overflow:
+    hidden;
 
   color:
     var(--cheof-text);
 
-  font-size: 0.8rem;
+  font-size:
+    0.74rem;
+
+  font-weight:
+    700;
 
   text-overflow:
     ellipsis;
 
-  white-space: nowrap;
+  white-space:
+    nowrap;
 }
 
 .google-account > i {
   color:
-    var(--p-primary-color);
+    var(--cheof-success);
+
+  font-size:
+    0.9rem;
 }
 
 /* =========================================================
-   GOOGLE PROFILE ACTIONS
+   PROFILE ACTIONS
    ========================================================= */
 
 .profile-actions {
-  display: grid;
+  display:
+    grid;
 
   grid-template-columns:
-    minmax(0, 0.8fr)
-    minmax(0, 1.2fr);
+    minmax(
+      0,
+      0.7fr
+    )
+    minmax(
+      0,
+      1fr
+    );
 
-  gap: 0.75rem;
+  gap:
+    0.65rem;
 }
 
 /* =========================================================
@@ -1316,216 +1505,120 @@ input.p-inputtext::placeholder {
    ========================================================= */
 
 .auth-footer {
-  display: flex;
+  display:
+    flex;
 
-  min-height: 32px;
+  align-items:
+    flex-start;
 
-  align-items: center;
+  justify-content:
+    center;
 
-  justify-content: center;
+  gap:
+    0.45rem;
 
-  gap: 0.5rem;
-
-  padding-top: 0.8rem;
-
-  border-top:
-    1px solid
-    var(--cheof-divider);
+  padding-top:
+    0.2rem;
 
   color:
     var(--cheof-text-soft);
 
-  font-size: 0.69rem;
+  font-size:
+    0.62rem;
 
-  line-height: 1.35;
+  line-height:
+    1.45;
 
-  text-align: center;
+  text-align:
+    center;
 }
 
 .auth-footer i {
+  margin-top:
+    0.12rem;
+
   color:
+    var(--cheof-success);
+
+  font-size:
+    0.65rem;
+}
+
+/* =========================================================
+   FOCUS
+   ========================================================= */
+
+.auth-brand:focus-visible,
+.icon-button:focus-visible,
+.password-toggle:focus-visible,
+.primary-button:focus-visible,
+.secondary-button:focus-visible,
+.google-button:focus-visible,
+.auth-switch button:focus-visible {
+  outline:
+    2px solid
     var(--p-primary-color);
 
-  font-size: 0.9rem;
-}
-
-.auth-shell--register
-.auth-footer {
-  min-height: 28px;
-
-  padding-top: 0.62rem;
+  outline-offset:
+    3px;
 }
 
 /* =========================================================
-   1080P / NORMAL DESKTOP
+   TABLET / MOBILE
    ========================================================= */
 
-/*
- * En 1920x1080 queremos que el registro completo entre
- * sin scrollbar en condiciones normales.
- */
-@media
-  (min-width: 641px)
-  and
-  (min-height: 850px) {
-
-  .auth-shell--register {
-    overflow-y: hidden;
-  }
-}
-
-/* =========================================================
-   DESKTOP CON ALTURA REDUCIDA
-   ========================================================= */
-
-@media
-  (min-width: 641px)
-  and
-  (max-height: 849px) {
-
-  :host ::ng-deep
-  .p-dialog-mask {
-    padding: 0.75rem;
-  }
-
+@media (
+  max-width:
+  680px
+) {
   :host ::ng-deep
   .auth-dialog.p-dialog,
-  :host ::ng-deep
-  .auth-dialog
-  .p-dialog-content,
-  .auth-shell {
-    max-height:
-      calc(
-        100dvh - 1.5rem
-      );
-  }
-
-  .auth-shell {
-    padding:
-      1.15rem
-      1.4rem
-      0.9rem;
-  }
-
-  .auth-shell--register {
-    gap: 0.56rem;
-
-    padding:
-      0.95rem
-      1.25rem
-      0.8rem;
-  }
-
-  .auth-shell--register
-  .auth-header {
-    min-height: 42px;
-  }
-
-  .auth-shell--register
-  .auth-brand__logo {
-    width: 110px;
-    height: 42px;
-  }
-
-  .auth-shell--register
-  .auth-heading__eyebrow {
-    font-size: 0.64rem;
-  }
-
-  .auth-shell--register
-  .auth-heading h2 {
-    font-size: 1.62rem;
-  }
-
-  .auth-shell--register
-  .auth-heading p {
-    font-size: 0.76rem;
-  }
-
-  .auth-shell--register
-  .form-grid {
-    gap:
-      0.45rem
-      0.75rem;
-  }
-
-  .auth-shell--register
-  .field {
-    gap: 0.24rem;
-  }
-
-  .auth-shell--register
-  .field__label {
-    font-size: 0.74rem;
-  }
-
-  .auth-shell--register
-  .input-shell {
-    min-height: 44px;
-  }
-
-  .auth-shell--register
-  .field__hint,
-  .auth-shell--register
-  .field__error {
-    font-size: 0.63rem;
-  }
-
-  .auth-shell--register
-  .terms-row {
-    padding:
-      0.5rem
-      0.65rem;
-  }
-
-  .auth-shell--register
-  .terms-row label {
-    font-size: 0.7rem;
-  }
-
-  .auth-shell--register
-  .primary-button,
-  .auth-shell--register
-  .google-button {
-    min-height: 44px;
-  }
-
-  .auth-shell--register
-  .auth-separator {
-    font-size: 0.64rem;
-  }
-
-  .auth-shell--register
-  .auth-switch {
-    min-height: 21px;
-
-    font-size: 0.69rem;
-  }
-
-  .auth-shell--register
-  .auth-footer {
-    min-height: 22px;
-
-    padding-top: 0.5rem;
-
-    font-size: 0.63rem;
-  }
-}
-
-/* =========================================================
-   TABLET
-   ========================================================= */
-
-@media
-  (max-width: 760px) {
-
   :host ::ng-deep
   .auth-dialog--register.p-dialog {
     width:
       min(
-        calc(100vw - 2rem),
-        620px
+        calc(
+          100vw -
+          1.25rem
+        ),
+        500px
       );
+
+    max-height:
+      calc(
+        100dvh -
+        1.25rem
+      );
+  }
+
+  :host ::ng-deep
+  .auth-dialog
+  .p-dialog-content {
+    max-height:
+      calc(
+        100dvh -
+        1.25rem
+      );
+  }
+
+  .auth-shell {
+    max-height:
+      calc(
+        100dvh -
+        1.25rem
+      );
+
+    padding:
+      1.2rem
+      1.1rem
+      1rem;
+  }
+
+  .auth-shell--register {
+    padding:
+      1.15rem
+      1rem
+      1rem;
   }
 
   .form-grid {
@@ -1533,46 +1626,54 @@ input.p-inputtext::placeholder {
       1fr;
   }
 
-  .auth-shell--register {
-    overflow-y: auto;
+  .profile-actions {
+    grid-template-columns:
+      1fr;
   }
 }
 
 /* =========================================================
-   MOBILE
+   SMALL MOBILE
    ========================================================= */
 
-@media
-  (max-width: 640px) {
-
+@media (
+  max-width:
+  420px
+) {
   :host ::ng-deep
   .p-dialog-mask {
-    align-items: flex-end;
+    align-items:
+      flex-end;
 
-    padding: 0;
+    padding:
+      0;
   }
 
   :host ::ng-deep
   .auth-dialog.p-dialog,
   :host ::ng-deep
   .auth-dialog--register.p-dialog {
-    width: 100%;
+    width:
+      100vw;
 
     max-height:
-      min(
-        94dvh,
-        900px
-      );
+      94dvh;
 
-    margin: 0;
+    margin:
+      0;
 
-    border-right: 0;
-    border-bottom: 0;
-    border-left: 0;
+    border-right:
+      0;
+
+    border-bottom:
+      0;
+
+    border-left:
+      0;
 
     border-radius:
-      26px
-      26px
+      24px
+      24px
       0
       0;
   }
@@ -1581,21 +1682,12 @@ input.p-inputtext::placeholder {
   .auth-dialog
   .p-dialog-content {
     max-height:
-      min(
-        94dvh,
-        900px
-      );
+      94dvh;
   }
 
-  .auth-shell,
-  .auth-shell--register {
+  .auth-shell {
     max-height:
-      min(
-        94dvh,
-        900px
-      );
-
-    gap: 0.95rem;
+      94dvh;
 
     padding:
       1rem
@@ -1606,133 +1698,41 @@ input.p-inputtext::placeholder {
           safe-area-inset-bottom
         )
       );
-
-    overflow-y: auto;
-  }
-
-  .auth-shell::before {
-    top: -140px;
-    right: -150px;
-
-    width: 290px;
-    height: 290px;
-  }
-
-  .auth-shell::after {
-    top: -105px;
-    right: -110px;
-
-    width: 220px;
-    height: 220px;
   }
 
   .auth-header {
-    min-height: 48px;
+    min-height:
+      48px;
   }
 
-  .auth-brand__logo,
-  .auth-shell--register
   .auth-brand__logo {
-    width: 126px;
-    height: 50px;
+    width:
+      116px;
+
+    height:
+      46px;
   }
 
-  .auth-heading h2,
-  .auth-shell--register
   .auth-heading h2 {
     font-size:
-      clamp(
-        1.85rem,
-        8vw,
-        2.2rem
-      );
+      1.75rem;
   }
 
-  .auth-heading p,
-  .auth-shell--register
   .auth-heading p {
-    font-size: 0.84rem;
-  }
-
-  .form-grid {
-    grid-template-columns:
-      1fr;
-
-    gap: 0.78rem;
-  }
-
-  .input-shell,
-  .auth-shell--register
-  .input-shell {
-    min-height: 52px;
-  }
-
-  .primary-button,
-  .auth-shell--register
-  .primary-button,
-  .google-button,
-  .auth-shell--register
-  .google-button {
-    min-height: 52px;
-  }
-
-  .profile-actions {
-    grid-template-columns:
-      1fr;
-  }
-
-  .terms-row {
-    padding:
+    font-size:
       0.75rem;
   }
 
-  .terms-row label {
-    font-size: 0.78rem;
+  .input-shell {
+    min-height:
+      45px;
   }
 
-  .auth-footer {
-    align-items: flex-start;
-
-    justify-content: flex-start;
-
-    text-align: left;
-  }
-}
-
-/* =========================================================
-   SMALL MOBILE
-   ========================================================= */
-
-@media
-  (max-width: 390px) {
-
-  .auth-shell,
-  .auth-shell--register {
-    padding-inline:
-      0.85rem;
-  }
-
-  .auth-heading h2,
-  .auth-shell--register
-  .auth-heading h2 {
-    font-size: 1.8rem;
-  }
-
-  .auth-switch {
-    font-size: 0.71rem;
-  }
-
+  .primary-button,
+  .secondary-button,
   .google-button {
-    grid-template-columns:
-      36px
-      minmax(0, 1fr)
-      36px;
-  }
-
-  .google-button__icon,
-  .google-button__balance {
-    width: 34px;
-    height: 34px;
+    min-height:
+      46px;
   }
 }
 
@@ -1740,21 +1740,28 @@ input.p-inputtext::placeholder {
    REDUCED MOTION
    ========================================================= */
 
-@media
-  (prefers-reduced-motion: reduce) {
-
-  :host ::ng-deep
-  .auth-dialog.p-dialog {
-    animation: none;
-  }
-
+@media (
+  prefers-reduced-motion:
+  reduce
+) {
+  .auth-brand__logo,
   .icon-button,
   .password-toggle,
   .primary-button,
   .secondary-button,
-  .google-button,
-  .input-shell,
-  .auth-switch button {
-    transition: none;
+  .google-button {
+    transition:
+      none;
+  }
+
+  .auth-brand:hover
+  .auth-brand__logo,
+  .icon-button:hover,
+  .password-toggle:hover,
+  .primary-button:hover,
+  .secondary-button:hover,
+  .google-button:hover {
+    transform:
+      none;
   }
 }

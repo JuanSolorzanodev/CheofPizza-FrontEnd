@@ -1,0 +1,251 @@
+  <section class="dashboard-main-grid">
+    <article class="dashboard-panel dashboard-panel--trend">
+      <header class="dashboard-panel__header">
+        <div>
+          <span>Evolución comercial</span>
+          <strong>Ventas netas por día</strong>
+        </div>
+
+        <span class="dashboard-panel__hint">
+          Ingresos confirmados del periodo
+        </span>
+      </header>
+
+      @if (loading()) {
+        <div class="dashboard-chart-skeleton">
+          <p-skeleton width="100%" height="20rem" borderRadius="1rem" />
+        </div>
+      } @else if (data()?.daily?.days?.length) {
+        <div class="dashboard-chart-summary">
+          <article>
+            <span>Total del periodo</span>
+            <strong>{{ data()!.daily.totals.net_sales | currency: 'USD' }}</strong>
+          </article>
+
+          <article>
+            <span>Promedio diario</span>
+            <strong>{{ dailyAverageSales() | currency: 'USD' }}</strong>
+          </article>
+
+          <article>
+            <span>Mejor día</span>
+            <strong>{{ bestSalesDay()?.net_sales ?? 0 | currency: 'USD' }}</strong>
+            <small>{{ bestSalesDay()?.date ?? 'Sin actividad' }}</small>
+          </article>
+
+          <article>
+            <span>Pedidos entregados</span>
+            <strong>{{ data()!.daily.totals.delivered_orders | number }}</strong>
+          </article>
+        </div>
+
+        <div class="dashboard-chart dashboard-chart--large">
+          <p-chart
+            type="line"
+            [data]="dailySalesChartData()"
+            [options]="dailyChartOptions"
+          />
+        </div>
+      } @else {
+        <div class="dashboard-chart-empty">
+          <span><i class="pi pi-chart-line"></i></span>
+          <strong>No hay ventas en el periodo</strong>
+          <small>Cambia el rango para consultar otra fecha.</small>
+        </div>
+      }
+    </article>
+
+    <article class="dashboard-panel dashboard-panel--payments">
+      <header class="dashboard-panel__header">
+        <div>
+          <span>Recaudación</span>
+          <strong>Métodos de pago</strong>
+        </div>
+
+        <a routerLink="/admin/transactions" class="dashboard-panel__link">
+          Ver transacciones
+          <i class="pi pi-arrow-up-right"></i>
+        </a>
+      </header>
+
+      @if (loading()) {
+        <div class="dashboard-chart-skeleton">
+          <p-skeleton width="100%" height="20rem" borderRadius="1rem" />
+        </div>
+      } @else if (data()?.payments; as paymentData) {
+        <div class="dashboard-payment-content">
+          <div class="dashboard-payment-visual">
+            <div class="dashboard-chart dashboard-chart--doughnut">
+              <p-chart
+                type="doughnut"
+                [data]="paymentChartData()"
+                [options]="paymentChartOptions"
+              />
+            </div>
+
+            <div class="dashboard-payment-total">
+              <span>Total recaudado</span>
+              <strong>{{ paymentData.summary.collected_total | currency: 'USD' }}</strong>
+              <small>
+                {{ paymentData.methods.length }} métodos registrados
+              </small>
+            </div>
+          </div>
+
+          <div class="dashboard-payment-methods">
+            @for (method of paymentData.methods; track method.method) {
+              <article class="dashboard-payment-method">
+                <div class="dashboard-payment-method__heading">
+                  <div>
+                    <span
+                      class="dashboard-payment-method__dot"
+                      [class.dashboard-payment-method__dot--cash]="method.method === 'cash'"
+                      [class.dashboard-payment-method__dot--transfer]="method.method === 'transfer'"
+                      [class.dashboard-payment-method__dot--paypal]="method.method === 'paypal'"
+                    ></span>
+                    <strong>{{ method.label }}</strong>
+                  </div>
+
+                  <strong>{{ method.amount | currency: 'USD' }}</strong>
+                </div>
+
+                <div class="dashboard-payment-method__meta">
+                  <span>
+                    {{ paymentMethodCount(method) }}
+                    {{ paymentMethodCount(method) === 1 ? 'operación' : 'operaciones' }}
+                  </span>
+                  <span>{{ paymentMethodPercentage(method) | number: '1.0-1' }}%</span>
+                </div>
+
+                <div class="dashboard-payment-method__progress" aria-hidden="true">
+                  <span
+                    [style.width.%]="paymentMethodPercentage(method)"
+                    [class.dashboard-payment-method__progress--cash]="method.method === 'cash'"
+                    [class.dashboard-payment-method__progress--transfer]="method.method === 'transfer'"
+                    [class.dashboard-payment-method__progress--paypal]="method.method === 'paypal'"
+                  ></span>
+                </div>
+              </article>
+            }
+          </div>
+        </div>
+      }
+    </article>
+  </section>
+
+  <section class="dashboard-secondary-grid">
+    <article class="dashboard-panel">
+      <header class="dashboard-panel__header">
+        <div>
+          <span>Demanda diaria</span>
+          <strong>Ventas por hora</strong>
+        </div>
+        <span class="dashboard-panel__hint">Distribución de ingresos</span>
+      </header>
+
+      @if (loading()) {
+        <div class="dashboard-chart-skeleton">
+          <p-skeleton width="100%" height="17rem" borderRadius="1rem" />
+        </div>
+      } @else if (data()?.hourly?.hours?.length) {
+        <div class="dashboard-chart dashboard-chart--medium">
+          <p-chart
+            type="bar"
+            [data]="hourlySalesChartData()"
+            [options]="hourlyChartOptions"
+          />
+        </div>
+      } @else {
+        <div class="dashboard-chart-empty dashboard-chart-empty--small">
+          <span><i class="pi pi-clock"></i></span>
+          <strong>Sin actividad horaria</strong>
+          <small>No se encontraron pedidos entregados.</small>
+        </div>
+      }
+    </article>
+
+    <article class="dashboard-panel">
+      <header class="dashboard-panel__header">
+        <div>
+          <span>Catálogo</span>
+          <strong>Pizzas más vendidas</strong>
+        </div>
+        <a routerLink="/admin/catalog/pizzas" class="dashboard-panel__link">
+          Ver catálogo
+          <i class="pi pi-arrow-up-right"></i>
+        </a>
+      </header>
+
+      @if (loading()) {
+        <div class="dashboard-chart-skeleton">
+          <p-skeleton width="100%" height="17rem" borderRadius="1rem" />
+        </div>
+      } @else if (data()?.products?.pizzas?.length) {
+        <div class="dashboard-chart dashboard-chart--medium">
+          <p-chart
+            type="bar"
+            [data]="productsChartData()"
+            [options]="productsChartOptions"
+          />
+        </div>
+      } @else {
+        <div class="dashboard-chart-empty dashboard-chart-empty--small">
+          <span><i class="pi pi-box"></i></span>
+          <strong>Sin productos vendidos</strong>
+          <small>No existe rendimiento para este periodo.</small>
+        </div>
+      }
+    </article>
+  </section>
+
+  @if (loading()) {
+    <section class="dashboard-insights" aria-label="Cargando conclusiones">
+      @for (item of [1, 2, 3, 4]; track item) {
+        <p-skeleton width="100%" height="7rem" borderRadius="1rem" />
+      }
+    </section>
+  } @else {
+    <section class="dashboard-insights" aria-label="Conclusiones operativas">
+      <article class="dashboard-insight dashboard-insight--sales">
+        <span class="dashboard-insight__icon"><i class="pi pi-bolt"></i></span>
+        <div>
+          <span>Hora con mayores ventas</span>
+          <strong>{{ peakSalesHour() }}</strong>
+          <small>{{ peakSalesAmount() | currency: 'USD' }} recaudados</small>
+        </div>
+      </article>
+
+      <article class="dashboard-insight dashboard-insight--orders">
+        <span class="dashboard-insight__icon"><i class="pi pi-clock"></i></span>
+        <div>
+          <span>Hora con más pedidos</span>
+          <strong>{{ peakOrdersHour() }}</strong>
+          <small>
+            {{ peakOrdersCount() }}
+            {{ peakOrdersCount() === 1 ? 'pedido entregado' : 'pedidos entregados' }}
+          </small>
+        </div>
+      </article>
+
+      <article class="dashboard-insight dashboard-insight--product">
+        <span class="dashboard-insight__icon"><i class="pi pi-star"></i></span>
+        <div>
+          <span>Pizza destacada</span>
+          <strong>{{ topPizza()?.pizza_name || 'Sin ventas' }}</strong>
+          <small>{{ topPizza()?.equivalent_units ?? 0 }} unidades equivalentes</small>
+        </div>
+      </article>
+
+      <article class="dashboard-insight dashboard-insight--promotion">
+        <span class="dashboard-insight__icon"><i class="pi pi-percentage"></i></span>
+        <div>
+          <span>Promoción destacada</span>
+          <strong>{{ topPromotion()?.promotion_name || 'Sin promociones' }}</strong>
+          <small>
+            {{ topPromotion()?.packages_sold ?? 0 }}
+            {{ (topPromotion()?.packages_sold ?? 0) === 1 ? 'paquete vendido' : 'paquetes vendidos' }}
+          </small>
+        </div>
+      </article>
+    </section>
+  }

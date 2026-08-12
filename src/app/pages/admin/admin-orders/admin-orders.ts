@@ -11,9 +11,6 @@ import {
 import {
   takeUntilDestroyed,
 } from '@angular/core/rxjs-interop';
-import {
-  RouterLink,
-} from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import {
   Subject,
@@ -41,57 +38,31 @@ import {
 import {
   SkeletonModule,
 } from 'primeng/skeleton';
-import {
-  TagModule,
-} from 'primeng/tag';
-import {
-  TooltipModule,
-} from 'primeng/tooltip';
 
 import {
   OperatorOrdersApiService,
 } from '../../../core/api/operator/operator-orders-api.service';
 import {
   OperatorOrderListDto,
+  OrderStatusName,
   QueueCountsDto,
 } from '../../../core/api/operator/operator-orders.models';
 import {
   OperatorRealtimeService,
 } from '../../../core/realtime/operator-realtime.service';
 import {
-  formatOperatorDate,
-  prettyDeliveryType,
   prettyOperatorStatus,
-  prettyPaymentMethod,
-} from '../../operator/operator-order-ui.utils';
-
-type TagSeverity =
-  | 'success'
-  | 'secondary'
-  | 'info'
-  | 'warn'
-  | 'danger'
-  | 'contrast'
-  | null
-  | undefined;
+} from '../../../shared/ui/operator-order-ui.utils';
+import {
+  OperatorStatusBoard,
+} from '../../../shared/components/operator-status-board/operator-status-board';
+import {
+  AdminOrdersTableBodyComponent,
+} from '../../../shared/components/admin-orders-table-body/admin-orders-table-body';
 
 interface FilterOption {
   label: string;
   value: string;
-}
-
-interface QueueCard {
-  status: string;
-  label: string;
-  icon: string;
-  count: number;
-  tone:
-    | 'neutral'
-    | 'warning'
-    | 'info'
-    | 'primary'
-    | 'success'
-    | 'danger';
 }
 
 @Component({
@@ -100,14 +71,13 @@ interface QueueCard {
   imports: [
     CommonModule,
     FormsModule,
-    RouterLink,
     ButtonModule,
     InputTextModule,
     PaginatorModule,
     SelectModule,
     SkeletonModule,
-    TagModule,
-    TooltipModule,
+    OperatorStatusBoard,
+    AdminOrdersTableBodyComponent,
   ],
   templateUrl: './admin-orders.html',
   styleUrl: './admin-orders.scss',
@@ -270,76 +240,6 @@ export class AdminOrders implements OnDestroy {
       ),
     );
 
-  readonly queueCards =
-    computed<QueueCard[]>(() => {
-      const counts = this.queue();
-
-      return [
-        {
-          status: 'pending',
-          label: 'Pendientes',
-          icon: 'pi pi-clock',
-          count: Number(
-            counts['pending'] ?? 0,
-          ),
-          tone: 'warning',
-        },
-        {
-          status: 'confirmed',
-          label: 'Confirmados',
-          icon: 'pi pi-check-circle',
-          count: Number(
-            counts['confirmed'] ?? 0,
-          ),
-          tone: 'info',
-        },
-        {
-          status: 'preparing',
-          label: 'En preparación',
-          icon: 'pi pi-bolt',
-          count: Number(
-            counts['preparing'] ?? 0,
-          ),
-          tone: 'primary',
-        },
-        {
-          status: 'ready',
-          label: 'Listos',
-          icon: 'pi pi-box',
-          count: Number(
-            counts['ready'] ?? 0,
-          ),
-          tone: 'success',
-        },
-        {
-          status: 'on_the_way',
-          label: 'En camino',
-          icon: 'pi pi-truck',
-          count: Number(
-            counts['on_the_way'] ?? 0,
-          ),
-          tone: 'info',
-        },
-        {
-          status: 'delivered',
-          label: 'Entregados',
-          icon: 'pi pi-verified',
-          count: Number(
-            counts['delivered'] ?? 0,
-          ),
-          tone: 'success',
-        },
-        {
-          status: 'cancelled',
-          label: 'Cancelados',
-          icon: 'pi pi-times-circle',
-          count: Number(
-            counts['cancelled'] ?? 0,
-          ),
-          tone: 'danger',
-        },
-      ];
-    });
 
   constructor() {
     this.searchChanges
@@ -387,7 +287,7 @@ export class AdminOrders implements OnDestroy {
   }
 
   filterByStatus(
-    status: string,
+    status: OrderStatusName,
   ): void {
     this.status.set(
       this.status() === status
@@ -395,6 +295,16 @@ export class AdminOrders implements OnDestroy {
         : status,
     );
 
+    this.page.set(1);
+    this.loadOrders();
+  }
+
+  clearStatusFilter(): void {
+    if (!this.status()) {
+      return;
+    }
+
+    this.status.set(null);
     this.page.set(1);
     this.loadOrders();
   }
@@ -441,85 +351,6 @@ export class AdminOrders implements OnDestroy {
     );
 
     this.loadOrders();
-  }
-
-  prettyStatus(
-    value: string,
-  ): string {
-    return prettyOperatorStatus(value);
-  }
-
-  prettyDeliveryType(
-    value: string,
-  ): string {
-    return prettyDeliveryType(value);
-  }
-
-  prettyPaymentMethod(
-    value: string,
-  ): string {
-    return prettyPaymentMethod(value);
-  }
-
-  formatDate(
-    value: string | null,
-  ): string {
-    return formatOperatorDate(value);
-  }
-
-  formatMoney(
-    value: number | string,
-  ): string {
-    const amount =
-      Number(value ?? 0);
-
-    return new Intl.NumberFormat(
-      'es-EC',
-      {
-        style: 'currency',
-        currency: 'USD',
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      },
-    ).format(
-      Number.isFinite(amount)
-        ? amount
-        : 0,
-    );
-  }
-
-  statusSeverity(
-    status: string,
-  ): TagSeverity {
-    if (status === 'pending') {
-      return 'warn';
-    }
-
-    if (status === 'confirmed') {
-      return 'info';
-    }
-
-    if (status === 'preparing') {
-      return 'warn';
-    }
-
-    if (status === 'ready') {
-      return 'success';
-    }
-
-    if (status === 'on_the_way') {
-      return 'info';
-    }
-
-    if (status === 'delivered') {
-      return 'success';
-    }
-
-    if (status === 'cancelled') {
-      return 'danger';
-    }
-
-    return 'secondary';
   }
 
   ngOnDestroy(): void {
@@ -644,7 +475,7 @@ export class AdminOrders implements OnDestroy {
             ...statuses.map(
               status => ({
                 label:
-                  this.prettyStatus(
+                  prettyOperatorStatus(
                     status,
                   ),
                 value: status,

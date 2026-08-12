@@ -1,0 +1,272 @@
+<article class="active-order-card">
+  <header class="active-order-card__header">
+    <div class="active-order-card__identity">
+      <span class="active-order-card__date">
+        {{ relativeDate() }}
+      </span>
+
+      <h3>
+        Pedido
+        <span>
+          #{{ order().order_number }}
+        </span>
+      </h3>
+    </div>
+
+    <span
+      [class]="statusClass()"
+    >
+      <span
+        class="order-status__pulse"
+        aria-hidden="true"
+      ></span>
+
+      {{ statusLabel() }}
+    </span>
+  </header>
+
+  <div class="status-message">
+    <span class="status-message__icon">
+      <i
+        [class]="
+          isPickup()
+            ? 'pi pi-shop'
+            : 'pi pi-clock'
+        "
+        aria-hidden="true"
+      ></i>
+    </span>
+
+    <p>
+      {{ statusDescription() }}
+    </p>
+  </div>
+
+  <section
+    class="order-progress"
+    aria-label="Progreso del pedido"
+  >
+    <div class="order-progress__heading">
+      <div>
+        <span>
+          Progreso del pedido
+        </span>
+
+        <strong>
+          Paso
+          {{ currentStepNumber() }}
+          de
+          {{ steps().length }}
+        </strong>
+      </div>
+
+      <span class="order-progress__percentage">
+        {{
+          progressPercentage()
+            | number:
+                '1.0-0'
+        }}%
+      </span>
+    </div>
+
+    <div
+      class="order-progress__mobile-bar"
+      role="progressbar"
+      aria-valuemin="0"
+      aria-valuemax="100"
+      [attr.aria-valuenow]="
+        progressPercentage()
+      "
+    >
+      <span
+        [style.width.%]="
+          progressPercentage()
+        "
+      ></span>
+    </div>
+
+    <div class="order-progress__steps">
+      @for (
+        step of steps();
+        track step.key
+      ) {
+        <div
+          class="progress-step"
+          [class.progress-step--completed]="
+            isStepCompleted(
+              step.key
+            )
+          "
+          [class.progress-step--current]="
+            isCurrentStep(
+              step.key
+            )
+          "
+        >
+          <span class="progress-step__marker">
+            @if (
+              isStepCompleted(
+                step.key
+              ) &&
+              !isCurrentStep(
+                step.key
+              )
+            ) {
+              <i
+                class="pi pi-check"
+                aria-hidden="true"
+              ></i>
+            }
+          </span>
+
+          <span class="progress-step__label">
+            {{ step.shortLabel }}
+          </span>
+        </div>
+      }
+    </div>
+
+    @if (
+      nextStepLabel();
+      as nextStep
+    ) {
+      <div class="order-progress__next">
+        <i
+          class="pi pi-arrow-right"
+          aria-hidden="true"
+        ></i>
+
+        <span>
+          Siguiente etapa:
+          <strong>
+            {{ nextStep }}
+          </strong>
+        </span>
+      </div>
+    }
+  </section>
+
+  <div class="order-facts">
+    <div class="order-fact">
+      <span class="order-fact__icon">
+        <i
+          [class]="deliveryIcon()"
+          aria-hidden="true"
+        ></i>
+      </span>
+
+      <div>
+        <span>
+          Entrega
+        </span>
+
+        <strong>
+          {{ deliveryLabel() }}
+        </strong>
+      </div>
+    </div>
+
+    <div class="order-fact">
+      <span class="order-fact__icon">
+        <i
+          [class]="paymentIcon()"
+          aria-hidden="true"
+        ></i>
+      </span>
+
+      <div>
+        <span>
+          Pago
+        </span>
+
+        <strong>
+          {{ paymentLabel() }}
+        </strong>
+      </div>
+    </div>
+
+    <div
+      class="
+        order-fact
+        order-fact--total
+      "
+    >
+      <span class="order-fact__icon">
+        <i
+          class="pi pi-wallet"
+          aria-hidden="true"
+        ></i>
+      </span>
+
+      <div>
+        <span>
+          Total
+        </span>
+
+        <strong>
+          {{
+            order().total
+              | currency:
+                  (order().currency ??
+                    'USD'):
+                  'symbol':
+                  '1.2-2'
+          }}
+        </strong>
+      </div>
+    </div>
+  </div>
+
+  @if (isDelivery()) {
+    <div class="order-address">
+      <span class="order-address__icon">
+        <i
+          class="pi pi-map-marker"
+          aria-hidden="true"
+        ></i>
+      </span>
+
+      <div>
+        <span>
+          Dirección de entrega
+        </span>
+
+        <strong>
+          {{ address() }}
+        </strong>
+
+        @if (
+          reference();
+          as currentReference
+        ) {
+          <small>
+            Referencia:
+            {{ currentReference }}
+          </small>
+        }
+      </div>
+    </div>
+  }
+
+  <footer class="active-order-card__footer">
+    <button
+      type="button"
+      class="primary-detail-button"
+      (click)="onOpenDetail()"
+    >
+      <span>
+        <i
+          class="pi pi-eye"
+          aria-hidden="true"
+        ></i>
+
+        Ver detalles del pedido
+      </span>
+
+      <i
+        class="pi pi-arrow-right"
+        aria-hidden="true"
+      ></i>
+    </button>
+  </footer>
+</article>

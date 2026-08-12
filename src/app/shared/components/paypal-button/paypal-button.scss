@@ -1,129 +1,497 @@
 :host {
-  display: block;
-  width: 100%;
+  display:
+    block;
+
+  width:
+    100%;
+
+  min-width:
+    0;
 }
+
+/* =========================================================
+   ROOT
+   ========================================================= */
 
 .paypal-payment {
-  position: relative;
-  width: 100%;
+  position:
+    relative;
+
+  width:
+    100%;
+
+  min-width:
+    0;
 }
 
+/* =========================================================
+   PAYPAL SDK BUTTONS
+   ========================================================= */
+
 .paypal-payment__buttons {
-  width: 100%;
-  min-height: 48px;
+  width:
+    100%;
+
+  min-height:
+    48px;
+
   transition:
-    opacity 160ms ease,
-    visibility 160ms ease;
+    opacity
+      var(--cheof-transition-fast),
+    visibility
+      var(--cheof-transition-fast);
 }
 
 .paypal-payment__buttons--hidden {
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-  height: 0;
-  min-height: 0;
-  overflow: hidden;
+  height:
+    0;
+
+  min-height:
+    0;
+
+  overflow:
+    hidden;
+
+  opacity:
+    0;
+
+  visibility:
+    hidden;
+
+  pointer-events:
+    none;
 }
+
+/* =========================================================
+   LOADING
+   ========================================================= */
 
 .paypal-payment__loading {
-  min-height: 88px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  color: var(--cheof-text-secondary);
-  font-size: 0.94rem;
-}
+  display:
+    flex;
 
-.paypal-payment__processing {
-  min-height: 96px;
-  padding: 18px;
-  border: 1px solid
-    var(--cheof-card-border);
-  border-radius: 14px;
-  background:
-    var(--cheof-card-background-muted);
+  min-height:
+    88px;
 
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 14px;
+  align-items:
+    center;
 
-  div {
-    display: grid;
-    gap: 4px;
-  }
+  justify-content:
+    center;
 
-  strong {
-    color:
-      var(--cheof-text);
-  }
+  gap:
+    0.75rem;
 
-  span {
-    color:
-      var(--cheof-text-secondary);
-    font-size: 0.88rem;
-  }
-}
+  padding:
+    1rem;
 
-.paypal-payment__error {
-  margin-top: 12px;
-  padding: 14px;
-  border: 1px solid #fecaca;
-  border-radius: 12px;
-  background: #fff1f2;
-  color: #991b1b;
-
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-
-  > i {
-    margin-top: 3px;
-  }
-
-  > div {
-    display: grid;
-    gap: 4px;
-  }
-
-  strong {
-    font-size: 0.94rem;
-  }
-
-  span {
-    font-size: 0.86rem;
-    line-height: 1.45;
-  }
-}
-
-.paypal-payment__retry {
-  width: max-content;
-  margin-top: 6px;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  color: inherit;
-  font: inherit;
-  font-weight: 700;
-  text-decoration: underline;
-  cursor: pointer;
-}
-
-.paypal-payment__security {
-  margin-top: 12px;
   color:
     var(--cheof-text-secondary);
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  gap: 7px;
-  font-size: 0.78rem;
-  line-height: 1.4;
-  text-align: center;
 
-  i {
-    margin-top: 2px;
-    font-size: 0.8rem;
+  font-size:
+    0.86rem;
+
+  line-height:
+    1.4;
+
+  text-align:
+    center;
+}
+
+/* =========================================================
+   PROCESSING / RECOVERY
+   ========================================================= */
+
+.paypal-payment__processing {
+  display:
+    flex;
+
+  min-height:
+    96px;
+
+  align-items:
+    center;
+
+  justify-content:
+    center;
+
+  gap:
+    0.875rem;
+
+  padding:
+    1rem;
+
+  border:
+    1px solid
+    color-mix(
+      in srgb,
+      var(--p-primary-color) 14%,
+      var(--cheof-card-border)
+    );
+
+  border-radius:
+    var(--cheof-radius-lg);
+
+  background:
+    color-mix(
+      in srgb,
+      var(--p-primary-color) 3%,
+      var(--cheof-card-background-muted)
+    );
+
+  box-shadow:
+    var(--cheof-shadow-xs);
+}
+
+.paypal-payment__processing > div {
+  display:
+    grid;
+
+  min-width:
+    0;
+
+  gap:
+    0.25rem;
+}
+
+.paypal-payment__processing strong {
+  color:
+    var(--cheof-text);
+
+  font-size:
+    0.88rem;
+
+  font-weight:
+    720;
+}
+
+.paypal-payment__processing span {
+  color:
+    var(--cheof-text-secondary);
+
+  font-size:
+    0.78rem;
+
+  line-height:
+    1.45;
+}
+
+/* =========================================================
+   ERROR
+   ========================================================= */
+
+.paypal-payment__error {
+  display:
+    flex;
+
+  align-items:
+    flex-start;
+
+  gap:
+    0.65rem;
+
+  margin-top:
+    0.75rem;
+
+  padding:
+    0.875rem;
+
+  border:
+    1px solid
+    color-mix(
+      in srgb,
+      var(--cheof-danger) 26%,
+      var(--cheof-card-border)
+    );
+
+  border-radius:
+    var(--cheof-radius-md);
+
+  background:
+    var(--cheof-danger-soft);
+
+  color:
+    var(--cheof-danger-strong);
+}
+
+.paypal-payment__error > i {
+  flex:
+    0 0 auto;
+
+  margin-top:
+    0.15rem;
+
+  color:
+    var(--cheof-danger);
+
+  font-size:
+    0.95rem;
+}
+
+.paypal-payment__error > div {
+  display:
+    grid;
+
+  min-width:
+    0;
+
+  gap:
+    0.25rem;
+}
+
+.paypal-payment__error strong {
+  color:
+    var(--cheof-danger-strong);
+
+  font-size:
+    0.86rem;
+
+  font-weight:
+    740;
+}
+
+.paypal-payment__error span {
+  color:
+    color-mix(
+      in srgb,
+      var(--cheof-danger-strong) 82%,
+      var(--cheof-text)
+    );
+
+  font-size:
+    0.77rem;
+
+  line-height:
+    1.5;
+
+  overflow-wrap:
+    anywhere;
+}
+
+/* =========================================================
+   RETRY
+   ========================================================= */
+
+.paypal-payment__retry {
+  display:
+    inline-flex;
+
+  width:
+    fit-content;
+
+  min-height:
+    34px;
+
+  align-items:
+    center;
+
+  justify-content:
+    center;
+
+  margin-top:
+    0.35rem;
+
+  padding:
+    0.4rem
+    0.6rem;
+
+  border:
+    1px solid
+    color-mix(
+      in srgb,
+      var(--cheof-danger) 24%,
+      var(--cheof-card-border)
+    );
+
+  border-radius:
+    var(--cheof-radius-sm);
+
+  background:
+    color-mix(
+      in srgb,
+      var(--cheof-danger) 5%,
+      var(--cheof-card-background)
+    );
+
+  color:
+    var(--cheof-danger-strong);
+
+  cursor:
+    pointer;
+
+  font:
+    inherit;
+
+  font-size:
+    0.72rem;
+
+  font-weight:
+    700;
+
+  text-decoration:
+    none;
+
+  transition:
+    border-color
+      var(--cheof-transition-fast),
+    background-color
+      var(--cheof-transition-fast),
+    box-shadow
+      var(--cheof-transition-fast),
+    transform
+      var(--cheof-transition-fast);
+}
+
+.paypal-payment__retry:hover {
+  border-color:
+    color-mix(
+      in srgb,
+      var(--cheof-danger) 40%,
+      var(--cheof-card-border)
+    );
+
+  background:
+    color-mix(
+      in srgb,
+      var(--cheof-danger) 9%,
+      var(--cheof-card-background)
+    );
+
+  box-shadow:
+    var(--cheof-shadow-xs);
+
+  transform:
+    translateY(-1px);
+}
+
+.paypal-payment__retry:focus-visible {
+  outline:
+    2px solid
+    var(--cheof-danger);
+
+  outline-offset:
+    3px;
+}
+
+/* =========================================================
+   SECURITY
+   ========================================================= */
+
+.paypal-payment__security {
+  display:
+    flex;
+
+  align-items:
+    flex-start;
+
+  justify-content:
+    center;
+
+  gap:
+    0.45rem;
+
+  margin-top:
+    0.75rem;
+
+  padding-inline:
+    0.5rem;
+
+  color:
+    var(--cheof-text-secondary);
+
+  font-size:
+    0.7rem;
+
+  line-height:
+    1.45;
+
+  text-align:
+    center;
+}
+
+.paypal-payment__security i {
+  flex:
+    0 0 auto;
+
+  margin-top:
+    0.1rem;
+
+  color:
+    var(--p-primary-color);
+
+  font-size:
+    0.72rem;
+}
+
+/* =========================================================
+   PRIME SPINNER
+   ========================================================= */
+
+:host ::ng-deep
+.p-progressspinner-circle {
+  stroke:
+    var(--p-primary-color);
+}
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (
+  max-width:
+  560px
+) {
+  .paypal-payment__processing {
+    align-items:
+      flex-start;
+
+    justify-content:
+      flex-start;
+
+    padding:
+      0.85rem;
+  }
+
+  .paypal-payment__loading {
+    min-height:
+      76px;
+
+    padding:
+      0.75rem;
+  }
+
+  .paypal-payment__error {
+    padding:
+      0.8rem;
+  }
+
+  .paypal-payment__retry {
+    width:
+      100%;
+  }
+
+  .paypal-payment__security {
+    text-align:
+      left;
+  }
+}
+
+/* =========================================================
+   REDUCED MOTION
+   ========================================================= */
+
+@media (
+  prefers-reduced-motion:
+  reduce
+) {
+  .paypal-payment__buttons,
+  .paypal-payment__retry {
+    transition:
+      none;
+  }
+
+  .paypal-payment__retry:hover {
+    transform:
+      none;
   }
 }

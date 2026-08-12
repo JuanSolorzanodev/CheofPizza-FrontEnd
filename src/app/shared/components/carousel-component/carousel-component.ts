@@ -1,6 +1,4 @@
-import {
-  isPlatformBrowser,
-} from '@angular/common';
+import { DOCUMENT, isPlatformBrowser } from '@angular/common';
 
 import {
   ChangeDetectionStrategy,
@@ -10,33 +8,22 @@ import {
   PLATFORM_ID,
   computed,
   inject,
-  isDevMode,
   signal,
 } from '@angular/core';
 
-import {
-  takeUntilDestroyed,
-} from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
-import {
-  Router,
-} from '@angular/router';
+import { Router } from '@angular/router';
 
-import {
-  finalize,
-} from 'rxjs';
+import { finalize } from 'rxjs';
 
-import {
-  SkeletonModule,
-} from 'primeng/skeleton';
+import { SkeletonModule } from 'primeng/skeleton';
 
-import {
-  PromotionApiService,
-} from '../../../core/api/promotions/promotion-api.service';
+import { PromotionApiService } from '../../../core/api/promotions/promotion-api.service';
 
-import {
-  PromotionDto,
-} from '../../../core/api/promotions/promotion.models';
+import { AppLoggerService } from '../../../core/logging/app-logger.service';
+
+import { PromotionDto } from '../../../core/api/promotions/promotion.models';
 
 interface PromotionBanner {
   id: number;
@@ -52,155 +39,87 @@ interface PromotionBanner {
 @Component({
   selector: 'app-carousel-component',
   standalone: true,
-  imports: [
-    SkeletonModule,
-  ],
-  templateUrl:
-    './carousel-component.html',
-  styleUrl:
-    './carousel-component.scss',
-  changeDetection:
-    ChangeDetectionStrategy.OnPush,
+  imports: [SkeletonModule],
+  templateUrl: './carousel-component.html',
+  styleUrl: './carousel-component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CarouselComponent {
-  private readonly router =
-    inject(Router);
+  private readonly router = inject(Router);
 
-  private readonly promotionApi =
-    inject(PromotionApiService);
+  private readonly promotionApi = inject(PromotionApiService);
 
-  private readonly destroyRef =
-    inject(DestroyRef);
+  private readonly logger = inject(AppLoggerService);
 
-  private readonly platformId =
-    inject(PLATFORM_ID);
+  private readonly destroyRef = inject(DestroyRef);
 
-  /**
-   * Tiempo durante el cual se muestra cada promoción.
-   */
-  private readonly autoplayDelayMs =
-    6000;
+  private readonly platformId = inject(PLATFORM_ID);
 
-  private autoplayTimer:
-    ReturnType<typeof window.setInterval> |
-    null = null;
+  private readonly document = inject(DOCUMENT);
 
-  private pointerStartX:
-    number |
-    null = null;
+  private readonly autoplayDelayMs = 6000;
 
-  private pointerStartY:
-    number |
-    null = null;
+  private autoplayTimer: ReturnType<typeof setInterval> | null = null;
 
-  readonly loading =
-    signal(true);
+  private interactionPaused = false;
 
-  readonly error =
-    signal<string | null>(
-      null,
-    );
+  private pointerStartX: number | null = null;
 
-  readonly banners =
-    signal<PromotionBanner[]>(
-      [],
-    );
+  private pointerStartY: number | null = null;
 
-  readonly activeIndex =
-    signal(0);
+  readonly loading = signal(true);
 
-  readonly hasMultipleBanners =
-    computed(
-      () =>
-        this.banners().length > 1,
-    );
+  readonly error = signal<string | null>(null);
 
-  readonly currentBanner =
-    computed(
-      () =>
-        this.banners()[
-          this.activeIndex()
-        ] ??
-        null,
-    );
+  readonly banners = signal<PromotionBanner[]>([]);
+
+  readonly activeIndex = signal(0);
+
+  readonly hasMultipleBanners = computed(() => this.banners().length > 1);
+
+  readonly currentBanner = computed(() => this.banners()[this.activeIndex()] ?? null);
 
   constructor() {
     this.bindDocumentVisibility();
     this.loadPromotions();
 
-    this.destroyRef.onDestroy(
-      () => {
-        this.stopAutoplay();
-      },
-    );
+    this.destroyRef.onDestroy(() => {
+      this.stopAutoplay();
+    });
   }
 
   previous(): void {
-    const total =
-      this.banners().length;
+    const total = this.banners().length;
 
     if (total <= 1) {
       return;
     }
 
-    const nextIndex =
-      (
-        this.activeIndex() -
-        1 +
-        total
-      ) % total;
-
-    this.selectSlide(
-      nextIndex,
-      true,
-    );
+    this.selectSlide((this.activeIndex() - 1 + total) % total, true);
   }
 
   next(): void {
-    const total =
-      this.banners().length;
+    const total = this.banners().length;
 
     if (total <= 1) {
       return;
     }
 
-    const nextIndex =
-      (
-        this.activeIndex() +
-        1
-      ) % total;
-
-    this.selectSlide(
-      nextIndex,
-      true,
-    );
+    this.selectSlide((this.activeIndex() + 1) % total, true);
   }
 
-  goToSlide(
-    index: number,
-  ): void {
-    this.selectSlide(
-      index,
-      true,
-    );
+  goToSlide(index: number): void {
+    this.selectSlide(index, true);
   }
 
-  goToPromotion(
-    slug: string,
-  ): void {
-    const normalizedSlug =
-      slug.trim();
+  goToPromotion(slug: string): void {
+    const normalizedSlug = slug.trim();
 
-    if (
-      normalizedSlug === ''
-    ) {
+    if (!normalizedSlug) {
       return;
     }
 
-    void this.router.navigate([
-      '/promociones',
-      normalizedSlug,
-    ]);
+    void this.router.navigate(['/promociones', normalizedSlug]);
   }
 
   retry(): void {
@@ -211,68 +130,48 @@ export class CarouselComponent {
     this.loadPromotions();
   }
 
-  onPointerDown(
-    event: PointerEvent,
-  ): void {
-    if (
-      !this.hasMultipleBanners()
-    ) {
-      return;
-    }
+  pauseAutoplay(): void {
+    this.interactionPaused = true;
 
-    this.pointerStartX =
-      event.clientX;
-
-    this.pointerStartY =
-      event.clientY;
+    this.stopAutoplay();
   }
 
-  onPointerUp(
-    event: PointerEvent,
-  ): void {
-    if (
-      this.pointerStartX === null ||
-      this.pointerStartY === null
-    ) {
+  resumeAutoplay(): void {
+    this.interactionPaused = false;
+
+    this.startAutoplay();
+  }
+
+  onPointerDown(event: PointerEvent): void {
+    if (!this.hasMultipleBanners()) {
       return;
     }
 
-    const horizontalDistance =
-      event.clientX -
-      this.pointerStartX;
+    this.pointerStartX = event.clientX;
 
-    const verticalDistance =
-      event.clientY -
-      this.pointerStartY;
+    this.pointerStartY = event.clientY;
+  }
 
-    this.pointerStartX =
-      null;
-
-    this.pointerStartY =
-      null;
-
-    /*
-     * El gesto solo se considera navegación cuando:
-     * - supera 48 píxeles;
-     * - el movimiento horizontal domina sobre el vertical.
-     */
-    if (
-      Math.abs(
-        horizontalDistance,
-      ) < 48 ||
-      Math.abs(
-        horizontalDistance,
-      ) <=
-        Math.abs(
-          verticalDistance,
-        )
-    ) {
+  onPointerUp(event: PointerEvent): void {
+    if (this.pointerStartX === null || this.pointerStartY === null) {
       return;
     }
 
-    if (
-      horizontalDistance < 0
-    ) {
+    const horizontalDistance = event.clientX - this.pointerStartX;
+
+    const verticalDistance = event.clientY - this.pointerStartY;
+
+    this.resetPointer();
+
+    const isHorizontalSwipe =
+      Math.abs(horizontalDistance) >= 48 &&
+      Math.abs(horizontalDistance) > Math.abs(verticalDistance);
+
+    if (!isHorizontalSwipe) {
+      return;
+    }
+
+    if (horizontalDistance < 0) {
       this.next();
 
       return;
@@ -282,68 +181,35 @@ export class CarouselComponent {
   }
 
   onPointerCancel(): void {
-    this.pointerStartX =
-      null;
-
-    this.pointerStartY =
-      null;
+    this.resetPointer();
   }
 
-  @HostListener(
-    'keydown',
-    ['$event'],
-  )
-  onKeydown(
-    event: KeyboardEvent,
-  ): void {
-    if (
-      !this.hasMultipleBanners()
-    ) {
+  @HostListener('keydown', ['$event'])
+  onKeydown(event: KeyboardEvent): void {
+    if (!this.hasMultipleBanners()) {
       return;
     }
 
-    if (
-      event.key ===
-      'ArrowLeft'
-    ) {
-      event.preventDefault();
-      this.previous();
+    switch (event.key) {
+      case 'ArrowLeft':
+        event.preventDefault();
+        this.previous();
+        break;
 
-      return;
-    }
+      case 'ArrowRight':
+        event.preventDefault();
+        this.next();
+        break;
 
-    if (
-      event.key ===
-      'ArrowRight'
-    ) {
-      event.preventDefault();
-      this.next();
-    }
-  }
+      case 'Home':
+        event.preventDefault();
+        this.selectSlide(0, true);
+        break;
 
-  private selectSlide(
-    index: number,
-    restartAutoplay: boolean,
-  ): void {
-    const total =
-      this.banners().length;
-
-    if (
-      total === 0 ||
-      index < 0 ||
-      index >= total ||
-      index ===
-        this.activeIndex()
-    ) {
-      return;
-    }
-
-    this.activeIndex.set(
-      index,
-    );
-
-    if (restartAutoplay) {
-      this.restartAutoplay();
+      case 'End':
+        event.preventDefault();
+        this.selectSlide(this.banners().length - 1, true);
+        break;
     }
   }
 
@@ -356,329 +222,200 @@ export class CarouselComponent {
     this.promotionApi
       .getPromotions()
       .pipe(
-        takeUntilDestroyed(
-          this.destroyRef,
-        ),
+        takeUntilDestroyed(this.destroyRef),
 
         finalize(() => {
           this.loading.set(false);
         }),
       )
       .subscribe({
-        next: promotions => {
-          const banners =
-            (promotions ?? [])
-              .filter(
-                promotion =>
-                  typeof promotion.slug ===
-                    'string' &&
-                  promotion.slug
-                    .trim() !== '',
-              )
-              .map(
-                promotion =>
-                  this.mapPromotionToBanner(
-                    promotion,
-                  ),
-              );
+        next: (promotions) => {
+          const banners = (promotions ?? [])
+            .filter(
+              (promotion) => typeof promotion.slug === 'string' && promotion.slug.trim().length > 0,
+            )
+            .map((promotion) => this.mapPromotionToBanner(promotion));
 
-          this.banners.set(
-            banners,
-          );
+          this.banners.set(banners);
 
-          this.activeIndex.set(
-            0,
-          );
+          this.activeIndex.set(0);
 
           this.startAutoplay();
         },
 
-        error: error => {
+        error: (error) => {
           const message =
-            typeof error?.error
-              ?.message ===
-              'string'
+            typeof error?.error?.message === 'string'
               ? error.error.message
-              : typeof error
-                    ?.message ===
-                  'string'
+              : typeof error?.message === 'string'
                 ? error.message
-                : (
-                    'No se pudieron cargar '
-                    + 'las promociones.'
-                  );
+                : 'No se pudieron cargar las promociones.';
 
-          this.error.set(
-            message,
-          );
+          this.error.set(message);
 
           this.banners.set([]);
           this.activeIndex.set(0);
 
-          if (isDevMode()) {
-            console.error(
-              'Error al cargar promociones:',
-              error,
-            );
-          }
+          this.logger.error('Error al cargar promociones:', error);
         },
       });
   }
 
+  private selectSlide(index: number, restartAutoplay: boolean): void {
+    const total = this.banners().length;
+
+    if (total === 0 || index < 0 || index >= total || index === this.activeIndex()) {
+      return;
+    }
+
+    this.activeIndex.set(index);
+
+    if (restartAutoplay) {
+      this.restartAutoplay();
+    }
+  }
+
   private startAutoplay(): void {
     if (
-      !isPlatformBrowser(
-        this.platformId,
-      ) ||
+      !isPlatformBrowser(this.platformId) ||
       !this.hasMultipleBanners() ||
-      document.hidden
+      this.document.hidden ||
+      this.interactionPaused
     ) {
       return;
     }
 
     this.stopAutoplay();
 
-    this.autoplayTimer =
-      window.setInterval(
-        () => {
-          const total =
-            this.banners().length;
+    this.autoplayTimer = setInterval(() => {
+      const total = this.banners().length;
 
-          if (total <= 1) {
-            return;
-          }
+      if (total <= 1) {
+        return;
+      }
 
-          this.activeIndex.update(
-            current =>
-              (
-                current +
-                1
-              ) % total,
-          );
-        },
-        this.autoplayDelayMs,
-      );
+      this.activeIndex.update((current) => (current + 1) % total);
+    }, this.autoplayDelayMs);
   }
 
   private stopAutoplay(): void {
-    if (
-      this.autoplayTimer ===
-      null
-    ) {
+    if (this.autoplayTimer === null) {
       return;
     }
 
-    window.clearInterval(
-      this.autoplayTimer,
-    );
+    clearInterval(this.autoplayTimer);
 
-    this.autoplayTimer =
-      null;
+    this.autoplayTimer = null;
   }
 
   private restartAutoplay(): void {
     this.stopAutoplay();
-    this.startAutoplay();
+
+    if (!this.interactionPaused) {
+      this.startAutoplay();
+    }
   }
 
   private bindDocumentVisibility(): void {
-    if (
-      !isPlatformBrowser(
-        this.platformId,
-      )
-    ) {
+    if (!isPlatformBrowser(this.platformId)) {
       return;
     }
 
-    const handleVisibilityChange =
-      (): void => {
-        if (document.hidden) {
-          this.stopAutoplay();
+    const handleVisibilityChange = (): void => {
+      if (this.document.hidden) {
+        this.stopAutoplay();
 
-          return;
-        }
+        return;
+      }
 
-        this.startAutoplay();
-      };
+      this.startAutoplay();
+    };
 
-    document.addEventListener(
-      'visibilitychange',
-      handleVisibilityChange,
-    );
+    this.document.addEventListener('visibilitychange', handleVisibilityChange);
 
-    this.destroyRef.onDestroy(
-      () => {
-        document.removeEventListener(
-          'visibilitychange',
-          handleVisibilityChange,
-        );
-      },
-    );
+    this.destroyRef.onDestroy(() => {
+      this.document.removeEventListener('visibilitychange', handleVisibilityChange);
+    });
   }
 
-  private mapPromotionToBanner(
-    promotion: PromotionDto,
-  ): PromotionBanner {
-    const name =
-      promotion.name?.trim() ||
-      'Promoción especial';
+  private resetPointer(): void {
+    this.pointerStartX = null;
+
+    this.pointerStartY = null;
+  }
+
+  private mapPromotionToBanner(promotion: PromotionDto): PromotionBanner {
+    const name = promotion.name?.trim() || 'Promoción especial';
 
     return {
-      id:
-        promotion.id,
+      id: promotion.id,
 
-      imageUrl:
-        promotion
-          .banner_image_url
-          ?.trim() ||
-        null,
+      imageUrl: promotion.banner_image_url?.trim() || null,
 
-      alt:
-        `Promoción ${name}`,
+      alt: `Promoción ${name}`,
 
-      promotionSlug:
-        promotion.slug.trim(),
+      promotionSlug: promotion.slug.trim(),
 
-      title:
-        name,
+      title: name,
 
-      subtitle:
-        promotion.description
-          ?.trim() ||
-        this.buildSubtitle(
-          promotion,
-        ),
+      subtitle: promotion.description?.trim() || this.buildSubtitle(promotion),
 
-      priceLabel:
-        this.buildPriceLabel(
-          promotion,
-        ),
+      priceLabel: this.buildPriceLabel(promotion),
 
-      typeLabel:
-        promotion.type ===
-        'size_fixed_price'
-          ? 'Precio especial por tamaño'
-          : 'Combo de la casa',
+      typeLabel: promotion.type === 'size_fixed_price' ? 'Precio especial' : 'Combo de la casa',
     };
   }
 
-  private buildSubtitle(
-    promotion: PromotionDto,
-  ): string {
-    if (
-      promotion.type ===
-      'size_fixed_price'
-    ) {
+  private buildSubtitle(promotion: PromotionDto): string {
+    if (promotion.type === 'size_fixed_price') {
       return (
         promotion.size_prices
-          ?.map(item => {
-            const sizeName =
-              item.size?.name ??
-              'Tamaño';
+          ?.map((item) => {
+            const sizeName = item.size?.name ?? 'Tamaño';
 
-            return (
-              `${sizeName} ` +
-              this.formatMoney(
-                item.price,
-              )
-            );
+            return `${sizeName} ` + this.formatMoney(item.price);
           })
-          .join(' · ') ||
-        (
-          'Elige tu tamaño favorito '
-          + 'y disfruta el precio '
-          + 'promocional.'
-        )
+          .join(' · ') || 'Elige tu tamaño favorito y disfruta el precio promocional.'
       );
     }
 
     return (
       promotion.details
-        ?.map(detail => {
-          const quantity =
-            Math.max(
-              0,
-              Number(
-                detail
-                  .required_quantity ??
-                0,
-              ),
-            );
+        ?.map((detail) => {
+          const quantity = Math.max(0, Number(detail.required_quantity ?? 0));
 
-          const category =
-            detail.category?.name ??
-            'pizza';
+          const category = detail.category?.name ?? 'pizza';
 
-          return (
-            `${quantity} ${category}`
-          );
+          return `${quantity} ${category}`;
         })
-        .join(' + ') ||
-      (
-        'Una combinación especial '
-        + 'preparada para compartir.'
-      )
+        .join(' + ') || 'Una combinación especial preparada para compartir.'
     );
   }
 
-  private buildPriceLabel(
-    promotion: PromotionDto,
-  ): string {
-    if (
-      promotion.type ===
-      'size_fixed_price'
-    ) {
-      const prices =
-        promotion.size_prices
-          ?.map(item => {
-            const sizeName =
-              item.size?.name ??
-              'Tamaño';
+  private buildPriceLabel(promotion: PromotionDto): string {
+    if (promotion.type === 'size_fixed_price') {
+      const prices = promotion.size_prices
+        ?.map((item) => {
+          const sizeName = item.size?.name ?? 'Tamaño';
 
-            return (
-              `${sizeName} ` +
-              this.formatMoney(
-                item.price,
-              )
-            );
-          })
-          .join(' · ');
+          return `${sizeName} ` + this.formatMoney(item.price);
+        })
+        .join(' · ');
 
-      return (
-        prices ||
-        'Precio promocional'
-      );
+      return prices || 'Precio promocional';
     }
 
-    return this.formatMoney(
-      promotion.price,
-    );
+    return this.formatMoney(promotion.price);
   }
 
-  private formatMoney(
-    value:
-      | number
-      | string
-      | null
-      | undefined,
-  ): string {
-    const numericValue =
-      Number(value ?? 0);
+  private formatMoney(value: number | string | null | undefined): string {
+    const numericValue = Number(value ?? 0);
 
-    return new Intl.NumberFormat(
-      'es-EC',
-      {
-        style: 'currency',
-        currency: 'USD',
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      },
-    ).format(
-      Number.isFinite(
-        numericValue,
-      )
-        ? numericValue
-        : 0,
-    );
+    return new Intl.NumberFormat('es-EC', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(Number.isFinite(numericValue) ? numericValue : 0);
   }
 }

@@ -1,0 +1,140 @@
+<section class="pizza-selector" aria-labelledby="promotion-pizza-selector-title">
+  <header class="pizza-selector__header">
+    <div class="pizza-selector__heading">
+      <span class="step-number">
+        {{ stepNumber() }}
+      </span>
+
+      <div>
+        <span class="eyebrow"> Selección </span>
+
+        <h2 id="promotion-pizza-selector-title">Elige tus pizzas</h2>
+
+        <p>Selecciona una receta para cada espacio incluido en la promoción.</p>
+      </div>
+    </div>
+
+    <label class="quantity-field" for="promotion-quantity">
+      <span> Cantidad de combos </span>
+
+      <p-inputnumber
+        inputId="promotion-quantity"
+        [ngModel]="quantity()"
+        (ngModelChange)="onQuantityChange($event)"
+        [min]="1"
+        [max]="10"
+        [showButtons]="true"
+        buttonLayout="horizontal"
+        incrementButtonIcon="pi pi-plus"
+        decrementButtonIcon="pi pi-minus"
+        styleClass="promotion-quantity"
+      />
+    </label>
+  </header>
+
+  @if (isLocked()) {
+    <div class="locked-message" role="status">
+      <span class="locked-message__icon">
+        <i class="pi pi-lock" aria-hidden="true"></i>
+      </span>
+
+      <div>
+        <h3>Selecciona primero el tamaño</h3>
+
+        <p>Después podrás elegir y personalizar las pizzas incluidas.</p>
+      </div>
+    </div>
+  } @else {
+    <div class="pizza-selector__progress" aria-live="polite">
+      <span> Configuradas </span>
+
+      <strong>
+        {{ configuredCount() }}
+        /
+        {{ slots().length }}
+      </strong>
+    </div>
+
+    <div class="pizza-selection-grid">
+      @for (slot of slots(); track slot.key) {
+        <article class="pizza-selection" [class.pizza-selection--completed]="isCompleted(slot)">
+          <header class="pizza-selection__header">
+            <span class="pizza-selection__number">
+              {{ slot.index }}
+            </span>
+
+            <div class="pizza-selection__title">
+              <small>
+                {{ slot.shortTitle }}
+              </small>
+
+              <h3>
+                {{ slot.title }}
+              </h3>
+            </div>
+
+            @if (isCompleted(slot)) {
+              <span class="pizza-selection__check" aria-label="Selección completada">
+                <i class="pi pi-check" aria-hidden="true"></i>
+              </span>
+            }
+          </header>
+
+          <p-select
+            ariaLabel="Seleccionar pizza"
+            [options]="optionsForSlot(slot)"
+            optionLabel="label"
+            optionValue="value"
+            [ngModel]="selectedBySlot()[slot.key]"
+            (ngModelChange)="onPizzaChange(slot, $event)"
+            [placeholder]="placeholderForSlot(slot)"
+            appendTo="body"
+            styleClass="promotion-pizza-select"
+          />
+
+          @if (selectedPizza(slot); as pizza) {
+            <div class="selected-pizza">
+              <div class="selected-pizza__image">
+                @if (pizza.image_url) {
+                  <img
+                    [src]="pizza.image_url"
+                    [alt]="'Pizza ' + pizza.name"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                } @else {
+                  <i class="pi pi-image" aria-hidden="true"></i>
+                }
+              </div>
+
+              <div class="selected-pizza__copy">
+                <strong>
+                  {{ pizza.name }}
+                </strong>
+
+                <span>
+                  {{ pizza.category.name }}
+
+                  @if (selectedSizeName()) {
+                    ·
+                    {{ selectedSizeName() }}
+                  }
+                </span>
+              </div>
+
+              <button type="button" class="customize-button" (click)="onCustomize(slot.key)">
+                <span> Personalizar </span>
+
+                <i class="pi pi-arrow-right" aria-hidden="true"></i>
+              </button>
+            </div>
+          } @else {
+            <p class="pizza-selection__helper">
+              {{ slot.helper }}
+            </p>
+          }
+        </article>
+      }
+    </div>
+  }
+</section>

@@ -1,0 +1,244 @@
+<section
+              class="receipt-section"
+              aria-labelledby="
+                payment-receipt-title
+              "
+            >
+              <header class="receipt-section__header">
+                <div class="receipt-section__heading">
+                  <span class="receipt-section__icon">
+                    <i class="pi pi-file-check"></i>
+                  </span>
+
+                  <div>
+                    <h3
+                      id="
+                        payment-receipt-title
+                      "
+                    >
+                      Comprobante de pago
+                    </h3>
+
+                    <p>Adjunta una imagen o PDF para que CHEO'F PIZZA valide la transferencia.</p>
+                  </div>
+                </div>
+
+                @if (receipt()) {
+                  <p-tag [value]="statusLabel()" [severity]="statusSeverity()" />
+                }
+              </header>
+
+              @if (loading()) {
+                <div class="receipt-loading" aria-live="polite">
+                  <p-skeleton width="100%" height="5rem" borderRadius="16px" />
+
+                  <p-skeleton width="100%" height="3rem" borderRadius="14px" />
+                </div>
+              } @else {
+                @if (receipt(); as receipt) {
+                  <article
+                    class="receipt-current"
+                    [class.receipt-current--pending]="receipt.status === 'pending'"
+                    [class.receipt-current--approved]="receipt.status === 'approved'"
+                    [class.receipt-current--rejected]="receipt.status === 'rejected'"
+                  >
+                    <div class="receipt-current__icon">
+                      <i
+                        class="pi"
+                        [class.pi-clock]="receipt.status === 'pending'"
+                        [class.pi-check-circle]="receipt.status === 'approved'"
+                        [class.pi-times-circle]="receipt.status === 'rejected'"
+                      ></i>
+                    </div>
+
+                    <div class="receipt-current__content">
+                      <div class="receipt-current__top">
+                        <div>
+                          <strong>
+                            {{ receiptStatusText(receipt.status) }}
+                          </strong>
+
+                          <span>
+                            Enviado el
+                            {{ receipt.submitted_at | date: 'dd/MM/yyyy HH:mm' }}
+                          </span>
+                        </div>
+
+                        @if (receipt.file_available) {
+                          <p-button
+                            type="button"
+                            label="Ver archivo"
+                            icon="pi pi-external-link"
+                            severity="secondary"
+                            [outlined]="true"
+                            size="small"
+                            [loading]="opening()"
+                            [disabled]="!canOpen()"
+                            (onClick)="openReceipt()"
+                          />
+                        }
+                      </div>
+
+                      <div class="receipt-file-info">
+                        <span class="receipt-file-info__icon">
+                          <i
+                            class="pi"
+                            [class.pi-file-pdf]="isPdf()"
+                            [class.pi-image]="!isPdf()"
+                          ></i>
+                        </span>
+
+                        <div>
+                          <strong>
+                            {{ receipt.original_name }}
+                          </strong>
+
+                          <span>
+                            {{ fileSize() }}
+                          </span>
+                        </div>
+                      </div>
+
+                      @if (receipt.status === 'pending') {
+                        <p class="receipt-current__message">
+                          El comprobante está pendiente de revisión. Te notificaremos cuando sea
+                          aprobado o rechazado.
+                        </p>
+                      }
+
+                      @if (receipt.status === 'approved') {
+                        <p class="receipt-current__message">
+                          La transferencia fue validada correctamente. No necesitas enviar otro
+                          comprobante.
+                        </p>
+                      }
+
+                      @if (receipt.status === 'rejected') {
+                        <div class="receipt-rejection" role="alert">
+                          <span> Motivo del rechazo </span>
+
+                          <strong>
+                            {{ receipt.rejection_reason || 'El comprobante no pudo ser validado.' }}
+                          </strong>
+                        </div>
+                      }
+                    </div>
+                  </article>
+                }
+
+                @if (canUpload()) {
+                  <div class="receipt-upload">
+                    <input
+                      #receiptInput
+                      type="file"
+                      id="payment-receipt-file"
+                      class="receipt-file-input"
+                      accept="image/jpeg,image/png,image/webp,application/pdf"
+                      [disabled]="uploading()"
+                      (change)="onFileSelected($event)"
+                    />
+
+                    @if (!selectedFile()) {
+                      <button
+                        type="button"
+                        class="receipt-dropzone"
+                        [disabled]="uploading() || !canUpload()"
+                        [class.receipt-dropzone--disabled]="
+                          uploading() || !canUpload()
+                        "
+                        (click)="openFilePicker()"
+                      >
+                        <span class="receipt-dropzone__icon">
+                          <i class="pi pi-cloud-upload"></i>
+                        </span>
+
+                        <strong> Seleccionar comprobante </strong>
+
+                        <span> JPG, PNG, WebP o PDF </span>
+
+                        <small> Tamaño máximo: 5 MB </small>
+                      </button>
+                    } @else {
+                      <article class="selected-receipt">
+                        <span class="selected-receipt__icon">
+                          <i
+                            class="pi"
+                            [class.pi-file-pdf]="selectedFile()?.type === 'application/pdf'"
+                            [class.pi-image]="selectedFile()?.type !== 'application/pdf'"
+                          ></i>
+                        </span>
+
+                        <div class="selected-receipt__info">
+                          <strong>
+                            {{ fileName() }}
+                          </strong>
+
+                          <span>
+                            {{ fileSize() }}
+                          </span>
+                        </div>
+
+                        <button
+                          type="button"
+                          class="selected-receipt__remove"
+                          aria-label="Quitar archivo seleccionado"
+                          [disabled]="uploading()"
+                          (click)="removeSelectedFile()"
+                        >
+                          <i class="pi pi-times"></i>
+                        </button>
+                      </article>
+                    }
+
+                    @if (uploading()) {
+                      <div class="receipt-progress" aria-live="polite">
+                        <div class="receipt-progress__label">
+                          <span> Enviando comprobante </span>
+
+                          <strong> Procesando… </strong>
+                        </div>
+
+                        <p-progressbar
+                          [value]="uploadProgress()"
+                          [showValue]="false"
+                          styleClass="
+                            receipt-progressbar
+                          "
+                        />
+                      </div>
+                    }
+
+                    @if (error()) {
+                      <div class="receipt-error" role="alert">
+                        <i class="pi pi-exclamation-triangle"></i>
+
+                        <span>
+                          {{ error() }}
+                        </span>
+                      </div>
+                    }
+
+                    <div class="receipt-upload__actions">
+                      <p-button
+                        type="button"
+                        [label]="
+                          receipt()?.status === 'rejected'
+                            ? 'Enviar nuevo comprobante'
+                            : 'Enviar comprobante'
+                        "
+                        icon="pi pi-send"
+                        [loading]="uploading()"
+                        [disabled]="!selectedFile() || !canUpload()"
+                        (onClick)="upload()"
+                      />
+                    </div>
+                  </div>
+                } @else if (!receipt()) {
+                  <div class="receipt-empty">
+                    <i class="pi pi-file"></i>
+
+                    <span> No se encontró información del comprobante. </span>
+                  </div>
+                }
+              }
+            </section>

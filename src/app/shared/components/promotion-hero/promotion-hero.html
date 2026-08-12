@@ -1,0 +1,109 @@
+<header
+  class="promotion-hero"
+  aria-labelledby="promotion-title"
+>
+  <div class="promotion-hero__copy">
+    <span class="promotion-eyebrow">
+      Combo para compartir
+    </span>
+
+    <h1 id="promotion-title">
+      {{ promotion().name }}
+    </h1>
+
+    <p>
+      {{
+        promotion().description ||
+          'Elige tus pizzas y personaliza cada una antes de agregar la promoción al carrito.'
+      }}
+    </p>
+  </div>
+
+  <div class="promotion-hero__details">
+    <div class="hero-price">
+      <span>
+        Precio del combo
+      </span>
+
+      <strong>
+        {{
+          displayedPrice()
+            | currency:
+                'USD':
+                'symbol':
+                '1.2-2'
+        }}
+      </strong>
+    </div>
+
+    <div class="hero-metadata">
+      @if (
+        selectedSizeName();
+        as sizeName
+      ) {
+        <span>
+          <i
+            class="pi pi-arrows-alt"
+            aria-hidden="true"
+          ></i>
+
+          {{ sizeName }}
+        </span>
+      }
+
+      <span>
+        <i
+          class="pi pi-shopping-bag"
+          aria-hidden="true"
+        ></i>
+
+        {{ totalSlots() }}
+        {{ pizzaLabel() }}
+      </span>
+
+      <span>
+        <i
+          class="pi pi-sliders-h"
+          aria-hidden="true"
+        ></i>
+
+        Hasta
+        {{ maxExtrasPerPizza() }}
+        extras por pizza
+      </span>
+    </div>
+
+    <div class="hero-progress">
+      <div class="hero-progress__label">
+        <span>
+          Configuración
+        </span>
+
+        <strong>
+          {{ configuredSlots() }}
+          de
+          {{ totalSlots() }}
+        </strong>
+      </div>
+
+      <div
+        class="hero-progress__track"
+        role="progressbar"
+        aria-label="Progreso de configuración de la promoción"
+        aria-valuemin="0"
+        [attr.aria-valuemax]="
+          totalSlots()
+        "
+        [attr.aria-valuenow]="
+          configuredSlots()
+        "
+      >
+        <span
+          [style.width.%]="
+            progressPercentage()
+          "
+        ></span>
+      </div>
+    </div>
+  </div>
+</header>

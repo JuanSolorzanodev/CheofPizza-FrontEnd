@@ -2,12 +2,19 @@
   class="hero-carousel"
   aria-label="Promociones destacadas"
   tabindex="0"
+  (mouseenter)="pauseAutoplay()"
+  (mouseleave)="resumeAutoplay()"
+  (focusin)="pauseAutoplay()"
+  (focusout)="resumeAutoplay()"
   (pointerdown)="onPointerDown($event)"
   (pointerup)="onPointerUp($event)"
   (pointercancel)="onPointerCancel()"
 >
   @if (loading()) {
-    <div class="carousel-loading">
+    <div
+      class="carousel-loading"
+      aria-label="Cargando promociones"
+    >
       <p-skeleton
         width="100%"
         height="100%"
@@ -27,29 +34,33 @@
       "
     >
       <div class="carousel-viewport">
-        @for (
-          banner of [current];
-          track activeIndex()
-        ) {
-          <article class="promotion-slide">
-            <div class="promotion-media">
-              @if (banner.imageUrl) {
-                <img
-                  class="promotion-image"
-                  [src]="banner.imageUrl"
-                  [alt]="banner.alt"
-                  loading="eager"
-                  decoding="async"
-                />
-              } @else {
-                <div class="promotion-placeholder">
-                  <span class="placeholder-icon">
-                    <i
-                      class="pi pi-percentage"
-                      aria-hidden="true"
-                    ></i>
-                  </span>
+        <article
+          class="promotion-slide"
+          [attr.aria-label]="current.title"
+        >
+          <div
+            class="promotion-media"
+            aria-hidden="true"
+          >
+            @if (current.imageUrl) {
+              <img
+                class="promotion-image"
+                [src]="current.imageUrl"
+                [alt]="current.alt"
+                loading="eager"
+                fetchpriority="high"
+                decoding="async"
+              />
+            } @else {
+              <div class="promotion-placeholder">
+                <span class="promotion-placeholder__icon">
+                  <i
+                    class="pi pi-percentage"
+                    aria-hidden="true"
+                  ></i>
+                </span>
 
+                <span class="promotion-placeholder__copy">
                   <strong>
                     Promoción especial
                   </strong>
@@ -57,42 +68,44 @@
                   <small>
                     Una oferta preparada para ti
                   </small>
-                </div>
-              }
+                </span>
+              </div>
+            }
+          </div>
+
+          <div
+            class="promotion-overlay"
+            aria-hidden="true"
+          ></div>
+
+          <div class="promotion-content">
+            <div class="promotion-tags">
+              <span class="promotion-tag">
+                {{ current.typeLabel }}
+              </span>
+
+              <span class="promotion-price">
+                {{ current.priceLabel }}
+              </span>
             </div>
 
-            <div
-              class="promotion-shade"
-              aria-hidden="true"
-            ></div>
+            <div class="promotion-copy">
+              <h1>
+                {{ current.title }}
+              </h1>
 
-            <div class="promotion-content">
-              <div class="promotion-tags">
-                <span class="promotion-type">
-                  {{ banner.typeLabel }}
-                </span>
+              <p>
+                {{ current.subtitle }}
+              </p>
+            </div>
 
-                <span class="promotion-price">
-                  {{ banner.priceLabel }}
-                </span>
-              </div>
-
-              <div class="promotion-copy">
-                <h2>
-                  {{ banner.title }}
-                </h2>
-
-                <p>
-                  {{ banner.subtitle }}
-                </p>
-              </div>
-
+            <div class="promotion-actions">
               <button
                 type="button"
                 class="promotion-cta"
                 (click)="
                   goToPromotion(
-                    banner.promotionSlug
+                    current.promotionSlug
                   )
                 "
               >
@@ -105,9 +118,17 @@
                   aria-hidden="true"
                 ></i>
               </button>
+
+              @if (hasMultipleBanners()) {
+                <span class="promotion-position">
+                  {{ activeIndex() + 1 }}
+                  /
+                  {{ banners().length }}
+                </span>
+              }
             </div>
-          </article>
-        }
+          </div>
+        </article>
       </div>
 
       @if (hasMultipleBanners()) {
@@ -117,10 +138,7 @@
         >
           <button
             type="button"
-            class="
-              carousel-navigation
-              carousel-navigation--previous
-            "
+            class="carousel-navigation"
             aria-label="Ver promoción anterior"
             (click)="previous()"
           >
@@ -165,10 +183,7 @@
 
           <button
             type="button"
-            class="
-              carousel-navigation
-              carousel-navigation--next
-            "
+            class="carousel-navigation"
             aria-label="Ver siguiente promoción"
             (click)="next()"
           >
@@ -182,21 +197,25 @@
     </div>
   } @else {
     <article class="carousel-empty">
-      <span class="carousel-empty-icon">
+      <span class="carousel-empty__icon">
         <i
           class="pi pi-percentage"
           aria-hidden="true"
         ></i>
       </span>
 
-      <div class="carousel-empty-copy">
+      <div class="carousel-empty__copy">
+        <span class="carousel-empty__eyebrow">
+          Cheo' F Pizza
+        </span>
+
         <h2>
           Promociones próximamente
         </h2>
 
         <p>
           En este momento no hay promociones activas.
-          Explora nuestro menú y arma tu pizza favorita.
+          Mientras tanto, puedes explorar nuestro menú.
         </p>
 
         @if (error()) {

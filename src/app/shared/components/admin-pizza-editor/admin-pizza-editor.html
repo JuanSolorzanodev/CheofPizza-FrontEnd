@@ -1,0 +1,165 @@
+<p-dialog
+  [visible]="visible()"
+  (visibleChange)="onVisibleChange($event)"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [closable]="!saving()"
+  [closeOnEscape]="!saving()"
+  [style]="{
+    width: 'min(96vw, 780px)',
+  }"
+  appendTo="body"
+  styleClass="pizza-form-dialog"
+>
+  <ng-template pTemplate="header">
+    <div class="dialog-title">
+      <span>
+        <i class="pi pi-box"></i>
+      </span>
+
+      <div>
+        <small> Catálogo </small>
+
+        <strong>
+          {{ pizza() ? 'Editar pizza' : 'Nueva pizza' }}
+        </strong>
+      </div>
+    </div>
+  </ng-template>
+
+  <form class="pizza-form" [formGroup]="pizzaForm" (ngSubmit)="savePizza()">
+    <section class="form-grid">
+      <label class="field">
+        <span> Nombre <em>*</em> </span>
+
+        <input pInputText formControlName="name" maxlength="150" placeholder="Ej. Americana" />
+
+        @if (pizzaForm.controls.name.touched && pizzaForm.controls.name.invalid) {
+          <small class="field-error"> Ingresa un nombre de al menos 2 caracteres. </small>
+        }
+      </label>
+
+      <div class="field">
+        <span> Categoría <em>*</em> </span>
+
+        <p-select
+          ariaLabel="Categoría de la pizza"
+          formControlName="category_id"
+          [options]="categories()"
+          optionLabel="name"
+          optionValue="id"
+          placeholder="Selecciona una categoría"
+          appendTo="body"
+        />
+
+        @if (pizzaForm.controls.category_id.touched && pizzaForm.controls.category_id.invalid) {
+          <small class="field-error"> Selecciona una categoría. </small>
+        }
+      </div>
+    </section>
+
+    <label class="field">
+      <span> Descripción </span>
+
+      <textarea
+        pTextarea
+        formControlName="description"
+        rows="4"
+        maxlength="3000"
+        placeholder="Describe los ingredientes y características de la pizza..."
+      ></textarea>
+
+      <small class="field-help">
+        {{ pizzaForm.controls.description.value.length }}/3000 caracteres
+      </small>
+    </label>
+
+    <label class="field">
+      <span> URL de imagen </span>
+
+      <input
+        pInputText
+        formControlName="image_url"
+        maxlength="2048"
+        placeholder="https://res.cloudinary.com/..."
+        (input)="imagePreviewError.set(false)"
+      />
+
+      @if (pizzaForm.controls.image_url.touched && pizzaForm.controls.image_url.invalid) {
+        <small class="field-error">
+          Ingresa una URL válida que comience con http:// o https://.
+        </small>
+      }
+    </label>
+
+    @if (imageUrl() && !pizzaForm.controls.image_url.invalid) {
+      <div class="image-preview">
+        @if (!imagePreviewError()) {
+          <img
+            [src]="imageUrl()"
+            alt="Vista previa de la pizza"
+            (error)="imagePreviewError.set(true)"
+          />
+        } @else {
+          <div class="image-preview-error">
+            <i class="pi pi-image"></i>
+
+            <span> No se pudo cargar la imagen. </span>
+          </div>
+        }
+      </div>
+    }
+
+    <div class="field">
+      <span> Ingredientes <em>*</em> </span>
+
+      <p-multiselect
+        ariaLabel="Ingredientes de la pizza"
+        formControlName="ingredient_ids"
+        [options]="ingredientOptions()"
+        optionLabel="label"
+        optionValue="value"
+        placeholder="Selecciona ingredientes"
+        display="chip"
+        [filter]="true"
+        filterPlaceholder="Buscar ingrediente..."
+        [showClear]="true"
+        [maxSelectedLabels]="6"
+        selectedItemsLabel="{0} ingredientes seleccionados"
+        appendTo="body"
+      />
+
+      @if (pizzaForm.controls.ingredient_ids.touched && pizzaForm.controls.ingredient_ids.invalid) {
+        <small class="field-error"> Selecciona al menos un ingrediente. </small>
+      }
+    </div>
+
+    <div class="visibility-field">
+      <div>
+        <strong> Visible en el catálogo </strong>
+
+        <span> Al desactivar esta opción, la pizza dejará de mostrarse a los clientes. </span>
+      </div>
+
+      <p-toggleswitch formControlName="is_visible" />
+    </div>
+  </form>
+
+  <ng-template pTemplate="footer">
+    <p-button
+      label="Cancelar"
+      severity="secondary"
+      [text]="true"
+      [disabled]="saving()"
+      (onClick)="close()"
+    />
+
+    <p-button
+      [label]="pizza() ? 'Guardar cambios' : 'Crear pizza'"
+      icon="pi pi-check"
+      [loading]="saving()"
+      (onClick)="savePizza()"
+    />
+  </ng-template>
+</p-dialog>

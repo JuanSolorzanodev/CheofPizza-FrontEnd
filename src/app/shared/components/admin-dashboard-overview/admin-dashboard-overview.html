@@ -1,0 +1,201 @@
+@if (loading()) {
+  <section class="dashboard-kpis" aria-label="Cargando indicadores">
+    @for (item of [1, 2, 3, 4]; track item) {
+      <p-skeleton
+        width="100%"
+        height="9.5rem"
+        borderRadius="1.25rem"
+      />
+    }
+  </section>
+} @else if (summary(); as salesSummary) {
+  <section class="dashboard-kpis" aria-label="Indicadores principales">
+    <article class="dashboard-kpi dashboard-kpi--sales">
+      <header class="dashboard-kpi__header">
+        <span class="dashboard-kpi__icon">
+          <i class="pi pi-dollar"></i>
+        </span>
+
+        <span
+          class="dashboard-comparison"
+          [class.dashboard-comparison--positive]="
+            comparisonTone(comparison()?.net_sales_percentage ?? null) === 'positive'
+          "
+          [class.dashboard-comparison--negative]="
+            comparisonTone(comparison()?.net_sales_percentage ?? null) === 'negative'
+          "
+          [class.dashboard-comparison--neutral]="
+            comparisonTone(comparison()?.net_sales_percentage ?? null) === 'neutral'
+          "
+        >
+          <i
+            [class]="comparisonIcon(comparison()?.net_sales_percentage ?? null)"
+          ></i>
+          {{ comparisonLabel(comparison()?.net_sales_percentage ?? null) }}
+        </span>
+      </header>
+
+      <div class="dashboard-kpi__body">
+        <span>Ventas netas</span>
+        <strong>{{ salesSummary.net_sales | currency: 'USD' }}</strong>
+        <small>Ventas confirmadas del periodo</small>
+      </div>
+    </article>
+
+    <article class="dashboard-kpi dashboard-kpi--orders">
+      <header class="dashboard-kpi__header">
+        <span class="dashboard-kpi__icon">
+          <i class="pi pi-receipt"></i>
+        </span>
+
+        <span
+          class="dashboard-comparison"
+          [class.dashboard-comparison--positive]="
+            comparisonTone(comparison()?.delivered_orders_percentage ?? null) === 'positive'
+          "
+          [class.dashboard-comparison--negative]="
+            comparisonTone(comparison()?.delivered_orders_percentage ?? null) === 'negative'
+          "
+          [class.dashboard-comparison--neutral]="
+            comparisonTone(comparison()?.delivered_orders_percentage ?? null) === 'neutral'
+          "
+        >
+          <i
+            [class]="comparisonIcon(comparison()?.delivered_orders_percentage ?? null)"
+          ></i>
+          {{ comparisonLabel(comparison()?.delivered_orders_percentage ?? null) }}
+        </span>
+      </header>
+
+      <div class="dashboard-kpi__body">
+        <span>Pedidos entregados</span>
+        <strong>{{ salesSummary.delivered_orders | number }}</strong>
+        <small>
+          {{ salesSummary.cancelled_orders }}
+          {{ salesSummary.cancelled_orders === 1 ? 'pedido cancelado' : 'pedidos cancelados' }}
+        </small>
+      </div>
+    </article>
+
+    <article class="dashboard-kpi dashboard-kpi--pizzas">
+      <header class="dashboard-kpi__header">
+        <span class="dashboard-kpi__icon">
+          <i class="pi pi-box"></i>
+        </span>
+
+        <span
+          class="dashboard-comparison"
+          [class.dashboard-comparison--positive]="
+            comparisonTone(comparison()?.pizzas_sold_percentage ?? null) === 'positive'
+          "
+          [class.dashboard-comparison--negative]="
+            comparisonTone(comparison()?.pizzas_sold_percentage ?? null) === 'negative'
+          "
+          [class.dashboard-comparison--neutral]="
+            comparisonTone(comparison()?.pizzas_sold_percentage ?? null) === 'neutral'
+          "
+        >
+          <i
+            [class]="comparisonIcon(comparison()?.pizzas_sold_percentage ?? null)"
+          ></i>
+          {{ comparisonLabel(comparison()?.pizzas_sold_percentage ?? null) }}
+        </span>
+      </header>
+
+      <div class="dashboard-kpi__body">
+        <span>Pizzas vendidas</span>
+        <strong>{{ salesSummary.pizzas_sold | number }}</strong>
+        <small>
+          {{ salesSummary.promotions_sold }}
+          {{ salesSummary.promotions_sold === 1 ? 'promoción vendida' : 'promociones vendidas' }}
+        </small>
+      </div>
+    </article>
+
+    <article class="dashboard-kpi dashboard-kpi--ticket">
+      <header class="dashboard-kpi__header">
+        <span class="dashboard-kpi__icon">
+          <i class="pi pi-chart-line"></i>
+        </span>
+
+        <span
+          class="dashboard-comparison"
+          [class.dashboard-comparison--positive]="
+            comparisonTone(comparison()?.average_ticket_percentage ?? null) === 'positive'
+          "
+          [class.dashboard-comparison--negative]="
+            comparisonTone(comparison()?.average_ticket_percentage ?? null) === 'negative'
+          "
+          [class.dashboard-comparison--neutral]="
+            comparisonTone(comparison()?.average_ticket_percentage ?? null) === 'neutral'
+          "
+        >
+          <i
+            [class]="comparisonIcon(comparison()?.average_ticket_percentage ?? null)"
+          ></i>
+          {{ comparisonLabel(comparison()?.average_ticket_percentage ?? null) }}
+        </span>
+      </header>
+
+      <div class="dashboard-kpi__body">
+        <span>Ticket promedio</span>
+        <strong>{{ salesSummary.average_ticket | currency: 'USD' }}</strong>
+        <small>
+          {{ salesSummary.cancellation_rate | number: '1.1-1' }}% de cancelación
+        </small>
+      </div>
+    </article>
+  </section>
+}
+
+@if (!loading() && hasFinancialAlerts() && data(); as dashboardData) {
+  <section class="dashboard-alerts" aria-label="Alertas financieras">
+    @if (dashboardData.payments.pending.transactions > 0) {
+      <article class="dashboard-alert dashboard-alert--pending">
+        <span class="dashboard-alert__icon">
+          <i class="pi pi-clock"></i>
+        </span>
+
+        <div>
+          <strong>Pagos pendientes</strong>
+          <span>
+            {{ dashboardData.payments.pending.transactions }}
+            {{ dashboardData.payments.pending.transactions === 1 ? 'operación' : 'operaciones' }}
+            por
+            {{ dashboardData.payments.pending.amount | currency: 'USD' }}
+            requieren seguimiento.
+          </span>
+        </div>
+
+        <a routerLink="/admin/transactions" class="dashboard-alert__link">
+          Revisar
+          <i class="pi pi-arrow-right"></i>
+        </a>
+      </article>
+    }
+
+    @if (
+      dashboardData.payments.refunds.refunded_payments > 0
+      || dashboardData.payments.refunds.partially_refunded_payments > 0
+    ) {
+      <article class="dashboard-alert dashboard-alert--refund">
+        <span class="dashboard-alert__icon">
+          <i class="pi pi-replay"></i>
+        </span>
+
+        <div>
+          <strong>Reembolsos registrados</strong>
+          <span>
+            {{ dashboardData.payments.refunds.refunded_payments }} completos y
+            {{ dashboardData.payments.refunds.partially_refunded_payments }} parciales.
+          </span>
+        </div>
+
+        <a routerLink="/admin/transactions" class="dashboard-alert__link">
+          Consultar
+          <i class="pi pi-arrow-right"></i>
+        </a>
+      </article>
+    }
+  </section>
+}

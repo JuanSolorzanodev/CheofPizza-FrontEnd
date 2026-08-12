@@ -1,0 +1,372 @@
+@if (comparison(); as result) {
+  <article class="detail-card surface-card">
+    <header class="panel-header detail-header">
+      <div>
+        <span class="panel-eyebrow"> Resultados diarios </span>
+
+        <h2>Detalle por fecha</h2>
+
+        <p>
+          Abre una fila para consultar la comparación de pizzas mini, pequeñas, medianas, familiares
+          y gigantes.
+        </p>
+      </div>
+
+      <span class="detail-hint">
+        <i class="pi pi-info-circle" aria-hidden="true"></i>
+
+        Venta real considera pedidos entregados
+      </span>
+    </header>
+
+    <!--
+      |--------------------------------------------------------------------------
+      | Tabla de escritorio
+      |--------------------------------------------------------------------------
+      -->
+
+    <div class="desktop-table">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Fecha</th>
+
+            <th scope="col">Estado</th>
+
+            <th scope="col" class="text-right">Predicción</th>
+
+            <th scope="col" class="text-right">Venta real</th>
+
+            <th scope="col">Diferencia</th>
+
+            <th scope="col" class="text-right">Error</th>
+
+            <th scope="col">Precisión</th>
+
+            <th scope="col" class="text-right">Pedidos</th>
+
+            <th scope="col" class="text-right">Venta neta</th>
+
+            <th scope="col" aria-label="Acciones"></th>
+          </tr>
+        </thead>
+
+        <tbody>
+          @for (day of result.days; track day.date) {
+            <tr
+              class="result-row"
+              tabindex="0"
+              role="button"
+              [attr.aria-expanded]="isExpanded(day.date)"
+              (click)="toggleDay(day.date)"
+              (keydown.enter)="toggleDay(day.date)"
+              (keydown.space)="$event.preventDefault(); toggleDay(day.date)"
+            >
+              <td>
+                <div class="date-cell">
+                  <strong>
+                    {{ day.day_of_week }}
+                  </strong>
+
+                  <span>
+                    {{ formatDate(day.date) }}
+                  </span>
+                </div>
+              </td>
+
+              <td>
+                <p-tag
+                  [value]="statusLabel(day.status)"
+                  [severity]="statusSeverity(day.status)"
+                  [icon]="statusIcon(day.status)"
+                />
+              </td>
+
+              <td class="numeric-cell">
+                {{ formatNumber(day.predicted_total) }}
+              </td>
+
+              <td class="numeric-cell">
+                {{ formatNumber(day.actual_total) }}
+              </td>
+
+              <td>
+                <div class="difference-cell" [class]="differenceClass(day.difference)">
+                  <strong>
+                    {{ formatSignedNumber(day.difference) }}
+                  </strong>
+
+                  <small>
+                    {{ differenceLabel(day.difference) }}
+                  </small>
+                </div>
+              </td>
+
+              <td class="numeric-cell">
+                {{ formatNumber(day.absolute_error) }}
+              </td>
+
+              <td>
+                <div class="accuracy-cell" [class]="accuracyClass(day.accuracy_percentage)">
+                  <strong>
+                    {{ formatPercentage(day.accuracy_percentage) }}
+                  </strong>
+
+                  <small>
+                    {{ accuracyDescription(day.accuracy_percentage) }}
+                  </small>
+                </div>
+              </td>
+
+              <td class="numeric-cell">
+                {{ formatNumber(day.delivered_orders) }}
+              </td>
+
+              <td class="numeric-cell">
+                {{ formatCurrency(day.actual_net_sales) }}
+              </td>
+
+              <td>
+                <button
+                  type="button"
+                  class="expand-button"
+                  [attr.aria-expanded]="isExpanded(day.date)"
+                  [attr.aria-label]="
+                    isExpanded(day.date)
+                      ? 'Ocultar desglose por tamaños'
+                      : 'Mostrar desglose por tamaños'
+                  "
+                  (click)="$event.stopPropagation(); toggleDay(day.date)"
+                >
+                  <i
+                    class="pi"
+                    [class.pi-chevron-up]="isExpanded(day.date)"
+                    [class.pi-chevron-down]="!isExpanded(day.date)"
+                    aria-hidden="true"
+                  ></i>
+                </button>
+              </td>
+            </tr>
+
+            @if (isExpanded(day.date)) {
+              <tr class="expanded-row">
+                <td colspan="10">
+                  <div class="size-comparison">
+                    <header class="size-comparison-header">
+                      <div>
+                        <strong> Comparación por tamaño </strong>
+
+                        <span> Cantidad prevista frente a cantidad realmente vendida </span>
+                      </div>
+
+                      <div class="size-legend">
+                        <span>
+                          <i class="legend-dot predicted"></i>
+                          Predicción
+                        </span>
+
+                        <span>
+                          <i class="legend-dot actual"></i>
+                          Venta real
+                        </span>
+                      </div>
+                    </header>
+
+                    <div class="size-grid">
+                      @for (size of sizeComparison(day); track size.key) {
+                        <article class="size-item">
+                          <div class="size-item-header">
+                            <span class="size-name">
+                              {{ size.label }}
+                            </span>
+
+                            <strong
+                              class="size-difference"
+                              [class]="differenceClass(size.difference)"
+                            >
+                              {{ formatSignedNumber(size.difference) }}
+                            </strong>
+                          </div>
+
+                          <div class="size-values">
+                            <div>
+                              <span> Predicción </span>
+
+                              <strong>
+                                {{ formatNumber(size.predicted) }}
+                              </strong>
+                            </div>
+
+                            <div>
+                              <span> Venta real </span>
+
+                              <strong>
+                                {{ formatNumber(size.actual) }}
+                              </strong>
+                            </div>
+                          </div>
+                        </article>
+                      }
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            }
+          } @empty {
+            <tr>
+              <td colspan="10" class="empty-row">
+                No existen predicciones dentro del rango seleccionado.
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <!--
+      |--------------------------------------------------------------------------
+      | Lista móvil
+      |--------------------------------------------------------------------------
+      -->
+
+    <div class="mobile-list">
+      @for (day of result.days; track day.date) {
+        <article class="mobile-result-card">
+          <header class="mobile-result-header">
+            <div class="mobile-date">
+              <strong>
+                {{ day.day_of_week }}
+              </strong>
+
+              <span>
+                {{ formatDate(day.date) }}
+              </span>
+            </div>
+
+            <p-tag
+              [value]="statusLabel(day.status)"
+              [severity]="statusSeverity(day.status)"
+              [icon]="statusIcon(day.status)"
+            />
+          </header>
+
+          <div class="mobile-metrics">
+            <div>
+              <span> Predicción </span>
+
+              <strong>
+                {{ formatNumber(day.predicted_total) }}
+              </strong>
+            </div>
+
+            <div>
+              <span> Venta real </span>
+
+              <strong>
+                {{ formatNumber(day.actual_total) }}
+              </strong>
+            </div>
+
+            <div>
+              <span> Diferencia </span>
+
+              <strong [class]="differenceClass(day.difference)">
+                {{ formatSignedNumber(day.difference) }}
+              </strong>
+            </div>
+
+            <div>
+              <span> Precisión </span>
+
+              <strong [class]="accuracyClass(day.accuracy_percentage)">
+                {{ formatPercentage(day.accuracy_percentage) }}
+              </strong>
+            </div>
+
+            <div>
+              <span> Pedidos </span>
+
+              <strong>
+                {{ formatNumber(day.delivered_orders) }}
+              </strong>
+            </div>
+
+            <div>
+              <span> Venta neta </span>
+
+              <strong>
+                {{ formatCurrency(day.actual_net_sales) }}
+              </strong>
+            </div>
+          </div>
+
+          <div class="mobile-result-note">
+            <span>
+              {{ differenceLabel(day.difference) }}
+            </span>
+
+            <span>
+              {{ accuracyDescription(day.accuracy_percentage) }}
+            </span>
+          </div>
+
+          <button
+            type="button"
+            class="mobile-expand-button"
+            [attr.aria-expanded]="isExpanded(day.date)"
+            (click)="toggleDay(day.date)"
+          >
+            <span>
+              {{
+                isExpanded(day.date)
+                  ? 'Ocultar comparación por tamaños'
+                  : 'Ver comparación por tamaños'
+              }}
+            </span>
+
+            <i
+              class="pi"
+              [class.pi-chevron-up]="isExpanded(day.date)"
+              [class.pi-chevron-down]="!isExpanded(day.date)"
+              aria-hidden="true"
+            ></i>
+          </button>
+
+          @if (isExpanded(day.date)) {
+            <div class="mobile-size-list">
+              @for (size of sizeComparison(day); track size.key) {
+                <div class="mobile-size-item">
+                  <div>
+                    <span>
+                      {{ size.label }}
+                    </span>
+
+                    <small> previsto / real </small>
+                  </div>
+
+                  <strong>
+                    {{ formatNumber(size.predicted) }}
+                    /
+                    {{ formatNumber(size.actual) }}
+                  </strong>
+
+                  <em [class]="differenceClass(size.difference)">
+                    {{ formatSignedNumber(size.difference) }}
+                  </em>
+                </div>
+              }
+            </div>
+          }
+        </article>
+      } @empty {
+        <div class="mobile-empty">
+          <i class="pi pi-inbox" aria-hidden="true"></i>
+
+          <strong> No existen resultados </strong>
+
+          <span> Selecciona otro periodo para consultar la comparación. </span>
+        </div>
+      }
+    </div>
+  </article>
+}

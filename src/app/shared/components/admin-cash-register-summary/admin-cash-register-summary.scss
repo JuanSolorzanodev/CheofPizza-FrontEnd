@@ -1,0 +1,513 @@
+:host {
+  display: grid;
+  min-width: 0;
+  gap: 1.25rem;
+}
+.cash-register-status {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem;
+
+  padding: 1.15rem 1.25rem;
+
+  border: 1px solid color-mix(in srgb, var(--cheof-success) 30%, var(--cheof-card-border));
+
+  border-radius: var(--cheof-radius-xl);
+
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--cheof-success) 7%, var(--cheof-card-background)),
+    var(--cheof-card-background)
+  );
+
+  box-shadow: var(--cheof-shadow-xs);
+}
+
+.cash-register-status__main {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 1rem;
+}
+
+.cash-register-status__indicator {
+  width: 14px;
+  min-width: 14px;
+  height: 14px;
+
+  border-radius: 50%;
+
+  background: var(--cheof-success);
+
+  box-shadow: 0 0 0 7px color-mix(in srgb, var(--cheof-success) 15%, transparent);
+}
+
+.cash-register-status__main div {
+  display: grid;
+  min-width: 0;
+  gap: 0.15rem;
+}
+
+.cash-register-status__main span {
+  color: var(--cheof-text-secondary);
+
+  font-size: 0.74rem;
+}
+
+.cash-register-status__main strong {
+  color: var(--cheof-text);
+
+  font-size: 1.05rem;
+}
+
+.cash-register-status__main small {
+  overflow: hidden;
+
+  color: var(--cheof-text-secondary);
+
+  font-size: 0.75rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cash-register-status__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.65rem;
+}
+
+.cash-summary-grid {
+  display: grid;
+
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+
+  gap: 1rem;
+}
+
+.cash-summary-card {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 0.9rem;
+
+  padding: 1.1rem;
+
+  border: 1px solid var(--cheof-card-border);
+
+  border-radius: var(--cheof-radius-lg);
+
+  background: var(--cheof-card-background);
+
+  box-shadow: var(--cheof-shadow-xs);
+
+  transition:
+    transform var(--cheof-transition),
+    box-shadow var(--cheof-transition);
+}
+
+.cash-summary-card:hover {
+  transform: translateY(-2px);
+
+  box-shadow: var(--cheof-shadow-sm);
+}
+
+.cash-summary-card__icon {
+  display: grid;
+  width: 48px;
+  min-width: 48px;
+  height: 48px;
+  place-items: center;
+
+  border-radius: 15px;
+
+  background: color-mix(in srgb, var(--p-primary-color) 11%, var(--cheof-card-background));
+
+  color: var(--p-primary-color);
+
+  font-size: 1.08rem;
+}
+
+.cash-summary-card--income .cash-summary-card__icon {
+  background: color-mix(in srgb, var(--cheof-success) 12%, var(--cheof-card-background));
+
+  color: var(--cheof-success);
+}
+
+.cash-summary-card--expense .cash-summary-card__icon {
+  background: color-mix(in srgb, var(--cheof-danger) 12%, var(--cheof-card-background));
+
+  color: var(--cheof-danger);
+}
+
+.cash-summary-card > div {
+  display: grid;
+  min-width: 0;
+  gap: 0.2rem;
+}
+
+.cash-summary-card span {
+  color: var(--cheof-text-secondary);
+
+  font-size: 0.76rem;
+}
+
+.cash-summary-card strong {
+  color: var(--cheof-text);
+
+  font-size: 1.12rem;
+}
+
+.cash-summary-card small {
+  overflow: hidden;
+
+  color: var(--cheof-text-secondary);
+
+  font-size: 0.7rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cash-register-balance {
+  display: grid;
+
+  grid-template-columns:
+    minmax(260px, 0.75fr)
+    minmax(0, 1.25fr);
+
+  align-items: center;
+  gap: 1.5rem;
+
+  padding: clamp(1.25rem, 3vw, 1.75rem);
+
+  overflow: hidden;
+
+  border: 1px solid color-mix(in srgb, var(--p-primary-color) 25%, var(--cheof-card-border));
+
+  border-radius: var(--cheof-radius-xl);
+
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--p-primary-color) 9%, var(--cheof-card-background)),
+    var(--cheof-card-background)
+  );
+
+  box-shadow: var(--cheof-shadow-sm);
+}
+
+.cash-register-balance__copy {
+  min-width: 0;
+}
+
+.cash-register-balance__copy > span {
+  color: var(--cheof-text-secondary);
+
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+
+.cash-register-balance__copy > strong {
+  display: block;
+  margin-top: 0.25rem;
+
+  color: var(--p-primary-color);
+
+  font-size: clamp(2rem, 5vw, 3.25rem);
+
+  line-height: 1;
+}
+
+.cash-register-balance__copy p {
+  max-width: 420px;
+  margin: 0.65rem 0 0;
+
+  color: var(--cheof-text-secondary);
+
+  font-size: 0.78rem;
+  line-height: 1.55;
+}
+
+.cash-register-balance__formula {
+  display: grid;
+
+  grid-template-columns: repeat(7, auto);
+
+  align-items: center;
+  justify-content: end;
+  gap: 0.6rem;
+}
+
+.cash-register-balance__formula div {
+  display: grid;
+  min-width: 95px;
+  gap: 0.2rem;
+
+  padding: 0.85rem;
+
+  border: 1px solid var(--cheof-card-border);
+
+  border-radius: var(--cheof-radius-md);
+
+  background: color-mix(in srgb, var(--cheof-card-background) 92%, transparent);
+
+  text-align: center;
+}
+
+.cash-register-balance__formula span {
+  color: var(--cheof-text-secondary);
+
+  font-size: 0.68rem;
+}
+
+.cash-register-balance__formula strong {
+  color: var(--cheof-text);
+
+  font-size: 0.9rem;
+}
+
+.cash-register-balance__formula > i {
+  color: var(--cheof-text-secondary);
+
+  font-size: 0.72rem;
+}
+
+.cash-register-collections {
+  min-width: 0;
+
+  padding: clamp(1rem, 2.5vw, 1.5rem);
+
+  border: 1px solid var(--cheof-card-border);
+
+  border-radius: var(--cheof-radius-xl);
+
+  background: var(--cheof-card-background);
+
+  box-shadow: var(--cheof-shadow-xs);
+}
+
+.cash-register-collections__total {
+  display: grid;
+  flex-shrink: 0;
+  gap: 0.1rem;
+
+  min-width: 180px;
+
+  padding: 0.8rem 1rem;
+
+  border: 1px solid color-mix(in srgb, var(--p-primary-color) 25%, var(--cheof-card-border));
+
+  border-radius: var(--cheof-radius-md);
+
+  background: color-mix(in srgb, var(--p-primary-color) 7%, var(--cheof-card-background));
+
+  text-align: right;
+}
+
+.cash-register-collections__total span,
+.cash-register-collections__total small {
+  color: var(--cheof-text-secondary);
+
+  font-size: 0.68rem;
+}
+
+.cash-register-collections__total strong {
+  color: var(--p-primary-color);
+
+  font-size: 1.35rem;
+}
+
+.cash-register-collections__grid {
+  display: grid;
+
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+
+  gap: 1rem;
+}
+
+.cash-collection-card {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 0.9rem;
+
+  padding: 1rem;
+
+  border: 1px solid var(--cheof-card-border);
+
+  border-radius: var(--cheof-radius-lg);
+
+  background: color-mix(
+    in srgb,
+    var(--cheof-card-background-muted) 35%,
+    var(--cheof-card-background)
+  );
+}
+
+.cash-collection-card__icon {
+  display: grid;
+  width: 48px;
+  min-width: 48px;
+  height: 48px;
+  place-items: center;
+
+  border-radius: 15px;
+
+  font-size: 1.05rem;
+}
+
+.cash-collection-card__icon--cash {
+  background: color-mix(in srgb, var(--cheof-success) 12%, var(--cheof-card-background));
+
+  color: var(--cheof-success);
+}
+
+.cash-collection-card__icon--transfer {
+  background: color-mix(in srgb, var(--cheof-info) 12%, var(--cheof-card-background));
+
+  color: var(--cheof-info);
+}
+
+.cash-collection-card__icon--paypal {
+  background: color-mix(in srgb, var(--cheof-info-strong) 12%, var(--cheof-card-background));
+
+  color: var(--cheof-info-strong);
+}
+
+.cash-collection-card > div {
+  display: grid;
+  min-width: 0;
+  gap: 0.2rem;
+}
+
+.cash-collection-card span {
+  color: var(--cheof-text-secondary);
+
+  font-size: 0.72rem;
+}
+
+.cash-collection-card strong {
+  color: var(--cheof-text);
+
+  font-size: 1.1rem;
+}
+
+.cash-collection-card small {
+  overflow: hidden;
+
+  color: var(--cheof-text-secondary);
+
+  font-size: 0.68rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cash-register-collections__notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+
+  margin-top: 1rem;
+  padding: 0.8rem 0.9rem;
+
+  border: 1px solid color-mix(in srgb, var(--cheof-info) 20%, var(--cheof-card-border));
+
+  border-radius: var(--cheof-radius-md);
+
+  background: color-mix(in srgb, var(--cheof-info) 5%, var(--cheof-card-background));
+
+  color: var(--cheof-info);
+}
+
+.cash-register-collections__notice i {
+  margin-top: 0.15rem;
+}
+
+.cash-register-collections__notice p {
+  margin: 0;
+
+  color: var(--cheof-text-secondary);
+
+  font-size: 0.72rem;
+  line-height: 1.55;
+}
+
+/* =========================================================
+   ACCESIBILIDAD
+   ========================================================= */
+
+.cash-register-header__actions .cash-register-status__actions :is(button, a):focus-visible {
+  outline: 0.16rem solid color-mix(in srgb, var(--p-primary-color) 38%, transparent);
+  outline-offset: 0.14rem;
+}
+
+@media (max-width: 1180px) {
+  .cash-summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .cash-register-balance {
+    grid-template-columns: 1fr;
+  }
+  .cash-register-balance__formula {
+    justify-content: start;
+  }
+}
+
+@media (max-width: 860px) {
+  .cash-register-status {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .cash-register-status__actions {
+    justify-content: flex-start;
+  }
+  .cash-register-balance__formula {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    width: 100%;
+  }
+  .cash-register-balance__formula > i {
+    display: none;
+  }
+  .cash-register-balance__formula div {
+    min-width: 0;
+  }
+  .cash-register-collections__grid {
+    grid-template-columns: 1fr;
+  }
+  .cash-register-collections__total {
+    width: 100%;
+    text-align: left;
+  }
+}
+
+@media (max-width: 600px) {
+  :host {
+    gap: 0.9rem;
+  }
+  .cash-register-status,
+  .cash-register-balance {
+    border-radius: var(--cheof-radius-lg);
+  }
+  .cash-summary-grid {
+    grid-template-columns: 1fr;
+  }
+  .cash-register-status__actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+  .cash-register-status__actions :is(.p-button, p-button) {
+    width: 100%;
+  }
+  .cash-register-balance__formula {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cash-summary-card {
+    transition: none;
+  }
+  .cash-summary-card:hover {
+    transform: none;
+  }
+}

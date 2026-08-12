@@ -1,0 +1,62 @@
+<article class="transaction-mobile-card">
+  <header class="transaction-mobile-card__header">
+    <div [class]="methodClass(transaction().method)">
+      <span class="transaction-method__icon">
+        <i [class]="methodIcon(transaction().method)" aria-hidden="true"></i>
+      </span>
+      <div>
+        <strong>{{ methodLabel(transaction().method) }}</strong>
+        <small>{{ sourceLabel(transaction().source) }}</small>
+      </div>
+    </div>
+    <p-tag
+      [value]="statusLabel(transaction().status)"
+      [severity]="statusSeverity(transaction().status)"
+      [icon]="statusIcon(transaction().status)"
+    />
+  </header>
+
+  <div class="transaction-mobile-card__body">
+    <div class="transaction-mobile-order">
+      <span>Pedido</span>
+      <strong>{{ transaction().order_number || 'Sin pedido relacionado' }}</strong>
+    </div>
+
+    <div class="transaction-mobile-customer">
+      <span class="transaction-mobile-customer__avatar" aria-hidden="true">
+        <i class="pi pi-user"></i>
+      </span>
+      <div>
+        <strong>{{ transaction().customer.name || 'Cliente sin nombre' }}</strong>
+        <small>{{ customerContact(transaction()) }}</small>
+      </div>
+    </div>
+
+    <div class="transaction-mobile-card__meta">
+      <div>
+        <span>Fecha efectiva</span>
+        <strong>
+          @if (transaction().effective_at) {
+            {{ transaction().effective_at | date: 'dd/MM/yyyy HH:mm' }}
+          } @else {
+            Sin fecha
+          }
+        </strong>
+      </div>
+      <div class="transaction-mobile-card__amount">
+        <span>Monto</span>
+        <strong>{{ transaction().amount | currency: transaction().currency }}</strong>
+      </div>
+    </div>
+  </div>
+
+  <footer class="transaction-mobile-card__footer">
+    <code class="transaction-mobile-reference">
+      {{ transaction().reference || transaction().transaction_key }}
+    </code>
+    <button type="button" class="transaction-mobile-detail" (click)="view.emit(transaction())">
+      <span>Ver detalle</span>
+      <i class="pi pi-arrow-right" aria-hidden="true"></i>
+    </button>
+  </footer>
+</article>

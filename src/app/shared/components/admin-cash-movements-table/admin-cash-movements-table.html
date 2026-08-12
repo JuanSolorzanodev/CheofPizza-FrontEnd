@@ -1,0 +1,107 @@
+<section class="cash-register-section">
+  <header class="cash-register-section__header">
+    <div>
+      <span> Actividad de caja </span>
+
+      <h3>Movimientos recientes</h3>
+
+      <p>Ingresos y egresos manuales registrados durante la sesión actual.</p>
+    </div>
+
+    <p-button
+      icon="pi pi-plus"
+      label="Nuevo movimiento"
+      [outlined]="true"
+      (onClick)="movementRequested.emit('income')"
+    />
+  </header>
+
+  @if (movements().length > 0) {
+    <p-table
+      [value]="movements()"
+      [rowHover]="true"
+      [scrollable]="true"
+      scrollHeight="420px"
+      styleClass="cash-movement-table"
+    >
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Tipo</th>
+
+          <th>Motivo</th>
+
+          <th>Responsable</th>
+
+          <th>Fecha</th>
+
+          <th class="cash-movement-table__amount">Monto</th>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="body" let-movement>
+        <tr>
+          <td>
+            <p-tag
+              [value]="movementLabel(movement.type)"
+              [severity]="movementSeverity(movement.type)"
+              [icon]="
+                movement.type === 'income' ? 'pi pi-arrow-down-left' : 'pi pi-arrow-up-right'
+              "
+            />
+          </td>
+
+          <td>
+            <div class="cash-movement-reason">
+              <strong>
+                {{ movement.reason }}
+              </strong>
+
+              <small>
+                {{ movement.uuid }}
+              </small>
+            </div>
+          </td>
+
+          <td>
+            <div class="cash-movement-user">
+              <span>
+                {{ movement.created_by.name || 'Administrador' }}
+              </span>
+            </div>
+          </td>
+
+          <td>
+            <span class="cash-movement-date">
+              @if (movement.occurred_at) {
+                {{ movement.occurred_at | date: 'dd/MM/yyyy HH:mm' }}
+              } @else {
+                Sin fecha
+              }
+            </span>
+          </td>
+
+          <td class="cash-movement-table__amount">
+            <strong
+              [class.cash-movement-amount--income]="movement.type === 'income'"
+              [class.cash-movement-amount--expense]="movement.type === 'expense'"
+            >
+              {{ movementSign(movement.type) }}
+
+              {{ movement.amount | currency: 'USD' }}
+            </strong>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  } @else {
+    <div class="cash-register-empty cash-register-empty--compact">
+      <span class="cash-register-empty__icon">
+        <i class="pi pi-inbox"></i>
+      </span>
+
+      <h4>No existen movimientos manuales</h4>
+
+      <p>Los ingresos y egresos que registres aparecerán en esta sección.</p>
+    </div>
+  }
+</section>

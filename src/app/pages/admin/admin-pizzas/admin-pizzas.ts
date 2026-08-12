@@ -23,8 +23,6 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
 import { SkeletonModule } from 'primeng/skeleton';
-import { TagModule } from 'primeng/tag';
-import { TooltipModule } from 'primeng/tooltip';
 
 import { AdminCatalogApiService } from '../../../core/api/admin/catalog/admin-catalog-api.service';
 import {
@@ -33,8 +31,12 @@ import {
   AdminValidationErrorResponse,
 } from '../../../core/api/admin/catalog/admin-catalog.models';
 import {
+  AdminPizzaCardComponent,
+} from '../../../shared/components/admin-pizza-card/admin-pizza-card';
+import {
   AdminPizzaEditorComponent,
-} from '../admin-pizza-editor/admin-pizza-editor';
+  AdminPizzaEditorSavedEvent,
+} from '../../../shared/components/admin-pizza-editor/admin-pizza-editor';
 
 import { CatalogApiService } from '../../../core/api/catalog/catalog-api.service';
 import {
@@ -47,10 +49,6 @@ interface SelectOption<T = number | string> {
 }
 
 
-interface AdminPizzaEditorSavedEvent {
-  pizza: AdminPizza;
-  editing: boolean;
-}
 
 @Component({
   selector: 'app-admin-pizzas',
@@ -63,8 +61,7 @@ interface AdminPizzaEditorSavedEvent {
     InputTextModule,
     SelectModule,
     SkeletonModule,
-    TagModule,
-    TooltipModule,
+    AdminPizzaCardComponent,
     AdminPizzaEditorComponent,
   ],
   providers: [
@@ -480,43 +477,6 @@ export class AdminPizzas {
       accept: () =>
         this.deletePizza(pizza),
     });
-  }
-
-  ingredientNames(
-    pizza: AdminPizza,
-  ): string {
-    if (!pizza.ingredients.length) {
-      return 'Sin ingredientes';
-    }
-
-    return pizza.ingredients
-      .map(
-        ingredient =>
-          ingredient.name,
-      )
-      .join(', ');
-  }
-
-  usageLabel(
-    pizza: AdminPizza,
-  ): string {
-    const total =
-      pizza.usage?.total ?? 0;
-
-    if (total === 0) {
-      return 'Sin uso registrado';
-    }
-
-    return total === 1
-      ? '1 registro asociado'
-      : `${total} registros asociados`;
-  }
-
-  trackPizza(
-    _: number,
-    pizza: AdminPizza,
-  ): number {
-    return pizza.id;
   }
 
   private updateVisibility(

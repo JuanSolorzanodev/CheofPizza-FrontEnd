@@ -1,16 +1,27 @@
-import { Injectable } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
+import { inject, Injectable } from '@angular/core';
 
 @Injectable({ providedIn: 'root' })
 export class ScrollService {
+  private readonly document = inject(DOCUMENT);
+
   /**
    * Desplaza suavemente a un elemento por id.
-   * offsetPx: útil si tu toolbar es fixed y tapa el título.
+   * offsetPx es útil cuando una barra fija puede cubrir el destino.
    */
   scrollToId(id: string, offsetPx = 0): void {
-    const el = document.getElementById(id);
-    if (!el) return;
+    const element = this.document.getElementById(id);
+    const windowRef = this.document.defaultView;
 
-    const y = el.getBoundingClientRect().top + window.scrollY - offsetPx;
-    window.scrollTo({ top: y, behavior: 'smooth' });
+    if (!element || !windowRef) {
+      return;
+    }
+
+    const y = element.getBoundingClientRect().top + windowRef.scrollY - offsetPx;
+
+    windowRef.scrollTo({
+      top: y,
+      behavior: 'smooth',
+    });
   }
 }

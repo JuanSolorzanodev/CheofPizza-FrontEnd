@@ -1,0 +1,103 @@
+<p-card styleClass="receipt-card card">
+  <ng-template pTemplate="header">
+    <div class="card-header receipt-card__header">
+      <div class="card-title">
+        <span class="card-icon receipt-icon"><i class="pi pi-receipt" aria-hidden="true"></i></span>
+        <div>
+          <span class="card-kicker">Validación del pago</span>
+          <strong>Comprobante de transferencia</strong>
+        </div>
+      </div>
+
+      @if (receipt(); as current) {
+        <p-tag [value]="statusLabel(current.status)" [severity]="statusSeverity(current.status)" [rounded]="true" />
+      }
+    </div>
+  </ng-template>
+
+  @if (error()) {
+    <p-message severity="error" [text]="error()!" styleClass="receipt-message" />
+  }
+  @if (success()) {
+    <p-message severity="success" [text]="success()!" styleClass="receipt-message" />
+  }
+
+  @if (receipt(); as current) {
+    <div class="receipt-layout">
+      <section class="receipt-file">
+        <div class="receipt-file__preview" [class.receipt-file__preview--image]="isImage(current)" [class.receipt-file__preview--pdf]="isPdf(current)">
+          @if (isImage(current)) {
+            <i class="pi pi-image" aria-hidden="true"></i><strong>Comprobante en imagen</strong>
+          } @else if (isPdf(current)) {
+            <i class="pi pi-file-pdf" aria-hidden="true"></i><strong>Documento PDF</strong>
+          } @else {
+            <i class="pi pi-file" aria-hidden="true"></i><strong>Archivo adjunto</strong>
+          }
+          <span>Haz clic en “Ver comprobante” para abrir el archivo privado.</span>
+        </div>
+
+        <div class="receipt-file__information">
+          <div class="receipt-file__name"><span>Archivo</span><strong>{{ current.original_name }}</strong></div>
+          <div class="receipt-file__metadata">
+            <span><i class="pi pi-file" aria-hidden="true"></i>{{ current.mime_type }}</span>
+            <span><i class="pi pi-database" aria-hidden="true"></i>{{ fileSize(current.file_size) }}</span>
+            <span><i class="pi pi-calendar" aria-hidden="true"></i>Enviado: {{ formatDate(current.submitted_at) }}</span>
+          </div>
+          <p-button label="Ver comprobante" icon="pi pi-eye" severity="secondary" [outlined]="true" [loading]="loading()" [disabled]="loading() || !current.file_available" styleClass="receipt-view-button" (onClick)="openPreview()" />
+        </div>
+      </section>
+
+      <section class="receipt-review">
+        <div class="receipt-review__summary">
+          <div class="receipt-review__status">
+            <span class="receipt-review__status-icon" [class.is-pending]="current.status === 'pending'" [class.is-approved]="current.status === 'approved'" [class.is-rejected]="current.status === 'rejected'">
+              <i [class]="current.status === 'approved' ? 'pi pi-check' : current.status === 'rejected' ? 'pi pi-times' : 'pi pi-clock'" aria-hidden="true"></i>
+            </span>
+            <div><span>Estado de revisión</span><strong>{{ statusLabel(current.status) }}</strong></div>
+          </div>
+
+          @if (current.reviewed_at) {
+            <div class="receipt-review__detail"><span>Fecha de revisión</span><strong>{{ formatDate(current.reviewed_at) }}</strong></div>
+          }
+          @if (current.reviewed_by; as reviewer) {
+            <div class="receipt-review__detail"><span>Revisado por</span><strong>{{ reviewer.name }}</strong></div>
+          }
+          @if (current.status === 'rejected' && current.rejection_reason) {
+            <div class="receipt-rejection-reason"><span>Motivo del rechazo</span><p>{{ current.rejection_reason }}</p></div>
+          }
+        </div>
+
+        @if (canReview()) {
+          <div class="receipt-review__notice"><i class="pi pi-info-circle" aria-hidden="true"></i><p>Revisa que el valor, la fecha y los datos bancarios sean correctos antes de aprobar el comprobante.</p></div>
+          <div class="receipt-review__actions">
+            <p-button label="Aprobar comprobante" icon="pi pi-check" severity="success" [loading]="reviewing()" [disabled]="reviewing()" styleClass="receipt-action-button" (onClick)="approve()" />
+            <p-button label="Rechazar" icon="pi pi-times" severity="danger" [outlined]="true" [disabled]="reviewing()" styleClass="receipt-action-button" (onClick)="openRejectDialog()" />
+          </div>
+        } @else if (current.status === 'approved') {
+          <div class="receipt-result receipt-result--approved"><i class="pi pi-check-circle" aria-hidden="true"></i><div><strong>Pago validado</strong><p>El comprobante fue aprobado y no requiere más acciones.</p></div></div>
+        } @else if (current.status === 'rejected') {
+          <div class="receipt-result receipt-result--rejected"><i class="pi pi-times-circle" aria-hidden="true"></i><div><strong>Comprobante rechazado</strong><p>El cliente deberá enviar un nuevo comprobante para continuar con la validación.</p></div></div>
+        } @else if (!current.file_available) {
+          <div class="receipt-result receipt-result--unavailable"><i class="pi pi-file-excel" aria-hidden="true"></i><div><strong>Archivo no disponible</strong><p>El comprobante ya no está disponible para visualización.</p></div></div>
+        }
+      </section>
+    </div>
+  } @else {
+    <div class="receipt-empty">
+      <span class="receipt-empty__icon"><i class="pi pi-cloud-upload" aria-hidden="true"></i></span>
+      <div><strong>El cliente todavía no ha enviado el comprobante</strong><p>Esta sección se actualizará cuando el cliente cargue el archivo de la transferencia.</p></div>
+    </div>
+  }
+</p-card>
+
+<app-operator-payment-receipt-dialogs
+  [previewVisible]="previewVisible()"
+  [previewUrl]="previewUrl()"
+  [previewMime]="previewMime()"
+  [rejectionVisible]="rejectionVisible()"
+  [reviewing]="reviewing()"
+  [rejectionError]="error()"
+  (previewClosed)="closePreview()"
+  (rejectionClosed)="closeRejectDialog()"
+  (rejectionConfirmed)="reject($event)"
+/>

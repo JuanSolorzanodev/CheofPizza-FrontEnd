@@ -10,6 +10,7 @@ import {
   input,
   output,
   signal,
+  untracked,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
@@ -139,7 +140,11 @@ export class AdminSettingsFormComponent {
 
   constructor() {
     effect(() => {
-      this.patchForm(this.settings());
+      const currentSettings = this.settings();
+
+      untracked(() => {
+        this.patchForm(currentSettings);
+      });
     });
 
     this.listenFormChanges();

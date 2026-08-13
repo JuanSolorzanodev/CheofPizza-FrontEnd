@@ -7,9 +7,7 @@
   [dismissableMask]="!loading"
   [closeOnEscape]="!loading"
   [styleClass]="
-    view === 'register'
-      ? 'auth-dialog auth-dialog--register'
-      : 'auth-dialog auth-dialog--compact'
+    view === 'register' ? 'auth-dialog auth-dialog--register' : 'auth-dialog auth-dialog--compact'
   "
   (visibleChange)="onVisibleChange($event)"
 >
@@ -20,77 +18,18 @@
     [class.auth-shell--google-profile]="view === 'google-profile'"
     [attr.aria-busy]="loading"
   >
-
-    @if (view === 'register') {
-      <aside class="register-showcase" aria-hidden="true">
-        <div class="register-showcase__glow register-showcase__glow--one"></div>
-        <div class="register-showcase__glow register-showcase__glow--two"></div>
-
-        <div class="register-showcase__brand">
-          <img
-            src="/assets/branding/cheof-pizza-logo-header.png"
-            alt=""
-            width="512"
-            height="379"
-          />
-        </div>
-
-        <div class="register-showcase__content">
-          <span class="register-showcase__eyebrow">Tu cuenta Cheof Pizza</span>
-          <h3>Más rápido para pedir. Más fácil para volver.</h3>
-          <p>Guarda tus datos y consulta el avance de tus pedidos desde un solo lugar.</p>
-
-          <div class="register-benefits">
-            <div class="register-benefit">
-              <span><i class="pi pi-shopping-bag"></i></span>
-              <div>
-                <strong>Pedidos en un solo lugar</strong>
-                <small>Consulta tu historial y tus órdenes activas.</small>
-              </div>
-            </div>
-
-            <div class="register-benefit">
-              <span><i class="pi pi-bolt"></i></span>
-              <div>
-                <strong>Checkout más rápido</strong>
-                <small>Menos pasos cuando vuelvas a comprar.</small>
-              </div>
-            </div>
-
-            <div class="register-benefit">
-              <span><i class="pi pi-shield"></i></span>
-              <div>
-                <strong>Acceso seguro</strong>
-                <small>Tus datos se usan únicamente para gestionar tu cuenta y pedidos.</small>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="register-showcase__footer">
-          <i class="pi pi-lock"></i>
-          Compra segura y seguimiento de pedidos
-        </div>
-      </aside>
-    }
-
     <!-- =====================================================
          HEADER
          ===================================================== -->
     <header class="auth-header">
-      <a
-        class="auth-brand"
-        href="/"
-        aria-label="Ir al inicio de Cheof Pizza"
-        (click)="close()"
-      >
-        <img
-          class="auth-brand__logo"
-          src="/assets/branding/cheof-pizza-logo-header.png"
-          alt="Cheof Pizza"
-          width="512"
-          height="379"
-        />
+      <a class="auth-brand" href="/" aria-label="Ir al inicio de Cheof Pizza" (click)="close()">
+        <span class="auth-brand__viewport">
+          <img
+            class="auth-brand__logo"
+            src="/assets/branding/cheof-pizza-logo-header.png"
+            alt="Cheof Pizza"
+          />
+        </span>
       </a>
 
       <button
@@ -100,10 +39,7 @@
         [disabled]="loading"
         (click)="close()"
       >
-        <i
-          class="pi pi-times"
-          aria-hidden="true"
-        ></i>
+        <i class="pi pi-times" aria-hidden="true"></i>
       </button>
     </header>
 
@@ -111,55 +47,32 @@
          LOGIN
          ===================================================== -->
     @if (view === 'login') {
-      <main class="auth-content">
+      <main class="auth-content auth-content--compact">
         <div class="auth-heading">
-          <span class="auth-heading__eyebrow">
-            Bienvenido
-          </span>
+          <span class="auth-heading__eyebrow"> Bienvenido de nuevo </span>
 
-          <h2>
-            Inicia sesión
-          </h2>
+          <h2>Inicia sesión</h2>
 
-          <p>
-            Accede a tu cuenta para continuar con tu pedido.
-          </p>
+          <p>Accede a tu cuenta para continuar con tus pedidos.</p>
         </div>
 
         @if (errorMessage) {
-          <p-message
-            severity="error"
-            styleClass="auth-message"
-          >
+          <p-message severity="error" styleClass="auth-message">
             {{ errorMessage }}
           </p-message>
         }
 
-        <form
-          class="auth-form"
-          novalidate
-          (ngSubmit)="login()"
-        >
-          <!-- CORREO -->
+        <form class="auth-form" novalidate (ngSubmit)="login()">
           <div class="field">
-            <label
-              class="field__label"
-              for="login-email"
-            >
-              Correo electrónico
-            </label>
+            <label class="field__label" for="login-email"> Correo electrónico </label>
 
             <div
               class="input-shell"
               [class.input-shell--invalid]="
-                loginForm.controls.email.invalid &&
-                loginForm.controls.email.touched
+                loginForm.controls.email.invalid && loginForm.controls.email.touched
               "
             >
-              <i
-                class="pi pi-envelope"
-                aria-hidden="true"
-              ></i>
+              <i class="pi pi-envelope" aria-hidden="true"></i>
 
               <input
                 id="login-email"
@@ -172,45 +85,26 @@
               />
             </div>
 
-            @if (
-              loginForm.controls.email.invalid &&
-              loginForm.controls.email.touched
-            ) {
-              <small class="field__error">
-                Ingresa un correo electrónico válido.
-              </small>
+            @if (loginForm.controls.email.invalid && loginForm.controls.email.touched) {
+              <small class="field__error"> Ingresa un correo electrónico válido. </small>
             }
           </div>
 
-          <!-- CONTRASEÑA -->
           <div class="field">
-            <label
-              class="field__label"
-              for="login-password"
-            >
-              Contraseña
-            </label>
+            <label class="field__label" for="login-password"> Contraseña </label>
 
             <div
-              class="input-shell"
+              class="input-shell input-shell--password"
               [class.input-shell--invalid]="
-                loginForm.controls.password.invalid &&
-                loginForm.controls.password.touched
+                loginForm.controls.password.invalid && loginForm.controls.password.touched
               "
             >
-              <i
-                class="pi pi-lock"
-                aria-hidden="true"
-              ></i>
+              <i class="pi pi-lock" aria-hidden="true"></i>
 
               <input
                 id="login-password"
                 pInputText
-                [type]="
-                  showLoginPassword
-                    ? 'text'
-                    : 'password'
-                "
+                [type]="showLoginPassword ? 'text' : 'password'"
                 autocomplete="current-password"
                 placeholder="Ingresa tu contraseña"
                 [formControl]="loginForm.controls.password"
@@ -219,15 +113,8 @@
               <button
                 type="button"
                 class="password-toggle"
-                [attr.aria-label]="
-                  showLoginPassword
-                    ? 'Ocultar contraseña'
-                    : 'Mostrar contraseña'
-                "
-                (click)="
-                  showLoginPassword =
-                    !showLoginPassword
-                "
+                [attr.aria-label]="showLoginPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+                (click)="showLoginPassword = !showLoginPassword"
               >
                 <i
                   class="pi"
@@ -238,47 +125,26 @@
               </button>
             </div>
 
-            @if (
-              loginForm.controls.password.invalid &&
-              loginForm.controls.password.touched
-            ) {
-              <small class="field__error">
-                Ingresa tu contraseña.
-              </small>
+            @if (loginForm.controls.password.invalid && loginForm.controls.password.touched) {
+              <small class="field__error"> Ingresa tu contraseña. </small>
             }
           </div>
 
-          <button
-            type="submit"
-            class="primary-button"
-            [disabled]="loading"
-          >
+          <button type="submit" class="primary-button" [disabled]="loading">
             @if (loading) {
-              <i
-                class="pi pi-spin pi-spinner"
-                aria-hidden="true"
-              ></i>
+              <i class="pi pi-spin pi-spinner" aria-hidden="true"></i>
 
-              <span>
-                Ingresando...
-              </span>
+              <span> Ingresando... </span>
             } @else {
-              <span>
-                Iniciar sesión
-              </span>
+              <span> Iniciar sesión </span>
 
-              <i
-                class="pi pi-arrow-right"
-                aria-hidden="true"
-              ></i>
+              <i class="pi pi-arrow-right" aria-hidden="true"></i>
             }
           </button>
         </form>
 
         <div class="auth-separator">
-          <span>
-            o continúa con
-          </span>
+          <span> o continúa con </span>
         </div>
 
         <button
@@ -287,99 +153,55 @@
           [disabled]="loading"
           (click)="continueWithGoogle()"
         >
-          <span
-            class="google-button__icon"
-            aria-hidden="true"
-          >
-            <img
-              src="/assets/branding/google-g.svg"
-              alt=""
-              width="22"
-              height="22"
-            />
+          <span class="google-button__icon" aria-hidden="true">
+            <img src="/assets/branding/google-g.svg" alt="" />
           </span>
 
-          <span class="google-button__label">
-            Continuar con Google
-          </span>
+          <span class="google-button__label"> Continuar con Google </span>
 
-          <span
-            class="google-button__balance"
-            aria-hidden="true"
-          ></span>
+          <span class="google-button__balance" aria-hidden="true"></span>
         </button>
 
         <div class="auth-switch">
-          <span>
-            ¿Aún no tienes una cuenta?
-          </span>
+          <span> ¿Aún no tienes una cuenta? </span>
 
-          <button
-            type="button"
-            [disabled]="loading"
-            (click)="showRegister()"
-          >
-            Crear cuenta
-          </button>
+          <button type="button" [disabled]="loading" (click)="showRegister()">Crear cuenta</button>
         </div>
       </main>
     }
 
     <!-- =====================================================
-         REGISTRO
+         REGISTER
          ===================================================== -->
     @if (view === 'register') {
       <main class="auth-content auth-content--register">
-        <div class="auth-heading">
-          <span class="auth-heading__eyebrow">
-            Nueva cuenta
-          </span>
+        <div class="auth-heading auth-heading--register">
+          <span class="auth-heading__eyebrow"> Nueva cuenta </span>
 
-          <h2>
-            Crea tu cuenta
-          </h2>
+          <h2>Crea tu cuenta</h2>
 
-          <p>
-            Guarda tus pedidos y disfruta de una experiencia
-            de compra más rápida.
-          </p>
+          <p>Completa tus datos para guardar tus pedidos y comprar más rápido la próxima vez.</p>
         </div>
 
         @if (errorMessage) {
-          <p-message
-            severity="error"
-            styleClass="auth-message"
-          >
+          <p-message severity="error" styleClass="auth-message">
             {{ errorMessage }}
           </p-message>
         }
 
-        <form
-          class="auth-form auth-form--register"
-          novalidate
-          (ngSubmit)="register()"
-        >
+        <form class="auth-form auth-form--register" novalidate (ngSubmit)="register()">
           <div class="form-grid">
             <!-- NOMBRES -->
             <div class="field">
-              <label
-                class="field__label"
-                for="register-first-name"
-              >
-                Nombres
-              </label>
+              <label class="field__label" for="register-first-name"> Nombres </label>
 
               <div
                 class="input-shell"
                 [class.input-shell--invalid]="
-                  registerForm.controls.firstName.invalid &&
-                  registerForm.controls.firstName.touched
+                  registerForm.controls.firstName.invalid && registerForm.controls.firstName.touched
                 "
               >
-                <i
-                  class="pi pi-user"
-                  aria-hidden="true"
-                ></i>
+                <i class="pi pi-user" aria-hidden="true"></i>
 
                 <input
                   id="register-first-name"
@@ -391,10 +213,7 @@
                 />
               </div>
 
-              @if (
-                registerFieldError('firstName');
-                as error
-              ) {
+              @if (registerFieldError('firstName'); as error) {
                 <small class="field__error">
                   {{ error }}
                 </small>
@@ -403,24 +222,15 @@
 
             <!-- APELLIDOS -->
             <div class="field">
-              <label
-                class="field__label"
-                for="register-last-name"
-              >
-                Apellidos
-              </label>
+              <label class="field__label" for="register-last-name"> Apellidos </label>
 
               <div
                 class="input-shell"
                 [class.input-shell--invalid]="
-                  registerForm.controls.lastName.invalid &&
-                  registerForm.controls.lastName.touched
+                  registerForm.controls.lastName.invalid && registerForm.controls.lastName.touched
                 "
               >
-                <i
-                  class="pi pi-user"
-                  aria-hidden="true"
-                ></i>
+                <i class="pi pi-user" aria-hidden="true"></i>
 
                 <input
                   id="register-last-name"
@@ -432,36 +242,24 @@
                 />
               </div>
 
-              @if (
-                registerFieldError('lastName');
-                as error
-              ) {
+              @if (registerFieldError('lastName'); as error) {
                 <small class="field__error">
                   {{ error }}
                 </small>
               }
             </div>
 
-            <!-- CORREO -->
+            <!-- EMAIL -->
             <div class="field">
-              <label
-                class="field__label"
-                for="register-email"
-              >
-                Correo electrónico
-              </label>
+              <label class="field__label" for="register-email"> Correo electrónico </label>
 
               <div
                 class="input-shell"
                 [class.input-shell--invalid]="
-                  registerForm.controls.email.invalid &&
-                  registerForm.controls.email.touched
+                  registerForm.controls.email.invalid && registerForm.controls.email.touched
                 "
               >
-                <i
-                  class="pi pi-envelope"
-                  aria-hidden="true"
-                ></i>
+                <i class="pi pi-envelope" aria-hidden="true"></i>
 
                 <input
                   id="register-email"
@@ -474,34 +272,32 @@
                 />
               </div>
 
-              @if (
-                registerFieldError('email');
-                as error
-              ) {
+              @if (registerFieldError('email'); as error) {
                 <small class="field__error">
                   {{ error }}
                 </small>
               }
             </div>
 
-            <!-- CELULAR -->
+            <!-- PHONE -->
             <div class="field">
-              <label
-                class="field__label"
-                for="register-phone"
-              >
-                Celular
-              </label>
+              <label class="field__label" for="register-phone"> Celular </label>
 
               <div
                 class="input-shell input-shell--phone"
                 [class.input-shell--invalid]="
-                  registerForm.controls.phone.invalid &&
-                  registerForm.controls.phone.touched
+                  registerForm.controls.phone.invalid && registerForm.controls.phone.touched
                 "
               >
-                <span class="phone-prefix">
-                  +593
+                <span
+                  class="phone-prefix"
+                  aria-label="Código de país Ecuador más quinientos noventa y tres"
+                >
+                  <span class="ecuador-flag" aria-hidden="true">
+                    <span class="ecuador-flag__shield"></span>
+                  </span>
+
+                  <span class="phone-prefix__code"> +593 </span>
                 </span>
 
                 <input
@@ -516,44 +312,31 @@
                 />
               </div>
 
-              <small class="field__hint">
-                9 dígitos, sin el cero inicial.
-              </small>
+              <small class="field__hint"> 9 dígitos, sin el cero inicial. </small>
 
-              @if (
-                registerFieldError('phone');
-                as error
-              ) {
+              @if (registerFieldError('phone'); as error) {
                 <small class="field__error">
                   {{ error }}
                 </small>
               }
             </div>
 
-            <!-- CONTRASEÑA -->
+            <!-- PASSWORD -->
             <div class="field">
-              <label
-                class="field__label"
-                for="register-password"
-              >
-                Contraseña
-              </label>
+              <label class="field__label" for="register-password"> Contraseña </label>
 
               <div
                 class="input-shell input-shell--password"
                 [class.input-shell--invalid]="
-                  registerForm.controls.password.invalid &&
-                  registerForm.controls.password.touched
+                  registerForm.controls.password.invalid && registerForm.controls.password.touched
                 "
               >
+                <i class="pi pi-lock" aria-hidden="true"></i>
+
                 <input
                   id="register-password"
                   pInputText
-                  [type]="
-                    showRegisterPassword
-                      ? 'text'
-                      : 'password'
-                  "
+                  [type]="showRegisterPassword ? 'text' : 'password'"
                   autocomplete="new-password"
                   placeholder="Crea una contraseña"
                   [formControl]="registerForm.controls.password"
@@ -563,14 +346,9 @@
                   type="button"
                   class="password-toggle"
                   [attr.aria-label]="
-                    showRegisterPassword
-                      ? 'Ocultar contraseña'
-                      : 'Mostrar contraseña'
+                    showRegisterPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'
                   "
-                  (click)="
-                    showRegisterPassword =
-                      !showRegisterPassword
-                  "
+                  (click)="showRegisterPassword = !showRegisterPassword"
                 >
                   <i
                     class="pi"
@@ -581,89 +359,58 @@
                 </button>
               </div>
 
-              <small class="field__hint">
-                8+ caracteres, mayúscula, minúscula y número.
-              </small>
+              <small class="field__hint"> 8+ caracteres, mayúscula, minúscula y número. </small>
 
-              @if (
-                registerFieldError('password');
-                as error
-              ) {
+              @if (registerFieldError('password'); as error) {
                 <small class="field__error">
                   {{ error }}
                 </small>
               }
             </div>
 
-            <!-- CONFIRMACIÓN -->
+            <!-- CONFIRM PASSWORD -->
             <div class="field">
-              <label
-                class="field__label"
-                for="register-password-confirmation"
-              >
+              <label class="field__label" for="register-password-confirmation">
                 Confirmar contraseña
               </label>
 
               <div
                 class="input-shell input-shell--password"
                 [class.input-shell--invalid]="
-                  (
-                    registerForm.controls
-                      .passwordConfirmation.invalid ||
-                    registerForm.errors?.['passwordMismatch']
-                  ) &&
-                  registerForm.controls
-                    .passwordConfirmation.touched
+                  (registerForm.controls.passwordConfirmation.invalid ||
+                    registerForm.errors?.['passwordMismatch']) &&
+                  registerForm.controls.passwordConfirmation.touched
                 "
               >
+                <i class="pi pi-lock" aria-hidden="true"></i>
+
                 <input
                   id="register-password-confirmation"
                   pInputText
-                  [type]="
-                    showRegisterPasswordConfirmation
-                      ? 'text'
-                      : 'password'
-                  "
+                  [type]="showRegisterPasswordConfirmation ? 'text' : 'password'"
                   autocomplete="new-password"
                   placeholder="Repite tu contraseña"
-                  [formControl]="
-                    registerForm.controls
-                      .passwordConfirmation
-                  "
+                  [formControl]="registerForm.controls.passwordConfirmation"
                 />
 
                 <button
                   type="button"
                   class="password-toggle"
                   [attr.aria-label]="
-                    showRegisterPasswordConfirmation
-                      ? 'Ocultar contraseña'
-                      : 'Mostrar contraseña'
+                    showRegisterPasswordConfirmation ? 'Ocultar contraseña' : 'Mostrar contraseña'
                   "
-                  (click)="
-                    showRegisterPasswordConfirmation =
-                      !showRegisterPasswordConfirmation
-                  "
+                  (click)="showRegisterPasswordConfirmation = !showRegisterPasswordConfirmation"
                 >
                   <i
                     class="pi"
-                    [class.pi-eye]="
-                      !showRegisterPasswordConfirmation
-                    "
-                    [class.pi-eye-slash]="
-                      showRegisterPasswordConfirmation
-                    "
+                    [class.pi-eye]="!showRegisterPasswordConfirmation"
+                    [class.pi-eye-slash]="showRegisterPasswordConfirmation"
                     aria-hidden="true"
                   ></i>
                 </button>
               </div>
 
-              @if (
-                registerFieldError(
-                  'passwordConfirmation'
-                );
-                as error
-              ) {
+              @if (registerFieldError('passwordConfirmation'); as error) {
                 <small class="field__error">
                   {{ error }}
                 </small>
@@ -671,68 +418,47 @@
             </div>
           </div>
 
-          <!-- PRIVACIDAD -->
+          <!-- TERMS -->
           <div
             class="terms-row"
             [class.terms-row--invalid]="
-              registerForm.controls.acceptTerms.invalid &&
-              registerForm.controls.acceptTerms.touched
+              registerForm.controls.acceptTerms.invalid && registerForm.controls.acceptTerms.touched
             "
           >
             <p-checkbox
               inputId="register-terms"
               [binary]="true"
-              [formControl]="
-                registerForm.controls.acceptTerms
-              "
+              [formControl]="registerForm.controls.acceptTerms"
             ></p-checkbox>
 
             <label for="register-terms">
-              Acepto el tratamiento de mis datos
-              para crear y gestionar mi cuenta.
+              Acepto el tratamiento de mis datos para crear y gestionar mi cuenta.
             </label>
           </div>
 
           @if (
-            registerForm.controls.acceptTerms.invalid &&
-            registerForm.controls.acceptTerms.touched
+            registerForm.controls.acceptTerms.invalid && registerForm.controls.acceptTerms.touched
           ) {
             <small class="field__error terms-error">
               Debes aceptar el tratamiento de tus datos.
             </small>
           }
 
-          <button
-            type="submit"
-            class="primary-button"
-            [disabled]="loading"
-          >
+          <button type="submit" class="primary-button" [disabled]="loading">
             @if (loading) {
-              <i
-                class="pi pi-spin pi-spinner"
-                aria-hidden="true"
-              ></i>
+              <i class="pi pi-spin pi-spinner" aria-hidden="true"></i>
 
-              <span>
-                Creando cuenta...
-              </span>
+              <span> Creando cuenta... </span>
             } @else {
-              <span>
-                Crear cuenta
-              </span>
+              <span> Crear cuenta </span>
 
-              <i
-                class="pi pi-arrow-right"
-                aria-hidden="true"
-              ></i>
+              <i class="pi pi-arrow-right" aria-hidden="true"></i>
             }
           </button>
         </form>
 
         <div class="auth-separator">
-          <span>
-            o regístrate con
-          </span>
+          <span> o regístrate con </span>
         </div>
 
         <button
@@ -741,116 +467,62 @@
           [disabled]="loading"
           (click)="continueWithGoogle()"
         >
-          <span
-            class="google-button__icon"
-            aria-hidden="true"
-          >
-            <img
-              src="/assets/branding/google-g.svg"
-              alt=""
-              width="22"
-              height="22"
-            />
+          <span class="google-button__icon" aria-hidden="true">
+            <img src="/assets/branding/google-g.svg" alt="" />
           </span>
 
-          <span class="google-button__label">
-            Continuar con Google
-          </span>
+          <span class="google-button__label"> Continuar con Google </span>
 
-          <span
-            class="google-button__balance"
-            aria-hidden="true"
-          ></span>
+          <span class="google-button__balance" aria-hidden="true"></span>
         </button>
 
         <div class="auth-switch">
-          <span>
-            ¿Ya tienes una cuenta?
-          </span>
+          <span> ¿Ya tienes una cuenta? </span>
 
-          <button
-            type="button"
-            [disabled]="loading"
-            (click)="showLogin()"
-          >
-            Iniciar sesión
-          </button>
+          <button type="button" [disabled]="loading" (click)="showLogin()">Iniciar sesión</button>
         </div>
       </main>
     }
 
     <!-- =====================================================
-         COMPLETAR PERFIL DE GOOGLE
+         GOOGLE PROFILE
          ===================================================== -->
     @if (view === 'google-profile') {
-      <main class="auth-content">
+      <main class="auth-content auth-content--compact">
         <div class="auth-heading">
-          <span class="auth-heading__eyebrow">
-            Un último paso
-          </span>
+          <span class="auth-heading__eyebrow"> Un último paso </span>
 
-          <h2>
-            Completa tu perfil
-          </h2>
+          <h2>Completa tu perfil</h2>
 
-          <p>
-            Google ya verificó tu correo.
-            Completa tus datos para continuar.
-          </p>
+          <p>Google ya verificó tu correo. Solo necesitamos tus datos de contacto.</p>
         </div>
 
         @if (errorMessage) {
-          <p-message
-            severity="error"
-            styleClass="auth-message"
-          >
+          <p-message severity="error" styleClass="auth-message">
             {{ errorMessage }}
           </p-message>
         }
 
         <div class="google-account">
-          <div
-            class="google-account__icon"
-            aria-hidden="true"
-          >
-            <img
-              src="/assets/branding/google-g.svg"
-              alt=""
-              width="22"
-              height="22"
-            />
+          <div class="google-account__icon" aria-hidden="true">
+            <img src="/assets/branding/google-g.svg" alt="" />
           </div>
 
           <div class="google-account__content">
-            <span>
-              Cuenta verificada
-            </span>
+            <span> Cuenta verificada </span>
 
             <strong>
               {{ googleEmail }}
             </strong>
           </div>
 
-          <i
-            class="pi pi-check-circle"
-            aria-hidden="true"
-          ></i>
+          <i class="pi pi-check-circle" aria-hidden="true"></i>
         </div>
 
-        <form
-          class="auth-form"
-          novalidate
-          (ngSubmit)="completeGoogleProfile()"
-        >
+        <form class="auth-form" novalidate (ngSubmit)="completeGoogleProfile()">
           <div class="form-grid">
-            <!-- NOMBRES -->
             <div class="field">
-              <label
-                class="field__label"
-                for="google-first-name"
-              >
-                Nombres
-              </label>
+              <label class="field__label" for="google-first-name"> Nombres </label>
 
               <div
                 class="input-shell"
@@ -859,10 +531,7 @@
                   googleProfileForm.controls.firstName.touched
                 "
               >
-                <i
-                  class="pi pi-user"
-                  aria-hidden="true"
-                ></i>
+                <i class="pi pi-user" aria-hidden="true"></i>
 
                 <input
                   id="google-first-name"
@@ -870,30 +539,19 @@
                   type="text"
                   autocomplete="given-name"
                   placeholder="Ingresa tus nombres"
-                  [formControl]="
-                    googleProfileForm.controls.firstName
-                  "
+                  [formControl]="googleProfileForm.controls.firstName"
                 />
               </div>
 
-              @if (
-                googleProfileFieldError('firstName');
-                as error
-              ) {
+              @if (googleProfileFieldError('firstName'); as error) {
                 <small class="field__error">
                   {{ error }}
                 </small>
               }
             </div>
 
-            <!-- APELLIDOS -->
             <div class="field">
-              <label
-                class="field__label"
-                for="google-last-name"
-              >
-                Apellidos
-              </label>
+              <label class="field__label" for="google-last-name"> Apellidos </label>
 
               <div
                 class="input-shell"
@@ -902,10 +560,7 @@
                   googleProfileForm.controls.lastName.touched
                 "
               >
-                <i
-                  class="pi pi-user"
-                  aria-hidden="true"
-                ></i>
+                <i class="pi pi-user" aria-hidden="true"></i>
 
                 <input
                   id="google-last-name"
@@ -913,16 +568,11 @@
                   type="text"
                   autocomplete="family-name"
                   placeholder="Ingresa tus apellidos"
-                  [formControl]="
-                    googleProfileForm.controls.lastName
-                  "
+                  [formControl]="googleProfileForm.controls.lastName"
                 />
               </div>
 
-              @if (
-                googleProfileFieldError('lastName');
-                as error
-              ) {
+              @if (googleProfileFieldError('lastName'); as error) {
                 <small class="field__error">
                   {{ error }}
                 </small>
@@ -930,24 +580,24 @@
             </div>
           </div>
 
-          <!-- CELULAR -->
           <div class="field">
-            <label
-              class="field__label"
-              for="google-phone"
-            >
-              Celular
-            </label>
+            <label class="field__label" for="google-phone"> Celular </label>
 
             <div
               class="input-shell input-shell--phone"
               [class.input-shell--invalid]="
-                googleProfileForm.controls.phone.invalid &&
-                googleProfileForm.controls.phone.touched
+                googleProfileForm.controls.phone.invalid && googleProfileForm.controls.phone.touched
               "
             >
-              <span class="phone-prefix">
-                +593
+              <span
+                class="phone-prefix"
+                aria-label="Código de país Ecuador más quinientos noventa y tres"
+              >
+                <span class="ecuador-flag" aria-hidden="true">
+                  <span class="ecuador-flag__shield"></span>
+                </span>
+
+                <span class="phone-prefix__code"> +593 </span>
               </span>
 
               <input
@@ -958,20 +608,13 @@
                 autocomplete="tel-national"
                 maxlength="9"
                 placeholder="991234567"
-                [formControl]="
-                  googleProfileForm.controls.phone
-                "
+                [formControl]="googleProfileForm.controls.phone"
               />
             </div>
 
-            <small class="field__hint">
-              9 dígitos, sin el cero inicial.
-            </small>
+            <small class="field__hint"> 9 dígitos, sin el cero inicial. </small>
 
-            @if (
-              googleProfileFieldError('phone');
-              as error
-            ) {
+            @if (googleProfileFieldError('phone'); as error) {
               <small class="field__error">
                 {{ error }}
               </small>
@@ -985,39 +628,20 @@
               [disabled]="loading"
               (click)="backFromGoogleProfile()"
             >
-              <i
-                class="pi pi-arrow-left"
-                aria-hidden="true"
-              ></i>
+              <i class="pi pi-arrow-left" aria-hidden="true"></i>
 
-              <span>
-                Volver
-              </span>
+              <span> Volver </span>
             </button>
 
-            <button
-              type="submit"
-              class="primary-button"
-              [disabled]="loading"
-            >
+            <button type="submit" class="primary-button" [disabled]="loading">
               @if (loading) {
-                <i
-                  class="pi pi-spin pi-spinner"
-                  aria-hidden="true"
-                ></i>
+                <i class="pi pi-spin pi-spinner" aria-hidden="true"></i>
 
-                <span>
-                  Guardando...
-                </span>
+                <span> Guardando... </span>
               } @else {
-                <span>
-                  Continuar
-                </span>
+                <span> Continuar </span>
 
-                <i
-                  class="pi pi-arrow-right"
-                  aria-hidden="true"
-                ></i>
+                <i class="pi pi-arrow-right" aria-hidden="true"></i>
               }
             </button>
           </div>
@@ -1025,18 +649,10 @@
       </main>
     }
 
-    <!-- =====================================================
-         FOOTER
-         ===================================================== -->
     <footer class="auth-footer">
-      <i
-        class="pi pi-shield"
-        aria-hidden="true"
-      ></i>
+      <i class="pi pi-shield" aria-hidden="true"></i>
 
-      <span>
-        Acceso protegido y datos tratados de forma segura.
-      </span>
+      <span> Tus datos se utilizan únicamente para gestionar tu cuenta y pedidos. </span>
     </footer>
   </section>
 </p-dialog>

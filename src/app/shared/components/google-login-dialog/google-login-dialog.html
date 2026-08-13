@@ -62,7 +62,8 @@
           </p-message>
         }
 
-        <form class="auth-form" novalidate (ngSubmit)="login()">
+        <form class="auth-form" [formGroup]="loginForm" novalidate (ngSubmit)="login()">
+          <!-- EMAIL -->
           <div class="field">
             <label class="field__label" for="login-email"> Correo electrónico </label>
 
@@ -90,6 +91,7 @@
             }
           </div>
 
+          <!-- PASSWORD -->
           <div class="field">
             <label class="field__label" for="login-password"> Contraseña </label>
 
@@ -114,6 +116,7 @@
                 type="button"
                 class="password-toggle"
                 [attr.aria-label]="showLoginPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+                [disabled]="loading"
                 (click)="showLoginPassword = !showLoginPassword"
               >
                 <i
@@ -189,7 +192,12 @@
           </p-message>
         }
 
-        <form class="auth-form auth-form--register" novalidate (ngSubmit)="register()">
+        <form
+          class="auth-form auth-form--register"
+          [formGroup]="registerForm"
+          novalidate
+          (ngSubmit)="register()"
+        >
           <div class="form-grid">
             <!-- NOMBRES -->
             <div class="field">
@@ -345,6 +353,7 @@
                 <button
                   type="button"
                   class="password-toggle"
+                  [disabled]="loading"
                   [attr.aria-label]="
                     showRegisterPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'
                   "
@@ -368,7 +377,7 @@
               }
             </div>
 
-            <!-- CONFIRM PASSWORD -->
+            <!-- PASSWORD CONFIRMATION -->
             <div class="field">
               <label class="field__label" for="register-password-confirmation">
                 Confirmar contraseña
@@ -396,6 +405,7 @@
                 <button
                   type="button"
                   class="password-toggle"
+                  [disabled]="loading"
                   [attr.aria-label]="
                     showRegisterPasswordConfirmation ? 'Ocultar contraseña' : 'Mostrar contraseña'
                   "
@@ -485,7 +495,7 @@
     }
 
     <!-- =====================================================
-         GOOGLE PROFILE
+         GOOGLE PROFILE COMPLETION
          ===================================================== -->
     @if (view === 'google-profile') {
       <main class="auth-content auth-content--compact">
@@ -519,8 +529,14 @@
           <i class="pi pi-check-circle" aria-hidden="true"></i>
         </div>
 
-        <form class="auth-form" novalidate (ngSubmit)="completeGoogleProfile()">
+        <form
+          class="auth-form"
+          [formGroup]="googleProfileForm"
+          novalidate
+          (ngSubmit)="completeGoogleProfile()"
+        >
           <div class="form-grid">
+            <!-- FIRST NAME -->
             <div class="field">
               <label class="field__label" for="google-first-name"> Nombres </label>
 
@@ -550,6 +566,7 @@
               }
             </div>
 
+            <!-- LAST NAME -->
             <div class="field">
               <label class="field__label" for="google-last-name"> Apellidos </label>
 
@@ -580,6 +597,7 @@
             </div>
           </div>
 
+          <!-- PHONE -->
           <div class="field">
             <label class="field__label" for="google-phone"> Celular </label>
 
@@ -649,6 +667,9 @@
       </main>
     }
 
+    <!-- =====================================================
+         FOOTER
+         ===================================================== -->
     <footer class="auth-footer">
       <i class="pi pi-shield" aria-hidden="true"></i>
 

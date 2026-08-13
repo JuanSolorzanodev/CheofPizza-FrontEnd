@@ -30,6 +30,7 @@ import { AuthApiService } from '../../../core/auth/auth-api.service';
 import { ApiErrorResponse, AuthSessionResponse, AuthUser } from '../../../core/auth/auth.models';
 
 import { AuthStore } from '../../../core/auth/auth.store';
+import { firstValueFrom } from 'rxjs';
 
 import {
   FirebaseAuthService,
@@ -468,14 +469,26 @@ export class GoogleLoginDialogComponent {
     }
 
     this.errorMessage = null;
-
     this.loading = true;
 
     this.cdr.markForCheck();
 
     try {
+      /*
+       * 1. Firebase autentica al usuario mediante Google.
+       */
       const profile = await this.firebase.signInWithGoogle();
 
+      if (!profile.idToken?.trim()) {
+        throw new Error('GOOGLE_ID_TOKEN_MISSING');
+      }
+
+      /*
+       * Guardamos temporalmente la identidad de Google.
+       *
+       * Si Laravel determina que es un usuario nuevo,
+       * necesitaremos estos datos para completar el perfil.
+       */
       this.pendingGoogleProfile = profile;
 
       const { firstName, lastName } = this.splitDisplayName(profile.displayName ?? '');
@@ -485,19 +498,46 @@ export class GoogleLoginDialogComponent {
         lastName,
       });
 
-      this.api.loginWithGoogle(profile.idToken).subscribe({
-        next: (response) => {
-          this.processSuccessfulLogin(response, profile.photoURL);
-        },
+      /*
+       * 2. Enviamos SIEMPRE el ID token a Laravel.
+       *
+       * Este es el punto que actualmente no estamos
+       * observando en Network en producción.
+       */
+      const response = await firstValueFrom(this.api.loginWithGoogle(profile.idToken));
 
-        error: (error) => {
-          this.processGoogleError(error);
-        },
-      });
+      /*
+       * 3. Usuario existente:
+       * Laravel devuelve la sesión completa.
+       */
+      this.processSuccessfulLogin(response, profile.photoURL);
     } catch (error: unknown) {
+      /*
+       * Laravel puede responder 422 para indicar que
+       * Firebase autenticó correctamente, pero todavía
+       * necesitamos nombre/teléfono para crear la cuenta.
+       */
+      if (error instanceof HttpErrorResponse) {
+        this.processGoogleError(error);
+
+        return;
+      }
+
+      /*
+       * Error ocurrido antes de llegar a Laravel:
+       * popup, token Firebase, navegador, etc.
+       */
       this.loading = false;
 
       this.errorMessage = this.resolveFirebaseError(error);
+
+      /*
+       * Durante desarrollo/diagnóstico conservamos
+       * el error real en DevTools.
+       *
+       * No contiene el ID token.
+       */
+      console.error('[Google Auth] Firebase authentication failed.', error);
 
       this.cdr.markForCheck();
     }
@@ -939,24 +979,46 @@ export class GoogleLoginDialogComponent {
      ======================================================= */
 
   private resolveFirebaseError(error: unknown): string {
-    const message = error instanceof Error ? error.message.toLowerCase() : '';
+    const firebaseError = error as {
+      code?: string;
+      message?: string;
+    };
 
-    if (message.includes('popup-closed') || message.includes('cancelled')) {
+    const code = firebaseError?.code?.toLowerCase().trim() ?? '';
+
+    const message = firebaseError?.message?.toLowerCase().trim() ?? '';
+
+    if (
+      code === 'auth/popup-closed-by-user' ||
+      code === 'auth/cancelled-popup-request' ||
+      message.includes('popup-closed') ||
+      message.includes('cancelled')
+    ) {
       return 'El acceso con Google fue cancelado.';
     }
 
-    if (message.includes('popup-blocked')) {
+    if (code === 'auth/popup-blocked' || message.includes('popup-blocked')) {
       return (
         'El navegador bloqueó la ventana de Google. ' +
         'Habilita las ventanas emergentes e inténtalo nuevamente.'
       );
     }
 
-    if (message.includes('network')) {
-      return 'No fue posible conectar con Google. Revisa tu conexión.';
+    if (code === 'auth/network-request-failed' || message.includes('network')) {
+      return 'No fue posible conectar con Google. ' + 'Revisa tu conexión e inténtalo nuevamente.';
     }
 
-    return 'No se pudo iniciar sesión con Google.';
+    if (
+      message.includes('firebase_google_id_token_missing') ||
+      message.includes('google_id_token_missing')
+    ) {
+      return (
+        'Google autenticó la cuenta, pero no fue posible ' +
+        'obtener una sesión segura. Inténtalo nuevamente.'
+      );
+    }
+
+    return 'No se pudo completar el acceso con Google. ' + 'Inténtalo nuevamente.';
   }
 
   /* =======================================================

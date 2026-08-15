@@ -1,7 +1,7 @@
-<section
-  class="admin-layout"
-  [class.admin-layout--collapsed]="sidebarCollapsed()"
->
+<section class="admin-layout" [class.admin-layout--collapsed]="sidebarCollapsed()">
+  <!-- =====================================================
+       DESKTOP SIDEBAR
+       ===================================================== -->
   <aside class="admin-sidebar">
     <header class="admin-sidebar__brand">
       <button
@@ -11,69 +11,49 @@
         routerLink="/admin/dashboard"
       >
         <span class="admin-brand__mark">
-          <i class="pi pi-shop"></i>
+          <i class="pi pi-shop" aria-hidden="true"></i>
         </span>
 
         <span class="admin-brand__copy">
-          <strong>CHEO' PIZZA</strong>
-          <small>Administración</small>
+          <strong> CHEO' PIZZA </strong>
+
+          <small> Administración </small>
         </span>
       </button>
 
       <button
         type="button"
         class="sidebar-collapse"
-        [attr.aria-label]="
-          sidebarCollapsed()
-            ? 'Expandir menú lateral'
-            : 'Contraer menú lateral'
-        "
-        [pTooltip]="
-          sidebarCollapsed()
-            ? 'Expandir menú'
-            : 'Contraer menú'
-        "
+        [attr.aria-label]="sidebarCollapsed() ? 'Expandir menú lateral' : 'Contraer menú lateral'"
+        [pTooltip]="sidebarCollapsed() ? 'Expandir menú' : 'Contraer menú'"
         tooltipPosition="right"
         (click)="toggleSidebar()"
       >
-        <i [class]="collapseIcon()"></i>
+        <i [class]="collapseIcon()" aria-hidden="true"></i>
       </button>
     </header>
 
-    <nav
-      class="admin-navigation"
-      aria-label="Navegación administrativa"
-    >
-      @for (
-        group of navigationGroups;
-        track group.label
-      ) {
+    <nav class="admin-navigation" aria-label="Navegación administrativa">
+      @for (group of navigationGroups; track group.label) {
         <section class="admin-navigation__group">
           <span class="admin-navigation__label">
             {{ group.label }}
           </span>
 
           <div class="admin-navigation__items">
-            @for (
-              item of group.items;
-              track item.route
-            ) {
+            @for (item of group.items; track item.route) {
               <a
                 class="admin-navigation__item"
                 [routerLink]="item.route"
                 routerLinkActive="is-active"
                 [routerLinkActiveOptions]="{
-                  exact: item.exact ?? false
+                  exact: item.exact ?? false,
                 }"
-                [pTooltip]="
-                  sidebarCollapsed()
-                    ? item.label
-                    : ''
-                "
+                [pTooltip]="sidebarCollapsed() ? item.label : ''"
                 tooltipPosition="right"
               >
                 <span class="admin-navigation__icon">
-                  <i [class]="item.icon"></i>
+                  <i [class]="item.icon" aria-hidden="true"></i>
                 </span>
 
                 <span class="admin-navigation__text">
@@ -94,8 +74,9 @@
         tooltipPosition="right"
         (click)="goToOperator()"
       >
-        <i class="pi pi-list-check"></i>
-        <span>Módulo operativo</span>
+        <i class="pi pi-list-check" aria-hidden="true"></i>
+
+        <span> Módulo operativo </span>
       </button>
 
       <button
@@ -105,12 +86,16 @@
         tooltipPosition="right"
         (click)="goToStore()"
       >
-        <i class="pi pi-arrow-left"></i>
-        <span>Volver a la tienda</span>
+        <i class="pi pi-arrow-left" aria-hidden="true"></i>
+
+        <span> Volver a la tienda </span>
       </button>
     </footer>
   </aside>
 
+  <!-- =====================================================
+       MAIN
+       ===================================================== -->
   <div class="admin-main">
     <header class="admin-topbar">
       <div class="admin-topbar__start">
@@ -118,22 +103,26 @@
           type="button"
           class="admin-mobile-menu"
           aria-label="Abrir menú administrativo"
+          [attr.aria-expanded]="mobileMenuVisible()"
           (click)="openMobileMenu()"
         >
-          <i class="pi pi-bars"></i>
+          <i class="pi pi-bars" aria-hidden="true"></i>
         </button>
 
         <div class="admin-route-copy">
-          <nav
-            class="admin-breadcrumb"
-            aria-label="Ruta de navegación"
-          >
-            <span>Administración</span>
-            <i class="pi pi-angle-right"></i>
-            <strong>{{ breadcrumb() }}</strong>
+          <nav class="admin-breadcrumb" aria-label="Ruta de navegación">
+            <span> Administración </span>
+
+            <i class="pi pi-angle-right" aria-hidden="true"></i>
+
+            <strong>
+              {{ breadcrumb() }}
+            </strong>
           </nav>
 
-          <h1>{{ pageTitle() }}</h1>
+          <h1>
+            {{ pageTitle() }}
+          </h1>
         </div>
       </div>
 
@@ -150,31 +139,25 @@
         />
 
         <div class="admin-user">
-          @if (
-            !avatarBroken() &&
-            photoUrl()
-          ) {
+          @if (!avatarBroken() && photoUrl()) {
             <img
               class="admin-user__avatar"
               [src]="photoUrl()!"
-              [alt]="
-                'Avatar de ' +
-                displayName()
-              "
+              [alt]="'Avatar de ' + displayName()"
               (error)="onAvatarError()"
             />
           } @else {
-            <span
-              class="admin-user__avatar admin-user__avatar--fallback"
-              aria-hidden="true"
-            >
+            <span class="admin-user__avatar admin-user__avatar--fallback" aria-hidden="true">
               {{ userInitial() }}
             </span>
           }
 
           <span class="admin-user__copy">
-            <strong>{{ displayName() }}</strong>
-            <small>Administrador</small>
+            <strong>
+              {{ displayName() }}
+            </strong>
+
+            <small> Administrador </small>
           </span>
         </div>
 
@@ -199,6 +182,10 @@
   </div>
 </section>
 
+<!-- =======================================================
+     MOBILE DRAWER
+     ======================================================= -->
+
 <p-drawer
   header="Administración"
   position="left"
@@ -211,102 +198,105 @@
   [baseZIndex]="3000"
   [visible]="mobileMenuVisible()"
   [style]="{
-    width: 'min(88vw, 340px)'
+    width: 'min(88vw, 340px)',
   }"
-  (visibleChange)="
-    onMobileMenuVisibleChange($event)
-  "
-  (onHide)="closeMobileMenu()"
+  (visibleChange)="onMobileMenuVisibleChange($event)"
+  (onHide)="onMobileDrawerHide()"
 >
   <div class="admin-mobile-drawer">
+    <!-- ===================================================
+         MOBILE USER
+         =================================================== -->
     <header class="admin-mobile-user">
-      @if (
-        !avatarBroken() &&
-        photoUrl()
-      ) {
+      @if (!avatarBroken() && photoUrl()) {
         <img
           class="admin-user__avatar"
           [src]="photoUrl()!"
-          [alt]="
-            'Avatar de ' +
-            displayName()
-          "
+          [alt]="'Avatar de ' + displayName()"
           (error)="onAvatarError()"
         />
       } @else {
-        <span
-          class="admin-user__avatar admin-user__avatar--fallback"
-          aria-hidden="true"
-        >
+        <span class="admin-user__avatar admin-user__avatar--fallback" aria-hidden="true">
           {{ userInitial() }}
         </span>
       }
 
       <div>
-        <strong>{{ displayName() }}</strong>
-        <span>Administrador</span>
+        <strong>
+          {{ displayName() }}
+        </strong>
+
+        <span> Administrador </span>
       </div>
     </header>
 
-    <nav
-      class="admin-mobile-navigation"
-      aria-label="Navegación administrativa móvil"
-    >
-      @for (
-        group of navigationGroups;
-        track group.label
-      ) {
+    <!-- ===================================================
+         MOBILE NAVIGATION
+         =================================================== -->
+    <nav class="admin-mobile-navigation" aria-label="Navegación administrativa móvil">
+      @for (group of navigationGroups; track group.label) {
         <section class="admin-mobile-navigation__group">
           <span class="admin-mobile-navigation__label">
             {{ group.label }}
           </span>
 
-          @for (
-            item of group.items;
-            track item.route
-          ) {
-            <a
+          @for (item of group.items; track item.route) {
+            <!--
+              No usamos routerLink directamente aquí.
+
+              Primero cerramos el Drawer.
+              onHide ejecutará la navegación cuando PrimeNG
+              haya limpiado correctamente su overlay.
+            -->
+            <button
+              type="button"
               class="admin-mobile-navigation__item"
-              [routerLink]="item.route"
-              routerLinkActive="is-active"
-              [routerLinkActiveOptions]="{
-                exact: item.exact ?? false
-              }"
-              (click)="closeMobileMenu()"
+              [class.is-active]="
+                currentUrl() === item.route ||
+                (!(item.exact ?? false) && currentUrl().startsWith(item.route + '/'))
+              "
+              (click)="navigateFromMobileMenu(item.route)"
             >
-              <i [class]="item.icon"></i>
-              <span>{{ item.label }}</span>
-            </a>
+              <i [class]="item.icon" aria-hidden="true"></i>
+
+              <span>
+                {{ item.label }}
+              </span>
+            </button>
           }
         </section>
       }
     </nav>
 
+    <!-- ===================================================
+         MOBILE FOOTER
+         =================================================== -->
     <footer class="admin-mobile-drawer__footer">
-      <button
-        type="button"
-        (click)="goToOperator()"
-      >
-        <i class="pi pi-list-check"></i>
-        Módulo operativo
+      <button type="button" (click)="goToOperatorFromMobile()">
+        <i class="pi pi-list-check" aria-hidden="true"></i>
+
+        <span> Módulo operativo </span>
       </button>
 
-      <button
-        type="button"
-        (click)="goToStore()"
-      >
-        <i class="pi pi-arrow-left"></i>
-        Volver a la tienda
+      <button type="button" (click)="goToStoreFromMobile()">
+        <i class="pi pi-arrow-left" aria-hidden="true"></i>
+
+        <span> Volver a la tienda </span>
       </button>
 
       <button
         type="button"
         class="is-danger"
         [disabled]="loggingOut()"
-        (click)="logout()"
+        (click)="logoutFromMobile()"
       >
-        <i class="pi pi-sign-out"></i>
-        Cerrar sesión
+        @if (loggingOut()) {
+          <i class="pi pi-spin pi-spinner" aria-hidden="true"></i>
+        } @else {
+          <i class="pi pi-sign-out" aria-hidden="true"></i>
+        }
+
+        <span> Cerrar sesión </span>
       </button>
     </footer>
   </div>

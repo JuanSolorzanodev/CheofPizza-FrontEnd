@@ -17,13 +17,10 @@ import { filter } from 'rxjs';
 import { MessageService } from 'primeng/api';
 
 import { ButtonModule } from 'primeng/button';
-
 import { DrawerModule } from 'primeng/drawer';
-
 import { TooltipModule } from 'primeng/tooltip';
 
 import { AuthStore } from '../../core/auth/auth.store';
-
 import { ThemeService } from '../../core/state/theme.service';
 
 interface AdminNavigationItem {
@@ -61,14 +58,6 @@ export class AdminLayout {
   private readonly toast = inject(MessageService);
 
   private readonly destroyRef = inject(DestroyRef);
-
-  /**
-   * Solo se usa cuando salimos completamente del AdminLayout
-   * desde el drawer móvil.
-   *
-   * Los enlaces normales del navbar NO dependen de esto.
-   */
-  private pendingExternalRoute: string | null = null;
 
   readonly mobileMenuVisible = signal(false);
 
@@ -199,6 +188,10 @@ export class AdminLayout {
 
   constructor() {
     effect(() => {
+      /*
+       * Cuando cambia la imagen del usuario permitimos
+       * nuevamente intentar renderizarla.
+       */
       this.photoUrl();
 
       this.avatarBroken.set(false);
@@ -213,11 +206,19 @@ export class AdminLayout {
       .subscribe((event) => {
         this.currentUrl.set(event.urlAfterRedirects);
 
+        /*
+         * Cualquier navegación finalizada debe dejar
+         * cerrado el drawer móvil.
+         */
         this.mobileMenuVisible.set(false);
 
         this.updateRouteMetadata();
       });
 
+    /*
+     * AdminLayout puede crearse después del
+     * NavigationEnd que activó la ruta.
+     */
     queueMicrotask(() => {
       this.updateRouteMetadata();
     });
@@ -245,71 +246,6 @@ export class AdminLayout {
 
   onAvatarError(): void {
     this.avatarBroken.set(true);
-  }
-
-  /**
-   * Desktop:
-   * puede navegar inmediatamente.
-   */
-  goToStore(): void {
-    void this.router.navigateByUrl('/');
-  }
-
-  /**
-   * Desktop:
-   * puede navegar inmediatamente.
-   */
-  goToOperator(): void {
-    void this.router.navigateByUrl('/operator/orders');
-  }
-
-  /**
-   * MOBILE
-   *
-   * Aquí está la corrección puntual.
-   *
-   * Como /operator/orders destruye AdminLayout,
-   * primero cerramos el drawer.
-   *
-   * La navegación se realizará desde onDrawerHide().
-   */
-  goToOperatorMobile(): void {
-    this.pendingExternalRoute = '/operator/orders';
-
-    this.mobileMenuVisible.set(false);
-  }
-
-  /**
-   * MOBILE
-   *
-   * Mismo tratamiento para volver a la tienda,
-   * porque también se abandona AdminLayout.
-   */
-  goToStoreMobile(): void {
-    this.pendingExternalRoute = '/';
-
-    this.mobileMenuVisible.set(false);
-  }
-
-  /**
-   * PrimeNG ejecuta este evento una vez ocultado
-   * el drawer.
-   *
-   * Solo procesamos rutas externas.
-   *
-   * La navegación interna del admin sigue usando
-   * routerLink normalmente.
-   */
-  onDrawerHide(): void {
-    const route = this.pendingExternalRoute;
-
-    this.pendingExternalRoute = null;
-
-    if (!route) {
-      return;
-    }
-
-    void this.router.navigateByUrl(route);
   }
 
   async logout(): Promise<void> {

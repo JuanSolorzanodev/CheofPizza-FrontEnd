@@ -37,44 +37,33 @@ interface AdminNavigationGroup {
 
 @Component({
   selector: 'app-admin-layout',
-
   standalone: true,
 
   imports: [RouterOutlet, RouterLink, RouterLinkActive, ButtonModule, DrawerModule, TooltipModule],
 
   templateUrl: './admin-layout.html',
-
   styleUrl: './admin-layout.scss',
 
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AdminLayout {
   private readonly auth = inject(AuthStore);
-
   private readonly theme = inject(ThemeService);
-
   private readonly router = inject(Router);
-
   private readonly toast = inject(MessageService);
-
   private readonly destroyRef = inject(DestroyRef);
 
   readonly mobileMenuVisible = signal(false);
-
   readonly sidebarCollapsed = signal(false);
-
   readonly avatarBroken = signal(false);
 
   readonly currentUrl = signal(this.router.url);
 
   readonly pageTitle = signal('Panel administrativo');
-
   readonly breadcrumb = signal('Resumen');
 
   readonly displayName = this.auth.displayName;
-
   readonly photoUrl = this.auth.photoUrl;
-
   readonly loggingOut = this.auth.loggingOut;
 
   readonly themeMode = this.theme.mode;
@@ -87,10 +76,9 @@ export class AdminLayout {
     this.sidebarCollapsed() ? 'pi pi-angle-right' : 'pi pi-angle-left',
   );
 
-  readonly navigationGroups: AdminNavigationGroup[] = [
+  readonly navigationGroups: readonly AdminNavigationGroup[] = [
     {
       label: 'Principal',
-
       items: [
         {
           label: 'Resumen',
@@ -98,19 +86,16 @@ export class AdminLayout {
           route: '/admin/dashboard',
           exact: true,
         },
-
         {
           label: 'Pedidos',
           icon: 'pi pi-receipt',
           route: '/admin/orders',
         },
-
         {
           label: 'Caja',
           icon: 'pi pi-wallet',
           route: '/admin/cash-register',
         },
-
         {
           label: 'Transacciones',
           icon: 'pi pi-credit-card',
@@ -121,26 +106,22 @@ export class AdminLayout {
 
     {
       label: 'Catálogo',
-
       items: [
         {
           label: 'Pizzas',
           icon: 'pi pi-box',
           route: '/admin/catalog/pizzas',
         },
-
         {
           label: 'Categorías',
           icon: 'pi pi-tags',
           route: '/admin/catalog/categories',
         },
-
         {
           label: 'Tamaños y precios',
           icon: 'pi pi-dollar',
           route: '/admin/catalog/prices',
         },
-
         {
           label: 'Ingredientes',
           icon: 'pi pi-list',
@@ -151,7 +132,6 @@ export class AdminLayout {
 
     {
       label: 'Comercial',
-
       items: [
         {
           label: 'Promociones',
@@ -163,20 +143,17 @@ export class AdminLayout {
 
     {
       label: 'Administración',
-
       items: [
         {
           label: 'Usuarios',
           icon: 'pi pi-users',
           route: '/admin/users',
         },
-
         {
           label: 'Configuración',
           icon: 'pi pi-cog',
           route: '/admin/settings',
         },
-
         {
           label: 'Analítica predictiva',
           icon: 'pi pi-chart-line',
@@ -187,38 +164,35 @@ export class AdminLayout {
   ];
 
   constructor() {
+    /*
+     * Si cambia la fotografía del usuario, permitimos volver
+     * a intentar renderizarla aunque anteriormente hubiera fallado.
+     */
     effect(() => {
-      /*
-       * Cuando cambia la imagen del usuario permitimos
-       * nuevamente intentar renderizarla.
-       */
       this.photoUrl();
-
       this.avatarBroken.set(false);
     });
 
+    /*
+     * Un NavigationEnd es la fuente de verdad para:
+     * - URL actual.
+     * - cierre del drawer móvil.
+     * - metadatos de la página.
+     *
+     * No necesitamos coordinar manualmente la animación
+     * del Drawer con la navegación del Router.
+     */
     this.router.events
       .pipe(
         filter((event): event is NavigationEnd => event instanceof NavigationEnd),
-
         takeUntilDestroyed(this.destroyRef),
       )
       .subscribe((event) => {
         this.currentUrl.set(event.urlAfterRedirects);
-
-        /*
-         * Cualquier navegación finalizada debe dejar
-         * cerrado el drawer móvil.
-         */
         this.mobileMenuVisible.set(false);
-
         this.updateRouteMetadata();
       });
 
-    /*
-     * AdminLayout puede crearse después del
-     * NavigationEnd que activó la ruta.
-     */
     queueMicrotask(() => {
       this.updateRouteMetadata();
     });
@@ -229,7 +203,7 @@ export class AdminLayout {
   }
 
   toggleSidebar(): void {
-    this.sidebarCollapsed.update((value) => !value);
+    this.sidebarCollapsed.update((collapsed) => !collapsed);
   }
 
   openMobileMenu(): void {
@@ -244,6 +218,16 @@ export class AdminLayout {
     this.mobileMenuVisible.set(visible);
   }
 
+  /**
+   * El RouterLink se encarga de navegar.
+   *
+   * Este método únicamente inicia el cierre visual del Drawer.
+   * La navegación NO depende de onHide.
+   */
+  closeDrawerForNavigation(): void {
+    this.mobileMenuVisible.set(false);
+  }
+
   onAvatarError(): void {
     this.avatarBroken.set(true);
   }
@@ -253,7 +237,23 @@ export class AdminLayout {
       return;
     }
 
-    this.closeMobileMenu();
+    await this.performLogout();
+  }
+
+  async logoutFromMobile(): Promise<void> {
+    if (this.loggingOut()) {
+      return;
+    }
+
+    this.mobileMenuVisible.set(false);
+
+    await this.performLogout();
+  }
+
+  private async performLogout(): Promise<void> {
+    if (this.loggingOut()) {
+      return;
+    }
 
     await this.auth.logout();
 
@@ -284,7 +284,6 @@ export class AdminLayout {
     const breadcrumb = data['breadcrumb'] ?? 'Resumen';
 
     this.pageTitle.set(title);
-
     this.breadcrumb.set(String(breadcrumb));
   }
 }

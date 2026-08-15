@@ -33,6 +33,9 @@
       </button>
     </header>
 
+    <!-- ===================================================
+         NAVEGACIÓN DESKTOP
+         =================================================== -->
     <nav class="admin-navigation" aria-label="Navegación administrativa">
       @for (group of navigationGroups; track group.label) {
         <section class="admin-navigation__group">
@@ -185,7 +188,6 @@
 <!-- =======================================================
      MOBILE DRAWER
      ======================================================= -->
-
 <p-drawer
   header="Administración"
   position="left"
@@ -201,11 +203,11 @@
     width: 'min(88vw, 340px)',
   }"
   (visibleChange)="onMobileMenuVisibleChange($event)"
-  (onHide)="onMobileDrawerHide()"
+  (onHide)="onDrawerHide()"
 >
   <div class="admin-mobile-drawer">
     <!-- ===================================================
-         MOBILE USER
+         USUARIO
          =================================================== -->
     <header class="admin-mobile-user">
       @if (!avatarBroken() && photoUrl()) {
@@ -231,7 +233,11 @@
     </header>
 
     <!-- ===================================================
-         MOBILE NAVIGATION
+         NAVEGACIÓN MÓVIL
+
+         IMPORTANTE:
+         aquí restauramos routerLink.
+         Estos enlaces NO dependen de onHide.
          =================================================== -->
     <nav class="admin-mobile-navigation" aria-label="Navegación administrativa móvil">
       @for (group of navigationGroups; track group.label) {
@@ -241,55 +247,43 @@
           </span>
 
           @for (item of group.items; track item.route) {
-            <!--
-              No usamos routerLink directamente aquí.
-
-              Primero cerramos el Drawer.
-              onHide ejecutará la navegación cuando PrimeNG
-              haya limpiado correctamente su overlay.
-            -->
-            <button
-              type="button"
+            <a
               class="admin-mobile-navigation__item"
-              [class.is-active]="
-                currentUrl() === item.route ||
-                (!(item.exact ?? false) && currentUrl().startsWith(item.route + '/'))
-              "
-              (click)="navigateFromMobileMenu(item.route)"
+              [routerLink]="item.route"
+              routerLinkActive="is-active"
+              [routerLinkActiveOptions]="{
+                exact: item.exact ?? false,
+              }"
+              (click)="closeMobileMenu()"
             >
               <i [class]="item.icon" aria-hidden="true"></i>
 
               <span>
                 {{ item.label }}
               </span>
-            </button>
+            </a>
           }
         </section>
       }
     </nav>
 
     <!-- ===================================================
-         MOBILE FOOTER
+         ACCIONES MÓVILES
          =================================================== -->
     <footer class="admin-mobile-drawer__footer">
-      <button type="button" (click)="goToOperatorFromMobile()">
+      <button type="button" (click)="goToOperatorMobile()">
         <i class="pi pi-list-check" aria-hidden="true"></i>
 
         <span> Módulo operativo </span>
       </button>
 
-      <button type="button" (click)="goToStoreFromMobile()">
+      <button type="button" (click)="goToStoreMobile()">
         <i class="pi pi-arrow-left" aria-hidden="true"></i>
 
         <span> Volver a la tienda </span>
       </button>
 
-      <button
-        type="button"
-        class="is-danger"
-        [disabled]="loggingOut()"
-        (click)="logoutFromMobile()"
-      >
+      <button type="button" class="is-danger" [disabled]="loggingOut()" (click)="logout()">
         @if (loggingOut()) {
           <i class="pi pi-spin pi-spinner" aria-hidden="true"></i>
         } @else {
